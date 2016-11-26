@@ -1,0 +1,375 @@
+body
+{
+margin-left: 0px;
+margin-top: 0px;
+margin-right: 0px;
+margin-bottom: 0px;
+}
+
+form
+{
+margin-left: 0px;
+margin-top: 0px;
+margin-right: 0px;
+margin-bottom: 0px;
+}
+
+.ic-banner-link {font-size: 11px; font-weight: bold; color: #B20000; text-decoration: underline;}
+
+.ic-banner-link2 {font-size: 11px; font-weight: bold; color: #B20000; text-decoration: underline; cursor:pointer;}
+
+.ic-content {BACKGROUND-POSITION: 50% top; BACKGROUND-IMAGE: url(images/img-content-bkg-top.jpg); BACKGROUND-REPEAT: repeat-x; height: 100%;}
+
+.ic-content-center {BACKGROUND-POSITION: 50% bottom; BACKGROUND-IMAGE: url(images/img-content-bkg-bottom.jpg); BACKGROUND-REPEAT: repeat-x; height: 100%;}
+
+
+.ic-content-footer {VERTICAL-ALIGN: top; HEIGHT: 5px;}
+
+.ic-content-footer-copyright
+{
+font-family: Arial, sans-serif;
+font-size: 10px;
+color: #878787;
+padding-left: 14px;
+padding-top: 14px;
+vertical-align: top;
+width: 145px;
+height: 40px;
+}
+
+.ic-content-footer-dottedline
+{
+background-image: url(images/img-footer-dottedline.gif);
+background-repeat: repeat-x;
+background-position: 0px 0px;
+height: 5px;
+}
+
+.ic-content-footer-client
+{
+background-image: url(images/img_logo.png);
+background-repeat: no-repeat;
+font-family: Arial, sans-serif;
+font-size: 10px;
+color: #878787;
+vertical-align: top;
+width: 140px;
+height: 40px;
+}
+
+.ic-content-left {BACKGROUND-POSITION: 0px 0px; BACKGROUND-IMAGE: url(images/log-img-aux-left-top.gif); VERTICAL-ALIGN: bottom; WIDTH: 9px; BACKGROUND-REPEAT: no-repeat;}
+
+.ic-content-right {BACKGROUND-POSITION: 0px 0px; BACKGROUND-IMAGE: url(images/log-img-aux-right-top.gif); VERTICAL-ALIGN: bottom; WIDTH: 9px; BACKGROUND-REPEAT: no-repeat;}
+
+.ic-content-space-top {PADDING-RIGHT: 25px; PADDING-LEFT: 135px; PADDING-BOTTOM: 25px; VERTICAL-ALIGN: top; PADDING-TOP: 25px;}
+
+.ic-content-space-padding {PADDING-RIGHT: 1px; PADDING-LEFT: 1px; PADDING-BOTTOM: 1px; VERTICAL-ALIGN: top; PADDING-TOP: 1px;}
+
+.ic-header-logo-content {background-image: url(images/img-logo.png);  background-color: #E6E6E6; background-repeat: repeat-x; height: 67px; width: 202px;}
+
+.ic-header-toolbar-content {background-image: url(images/img-header-bkg-toolbar.gif); background-repeat: repeat-x; padding-top: 14px; height: 67px; width: 190px; background-color: #E6E6E6;}
+
+.ic-header-center {height: 67px;}
+
+.ic-header-center-top {background-image: url(images/img-header-bkg-center-top.png); background-repeat: repeat-y; background-position: 100%; height: 42px; background-color: #E6E6E6;}
+
+.ic-header-center-bottom {background-image: url(images/img-header-bkg-center-bottom.gif); background-repeat: repeat-x; height: 25px; text-align: right; background-color: #E6E6E6;} 
+
+.ic-header-date {font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 9px; color: #333333; text-align: right; }
+
+.ic-log-column-center {BORDER-RIGHT: #d3d3d3 1px solid; PADDING-RIGHT: 10px; PADDING-LEFT: 10px; PADDING-BOTTOM: 15px; VERTICAL-ALIGN: top; BORDER-LEFT: #d3d3d3 1px solid; WIDTH: 455px; PADDING-TOP: 15px; BACKGROUND-COLOR: #ffffff;}
+
+.ic-log-column-left {BORDER-RIGHT: #ffffff 1px solid; PADDING-BOTTOM: 14px; VERTICAL-ALIGN: top; WIDTH: 117px; PADDING-TOP: 14px; BACKGROUND-COLOR: #e6e6e6; TEXT-ALIGN: center;}
+
+.ic-log-column-right {PADDING-BOTTOM: 14px; VERTICAL-ALIGN: top; BORDER-LEFT: #ffffff 1px solid; WIDTH: 117px; PADDING-TOP: 14px; BACKGROUND-COLOR: #e6e6e6;}
+
+.ic-log-form {HEIGHT: 299px;}
+
+.ic-log-form-bottom {BORDER-BOTTOM: #d3d3d3 1px solid; HEIGHT: 3px; BACKGROUND-COLOR: #ffffff;}
+
+.ic-log-form-bottom-left {BACKGROUND-IMAGE: url(images/img-log-form-bottom-left.gif); WIDTH: 3px; BACKGROUND-REPEAT: no-repeat; HEIGHT: 3px;}
+
+.ic-log-form-bottom-right {BACKGROUND-IMAGE: url(images/img-log-form-bottom-right.gif); WIDTH: 3px; BACKGROUND-REPEAT: no-repeat; HEIGHT: 3px;}
+
+
+
+.ic-log-form-field {BORDER-RIGHT: #6b6b6b 1px solid; BORDER-TOP: #6b6b6b 1px solid; BACKGROUND-IMAGE: url(images/log-bkg-field.gif); BORDER-LEFT: #6b6b6b 1px solid; WIDTH: 140px; BORDER-BOTTOM: #6b6b6b 1px solid; BACKGROUND-REPEAT: no-repeat; HEIGHT: 19px;}
+
+
+
+.ic-log-form-space-button {BACKGROUND-POSITION: center 0px; BACKGROUND-IMAGE: url(images/img-log-dotted.gif); VERTICAL-ALIGN: middle;  BACKGROUND-REPEAT: no-repeat; HEIGHT: 40px;}
+.ic-log-form-space-button2 {BACKGROUND-POSITION: center 0px; BACKGROUND-IMAGE: url(images/img-log-dotted.gif); VERTICAL-ALIGN: middle;  BACKGROUND-REPEAT: no-repeat; HEIGHT: 20px;}
+
+
+.ic-log-form-tittle {HEIGHT: 26px;}
+
+.ic-log-form-tittle-center {PADDING-LEFT: 4px; FONT-WEIGHT: bold; FONT-SIZE: 9px; BACKGROUND-IMAGE: url(images/img-log-form-tittle-center.gif); COLOR: #ffffff; BACKGROUND-REPEAT: repeat-x; FONT-FAMILY: Verdana, Arial, sans-serif; HEIGHT: 23px;}
+
+.ic-log-form-tittle-left {BACKGROUND-IMAGE: url(images/img-log-form-tittle-left.gif); WIDTH: 16px; BACKGROUND-REPEAT: no-repeat; HEIGHT: 23px;}
+
+.ic-log-form-tittle-right {BACKGROUND-IMAGE: url(images/img-log-form-tittle-right.gif); WIDTH: 16px; BACKGROUND-REPEAT: no-repeat; HEIGHT: 23px;}
+
+.ic-log-form-top {BORDER-RIGHT: #d3d3d3 1px solid; BORDER-TOP: #d3d3d3 1px solid; VERTICAL-ALIGN: top; BORDER-LEFT: #d3d3d3 1px solid; BORDER-BOTTOM: #d3d3d3 1px solid ; BACKGROUND-COLOR: #ffffff;}
+
+.ic-log-form-footer{height:3px; }
+
+.ic-log-language {PADDING-RIGHT: 10px; WIDTH: 80px;}
+
+.ic-log-language-eng {BACKGROUND-POSITION: 5px 2px; PADDING-LEFT: 18px; BACKGROUND-IMAGE: url(images/img-flag-eng.gif); WIDTH: 33px; BACKGROUND-REPEAT: no-repeat;}
+
+.ic-log-language-eng A {
+	FONT-SIZE: 10px;
+	COLOR: #9f0101;
+	FONT-FAMILY: Verdana, Arial, sans-serif;
+	TEXT-DECORATION: none;
+	vertical-align: top;
+}
+
+.ic-log-language-esp {BACKGROUND-POSITION: 5px 2px; PADDING-LEFT: 18px; BACKGROUND-IMAGE: url(images/img-flag-esp.gif); WIDTH: 46px; BACKGROUND-REPEAT: no-repeat;}
+
+.ic-log-language-esp A {
+	FONT-SIZE: 10px;
+	COLOR: #9f0101;
+	FONT-FAMILY: Verdana, Arial, sans-serif;
+	TEXT-DECORATION: none;
+	vertical-align: top;
+}
+
+.ic-log-language-seprator {
+	BACKGROUND-POSITION: 0px 2px;
+	BACKGROUND-IMAGE: url(images/img-flag-separator.gif);
+	WIDTH: 1px;
+	BACKGROUND-REPEAT: no-repeat;
+}
+
+.ic-log-information-important
+{
+    text-align: center;
+    color:Black;
+    font-family:Verdana, Arial, Sans-Serif;
+    font-weight:bold;
+    font-size: 10px; 
+}
+
+.ic-log-message {PADDING-RIGHT: 10px; BACKGROUND-POSITION: 10px 2px; PADDING-LEFT: 30px; FONT-SIZE: 9px; BACKGROUND-IMAGE: url(images/img-info.gif); PADDING-BOTTOM: 6px; COLOR: #666666; PADDING-TOP: 3px; BACKGROUND-REPEAT: no-repeat; FONT-FAMILY: Verdana, Arial, sans-serif;}
+
+.ic-log-message-link {FONT-SIZE: 10px; COLOR: #666666; FONT-FAMILY: Verdana, Arial, sans-serif;}
+
+.ic-log-message-important {BORDER-RIGHT: #c9c9c9 1px dotted; PADDING-RIGHT: 20px; BORDER-TOP: #c9c9c9 1px dotted; PADDING-LEFT: 20px; FONT-SIZE: 10px; PADDING-BOTTOM: 5px; BORDER-LEFT: #c9c9c9 1px dotted; COLOR: #666666; PADDING-TOP: 5px; BORDER-BOTTOM: #c9c9c9 1px dotted; FONT-FAMILY: Verdana, Arial, sans-serif;}
+
+.ic-log-message-title-header { FONT-SIZE: 9px; font-weight:bold;  COLOR: Black;  FONT-FAMILY: Verdana, Arial, sans-serif;}
+
+.ic-log-message-important-space {PADDING-RIGHT: 5px; PADDING-LEFT: 5px;}
+
+.ic-log-panel-bottom {BACKGROUND-IMAGE: url(images/log-panel-bottom.gif); BACKGROUND-REPEAT: repeat-x; HEIGHT: 6px;}
+
+.ic-log-panel-bottom-left {BACKGROUND-POSITION: 100% 100%; BACKGROUND-IMAGE: url(images/log-panel-bottom-left.gif); WIDTH: 6px; BACKGROUND-REPEAT: no-repeat; HEIGHT: 6px;}
+
+.ic-log-panel-bottom-right {BACKGROUND-IMAGE: url(images/log-panel-bottom-right.gif); WIDTH: 6px; BACKGROUND-REPEAT: no-repeat; HEIGHT: 6px;}
+
+.ic-log-panel-left {BACKGROUND-POSITION: 100% 100%; BACKGROUND-IMAGE: url(images/log-panel-left.gif); WIDTH: 6px; BACKGROUND-REPEAT: repeat-y;}
+
+.ic-log-panel-right {BACKGROUND-IMAGE: url(images/log-panel-right.gif); WIDTH: 6px; BACKGROUND-REPEAT: repeat-y;}
+
+.ic-log-panel-top {BACKGROUND-IMAGE: url(images/log-panel-top.gif); BACKGROUND-REPEAT: repeat-x; HEIGHT: 6px;}
+
+.ic-log-panel-top-left {BACKGROUND-POSITION: 100% 100%; BACKGROUND-IMAGE: url(images/log-panel-top-left.gif); WIDTH: 6px; BACKGROUND-REPEAT: no-repeat; HEIGHT: 6px;}
+
+.ic-log-panel-top-right {BACKGROUND-IMAGE: url(images/log-panel-top-right.gif); WIDTH: 6px; BACKGROUND-REPEAT: no-repeat; HEIGHT: 6px;}
+
+.ic-log-right-space-image {background-image: url(images/bot-log-background.gif); background-repeat: no-repeat; background-position: 0px 0px; width: 89px; VERTICAL-ALIGN: top; HEIGHT: 94px;}
+
+.ic-log-right-button-link {text-align: left; height: 10px; padding-left: 20px;}
+
+.ic-log-right-button-link A{font-family: Verdana, Arial, Helvetica, sans-serif; font-weight: bold; color: #9E0101; font-size: 9px; text-decoration: none; padding-bottom: 4px;}
+
+.ic-log-right-button-link A:hover{font-family: Verdana, Arial, Helvetica, sans-serif; font-weight: bold; color: #9E0101; font-size: 9px; text-decoration: underline;}
+
+.ic-log-tittle {
+	PADDING-LEFT: 16px;
+	FONT-WEIGHT: bold;
+	FONT-SIZE: 12px;
+	COLOR: #9f0101;
+	FONT-FAMILY: Verdana, Arial, sans-serif;
+	vertical-align: top;
+}
+
+.ic-log-title-login {
+	FONT-WEIGHT: bold;
+	FONT-SIZE: 10px;
+	COLOR: #9f0101;
+	FONT-FAMILY: Verdana, Arial, sans-serif;
+	vertical-align: middle;
+}
+.ic-login-header {HEIGHT: 67px;}
+
+A.ic-button {BACKGROUND-POSITION: 0px 0px; DISPLAY: block; FONT-WEIGHT: bold; FONT-SIZE: 10px; BACKGROUND-IMAGE: url(images/ic-button-01.gif); PADDING-BOTTOM: 1px; WIDTH: 80px; COLOR: #b20000; PADDING-TOP: 3px; BACKGROUND-REPEAT: no-repeat; FONT-FAMILY: Verdana, Arial, sans-serif; HEIGHT: 20px; TEXT-ALIGN: center; TEXT-DECORATION: none;}
+
+.ic-log-language-eng A:hover {TEXT-DECORATION: underline;}
+
+.ic-log-language-esp A:hover {TEXT-DECORATION: underline;}
+
+A.ic-button:hover {BACKGROUND-POSITION: 0px 0px; FONT-WEIGHT: bold; FONT-SIZE: 10px; BACKGROUND-IMAGE: url(images/ic-button-01.gif); PADDING-BOTTOM: 1px; WIDTH: 80px; COLOR: #b20000; PADDING-TOP: 3px; BACKGROUND-REPEAT: no-repeat; FONT-FAMILY: Verdana, Arial, sans-serif; HEIGHT: 20px; TEXT-ALIGN: center; TEXT-DECORATION: underline;}
+
+.ic-bot-keyboard { font-family:Verdana, Arial, Helvetica, sans-serif; font-size: 12px; color:#000000; text-align:center; vertical-align:middle; background-image:url(images/img-bot-key-bkg.gif); background-repeat:no-repeat; background-color:#E4E4E4; width:23px; height:23px; text-decoration:none;}
+
+.ic-bot-keyboard a { font-family:Verdana, Arial, Helvetica, sans-serif; font-size: 12px; color:#000000; text-decoration:none; display: block;  width:100%; height:100%; padding-top:4px}
+
+.ic-bot-keyboard a:hover { font-family:Verdana, Arial, Helvetica, sans-serif; font-size: 12px; color:#B20000; text-decoration:none;}
+
+.ic-bot-keyboard a:active { font-family:Verdana, Arial, Helvetica, sans-serif; font-size: 12px; color:#B20000; text-decoration:none; font-weight:bold;}
+
+.ic-bot-key-clear { font-family:Verdana, Arial, Helvetica, sans-serif; font-size: 10px; color:#000000; text-align:left; vertical-align:middle; background-image: url(images/img-bot-key-back-bkg.gif); background-repeat:no-repeat; background-color:#E4E4E4; width:71px; height:24px; text-decoration:none;}
+
+.ic-bot-key-clear a { font-family:Verdana, Arial, Helvetica, sans-serif; font-size: 10px; color:#000000; text-decoration:none; display: block;  width:100%; height:100%; padding-top:4px;  padding-left:28px;}
+
+.ic-bot-key-clear a:hover { font-family:Verdana, Arial, Helvetica, sans-serif; font-size: 10px; color:#B20000; text-decoration:none;}
+
+.ic-bot-key-clear a:active { font-family:Verdana, Arial, Helvetica, sans-serif; font-size: 10px; color:#B20000; text-decoration:none; font-weight:bold;}
+
+.ic-log-text-error {font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10px; font-weight: bold; color: #FF0000; text-decoration: none; background-image: url(images/ic_icon_error.gif); background-repeat: no-repeat; background-position: 65px 0px; padding-left: 80px;}
+
+.ic-grid-link {font-size: 9px; text-align: right; padding-right: 10px; color: #B20000; text-decoration: none;}
+
+.ic-form-label {PADDING-RIGHT: 4px; FONT-SIZE: 11px; VERTICAL-ALIGN: middle; WIDTH: 100px; COLOR: #666666; FONT-FAMILY: Verdana, Arial, sans-serif; HEIGHT: 30px; TEXT-ALIGN: right;}
+
+.ic-form-data
+{
+    font-size: 10px;
+    font-family: Verdana, Arial, sans-serif;
+    padding-top: 5px;
+    vertical-align: top;
+    text-align: left;
+    border-bottom: 1px solid #DFDFDF;
+    color: #000000;
+}
+.ic-log-form-label 
+{
+    FONT-SIZE: 11px; 
+    FONT-FAMILY: Verdana, Arial, sans-serif; 
+    PADDING-RIGHT: 4px; 
+    VERTICAL-ALIGN: middle; 
+    WIDTH: 160px; 
+    COLOR: #666666; 
+    HEIGHT: 30px; 
+    TEXT-ALIGN: right;}
+
+.ic-log-form-data 
+{
+    font-size: 10px; 
+    PADDING-LEFT: 10px; 
+    VERTICAL-ALIGN: middle; 
+    WIDTH: 240px; 
+    HEIGHT: 30px; 
+    TEXT-ALIGN: left;}
+
+.ic-customerAttention-data 
+{
+    FONT-SIZE: 11px; 
+    FONT-FAMILY: Verdana, Arial, sans-serif; 
+    COLOR: #000000; 
+}
+.ic-customerAttention-title 
+{
+    FONT-SIZE: 11px; 
+    FONT-FAMILY: Verdana, Arial, sans-serif; 
+    COLOR: #000000; 
+    font-weight:bold;
+}
+.ic-form-data-required
+{
+    font-size: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    background-position: 0px 7px;
+    vertical-align: top;
+    text-align: left;
+    background-image: url(images/ic_img-data-required.gif);
+    padding-bottom: 4px;
+    padding-top: 5px;
+    background-repeat: no-repeat;
+    font-family: Verdana, Arial, sans-serif;
+    background-color: #ffffff;
+    color: #000000;
+}
+
+.ic-form-data-right
+{
+font-size: 10px;
+font-family: Verdana, Arial, sans-serif;
+padding-top: 5px;
+vertical-align: top;
+text-align: right;
+border-bottom: 1px solid #DFDFDF;
+color: #000000;
+}
+
+.ic-form-data-no-border
+{
+font-size: 10px;
+font-family: Verdana, Arial, sans-serif;
+padding-top: 5px;
+vertical-align: top;
+text-align: left;
+color: #000000;
+}
+
+.ic-form-row
+{
+background-color: white;
+}
+
+.ic-error-message
+{
+	color: Red;
+	font-size: 11px;
+	font-family: Verdana, Arial, sans-serif;
+}
+
+.wiz-tit
+{
+font-size: 11px;
+font-family: Verdana, Arial, sans-serif;
+font-weight:bold;
+}
+
+.ic-button-navigation-large
+{
+display: inline;
+background-image: url(images/ic-button-01-large.gif);
+background-position: 0px 0px;
+background-repeat: no-repeat;
+text-align: center;
+text-decoration: none;
+font-family: Verdana, Arial, sans-serif;
+font-weight: bold;
+font-size: 10px;
+color: #B20000;
+padding-bottom: 1px;
+padding-top: 3px;
+width: 120px;
+height: 20px;
+}
+
+.ic-welcome
+{
+font-size: 12px;
+font-family: Verdana, Arial, sans-serif;
+color: #666666;
+text-align: justify;
+}
+
+
+.ic-password-error-message
+{
+	color: Red;
+	font-size: 10px;
+	font-family: Verdana, Arial, sans-serif;
+}
+
+.ic-password-message
+{
+	color: Black;
+	font-size: 10px;
+	font-family: Verdana, Arial, sans-serif;
+}

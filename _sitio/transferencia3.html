@@ -1,0 +1,882 @@
+
+<!-- saved from url=(0061)Pages/Transfers/MyCreditAccounts.aspx -->
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><script src="./jquery-1.7.2.min.js.descarga" type="text/javascript"></script>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<link href="Default.css" type="text/css" rel="stylesheet">
+<link href="Menu.css" type="text/css" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="Estilo.css">
+<script src="rutas.js"></script>
+
+<script src="./jquery-1.7.1.js.descarga" type="text/javascript"></script>
+<script src="./jquery-ui-1.8.19.custom.min.js.descarga" type="text/javascript"></script>
+<script src="./jquery.formatCurrency-1.4.0.js.descarga" type="text/javascript"></script>
+<script src="./idle-timer.js.descarga" type="text/javascript"></script>
+<script src="./idle-timer.min.js.descarga" type="text/javascript"></script>
+<script language="javascript" type="text/javascript">
+
+function Logout() {
+        if (confirm("¿ Desea salir del sistema ?") == true) {
+                    
+            window.location =  '/'+ "Logout.aspx";
+        }
+       
+    }
+    
+var focusedFormControl;    
+var dateFormat = 'dd/mm/aaaa';
+var applicationRoot = '/';      
+function OnRowClick(sender, args) {
+    if (sender.GetSelectedRowCount() == 0) {
+        sender.UnselectRowOnPage(args.visibleIndex);
+        SetPageLinkData("");
+    }
+    else {
+        _aspxClearSelection();
+        sender._selectAllRowsOnPage(false);
+        sender.SelectRow(args.visibleIndex, true);
+        SetPageLinkData(sender.GetRowKey(args.visibleIndex));
+    }
+}
+
+if (history.forward(1))
+{
+
+    location.replace(history.forward(1))
+} 
+
+function PrintPage() {
+
+    window.print();
+}
+
+function GoMyOption(select)
+{
+    var url = select.options[select.selectedIndex].value;
+    if( url != "")
+        window.location = url;
+}
+
+function GoFavourites(select)
+{
+
+    var url = select.options[select.selectedIndex].value;
+    if( url != "")
+        window.location = url;
+}
+
+function GoPrint()
+{
+
+window.print();
+}
+
+function addEvent(elm, evType, fn, useCapture)
+{
+
+  if (elm.addEventListener){
+    elm.addEventListener(evType, fn, useCapture);
+    return true;
+  } else if (elm.attachEvent){
+    var r = elm.attachEvent("on"+evType, fn);
+    return r;
+  } else {
+    alert("Handler could not be removed");
+  }
+} 
+
+function SetPageLinkData(data)
+{
+    pageLinkData = document.getElementById('PageLinkData');
+    pageLinkData.value = data;
+}
+
+function SetPageLinkUrl(url)
+{
+    pageLinkUrl = document.getElementById('PageLinkUrl');
+    pageLinkUrl.value = url;
+}
+
+function doPageLink(id)
+{
+    __doPostBack(id, 'PageLinkEvent');
+}
+
+function imprimirEstadoCuenta()
+{
+											
+    var ficha = document.getElementById('printDiv');		
+    var ventimp = window.open('', 'popimpr','height=450, width=550, scrollbars=1');																						
+    var fichaHTML = new String(ficha.innerHTML);
+    fichaHTML = fichaHTML.replace('Seleccione un período y oprima "Consultar".'," ");
+    //var i = document.getElementById('ctl00_MainHolder_panelDetalle_imgPlusMinus');
+    var html  = "<html>\n<head>\n<link rel=\"stylesheet\" type=\"text/css\" href=\"..\\..\\App_Themes\\Default\\Default.css \" />" 
+                + "</head><table width=\"100%\"><tr bgcolor=\"#FF0000\"><td><img src=\"..\\..\\App_Themes\\Default\\Images\\logoSantander.gif\" /></td></tr></table>" 
+                + fichaHTML 
+                + "</html>";
+    ventimp.document.write( html );
+    ventimp.document.close();
+    ventimp.print( );
+    ventimp.close();
+					
+}
+
+ function removeInvalidCharacters(control) {
+ 
+            !(/^[A-zÑñ0-9 ]*$/i).test(control.value) ? control.value = control.value.replace(/[^A-zÑñ0-9 ]/ig, '') : null
+        }
+        
+  function removeInvalidNumbers(control) {
+            !(/^[0-9,]*$/i).test(control.value) ? control.value = control.value.replace(/[^0-9,]/ig, '') : null
+        }
+function showLoading()
+{
+//debugger;
+    // aquí le pasamos la clase o id de nuestro div a centrar (en este caso "caja")
+    $('.ic-loading').css({
+       position:'absolute',
+       left: ($('#mainContainer').width()/2 - $('.ic-loading').outerWidth())/2,
+       //top: ($('#mainContainer').height()/2 - $('.ic-loading').outerHeight())/2
+       top: ($('#mainContainer').height()/2 - $('ic-loading').height()/2)
+    });
+    
+    $('#mainContainer').css('display','none');
+    $('#ic-loading').css('display','block');
+}
+//ModalDialog SessionTimeout
+var idleTime = (parseInt('1170') * 1000); // number of miliseconds until the user is considered idle
+var initialSessionTimeoutMessage = "La sesión finalizará en <span id='sessionTimeoutCountdown'></span> segundos. Para seguir operando seleccioná “Continuar”<br /><br />";
+var sessionTimeoutCountdownId = 'sessionTimeoutCountdown';
+var redirectAfter = (parseInt('30')) ; // number of seconds to wait before redirecting the user
+var redirectTo = '/' + "Logout.aspx"; // URL to relocate the user to once they have timed out
+var keepAliveURL = ''; // URL to call to keep the session alive
+var expiredMessage = ''; // message to show user when the countdown reaches 0
+var running = false; // var to check if the countdown is running 
+var timer; // reference to the setInterval timer so it can be stopped 
+var timerSB;  
+var timeout;  
+    $(document).ready(function() {     
+// create the warning window and set autoOpen to false  
+      var sessionTimeoutWarningDialog = $("#sessionTimeoutWarning"); 
+    $(sessionTimeoutWarningDialog).dialog({         
+        title: '',       
+        autoOpen: false,    // set this to false so we can manually open it         
+        closeOnEscape: false,         
+        draggable: false,         
+        width: 460,         
+        minHeight: 150,         
+        modal: true,           
+        beforeclose: function() { // bind to beforeclose so if the user clicks on the "X" or escape to close the dialog, it will work too             // stop the timer             
+            clearInterval(timer);               // stop countdown
+            running = false;               // ajax call to keep the server-side session alive    
+                  
+            $.ajax({               
+                url: keepAliveURL,               
+                async: false            
+            });         
+        },         
+        buttons: {      
+             'Continuar ': function() {                 
+                // close dialog 
+                window.location.reload();//BM24925: Se agrega esto para que el expired de una cookie se actualice y no se cierre la sesión luego de hacer click en continuar al terminar el timeout del webconfig. El valor del expired se pone en la tabla configuration en la clave SessionMaxMinutes.
+                //var valor = getCookie('ICBWebLogin'); //Esta función la dejo por las dudas, pero no la pude hacer andar poque el document.cookie no me trae las cookies del explorador.                
+                $(this).dialog('close');
+                clearInterval(timerSB);    
+                window.status = "";      
+                StatusBarCountDown();     
+            },
+            'Finalizar sesión': function() {                 
+                // close dialog                 
+                $(sessionTimeoutWarningDialog).html(expiredMessage);
+                $(sessionTimeoutWarningDialog).dialog('disable');                     
+                window.parent.location = redirectTo;           
+            }         
+        },         
+        resizable: false,         
+        open: function() {
+            $('body').css('overflow','auto');         
+        },         
+        close: function() {             
+            // reset overflow             
+            $('body').css('overflow','auto');         
+        }  
+           
+    }); // end of dialog  
+    jQuery("a.ui-dialog-titlebar-close").hide(); 
+          
+    // start the idle timer
+    $.idleTimer(idleTime);
+ 
+});
+
+// BM24925: Función para recuperar el valor de una cookie.
+// name - nombre de la cookie deseada
+// devuelve un string conteniendo el valor de la cookie especificada o null si la cookie no existe
+
+function getCookie(name){
+var micookie = (document.cookie.indexOf('ICBWebLogin=') === -1 ? '' : ("; " + document.cookie).split('; ICBWebLogin=')[1].split(';')[0]);
+
+  var cname = name + "=";               
+  var dc = document.cookie;             
+  if (dc.length > 0) {              
+    begin = dc.indexOf(cname);       
+    if (begin != -1) {           
+      begin += cname.length;       
+      end = dc.indexOf(";", begin);
+      if (end == -1) end = dc.length;
+        return unescape(dc.substring(begin, end));
+    } 
+  }
+  return null;
+}
+
+//Status Bar Countdown Script
+function StatusBarCountDown() 
+{
+    var redirectAfter = (parseInt('30'));
+    var timeout = '1200000';   
+    var redirectTo = '/' + "Logout.aspx"; // URL to relocate the user to once they have timed out   
+    timerSB = setInterval(function(){
+    timeout -= 1000;
+    if(timeout == redirectAfter * 1000)
+    {
+        window.focus();
+    }
+   if(timeout < redirectAfter * 1000)
+   {
+        $("#sessionTimeoutCountdown").html(timeout/1000);
+        $("#sessionTimeoutWarning").dialog('open'); 
+   }
+   if (timeout < 100)
+   {
+        $("#sessionTimeoutWarning").html(expiredMessage);
+        $("#sessionTimeoutWarning").dialog('disable');                     
+        window.parent.location = redirectTo;
+        clearInterval(timerSB);    
+        window.status = "";     
+   }
+        
+   window.status = "Su sesión expirará " + time(timeout) + " minutos";        
+    }, 1000);   
+         
+   function two(x)
+   {
+    return ((x > 9) ? "" : "0") + x
+   }   
+  
+   function time(ms)
+   {   
+       var t = '';   
+       var sec = Math.floor(ms / 1000);   
+       ms = ms % 1000   
+
+       var min = Math.floor(sec / 60);   
+       sec = sec % 60;   
+       t = two(sec);   
+
+       var hr = Math.floor(min / 60);   
+       min = min % 60;   
+       t = two(min) + ":" + t;   
+    return t;
+   }
+}
+
+StatusBarCountDown();
+
+
+
+</script>
+
+<link href="./Default.css" type="text/css" rel="stylesheet"><link href="./jquery-ui-1.8.19.custom.css" type="text/css" rel="stylesheet"><title>
+	Untitled Page
+</title></head>
+<body>
+    <form name="aspnetForm" method="post" action="Pages/Transfers/MyCreditAccounts.aspx" onsubmit="javascript:return WebForm_OnSubmit();" id="aspnetForm">
+<div>
+<input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="">
+<input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="">
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwULLTE0MDk2ODg5OTgPZBYCZg9kFgICAQ9kFgICAQ9kFgJmD2QWBAIBD2QWBAICDw8WAh4EVGV4dAUXTWlzIGN1ZW50YXMgZGUgY3LDqWRpdG9kZAIHD2QWAmYPZBYGZg9kFgICAQ9kFgICAQ9kFgJmDzwrABYCAA8WCB4PRGF0YVNvdXJjZUJvdW5kZx4RQ2xpZW50U3RhdGVMb2FkZWRoHg1DYWxsYmFja1N0YXRlBaAdL3dFV0JCNEVSR0YwWVFYc0ZFRkJRVUZCUVc5QlFVRkJRVUZCUVVGRFowRkJRVUZCUzBGQlFVRkNWVVp6WVZkR2VrSlZSbk5oVjBaNlFuZEJRVVJWUm1wWk1qa3hZbTVTVDJSWE1XbGFXRWxPVVZkT2FtSXpWblZrUlRVeFlsZEtiR05uWTBGQlFXaEVaRmhLZVZwWE5XcGxVV2hFWkZoS2VWcFhOV3BsVVdOQlFVRmFWV1ZZUW14VFYxRkhWa2hzZDFwVmJHdENkMEZCUWpCT2RtSllRbWhpYm10SVVUSTVkR05IUm5WbFVXTkJRVUUxUkdSWVNubGFWelZxWlZaT05XSlhTblppUVRWRVpGaEtlVnBYTldwbFZrNDFZbGRLZG1KQlkwRkJRVTVFVVd4VlJGRXdTbFpDZDBGQlEyeENlV0l6V25CaWJVNXNVMWRSUzFWSVNuWmtiV3gxV1RKV1NscEJZMEZCUWxKS1l6Rk9NV05IVm5sa2JXeHNZa2Q0YkZGWFRtcGlNMVoxWkVKU1NtTXhUakZqUjFaNVpHMXNiR0pIZUd4UlYwNXFZak5XZFdSQmIwRkJRWFJSWTIwNWEyUlhUakJSTWpscldsRjBVV050T1d0a1YwNHdVVEk1YTFwUlkwRkJSRkZCUVVGQlVWRllXbWhoVjNob1dXMTRiRkZ0Um5OWlZ6VnFXbEYwUWxreVRuWmtWelV3Vmtoc2QxcFNRa1JpTW5oeldsZE9NRnBYVWtOWlYzaG9ZbTFPYkVKVk9UTmliVlo1UW10S2VWbFhOV3BoUVdoRFkyMUdkVmt5YUVwYVFWWlVaRWRHTUZwUlVrUmhXRkkxUkVaS2JHTXpVbmxoVjA0d1lWYzVkV04zZUVaaWJVNTVaVmhDTUZwWFVreGFXR3RTVkVjNWRWb3dSbXBaTWpreFltNVNUMlJYTVdsYVdFbG1WRWM1ZFZvd1JtcFpNamt4WW01U1QyUlhNV2xhV0VwT1lqSlNNV0pIVmtSa1dFcDVXbGMxYW1WU2JFMWlNalZ1VVZkT2FtSXpWblZrUlRVeFlsZEtiR05yVGpGamJrcHNZbTFPTlVNd1pIbGhWMUpDV1RKT2RtUlhOVEJGTVZaMVlWaEdNVnBWUm1wWk1qa3hZbTVTVDJSWE1XbGFXRWxRVWpOS2NGcEdValZqUjFaQ1dUSk9kbVJYTlRCSFZYaDJZbTFrUWxreVRuWmtWelV3Vkc1V2RGbHRWbmxXU0Vwb1ltNU9iVnBZU1VWUmJVWjFZWGMxUTJKSE9XcGhNbFpyVVcxR2MxbFhOV3BhVVd4UVpHMVdlVnBJU21oYWJsRk5Va2M1YW1SWE1XeGlibEpWWlZoQ2JFUnJVblpaTTFaMFdsYzFNRlJ1Vm5SWmJWWjVRbXN4ZGxwSVZuTmFVVlpSV1ZoQ2JHTm5PVkJqUjFaNVdWaFNjR0l5TlU5a1Z6RnBXbGhKVTFVelZtbFVNMEpzWTIxR01HRlhPWFZVYmxaMFdXMVdlVVJWT1hkYVdFcG9aRWRzZG1Kc1VqVmpSMVZVVVROV2VXTnRWblZaTTJ4RldsaE9hbU50Ykhka1IyeDJZbWhHVG1JeVVqRmlSMVpGV2xoT2FtTnRiSGRrUjJ4MlltZDBRMWxYZUdoaWJVNXNVa2RHTUZwU1VrWmxTRko1V1ZkT01GSnVTbXhqV0Zac1ltMU9OVkV5T1d0YVVuUkdaVWhTZVZsWFRqQlNia3BzWTFoV2JHSnRUalZTUjFaNldUTktjR05JVW5CaU1qUlFVbGhvTUdOdFJtcGtSbEkxWTBkV1JHSXlVbXhHYTFZMFpFaEthRmt6VWxWbFdFSnNVa2RXZWxrelNuQmpTRkp3WWpJMFRGSkhSalZqTURreVdsaEthMlJYVlUxVU1rcDZXbGhLTWxsWVVuQmlNalY2UTJ4T2FHSlhWa2xpTW5ocldsaEpTVlV6VW1oa1NGWjZVMWRSVGxKWWFHeFpNMVl3WVZoYWJGRXlPV3RhVVRGR1pVZFdhbVJZVW5Ca2JWWlBXVmN4YkVSVlZqUmhXRTR3WXpCc2RWUkhPV3BaVjNkWVVrYzVhbVJYTVd4aWJsSlZaVmhDYkZKSFZucFpNMHB3WTBoU2NHSXlORlZSYlVaMVdsZDRhbUl3Um1wWk1qa3hZbTVTVDJSWE1XbGFXRWxTVlVoS2JGRllRbmRqYlRreVdsZFNRMVF3TldoaVYxVkdVbGN4YUdGWGQwVlViVVowV2xGd1Fsa3lUblprVnpVd1ZETmtkVUV4VW14WlVsWlBXbGhrVkZwWVNqSmhWMDVzVWpKV01GVklTblphU0ZacVpFaE5SMVV6VW1oa1NGWjZSRVZHYTJGSFZucGhWemwxVmtoc2QxcFJiRkZqYlRsclpGZE9NRk5YVVVoQlFXTkJRbmRCU0VGQllpOHZkMk5EUld0T1FrbERVV2RSYlVaMVdUSTRaMUl5Um5OaFYwNXdXVkZyU0VGblNUUk5RV05EUVd0T1FrSjNTVUZDZDBsR1NrTkJaMGxEUVVoQmFGbDNUVVJqZDAxRVNUVk5SRTEzVFVSQk1FMUVRWGxOZWxVMFRXcEJNVUozU1VOTlJFVkxRV2RCU0VGblFVaEJRV05CUW5ZdkwwSjNTVXRSTUUxblNrTkNVVkZWVWtKVFVXTkRRWHBKZUU1QlkwTkJhbWQzUW5kSlExRXdUVWhCWjBGSVFXZFZhMGxEUVdkSlFXTkRSbXBCZVU1NlFYZE5WR2Q1VFZSQmQwMUVRWGROUkVsNFRrUkJkMDFVVFVoQlowRkxRV2RGU0VGb1dYaE1WRVUwVEZSSmQweFVaM2RNVkVGMFRXcEZNRXhVUVhSTlV6QXdRbmRCU0VGQllpOHZkMk5EUTJ0T1JFbERVV2RWUlVaRFZUQkZTRUZuVFhsT2VrbElRV2RKTkUxQlkwTkJhMDVFUW5kSlFVSjNTVVpLUTBGblNVTkJTRUZvV1hkTmFtTjNUVVJGTlU5VVJYZE5SRUYzVFVSQmVVNTZTWGROUkVWNlFuZEpRVU5uU1VKQ2QwbFhUVk13ZUU5VE1IbE5RekEwVFVNd2QweFVTVE5OYVRCM1RGUkZkRTVCWTBGQ2QwRkhMeTg0U0VGb1pFSkpSVEIxU1VWT2FHTXpVbmxpZVVGdldXMTRkbU5ZVm14WlYxSm9TMUZqUTBKcVJYZE9hbFUxVDBGalEwRnFaM2RDZDBsRFVUQkZTRUZuUVVoQloxVnJTVU5CWjBsQlkwTkdha0Y1VG5wQmQwMVVhelZOYWtGM1RVUkZkMDVxVlRWUFJFRjNUV3ByU0VGblFVdEJaMFZJUVdocmVFeFVSVFZNVkVsNFRGUm5kMHhVUVhSTlZFRXlUbFJyTkV4VVFYUk5hVEI0UW5kQlNFRkJZaTh2ZDJORFJHdE9SRWxEVVdkV2JVWnJXbGN4YkZrelZuUkNkMGxGVFZSSk0wNTNZME5CYW1kM1FuZEpRMUV3VFVoQlowRklRV2RWYTBsRFFXZEpRV05EUm1wQmVVNTZRWGhOUkVGM1RWUkJkMDFFUVhkTlZFa3pUbnBCZDAxVVJVaEJaMEZMUVdkRlNFRm9aM2hNVkVWM1RVTXdlVTFETURSTlF6QjNURlJGZVU1NlkzUk5RekI0VEZSUlNFRkJZMEZDZGk4dlFuZEpUbEV3VFdkS1EwSkVZMjFXYTJGWE1XaGpkMk5EUWtSRk1rOVVWVWhCWjBrMFRVRmpRMEZyVGtSQ2QwbEJRbmRKUmtwRFFXZEpRMEZJUVdoWmQwMXFZM2ROVkVGM1RVUkZkMDFFUVhkTlJFVXlUMVJWZDAxRVJUVkNkMGxCUTJkSlFrSjNTVmxOVXpCNFRVUkJkRTFxUVhSUFJFRjBUVU13ZUU1cWF6Rk1WRUYwVFZNd01FSjNRVWhCUVdJdkwzZGpRMFZWVGtKSlExRm5VVzFHZFZreU9HZFJNbXd4V2tkR2EwTlJZME5CYW1kM1FuZEpRMUV3UlVoQlowRklRV2RWYTBsRFFXZEpRV05EUm1wQmVVOVVRWGROVkVrd1RWUkJkMDFFUVhkTmVsVXlUVlJaZUUxcVZVaEJaMGwzVFZGdlEwRkJZME5CUVdOQlFuZEJSeTh2T0VoQmFFWkVVVk5CYTBsRlNtaGliVTUyU1VWT2NHUlhVbWhhUVd0SVFXZEpORTFCWTBOQmEwNUNRbmRKUVVKM1NVWktRMEZuU1VOQlNFRm9XWGROYW10M1RVUk5kMDlFUlhkTlJFRjNUVVJOTVUxNlVYbE9lbEY2UW5kSlEwMUVSVXRCWjBGSVFXZEJTRUZCWTBGQ2RpOHZRbmRKVlZFd1JXZEtRMEpEV1ZjMWFtSjVRbFJaVnpVd1dWYzFhMXBZU1VwQ2QwbERUMFJCU0VGblNrUlJVV05EUVVGalEwSlRVV2RKUTBGblFuZEpWMDFFWTNsTlJFbDNUVlJCTkU5RVFYZE5SRUY2VG1wQk1rMUVZekpQUVdORFFXcEJlRU5uU1VGQ2QwbEJRbmRCU0VGQllpOHZkMk5EU0VWT1FrbERVV2RUV0ZKb1pGTkJkRWxGVWtwUlUwSkNZMjFrYkdKdVVuQmliVVZuVlRCRlNrSjNTVU5QUkVGSVFXZEtSRkZSWTBOQlFXTkRRbE5SWjBsRFFXZENkMGxYVFdwVk5VMUVRWGhPYWxWNVRVUkJORTFxVVRKUFJGRjZUVVJGTkUxQlkwTkJha0Y0UTJkSlFVSjNTVUVlQlZOMFlYUmxCWFJDZDNOSVFVRkpRa0ozUlVOQlVXTkRRV2RGU0VGM1NVRkNkMDFEUVZGalJVRm5SVWhDVVVsQ1FuZGpRMEZCWTBsQlowRklRMUZKUVVKM2IwTkJRV05CUW5kQlNFRkJZMEZCWjBGSEx5ODRTa0ZuVGtSUmJGVktRV2RCUTBGQlRVaENRVWxCUW5kQlEwRlJZMEZCWjBWSVFVRTlQUT09Hg5fIVVzZVZpZXdTdGF0ZWdkBg9kEBYLZgIBAgICAwIEAgUCBgIHAggCCQIKFgs8KwAMAQAWAh4PQ29sVmlzaWJsZUluZGV4ZjwrAAsBABYIHwUCAR4JU29ydEluZGV4Av////8PHgpHcm91cEluZGV4Av////8PHglTb3J0T3JkZXILKXhEZXZFeHByZXNzLkRhdGEuQ29sdW1uU29ydE9yZGVyLCBEZXZFeHByZXNzLkRhdGEudjguMywgVmVyc2lvbj04LjMuNS4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWI4OGQxNzU0ZDcwMGU0OWEAPCsACwEAFggfBQICHwYC/////w8fBwL/////Dx8ICysEADwrAAsBABYGHwYC/////w8fBwL/////Dx8ICysEADwrAAsBABYIHwUCAx8GAv////8PHwcC/////w8fCAsrBAA8KwALAQAWCB8FAgQfBgL/////Dx8HAv////8PHwgLKwQAPCsACwEAFggfBQIFHwYC/////w8fBwL/////Dx8ICysEADwrAAsCABYGHwYC/////w8fBwL/////Dx8ICysEAAk8KwAFAQAWBB4MVmFsdWVDaGVja2VkZx4OVmFsdWVVbmNoZWNrZWRoPCsACwEAFgYfBgL/////Dx8HAv////8PHwgLKwQAPCsACwEAFgYfBgL/////Dx8HAv////8PHwgLKwQAPCsACwEAFgYfBgL/////Dx8HAv////8PHwgLKwQADxYLAgECAgICAgICAgICAgICAwICAgICAhYDBZYBRGV2RXhwcmVzcy5XZWIuQVNQeEdyaWRWaWV3LkdyaWRWaWV3Q29tbWFuZENvbHVtbiwgRGV2RXhwcmVzcy5XZWIuQVNQeEdyaWRWaWV3LnY4LjMsIFZlcnNpb249OC4zLjUuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj1iODhkMTc1NGQ3MDBlNDlhBaABSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbi5DbGFzc2VzLkdyaWRWaWV3RGF0YVRleHRDb2x1bW5UZXh0LCBJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLCBWZXJzaW9uPTMuMC4xLjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49NzE4NjI4MDE3ZmZiOTY2ZQWYAURldkV4cHJlc3MuV2ViLkFTUHhHcmlkVmlldy5HcmlkVmlld0RhdGFDaGVja0NvbHVtbiwgRGV2RXhwcmVzcy5XZWIuQVNQeEdyaWRWaWV3LnY4LjMsIFZlcnNpb249OC4zLjUuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj1iODhkMTc1NGQ3MDBlNDlhZAIBD2QWAgIBD2QWAgIBD2QWFGYPDxYEHgtDaGFyc0ZpbHRlcgUOXlteOjtcPD4nXCJdKiQeEkNoYXJzRmlsdGVyRW5hYmxlZGcWAh4Kb25rZXlwcmVzcwU5cmV0dXJuIHZhbGlkQ2hhcmFjdGVyc09ubHkodGhpcywgZXZlbnQsICJeW146O1w8PidcIl0qJCIpZAIEDxBkZBYAZAIFDw8WBB8LBQ5eW146O1w8PidcIl0qJB8MZxYCHw0FKnJldHVybiBudW1iZXJzb25seSh0aGlzLCBldmVudCwgdHJ1ZSwgJywnKWQCCg8PFgQfCwUOXlteOjtcPD4nXCJdKiQfDGcWAh8NBTlyZXR1cm4gdmFsaWRDaGFyYWN0ZXJzT25seSh0aGlzLCBldmVudCwgIl5bXjo7XDw+J1wiXSokIilkAgsPEGRkFgFmZAIMDxAPFgYeDkRhdGFWYWx1ZUZpZWxkBQpDdXJyZW5jeUlkHg1EYXRhVGV4dEZpZWxkBQtEZXNjcmlwdGlvbh4LXyFEYXRhQm91bmRnZBAVAxBQRVNPUyBBUkdFTlRJTk9TBFJFQUwIVSRTIEVFVVUVAwI4MAIxMgEyFCsDA2dnZxYBZmQCDQ8QDxYGHw4FA0tleR8PBQVWYWx1ZR8QZ2QQFRgtQ0FQSVRBTCBGRURFUkFMICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIEJVRU5PUyBBSVJFUyAgICAgICAgICAgICAgICAgICAgIENBVEFNQVJDQSAgICAgICAgICAgICAgICAgICAgICAgIENPUkRPQkEgICAgICAgICAgICAgICAgICAgICAgICAgIENPUlJJRU5URVMgICAgICAgICAgICAgICAgICAgICAgIENIQUNPICAgICAgICAgICAgICAgICAgICAgICAgICAgIENIVUJVVCAgICAgICAgICAgICAgICAgICAgICAgICAgIEVOVFJFIFJJT1MgICAgICAgICAgICAgICAgICAgICAgIEpVSlVZICAgICAgICAgICAgICAgICAgICAgICAgICAgIExBIFBBTVBBICAgICAgICAgICAgICAgICAgICAgICAgIExBIFJJT0pBICAgICAgICAgICAgICAgICAgICAgICAgIE1FTkRPWkEgICAgICAgICAgICAgICAgICAgICAgICAgIE1JU0lPTkVTICAgICAgICAgICAgICAgICAgICAgICAgIE5FVVFVRU4gICAgICAgICAgICAgICAgICAgICAgICAgIFJJTyBORUdSTyAgICAgICAgICAgICAgICAgICAgICAgIFNBTFRBICAgICAgICAgICAgICAgICAgICAgICAgICAgIFNBTiBKVUFOICAgICAgICAgICAgICAgICAgICAgICAgIFNBTiBMVUlTICAgICAgICAgICAgICAgICAgICAgICAgIFNBTlRBIENSVVogICAgICAgICAgICAgICAgICAgICAgIFNBTlRBIEZFICAgICAgICAgICAgICAgICAgICAgICAgIFNBTlRJQUdPIERFTCBFU1RFUk8gICAgICAgICAgICAgGVRVQ1VNQU4gICAgICAgICAgICAgICAgICAkVC4gREVMIEZVRUdPLCBBTlRBUi4gRSBJLiAgICAgICAgICAgGUZPUk1PU0EgICAgICAgICAgICAgICAgICAVGAIwMQIwMgIwMwIwNAIwNQIwNgIwNwIwOAIxMAIxMQIxMgIxMwIxNAIxNQIxNgIxNwIxOAIxOQIyMAIyMQIyMgIyMwI0MAE5FCsDGGdnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZxYBZmQCDg8PFgQfCwUOXlteOjtcPD4nXCJdKiQfDGcWAh8NBTlyZXR1cm4gdmFsaWRDaGFyYWN0ZXJzT25seSh0aGlzLCBldmVudCwgIl5bXjo7XDw+J1wiXSokIilkAhAPDxYEHwsFDl5bXjo7XDw+J1wiXSokHwxnFgIfDQU5cmV0dXJuIHZhbGlkQ2hhcmFjdGVyc09ubHkodGhpcywgZXZlbnQsICJeW146O1w8PidcIl0qJCIpZAIRDxAPFgIeB0NoZWNrZWRoZGRkZAICD2QWAgIBD2QWAgIBD2QWEmYPDxYIHgdFbmFibGVkaB8LBQ5eW146O1w8PidcIl0qJB8ABRYwMjcwMDE4MjEwMDAwMDAyMTQwMDEzHwxnFgIfDQU5cmV0dXJuIHZhbGlkQ2hhcmFjdGVyc09ubHkodGhpcywgZXZlbnQsICJeW146O1w8PidcIl0qJCIpZAIEDxAPFgYfDgUORG9jdW1lbnRUeXBlSUQfDwUXRG9jdW1lbnRUeXBlRGVzY3JpcHRpb24fEGdkEBUDBkMuRC5JLghDLlUuSS5MLghDLlUuSS5ULhUDATMBMgExFCsDA2dnZ2RkAgUPDxYGHwsFDl5bXjo7XDw+J1wiXSokHwxnHwAFCzMwNzA4MTE1MDQxFgIfDQUqcmV0dXJuIG51bWJlcnNvbmx5KHRoaXMsIGV2ZW50LCB0cnVlLCAnLCcpZAIKDw8WBh8LBQ5eW146O1w8PidcIl0qJB8MZx8ABQpDQyAkIFBBREFJFgIfDQU5cmV0dXJuIHZhbGlkQ2hhcmFjdGVyc09ubHkodGhpcywgZXZlbnQsICJeW146O1w8PidcIl0qJCIpZAILDxBkZBYBZmQCDA8QDxYGHw4FCkN1cnJlbmN5SWQfDwULRGVzY3JpcHRpb24fEGdkEBUDEFBFU09TIEFSR0VOVElOT1MEUkVBTAhVJFMgRUVVVRUDAjgwAjEyATIUKwMDZ2dnFgFmZAINDxAPFgYfDgUDS2V5Hw8FBVZhbHVlHxBnZBAVGC1DQVBJVEFMIEZFREVSQUwgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgQlVFTk9TIEFJUkVTICAgICAgICAgICAgICAgICAgICAgQ0FUQU1BUkNBICAgICAgICAgICAgICAgICAgICAgICAgQ09SRE9CQSAgICAgICAgICAgICAgICAgICAgICAgICAgQ09SUklFTlRFUyAgICAgICAgICAgICAgICAgICAgICAgQ0hBQ08gICAgICAgICAgICAgICAgICAgICAgICAgICAgQ0hVQlVUICAgICAgICAgICAgICAgICAgICAgICAgICAgRU5UUkUgUklPUyAgICAgICAgICAgICAgICAgICAgICAgSlVKVVkgICAgICAgICAgICAgICAgICAgICAgICAgICAgTEEgUEFNUEEgICAgICAgICAgICAgICAgICAgICAgICAgTEEgUklPSkEgICAgICAgICAgICAgICAgICAgICAgICAgTUVORE9aQSAgICAgICAgICAgICAgICAgICAgICAgICAgTUlTSU9ORVMgICAgICAgICAgICAgICAgICAgICAgICAgTkVVUVVFTiAgICAgICAgICAgICAgICAgICAgICAgICAgUklPIE5FR1JPICAgICAgICAgICAgICAgICAgICAgICAgU0FMVEEgICAgICAgICAgICAgICAgICAgICAgICAgICAgU0FOIEpVQU4gICAgICAgICAgICAgICAgICAgICAgICAgU0FOIExVSVMgICAgICAgICAgICAgICAgICAgICAgICAgU0FOVEEgQ1JVWiAgICAgICAgICAgICAgICAgICAgICAgU0FOVEEgRkUgICAgICAgICAgICAgICAgICAgICAgICAgU0FOVElBR08gREVMIEVTVEVSTyAgICAgICAgICAgICAZVFVDVU1BTiAgICAgICAgICAgICAgICAgICRULiBERUwgRlVFR08sIEFOVEFSLiBFIEkuICAgICAgICAgICAZRk9STU9TQSAgICAgICAgICAgICAgICAgIBUYAjAxAjAyAjAzAjA0AjA1AjA2AjA3AjA4AjEwAjExAjEyAjEzAjE0AjE1AjE2AjE3AjE4AjE5AjIwAjIxAjIyAjIzAjQwATkUKwMYZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnFgFmZAIODw8WBh8LBQ5eW146O1w8PidcIl0qJB8MZx8AZRYCHw0FOXJldHVybiB2YWxpZENoYXJhY3RlcnNPbmx5KHRoaXMsIGV2ZW50LCAiXlteOjtcPD4nXCJdKiQiKWQCEA8PFgYfCwUOXlteOjtcPD4nXCJdKiQfDGcfAGUWAh8NBTlyZXR1cm4gdmFsaWRDaGFyYWN0ZXJzT25seSh0aGlzLCBldmVudCwgIl5bXjo7XDw+J1wiXSokIilkAgIPFgIeBXN0eWxlBQ1kaXNwbGF5Om5vbmU7FgICBQ8WAh4HVmlzaWJsZWgWBAIBDxAWBh8PBQVUaXRsZR8OBQNVcmkfEGcQFQEAFQEAFCsDAWcUKwEAZAIDDxYCHxMFDWRpc3BsYXk6bm9uZTsWAmYPZBYCAgEPFgIfEwUNZGlzcGxheTpub25lO2QYAgUeX19Db250cm9sc1JlcXVpcmVQb3N0QmFja0tleV9fFgUFJmN0bDAwJE1haW5Ib2xkZXIkTXlDcmVkaXRBY2NvdW50c1BhbmVsBSpjdGwwMCRNYWluSG9sZGVyJGNyZWRpdEFjY291bnQkcGFuZWxDdWVudGEFMGN0bDAwJE1haW5Ib2xkZXIkY3JlZGl0QWNjb3VudFVwZGF0ZSRwYW5lbEN1ZW50YQU0Y3RsMDAkTWFpbkhvbGRlciRjcmVkaXRBY2NvdW50VXBkYXRlJGNoZWNrU2FtZUhvbGRlcgUZY3RsMDAkaW1hZ2VCdXR0b25Db2xsYXBzZQUXY3RsMDAkTWFpbkhvbGRlciR2aXN0YXMPD2QCAmShPyBeSR8HgP0dPsv9AnOBcN+i3A==">
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+var theForm = document.forms['aspnetForm'];
+if (!theForm) {
+    theForm = document.aspnetForm;
+}
+function __doPostBack(eventTarget, eventArgument) {
+    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+        theForm.__EVENTTARGET.value = eventTarget;
+        theForm.__EVENTARGUMENT.value = eventArgument;
+        theForm.submit();
+    }
+}
+//]]>
+</script>
+
+
+<script src="./WebResource.axd" type="text/javascript"></script>
+
+<script src="./DataEntry.js.descarga"></script><script src="./DataEntry.js.descarga"></script>
+						<style>							
+							P.PanelControlTitleStyle
+							{
+ 								font-family:verdana;
+ 								font-size: 12px;
+								font-weight : bold;
+								text-align: center;  								
+							}
+						</style>						
+						<script language="javascript">
+						function MinMaxPanelControl(cntrlId)
+						{
+						    var imgPath='App_Themes/Default/Images/';	
+					
+							//Get state from hidden control.													
+							if ( document.getElementById(cntrlId).style.display == 'none' )
+							{
+								document.getElementById(cntrlId).style.display = '';						
+								document.getElementById(cntrlId+'_imgPlusMinus').src = imgPath + 'bot-grid-minus.gif';
+							}
+							else 
+							{
+								document.getElementById(cntrlId).style.display = 'none';								
+								document.getElementById(cntrlId+'_imgPlusMinus').src = imgPath + 'bot-grid-plus.gif';
+							}
+						}
+						</script>
+			
+<script src="./ScriptResource.axd" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+var __cultureInfo = '{"name":"es-UY","numberFormat":{"CurrencyDecimalDigits":2,"CurrencyDecimalSeparator":",","IsReadOnly":false,"CurrencyGroupSizes":[3],"NumberGroupSizes":[3],"PercentGroupSizes":[3],"CurrencyGroupSeparator":".","CurrencySymbol":"$U","NaNSymbol":"NeuN","CurrencyNegativePattern":14,"NumberNegativePattern":1,"PercentPositivePattern":0,"PercentNegativePattern":0,"NegativeInfinitySymbol":"-Infinito","NegativeSign":"-","NumberDecimalDigits":2,"NumberDecimalSeparator":",","NumberGroupSeparator":".","CurrencyPositivePattern":2,"PositiveInfinitySymbol":"Infinito","PositiveSign":"+","PercentDecimalDigits":2,"PercentDecimalSeparator":",","PercentGroupSeparator":".","PercentSymbol":"%","PerMilleSymbol":"‰","NativeDigits":["0","1","2","3","4","5","6","7","8","9"],"DigitSubstitution":1},"dateTimeFormat":{"AMDesignator":"a.m.","Calendar":{"MinSupportedDateTime":"\/Date(-62135586000000)\/","MaxSupportedDateTime":"\/Date(253402300799999)\/","AlgorithmType":1,"CalendarType":1,"Eras":[1],"TwoDigitYearMax":2029,"IsReadOnly":false},"DateSeparator":"/","FirstDayOfWeek":1,"CalendarWeekRule":0,"FullDateTimePattern":"dddd, dd\u0027 de \u0027MMMM\u0027 de \u0027yyyy hh:mm:ss tt","LongDatePattern":"dddd, dd\u0027 de \u0027MMMM\u0027 de \u0027yyyy","LongTimePattern":"hh:mm:ss tt","MonthDayPattern":"dd MMMM","PMDesignator":"p.m.","RFC1123Pattern":"ddd, dd MMM yyyy HH\u0027:\u0027mm\u0027:\u0027ss \u0027GMT\u0027","ShortDatePattern":"dd/MM/yyyy","ShortTimePattern":"hh:mm tt","SortableDateTimePattern":"yyyy\u0027-\u0027MM\u0027-\u0027dd\u0027T\u0027HH\u0027:\u0027mm\u0027:\u0027ss","TimeSeparator":":","UniversalSortableDateTimePattern":"yyyy\u0027-\u0027MM\u0027-\u0027dd HH\u0027:\u0027mm\u0027:\u0027ss\u0027Z\u0027","YearMonthPattern":"MMMM\u0027 de \u0027yyyy","AbbreviatedDayNames":["dom","lun","mar","mié","jue","vie","sáb"],"ShortestDayNames":["do","lu","ma","mi","ju","vi","sá"],"DayNames":["domingo","lunes","martes","miércoles","jueves","viernes","sábado"],"AbbreviatedMonthNames":["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic",""],"MonthNames":["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre",""],"IsReadOnly":false,"NativeCalendarName":"calendario gregoriano","AbbreviatedMonthGenitiveNames":["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic",""],"MonthGenitiveNames":["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre",""]}}';//]]>
+</script>
+
+<script src="./ScriptResource(1).axd" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+if (typeof(Sys) === 'undefined') throw new Error('ASP.NET Ajax client-side framework failed to load.');
+//]]>
+</script>
+
+<script src="./ScriptResource(2).axd" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+function WebForm_OnSubmit() {
+if (typeof(ValidatorOnSubmit) == "function" && ValidatorOnSubmit() == false) return false;
+return true;
+}
+//]]>
+</script>
+
+<div>
+
+	<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEWKwLFlof7CQKNip/NAwLrmt2zCALomt2zCALpmt2zCAK9ueu5DAKYpLGeDQKC0eb6BwKC0d76BwKpvr2YDQK+vrWYDQK/vv2bDQLZoIe/AQLZoIO/AQLZoL+/AQLZoLu/AQLZoLe/AQLZoLO/AQLZoK+/AQLZoOu8AQLGoIu/AQLGoIe/AQLGoIO/AQLGoL+/AQLGoLu/AQLGoLe/AQLGoLO/AQLGoK+/AQLGoOu8AQLGoOe8AQLHoIu/AQLHoIe/AQLHoIO/AQLHoL+/AQLFoIu/AQLeoMu8AQLU9feJBwLpn4y+BwLz0sGYBQK72IKvCwL1g5fPDALRqszJDgKJt+C7ATWX0ttXVvjCSNfbG2dUh7Tyhw/0">
+</div>
+    <script type="text/javascript">
+//<![CDATA[
+Sys.WebForms.PageRequestManager._initialize('ctl00$scriptManager', document.getElementById('aspnetForm'));
+Sys.WebForms.PageRequestManager.getInstance()._updateControls([], [], [], 90);
+//]]>
+</script>
+
+    <input type="hidden" id="PageLinkData" name="PageLinkData" value="">
+    <input type="hidden" id="PageLinkUrl" name="PageLinkUrl" value="">
+    <input type="hidden" id="PageUrl" value="/Pages/Transfers/MyCreditAccounts.aspx">
+    <table id="ctl00_tableContent" width="100%" border="0" cellpadding="0" cellspacing="0" class="ic-content">
+	<tbody><tr>
+		<td class="ic-content-left-aux">
+                <img src="./log-img-aux-left-bottom.gif" width="9" height="110">
+            </td>
+		<td style="width: 100%">
+                <table width="100%" border="0" cellpadding="0" cellspacing="0" class="ic-content-left">
+                    <tbody><tr>
+                        <td id="TdCPM" class="ic-content-space-top" valign="top">
+                            <table id="TablaCPM" width="100%" border="0" cellspacing="0" cellpadding="0">
+                                
+                                <tbody><tr>
+                                    <td>
+                                        <table id="ctl00_tableHeader" width="100%" border="0" cellspacing="0" cellpadding="0">
+			<tbody><tr>
+				<td class="ic-breadcrumb-container">
+                                                    
+                                                    &gt;
+                                                    <span id="ctl00_siteMapNavigator"><a href="Pages/Transfers/MyCreditAccounts.aspx#ctl00_siteMapNavigator_SkipLink"><img alt="Skip Navigation Links" height="0" width="0" src="./WebResource(1).axd" style="border-width:0px;"></a><span><a href="">Posición Consolidada</a></span><span> &gt; </span><span><a>Transferencias</a></span><span> &gt; </span><span>Mis cuentas de crédito</span><a id="ctl00_siteMapNavigator_SkipLink"></a></span>
+                                                    </td>
+				<td class="ic-toolbar-container">
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tbody><tr>
+                                                            <td width="16">
+                                                                <img src="./ico-print.gif" id="ctl00_Img4" width="16" height="16">
+                                                            </td>
+                                                            <td class="ic-links-toolbar">
+                                                                <a href="Pages/Transfers/MyCreditAccounts.aspx#" onclick="javascript: GoPrint();">
+                                                                    Imprimir página</a>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody></table>
+                                                </td>
+			</tr>
+		</tbody></table>
+		
+                                    </td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>
+                                        <span id="ctl00_labelTitle" class="ic-page-title">Mis cuentas de crédito</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td id="ctl00_cellRequiered" align="right">
+                                        <img src="./ic_img-data-required.gif" id="ctl00_Img5" border="0">
+                                        <span>
+                                            Campo requerido</span>
+                                    </td>
+		
+                                </tr>
+                                <tr>
+                                    <td width="95%" align="center">
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                            <tbody><tr>
+                                                <td align="right">
+                                                    
+                                                    
+                                                </td>
+                                            </tr>
+                                        </tbody></table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="100%" align="center">
+                                        <div id="ic-loading" class="ic-loading-bg" style="display: none;">
+                                            <div class="ic-loading">
+                                                <div id="message">
+                                                    <img src="./cargandoBAR.gif" id="ctl00_imgLoading"><br>
+                                                    <span id="ctl00_WaitingMessage">Procesando...</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="mainContainer">
+                                            
+<script language="javascript" type="text/javascript">
+    function ValidateUpdateSelection() {
+        var hasSelection = false;
+
+        if (FavoriteAccountASPxGridView._getSelectedRowCount() > 0) {
+            hasSelection = true;
+        }
+        else {
+            alert('Debe seleccionar una cuenta.');
+        }
+
+        return hasSelection;
+    }
+
+    function ValidateDeleteSelection()
+    {
+        var hasSelection = false;
+
+        if (FavoriteAccountASPxGridView._getSelectedRowCount() > 0) 
+        {
+            hasSelection = confirm('¿Desea eliminar la Cuenta seleccionada?');
+        }
+        else
+            alert('Debe seleccionar una cuenta.');
+
+        return hasSelection;    
+    }
+</script>
+
+        
+<table style="width: 100%">
+    <tbody><tr>
+        <td>
+            <table class="ic-grid-border" cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+			<tbody><tr>
+				<td><table id="ctl00_MainHolder_creditAccountUpdate_panelCuenta_thePanel" class="ic-grid" cellspacing="0" cellpadding="0" align="Center" border="0" style="width:100%;border-collapse:collapse;">
+					<tbody><tr class="ic-grid-title-row">
+						<td><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+							<tbody><tr>
+								<td class="ic-grid-title-cell-left">&nbsp;</td><td class="ic-grid-title-cell" align="left" style="white-space:nowrap;">Datos de la Cuenta</td>
+							</tr>
+						</tbody></table></td>
+					</tr><tr>
+						<td align="center"><div id="ctl00_MainHolder_creditAccountUpdate_panelCuenta" style="color:Black;border-color:DodgerBlue;font-family:verdana;font-size:10pt;width:100%;display:;">
+	
+                
+                <table style="width: 100%" border="0">
+                    <tbody><tr class="ic-form-row">
+                        <td style="width: 25%" class="ic-form-label">
+                            CBU:
+                        </td>                                               
+                        <td class="ic-form-data-required" style="width: 50%" colspan="2">
+                            <input name="ctl00$MainHolder$creditAccountUpdate$CBU" type="text" value="0270018210000002140013" maxlength="22" onchange="javascript:setTimeout(&#39;__doPostBack(\&#39;ctl00$MainHolder$creditAccountUpdate$CBU\&#39;,\&#39;\&#39;)&#39;, 0)" onkeypress="if (WebForm_TextBoxKeyHandler(event) == false) return false;return validCharactersOnly(this, event, &quot;^[^:;\&lt;&gt;&#39;\&quot;]*$&quot;)" id="ctl00_MainHolder_creditAccountUpdate_CBU" disabled="disabled" tabindex="1" class="ic-control-text" style="width:50%;">
+                            <span id="ctl00_MainHolder_creditAccountUpdate_RequiredFieldValidatorCBU" style="color:Red;display:none;">Campo requerido</span>                            
+                            <span id="ctl00_MainHolder_creditAccountUpdate_CBURegularExpressionValidator" title="Error" style="color:Red;visibility:hidden;">El CBU debe ser de 22 dígitos</span>
+                            <span id="ctl00_MainHolder_creditAccountUpdate_CBUErrorLabel" class="ic-log-text-error"></span>                                                                                                                                                                            
+                        </td>  
+                    </tr>                                                                         
+                    <tr class="ic-form-row">
+                        <td style="width: 20%" class="ic-form-label">
+		                    Tipo de Documento:
+                        </td>
+                        <td class="ic-form-data-required" style="width: 30%">
+                            <select name="ctl00$MainHolder$creditAccountUpdate$DocumentTypeDropDownList" id="ctl00_MainHolder_creditAccountUpdate_DocumentTypeDropDownList" tabindex="2" class="ic-control-select" style="width:300px;">
+		<option value="3">C.D.I.</option>
+		<option value="2">C.U.I.L.</option>
+		<option selected="selected" value="1">C.U.I.T.</option>
+
+	</select>
+                        </td>
+                    </tr>
+                    
+                    
+                    <tr class="ic-form-row">
+                        <td style="width: 20%" class="ic-form-label">
+                            Número de Documento:
+                        </td>
+                        <td class="ic-form-data-required" style="width: 30%">
+                            <input name="ctl00$MainHolder$creditAccountUpdate$DocumentationNumberTextBox" type="text" value="30708115041" maxlength="20" id="ctl00_MainHolder_creditAccountUpdate_DocumentationNumberTextBox" tabindex="3" class="ic-control-text" onkeypress="return numbersonly(this, event, true, &#39;,&#39;)" style="width:150px;">
+                                
+                            <span id="ctl00_MainHolder_creditAccountUpdate_DocumentNumberRequiredValidator" title="Campo requerido" style="color:Red;display:none;">Campo requerido</span>
+                            <span id="ctl00_MainHolder_creditAccountUpdate_DocumentNumberCustomValidator" title="El número de documento ingresado es inválido para el tipo de documento seleccionado. Por favor ingrese nuevamente el número de documento." style="color:Red;display:none;">El número de documento ingresado es inválido para el tipo de documento seleccionado. Por favor ingrese nuevamente el número de documento.</span>
+                            
+                            <span id="ctl00_MainHolder_creditAccountUpdate_DocumentValidator" style="color:Red;display:none;">El documento debe tener al menos 6 dígitos.</span>
+                            
+                            <span id="ctl00_MainHolder_creditAccountUpdate_DocumentNumberRegularExpressionValidator" title="Ingrese solamente números" style="color:Red;display:none;">Ingrese solamente números</span>
+                        </td>
+                    </tr>
+                    
+                    
+                    <tr class="ic-form-row">
+                        <td style="width: 25%" class="ic-form-label">
+                            Nombre de la cuenta:
+                        </td>
+                        <td class="ic-form-data" style="width: 50%">
+                            <input name="ctl00$MainHolder$creditAccountUpdate$Alias" type="text" value="CC $ PADAI" maxlength="50" id="ctl00_MainHolder_creditAccountUpdate_Alias" tabindex="4" class="ic-control-text" onkeypress="return validCharactersOnly(this, event, &quot;^[^:;\&lt;&gt;&#39;\&quot;]*$&quot;)" style="width:50%;">
+                        </td>
+                    </tr>
+                    
+                    <tr class="ic-form-row">
+                        <td style="width: 25%" class="ic-form-label">
+                            Tipo de cuenta:
+                        </td>
+                        <td class="ic-form-data-required" style="width: 50%">
+                            <select name="ctl00$MainHolder$creditAccountUpdate$AccountTypeDropDownList" id="ctl00_MainHolder_creditAccountUpdate_AccountTypeDropDownList" disabled="disabled" tabindex="5" class="ic-control-select" style="height:16px;width:77px;">
+		<option selected="selected" value="CC">CC</option>
+		<option value="CA">CA</option>
+
+	</select>
+                        </td>
+                    </tr>
+                    <tr class="ic-form-row">
+                        <td style="width: 25%" class="ic-form-label">
+                            Moneda:
+                        </td>
+                        <td class="ic-form-data-required" style="width: 50%">
+                            <select name="ctl00$MainHolder$creditAccountUpdate$CurrencyIdDropDownList" id="ctl00_MainHolder_creditAccountUpdate_CurrencyIdDropDownList" disabled="disabled" tabindex="6" class="ic-control-select" style="width:50%;">
+		<option selected="selected" value="80">PESOS ARGENTINOS</option>
+		<option value="12">REAL</option>
+		<option value="2">U$S EEUU</option>
+
+	</select>
+                        </td>
+                    </tr>
+                    <tr class="ic-form-row">
+                        <td style="width: 25%" class="ic-form-label">
+                            Provincia:
+                        </td>
+                        <td class="ic-form-data-required" style="width: 50%">
+                            <select name="ctl00$MainHolder$creditAccountUpdate$ProvincesDropDownList" id="ctl00_MainHolder_creditAccountUpdate_ProvincesDropDownList" disabled="disabled" tabindex="7" class="ic-control-select" style="width:50%;">
+		<option selected="selected" value="01">CAPITAL FEDERAL                              </option>
+		<option value="02">BUENOS AIRES                    </option>
+		<option value="03">CATAMARCA                       </option>
+		<option value="04">CORDOBA                         </option>
+		<option value="05">CORRIENTES                      </option>
+		<option value="06">CHACO                           </option>
+		<option value="07">CHUBUT                          </option>
+		<option value="08">ENTRE RIOS                      </option>
+		<option value="10">JUJUY                           </option>
+		<option value="11">LA PAMPA                        </option>
+		<option value="12">LA RIOJA                        </option>
+		<option value="13">MENDOZA                         </option>
+		<option value="14">MISIONES                        </option>
+		<option value="15">NEUQUEN                         </option>
+		<option value="16">RIO NEGRO                       </option>
+		<option value="17">SALTA                           </option>
+		<option value="18">SAN JUAN                        </option>
+		<option value="19">SAN LUIS                        </option>
+		<option value="20">SANTA CRUZ                      </option>
+		<option value="21">SANTA FE                        </option>
+		<option value="22">SANTIAGO DEL ESTERO             </option>
+		<option value="23">TUCUMAN                  </option>
+		<option value="40">T. DEL FUEGO, ANTAR. E I.           </option>
+		<option value="9">FORMOSA                  </option>
+
+	</select>
+                        </td>
+                    </tr>
+                    
+                    <tr class="ic-form-row">
+                        <td style="width: 25%" class="ic-form-label">
+                            Email:
+                        </td>
+                        <td class="ic-form-data" style="width: 50%">
+                            <input name="ctl00$MainHolder$creditAccountUpdate$txtMail" type="text" id="ctl00_MainHolder_creditAccountUpdate_txtMail" tabindex="8" class="ic-control-text" onkeypress="return validCharactersOnly(this, event, &quot;^[^:;\&lt;&gt;&#39;\&quot;]*$&quot;)" style="width:50%;">
+                        
+                            <span id="ctl00_MainHolder_creditAccountUpdate_CustomValidator3" style="color:Red;visibility:hidden;">Email incorrecto</span>
+                        </td>
+                    </tr>
+                    
+                     <tr class="ic-form-row">
+                        <td style="width: 25%" class="ic-form-label">
+                            Razón Social:
+                        </td>
+                        <td class="ic-form-data" style="width: 50%">
+                            <input name="ctl00$MainHolder$creditAccountUpdate$txtRazoSocial" type="text" id="ctl00_MainHolder_creditAccountUpdate_txtRazoSocial" tabindex="9" class="ic-control-text" onkeypress="return validCharactersOnly(this, event, &quot;^[^:;\&lt;&gt;&#39;\&quot;]*$&quot;)" style="width:50%;">
+                        </td>
+                    </tr>
+                    
+                    <tr class="ic-form-row">
+                        <td style="width: 25%" class="ic-form-label">
+                            Mismo titular:
+                        </td>
+                        <td class="ic-form-data" style="width: 50%">
+                            <input id="ctl00_MainHolder_creditAccountUpdate_checkSameHolder" type="checkbox" name="ctl00$MainHolder$creditAccountUpdate$checkSameHolder" tabindex="10">
+                        </td>
+                    </tr>
+                    
+                </tbody></table>
+            
+</div></td>
+					</tr>
+				</tbody></table></td>
+			</tr>
+		</tbody></table>
+            
+            <table style="width: 100%" border="0">
+                <tbody><tr valign="center">
+                    <td>
+                        
+                    </td>
+                </tr>
+            </tbody></table>
+        </td>
+    </tr>
+</tbody></table>
+
+        
+        <table width="100%" border="0">
+            <tbody><tr valign="top">
+                <td align="right" nowrap="nowrap" style="width: 100%">
+                    &nbsp;
+                </td>
+                <td align="right" nowrap="nowrap">
+                    <a id="bot13" class="ic-button">Volver</a>
+                   
+                </td>
+                <td align="right" nowrap="nowrap">
+                <a id="exito" class="ic-button">Confirmar</a>
+                   
+                </td>
+            </tr>
+        </tbody></table>
+       
+
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="right">
+                                        <div id="ctl00_validationSummaryFooter" style="color:Red;font-size:10px;display:none;">
+
+		</div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="95%" align="center">
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                            <tbody><tr>
+                                                <td align="right">
+                                                    
+                                                    
+                                                </td>
+                                            </tr>
+                                        </tbody></table>
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="ic-content-footer">
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                <tbody><tr class="ic-content-footer-dottedline">
+                                    <td align="right" nowrap="nowrap" style="width: 90%">
+                                    </td>
+                                    <td align="right" nowrap="nowrap" style="width: 10%">
+                                        <a id="ctl00_LinkButtonTermsAndConditions" class="ic-grid-link" href="terminosCondi.html">Términos y Condiciones</a>
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                </tbody></table>
+            </td>
+		<td id="ctl00_cellContentRight" class="ic-content-space-top-right" valign="top" style="display:none;">
+                <table class="ic-content-right" border="0" cellspacing="0" cellpadding="0">
+                    <tbody><tr>
+                        <td>
+                            <img src="./pixel.gif" width="8" height="1">
+                        </td>
+                        <td class="ic-right-panel">
+                            <table border="0" cellpadding="0" cellspacing="0" class="ic-right-panel-content">
+                                <tbody><tr>
+                                    <td width="8" class="ic-right-panel-collapse">
+                                        <input type="image" name="ctl00$imageButtonCollapse" id="ctl00_imageButtonCollapse" src="./bot-right-collapse.gif" style="height:47px;width:9px;border-width:0px;">
+                                    </td>
+                                    
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                </tbody></table>
+            </td>
+	</tr>
+</tbody></table>
+
+    
+    
+<script type="text/javascript">
+//<![CDATA[
+var Page_ValidationSummaries =  new Array(document.getElementById("ctl00_validationSummaryFooter"));
+var Page_Validators =  new Array(document.getElementById("ctl00_MainHolder_creditAccountUpdate_RequiredFieldValidatorCBU"), document.getElementById("ctl00_MainHolder_creditAccountUpdate_CBURegularExpressionValidator"), document.getElementById("ctl00_MainHolder_creditAccountUpdate_DocumentNumberRequiredValidator"), document.getElementById("ctl00_MainHolder_creditAccountUpdate_DocumentNumberCustomValidator"), document.getElementById("ctl00_MainHolder_creditAccountUpdate_DocumentValidator"), document.getElementById("ctl00_MainHolder_creditAccountUpdate_DocumentNumberRegularExpressionValidator"), document.getElementById("ctl00_MainHolder_creditAccountUpdate_CustomValidator3"));
+//]]>
+</script>
+
+<script type="text/javascript">
+//<![CDATA[
+var ctl00_MainHolder_creditAccountUpdate_RequiredFieldValidatorCBU = document.all ? document.all["ctl00_MainHolder_creditAccountUpdate_RequiredFieldValidatorCBU"] : document.getElementById("ctl00_MainHolder_creditAccountUpdate_RequiredFieldValidatorCBU");
+ctl00_MainHolder_creditAccountUpdate_RequiredFieldValidatorCBU.controltovalidate = "ctl00_MainHolder_creditAccountUpdate_CBU";
+ctl00_MainHolder_creditAccountUpdate_RequiredFieldValidatorCBU.focusOnError = "t";
+ctl00_MainHolder_creditAccountUpdate_RequiredFieldValidatorCBU.errormessage = "Campo requerido";
+ctl00_MainHolder_creditAccountUpdate_RequiredFieldValidatorCBU.display = "Dynamic";
+ctl00_MainHolder_creditAccountUpdate_RequiredFieldValidatorCBU.validationGroup = "Confirmation";
+ctl00_MainHolder_creditAccountUpdate_RequiredFieldValidatorCBU.evaluationfunction = "RequiredFieldValidatorEvaluateIsValid";
+ctl00_MainHolder_creditAccountUpdate_RequiredFieldValidatorCBU.initialvalue = "";
+var ctl00_MainHolder_creditAccountUpdate_CBURegularExpressionValidator = document.all ? document.all["ctl00_MainHolder_creditAccountUpdate_CBURegularExpressionValidator"] : document.getElementById("ctl00_MainHolder_creditAccountUpdate_CBURegularExpressionValidator");
+ctl00_MainHolder_creditAccountUpdate_CBURegularExpressionValidator.controltovalidate = "ctl00_MainHolder_creditAccountUpdate_CBU";
+ctl00_MainHolder_creditAccountUpdate_CBURegularExpressionValidator.focusOnError = "t";
+ctl00_MainHolder_creditAccountUpdate_CBURegularExpressionValidator.errormessage = "El CBU debe ser de 22 dígitos";
+ctl00_MainHolder_creditAccountUpdate_CBURegularExpressionValidator.validationGroup = "Confirmation";
+ctl00_MainHolder_creditAccountUpdate_CBURegularExpressionValidator.evaluationfunction = "RegularExpressionValidatorEvaluateIsValid";
+ctl00_MainHolder_creditAccountUpdate_CBURegularExpressionValidator.validationexpression = "\\d{22}";
+var ctl00_MainHolder_creditAccountUpdate_DocumentNumberRequiredValidator = document.all ? document.all["ctl00_MainHolder_creditAccountUpdate_DocumentNumberRequiredValidator"] : document.getElementById("ctl00_MainHolder_creditAccountUpdate_DocumentNumberRequiredValidator");
+ctl00_MainHolder_creditAccountUpdate_DocumentNumberRequiredValidator.controltovalidate = "ctl00_MainHolder_creditAccountUpdate_DocumentationNumberTextBox";
+ctl00_MainHolder_creditAccountUpdate_DocumentNumberRequiredValidator.focusOnError = "t";
+ctl00_MainHolder_creditAccountUpdate_DocumentNumberRequiredValidator.errormessage = "Campo requerido";
+ctl00_MainHolder_creditAccountUpdate_DocumentNumberRequiredValidator.display = "Dynamic";
+ctl00_MainHolder_creditAccountUpdate_DocumentNumberRequiredValidator.validationGroup = "Confirmation";
+ctl00_MainHolder_creditAccountUpdate_DocumentNumberRequiredValidator.evaluationfunction = "RequiredFieldValidatorEvaluateIsValid";
+ctl00_MainHolder_creditAccountUpdate_DocumentNumberRequiredValidator.initialvalue = "";
+var ctl00_MainHolder_creditAccountUpdate_DocumentNumberCustomValidator = document.all ? document.all["ctl00_MainHolder_creditAccountUpdate_DocumentNumberCustomValidator"] : document.getElementById("ctl00_MainHolder_creditAccountUpdate_DocumentNumberCustomValidator");
+ctl00_MainHolder_creditAccountUpdate_DocumentNumberCustomValidator.controltovalidate = "ctl00_MainHolder_creditAccountUpdate_DocumentationNumberTextBox";
+ctl00_MainHolder_creditAccountUpdate_DocumentNumberCustomValidator.focusOnError = "t";
+ctl00_MainHolder_creditAccountUpdate_DocumentNumberCustomValidator.errormessage = "El número de documento ingresado es inválido para el tipo de documento seleccionado. Por favor ingrese nuevamente el número de documento.";
+ctl00_MainHolder_creditAccountUpdate_DocumentNumberCustomValidator.display = "Dynamic";
+ctl00_MainHolder_creditAccountUpdate_DocumentNumberCustomValidator.validationGroup = "Confirmation";
+ctl00_MainHolder_creditAccountUpdate_DocumentNumberCustomValidator.evaluationfunction = "CustomValidatorEvaluateIsValid";
+var ctl00_MainHolder_creditAccountUpdate_DocumentValidator = document.all ? document.all["ctl00_MainHolder_creditAccountUpdate_DocumentValidator"] : document.getElementById("ctl00_MainHolder_creditAccountUpdate_DocumentValidator");
+ctl00_MainHolder_creditAccountUpdate_DocumentValidator.controltovalidate = "ctl00_MainHolder_creditAccountUpdate_DocumentationNumberTextBox";
+ctl00_MainHolder_creditAccountUpdate_DocumentValidator.errormessage = "El documento debe tener al menos 6 dígitos.";
+ctl00_MainHolder_creditAccountUpdate_DocumentValidator.display = "Dynamic";
+ctl00_MainHolder_creditAccountUpdate_DocumentValidator.validationGroup = "Confirmation";
+ctl00_MainHolder_creditAccountUpdate_DocumentValidator.evaluationfunction = "RegularExpressionValidatorEvaluateIsValid";
+ctl00_MainHolder_creditAccountUpdate_DocumentValidator.validationexpression = "\\d{6,20}";
+var ctl00_MainHolder_creditAccountUpdate_DocumentNumberRegularExpressionValidator = document.all ? document.all["ctl00_MainHolder_creditAccountUpdate_DocumentNumberRegularExpressionValidator"] : document.getElementById("ctl00_MainHolder_creditAccountUpdate_DocumentNumberRegularExpressionValidator");
+ctl00_MainHolder_creditAccountUpdate_DocumentNumberRegularExpressionValidator.controltovalidate = "ctl00_MainHolder_creditAccountUpdate_DocumentationNumberTextBox";
+ctl00_MainHolder_creditAccountUpdate_DocumentNumberRegularExpressionValidator.focusOnError = "t";
+ctl00_MainHolder_creditAccountUpdate_DocumentNumberRegularExpressionValidator.errormessage = "Ingrese solamente números";
+ctl00_MainHolder_creditAccountUpdate_DocumentNumberRegularExpressionValidator.display = "Dynamic";
+ctl00_MainHolder_creditAccountUpdate_DocumentNumberRegularExpressionValidator.validationGroup = "Confirmation";
+ctl00_MainHolder_creditAccountUpdate_DocumentNumberRegularExpressionValidator.evaluationfunction = "RegularExpressionValidatorEvaluateIsValid";
+ctl00_MainHolder_creditAccountUpdate_DocumentNumberRegularExpressionValidator.validationexpression = "^[0-9]*$";
+var ctl00_MainHolder_creditAccountUpdate_CustomValidator3 = document.all ? document.all["ctl00_MainHolder_creditAccountUpdate_CustomValidator3"] : document.getElementById("ctl00_MainHolder_creditAccountUpdate_CustomValidator3");
+ctl00_MainHolder_creditAccountUpdate_CustomValidator3.controltovalidate = "ctl00_MainHolder_creditAccountUpdate_txtMail";
+ctl00_MainHolder_creditAccountUpdate_CustomValidator3.errormessage = "Email incorrecto";
+ctl00_MainHolder_creditAccountUpdate_CustomValidator3.validationGroup = "Confirmation";
+ctl00_MainHolder_creditAccountUpdate_CustomValidator3.evaluationfunction = "CustomValidatorEvaluateIsValid";
+var ctl00_validationSummaryFooter = document.all ? document.all["ctl00_validationSummaryFooter"] : document.getElementById("ctl00_validationSummaryFooter");
+ctl00_validationSummaryFooter.headertext = "Formulario inválido, por favor revise los datos ingresados:";
+ctl00_validationSummaryFooter.showsummary = "False";
+//]]>
+</script>
+
+
+<script type="text/javascript">
+//<![CDATA[
+
+var Page_ValidationActive = false;
+if (typeof(ValidatorOnLoad) == "function") {
+    ValidatorOnLoad();
+}
+
+function ValidatorOnSubmit() {
+    if (Page_ValidationActive) {
+        return ValidatorCommonOnSubmit();
+    }
+    else {
+        return true;
+    }
+}
+        
+document.getElementById('ctl00_validationSummaryFooter').dispose = function() {
+    Array.remove(Page_ValidationSummaries, document.getElementById('ctl00_validationSummaryFooter'));
+}
+Sys.Application.initialize();
+
+document.getElementById('ctl00_MainHolder_creditAccountUpdate_RequiredFieldValidatorCBU').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_creditAccountUpdate_RequiredFieldValidatorCBU'));
+}
+
+document.getElementById('ctl00_MainHolder_creditAccountUpdate_CBURegularExpressionValidator').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_creditAccountUpdate_CBURegularExpressionValidator'));
+}
+
+document.getElementById('ctl00_MainHolder_creditAccountUpdate_DocumentNumberRequiredValidator').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_creditAccountUpdate_DocumentNumberRequiredValidator'));
+}
+
+document.getElementById('ctl00_MainHolder_creditAccountUpdate_DocumentNumberCustomValidator').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_creditAccountUpdate_DocumentNumberCustomValidator'));
+}
+
+document.getElementById('ctl00_MainHolder_creditAccountUpdate_DocumentValidator').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_creditAccountUpdate_DocumentValidator'));
+}
+
+document.getElementById('ctl00_MainHolder_creditAccountUpdate_DocumentNumberRegularExpressionValidator').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_creditAccountUpdate_DocumentNumberRegularExpressionValidator'));
+}
+
+document.getElementById('ctl00_MainHolder_creditAccountUpdate_CustomValidator3').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_creditAccountUpdate_CustomValidator3'));
+}
+//]]>
+</script>
+</form>
+
+
+<div class="ui-dialog ui-widget ui-widget-content ui-corner-all" tabindex="-1" role="dialog" aria-labelledby="ui-dialog-title-sessionTimeoutWarning" style="display: none; z-index: 1000; outline: 0px;"><div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix"><span class="ui-dialog-title" id="ui-dialog-title-sessionTimeoutWarning">&nbsp;</span><a href="Pages/Transfers/MyCreditAccounts.aspx#" class="ui-dialog-titlebar-close ui-corner-all" role="button" style="display: none;"><span class="ui-icon ui-icon-closethick">close</span></a></div><div id="sessionTimeoutWarning" style="background-color: rgb(255, 255, 255); padding: 0px; height: 100%;" class="ui-dialog-content ui-widget-content">
+        <div id="sessionTimeoutWarningHeader">
+            <table width="100%">
+                 <tbody><tr>
+                    <td colspan="2" align="center" class="ic-form-data-modal">
+                        La sesión finalizará en <span id="sessionTimeoutCountdown"></span>&nbsp;segundos.
+                        Para seguir operando seleccioná “Continuar”
+                    </td>
+                </tr>
+            </tbody></table>
+        </div>
+    </div><div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix"><div class="ui-dialog-buttonset"><button type="button">Continuar </button><button type="button">Finalizar sesión</button></div></div></div></body></html>

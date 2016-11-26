@@ -1,0 +1,786 @@
+
+<!-- saved from url=(0068)Pages/ProvidersCheck/ConsultaLoteCheque.aspx -->
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><script src="./jquery-1.7.2.min.js.descarga" type="text/javascript"></script>
+<script src="./jquery-1.7.1.js.descarga" type="text/javascript"></script>
+<script src="./jquery-ui-1.8.19.custom.min.js.descarga" type="text/javascript"></script>
+<script src="./jquery.formatCurrency-1.4.0.js.descarga" type="text/javascript"></script>
+<script src="./idle-timer.js.descarga" type="text/javascript"></script>
+<script src="./idle-timer.min.js.descarga" type="text/javascript"></script>
+<script language="javascript" type="text/javascript">
+
+function Logout() {
+        if (confirm("¿ Desea salir del sistema ?") == true) {
+                    
+            window.location =  '/'+ "Logout.aspx";
+        }
+       
+    }
+    
+var focusedFormControl;    
+var dateFormat = 'dd/mm/aaaa';
+var applicationRoot = '/';      
+function OnRowClick(sender, args) {
+    if (sender.GetSelectedRowCount() == 0) {
+        sender.UnselectRowOnPage(args.visibleIndex);
+        SetPageLinkData("");
+    }
+    else {
+        _aspxClearSelection();
+        sender._selectAllRowsOnPage(false);
+        sender.SelectRow(args.visibleIndex, true);
+        SetPageLinkData(sender.GetRowKey(args.visibleIndex));
+    }
+}
+
+if (history.forward(1))
+{
+
+    location.replace(history.forward(1))
+} 
+
+function PrintPage() {
+
+    window.print();
+}
+
+function GoMyOption(select)
+{
+    var url = select.options[select.selectedIndex].value;
+    if( url != "")
+        window.location = url;
+}
+
+function GoFavourites(select)
+{
+
+    var url = select.options[select.selectedIndex].value;
+    if( url != "")
+        window.location = url;
+}
+
+function GoPrint()
+{
+
+window.print();
+}
+
+function addEvent(elm, evType, fn, useCapture)
+{
+
+  if (elm.addEventListener){
+    elm.addEventListener(evType, fn, useCapture);
+    return true;
+  } else if (elm.attachEvent){
+    var r = elm.attachEvent("on"+evType, fn);
+    return r;
+  } else {
+    alert("Handler could not be removed");
+  }
+} 
+
+function SetPageLinkData(data)
+{
+    pageLinkData = document.getElementById('PageLinkData');
+    pageLinkData.value = data;
+}
+
+function SetPageLinkUrl(url)
+{
+    pageLinkUrl = document.getElementById('PageLinkUrl');
+    pageLinkUrl.value = url;
+}
+
+function doPageLink(id)
+{
+    __doPostBack(id, 'PageLinkEvent');
+}
+
+function imprimirEstadoCuenta()
+{
+											
+    var ficha = document.getElementById('printDiv');		
+    var ventimp = window.open('', 'popimpr','height=450, width=550, scrollbars=1');																						
+    var fichaHTML = new String(ficha.innerHTML);
+    fichaHTML = fichaHTML.replace('Seleccione un período y oprima "Consultar".'," ");
+    //var i = document.getElementById('ctl00_MainHolder_panelDetalle_imgPlusMinus');
+    var html  = "<html>\n<head>\n<link rel=\"stylesheet\" type=\"text/css\" href=\"..\\..\\App_Themes\\Default\\Default.css \" />" 
+                + "</head><table width=\"100%\"><tr bgcolor=\"#FF0000\"><td><img src=\"..\\..\\App_Themes\\Default\\Images\\logoSantander.gif\" /></td></tr></table>" 
+                + fichaHTML 
+                + "</html>";
+    ventimp.document.write( html );
+    ventimp.document.close();
+    ventimp.print( );
+    ventimp.close();
+					
+}
+
+ function removeInvalidCharacters(control) {
+ 
+            !(/^[A-zÑñ0-9 ]*$/i).test(control.value) ? control.value = control.value.replace(/[^A-zÑñ0-9 ]/ig, '') : null
+        }
+        
+  function removeInvalidNumbers(control) {
+            !(/^[0-9,]*$/i).test(control.value) ? control.value = control.value.replace(/[^0-9,]/ig, '') : null
+        }
+function showLoading()
+{
+//debugger;
+    // aquí le pasamos la clase o id de nuestro div a centrar (en este caso "caja")
+    $('.ic-loading').css({
+       position:'absolute',
+       left: ($('#mainContainer').width()/2 - $('.ic-loading').outerWidth())/2,
+       //top: ($('#mainContainer').height()/2 - $('.ic-loading').outerHeight())/2
+       top: ($('#mainContainer').height()/2 - $('ic-loading').height()/2)
+    });
+    
+    $('#mainContainer').css('display','none');
+    $('#ic-loading').css('display','block');
+}
+//ModalDialog SessionTimeout
+var idleTime = (parseInt('1170') * 1000); // number of miliseconds until the user is considered idle
+var initialSessionTimeoutMessage = "La sesión finalizará en <span id='sessionTimeoutCountdown'></span> segundos. Para seguir operando seleccioná “Continuar”<br /><br />";
+var sessionTimeoutCountdownId = 'sessionTimeoutCountdown';
+var redirectAfter = (parseInt('30')) ; // number of seconds to wait before redirecting the user
+var redirectTo = '/' + "Logout.aspx"; // URL to relocate the user to once they have timed out
+var keepAliveURL = ''; // URL to call to keep the session alive
+var expiredMessage = ''; // message to show user when the countdown reaches 0
+var running = false; // var to check if the countdown is running 
+var timer; // reference to the setInterval timer so it can be stopped 
+var timerSB;  
+var timeout;  
+    $(document).ready(function() {     
+// create the warning window and set autoOpen to false  
+      var sessionTimeoutWarningDialog = $("#sessionTimeoutWarning"); 
+    $(sessionTimeoutWarningDialog).dialog({         
+        title: '',       
+        autoOpen: false,    // set this to false so we can manually open it         
+        closeOnEscape: false,         
+        draggable: false,         
+        width: 460,         
+        minHeight: 150,         
+        modal: true,           
+        beforeclose: function() { // bind to beforeclose so if the user clicks on the "X" or escape to close the dialog, it will work too             // stop the timer             
+            clearInterval(timer);               // stop countdown
+            running = false;               // ajax call to keep the server-side session alive    
+                  
+            $.ajax({               
+                url: keepAliveURL,               
+                async: false            
+            });         
+        },         
+        buttons: {      
+             'Continuar ': function() {                 
+                // close dialog 
+                window.location.reload();//BM24925: Se agrega esto para que el expired de una cookie se actualice y no se cierre la sesión luego de hacer click en continuar al terminar el timeout del webconfig. El valor del expired se pone en la tabla configuration en la clave SessionMaxMinutes.
+                //var valor = getCookie('ICBWebLogin'); //Esta función la dejo por las dudas, pero no la pude hacer andar poque el document.cookie no me trae las cookies del explorador.                
+                $(this).dialog('close');
+                clearInterval(timerSB);    
+                window.status = "";      
+                StatusBarCountDown();     
+            },
+            'Finalizar sesión': function() {                 
+                // close dialog                 
+                $(sessionTimeoutWarningDialog).html(expiredMessage);
+                $(sessionTimeoutWarningDialog).dialog('disable');                     
+                window.parent.location = redirectTo;           
+            }         
+        },         
+        resizable: false,         
+        open: function() {
+            $('body').css('overflow','auto');         
+        },         
+        close: function() {             
+            // reset overflow             
+            $('body').css('overflow','auto');         
+        }  
+           
+    }); // end of dialog  
+    jQuery("a.ui-dialog-titlebar-close").hide(); 
+          
+    // start the idle timer
+    $.idleTimer(idleTime);
+ 
+});
+
+// BM24925: Función para recuperar el valor de una cookie.
+// name - nombre de la cookie deseada
+// devuelve un string conteniendo el valor de la cookie especificada o null si la cookie no existe
+
+function getCookie(name){
+var micookie = (document.cookie.indexOf('ICBWebLogin=') === -1 ? '' : ("; " + document.cookie).split('; ICBWebLogin=')[1].split(';')[0]);
+
+  var cname = name + "=";               
+  var dc = document.cookie;             
+  if (dc.length > 0) {              
+    begin = dc.indexOf(cname);       
+    if (begin != -1) {           
+      begin += cname.length;       
+      end = dc.indexOf(";", begin);
+      if (end == -1) end = dc.length;
+        return unescape(dc.substring(begin, end));
+    } 
+  }
+  return null;
+}
+
+//Status Bar Countdown Script
+function StatusBarCountDown() 
+{
+    var redirectAfter = (parseInt('30'));
+    var timeout = '1200000';   
+    var redirectTo = '/' + "Logout.aspx"; // URL to relocate the user to once they have timed out   
+    timerSB = setInterval(function(){
+    timeout -= 1000;
+    if(timeout == redirectAfter * 1000)
+    {
+        window.focus();
+    }
+   if(timeout < redirectAfter * 1000)
+   {
+        $("#sessionTimeoutCountdown").html(timeout/1000);
+        $("#sessionTimeoutWarning").dialog('open'); 
+   }
+   if (timeout < 100)
+   {
+        $("#sessionTimeoutWarning").html(expiredMessage);
+        $("#sessionTimeoutWarning").dialog('disable');                     
+        window.parent.location = redirectTo;
+        clearInterval(timerSB);    
+        window.status = "";     
+   }
+        
+   window.status = "Su sesión expirará " + time(timeout) + " minutos";        
+    }, 1000);   
+         
+   function two(x)
+   {
+    return ((x > 9) ? "" : "0") + x
+   }   
+  
+   function time(ms)
+   {   
+       var t = '';   
+       var sec = Math.floor(ms / 1000);   
+       ms = ms % 1000   
+
+       var min = Math.floor(sec / 60);   
+       sec = sec % 60;   
+       t = two(sec);   
+
+       var hr = Math.floor(min / 60);   
+       min = min % 60;   
+       t = two(min) + ":" + t;   
+    return t;
+   }
+}
+
+StatusBarCountDown();
+
+
+
+</script>
+
+<link rel="stylesheet" type="text/css" href="./WebResource.axd">
+<link rel="stylesheet" type="text/css" href="./WebResource(1).axd">
+<link href="./Default.css" type="text/css" rel="stylesheet"><link href="./jquery-ui-1.8.19.custom.css" type="text/css" rel="stylesheet"><title>
+	Detalle Lotes de Cheques
+</title></head>
+<body>
+    <form name="aspnetForm" method="post" action="Pages/ProvidersCheck/ConsultaLoteCheque.aspx" id="aspnetForm">
+<div>
+<input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="">
+<input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="">
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUKMTMxMDY1OTIxMA9kFgJmD2QWAgIBD2QWAgIBD2QWAmYPZBYEAgEPZBYEAgIPDxYCHgRUZXh0BRhEZXRhbGxlIExvdGVzIGRlIENoZXF1ZXNkZAIHD2QWAmYPZBYEZg9kFgICAQ9kFgJmD2QWAgIBDzwrABYCAA8WCB4PRGF0YVNvdXJjZUJvdW5kZx4RQ2xpZW50U3RhdGVMb2FkZWRoHg1DYWxsYmFja1N0YXRlBZQRL3dFV0JCNEVSR0YwWVFYWUMwRkJRVUZCUWpSQlFVRkJRVUZCUVVGRFowRkJRVUZCVFVGQlFVRkNSWGgyWkVkVlJWUkhPVEJhVVUxQlFVRXhWV0l6VW1oaVJqbEVZVWRXZUdSWFZucEVWbEoyWkVkR2MxZ3dUbTlhV0VZeFdsaE5SRUZCUlVsVFZ6RjNZMjFXZW1JelRVbFRWekYzWTIxV2VtSXpUVVJCUVVGTVVrZHNlbU5IT1hWaFYwcHpXbGhOVEZKSGJIcGpSemwxWVZkS2MxcFlUVVJCUVVGTFVsYzFNR050Vm01WlYxSjJZM2R3Um1KdVVubGFWMlJvV2tjNWVrRjNRVUZDTVVKb1dqSkdhMkl6VFVoVlIwWnVXVmRTZG1OM1RVRkJRWEJUV2xkT2IxbFljR2hhUnpsNlEyeEtiRmt5YUdobGJVWnJZak5OUkVGQlFVbFdiVloxV1RKc2EySXpUVWxXYlZaMVdUSnNhMkl6VFVSQlFVRkpVVmMxTVdKSFJtdGlNMDFKVVZjMU1XSkhSbXRpTTAxRVFVRkJUVkp0Vm1waFIwWktZbTFrZVZwWVRuWkVSVnBzV1RKb2FGTlhOVzVqYlZaNlluZERLMEZXVGpWak0xSnNZbE0xVDJSWGVITlpWMHB6V2xkQmVGY3hkRlJsV0U0d1dsY3dkVkpIUmpCYVZsSndZbGRWYzBsSE1YcFpNamw1WWtkc2FVeERRbGRhV0VwNllWYzVkVkJVU1hWTlF6UjNUR3BCYzBsRlRqRmlTRkl4WTIxVk9XSnRWakZrU0Vwb1lrTjNaMVZJVm1saVIyeHFVekpXTlZaSE9YSmFWelE1V1dwak0xbFVWbXBPVkZsNFQxUk5NRnBVUVRSUFZqRmtURU5DZEdNeVRuWmpiWGh3V1dsM1oxWnRWbmxqTW14Mlltb3dlVXhxUVhWTlF6UjNURU5DUkdSWGVEQmtXRXBzVUZjMWJHUllVbmxaVjNkelNVWkNNVmx0ZUhCWk1IUnNaVlpTZG1FeVZuVlFWMGt6VGpKRk1WbDZWVEpOVkd0NlRrZFZkMDlFYTBGQlVYaFBZMjA1VkdJeWVIQlpNbXd3WkZkUlRWUnVTblpWTWpsellWZE9jR1JJVm10QmQwRkNRMVZPYUdKdFJuTlNSMVo2V1hkc1JGbFhOV2hpUlZKc1l6Sk5TRUZCUlVSQlFVRkJRekJhYkZreE9VcGliV1I1V2xoT2RrSXdlSFprUjFaSlVXdFZSbEV5Um5WWlYzZElRVUZqUVVKM1FVaEJRV0l2TDNkTlIyTlZSVVJDZVVGRVFuZEJSRUo0YzBSQ2QxVkVRbmRCUkVKM1FVUkNkMEZFUW5kQlNVRm5VVUZuVGtob1pESnVWRU5CVFVoQlFXTkRRakJHZVZreWFIQmtiVGhJUVVGalFVSjJMeTlCZDFwcFVWRk5TRUpCVFVoQlFVMUlRVkZOU0VGM1RVaEJRVTFJUVVGTlNFRkJUVWhCUVdkRFFrRkVRVm8zWlhWaFRrMUpRWGRqUVVKM1NVaFJXRXBxWVVkc01tSjNZMEZDZDBGSEx5ODRSRUp0VGtKQmQyTkRRWGRqUVVGM1kwRkJkMk5CUVhkalFVRjNZMEZCZDJORFFYZGpRVU5CU1VWQlRVSnVkRFkxYnpCM1owUkNkMEZJUVdka1FtTnRUbTloV0ZwMlFuZEJTRUZCWWk4dmQwMUhXVlZGUkVKM09FUkNkMEZFUW5kalJFSjNaMFJDZDBGRVFuZEJSRUozUVVSQ2QwRkpRV2RSUVhkSFpUTnliV3BVUTBGTlNFRkJZME5DTUVaNVdUSm9jR1J0T0VoQlFXTkJRbll2TDBGM1drVlJVVTFJUTJkTlNFRkJUVWhCWjAxSVEwRk5TRUZCVFVoQlFVMUlRVUZOU0VGQlowTkNRVUpCYkVkSlkxbzVUVWxCZDJOQlFuZEpTRkZZU21waFIyd3lZbmRqUVVKM1FVY3ZMemhFUW1od1FrRjNZMWRCZDJOQlFYZGpTa0YzWTA1QmQyTkJRWGRqUVVGM1kwRkJkMk5CUTBGSlJVRkZSSFIxVUdScU1IZG5SRUozUVVoQloyUkNZMjFPYjJGWVduWkNkMEZJUVVGaUx5OTNUVWRETUVWRVFuZFJSRUozUVVSQ2QwRkVRbmRSUkVKM1FVUkNkMEZFUW5kQlJFSjNRVWxCWjFGQlowbFBUMHh0VUZSRFFVMUlRVUZqUTBJd1JubFpNbWh3WkcwNFNFRkJZMEZDZGk4dlFYZFpUVkZSVFVoQ1VVMUlRVUZOU0VGQlRVaEJaMDFJUVVGTlNFRkJUVWhCZDAxSVFVRm5RMEpCUTBGbk5EUjFXVGxOU1VGM1kwRkNkMGxJVVZoS2FtRkhiREppZDJOQlFuZEJSeTh2T0VSQ1ozQkNRWGRqVDBGM1kwRkJkMk5DUVhkalRrRjNZMEZCZDJOQlFYZGpRVUYzWTBGRFFVbEZRVWxEUkdwcE5Xb3dkMmRFUW5kQlNFRm5aRUpqYlU1dllWaGFka0ozUVVoQlFXSXZMM2ROUnpGVlFVUkNkMFZFUW5kQlJFSjNRVVJDZDBGRVFuZEJSRUozUVVSQ2QwVkVRbmRCU1VGblVVRjNTRXMyVVVZdlZFTkJUVWhCUVdORFFqQkdlVmt5YUhCa2JUZzlIZ1ZUZEdGMFpRV0FBVUozTUVoQlFVbENRbmRGUTBGUlkwTkJaMFZJUVhkSlFrSjNVVU5CVVdOR1FXZEZTRUpuU1VKQ2QyTkRRVkZqU1VGblJVaERVVWxDUW5kdlEwRlJZMHhCWjBWSVJFRkpRa0ozUVVoQlFXTkJRbmRCUTBGQllpOHZkMnREUWtWNGRtUkhWVXBCWjBGRFFVRk5TRUpCU1VGQ2QwRkRRVkZqUVVGblJVaEJRVDA5Hg5fIVVzZVZpZXdTdGF0ZWdkBg9kEBYNZgIBAgICAwIEAgUCBgIHAggCCQIKAgsCDBYNPCsADAEAFgIeD0NvbFZpc2libGVJbmRleGY8KwALAQAWCB8FAgEeCVNvcnRJbmRleAL/////Dx4KR3JvdXBJbmRleAL/////Dx4JU29ydE9yZGVyCyl4RGV2RXhwcmVzcy5EYXRhLkNvbHVtblNvcnRPcmRlciwgRGV2RXhwcmVzcy5EYXRhLnY4LjMsIFZlcnNpb249OC4zLjUuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj1iODhkMTc1NGQ3MDBlNDlhADwrAAsBABYIHwUCAh8GAv////8PHwcC/////w8fCAsrBAA8KwALAQAWCB8FAgMfBgL/////Dx8HAv////8PHwgLKwQAPCsACwEAFggfBQIEHwYC/////w8fBwL/////Dx8ICysEADwrAAsBABYIHwUCBR8GAv////8PHwcC/////w8fCAsrBAA8KwALAQAWCB8FAgYfBgL/////Dx8HAv////8PHwgLKwQAPCsACwEAFggfBQIHHwYC/////w8fBwL/////Dx8ICysEADwrAAsBABYIHwUCCB8GAv////8PHwcC/////w8fCAsrBAA8KwALAQAWCB8FAgkfBgL/////Dx8HAv////8PHwgLKwQAPCsACwEAFggfBQIKHwYC/////w8fBwL/////Dx8ICysEADwrAAsBABYIHwUCCx8GAv////8PHwcC/////w8fCAsrBAA8KwALAQAWCB8FAgwfBgL/////Dx8HAv////8PHwgLKwQADxYNAgECAgICAgICAwICAgICAgICAgICAgICAgIWAwWWAURldkV4cHJlc3MuV2ViLkFTUHhHcmlkVmlldy5HcmlkVmlld0NvbW1hbmRDb2x1bW4sIERldkV4cHJlc3MuV2ViLkFTUHhHcmlkVmlldy52OC4zLCBWZXJzaW9uPTguMy41LjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49Yjg4ZDE3NTRkNzAwZTQ5YQWgAUluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24uQ2xhc3Nlcy5HcmlkVmlld0RhdGFUZXh0Q29sdW1uVGV4dCwgSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbiwgVmVyc2lvbj0zLjAuMS4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPTcxODYyODAxN2ZmYjk2NmUFoAFJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLkNsYXNzZXMuR3JpZFZpZXdEYXRhVGV4dENvbHVtbkRhdGUsIEluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24sIFZlcnNpb249My4wLjEuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj03MTg2MjgwMTdmZmI5NjZlZAIBD2QWBAIBD2QWAgIBD2QWBGYPZBYCAgEPZBYCAgEPFgIfAAUBMGQCAQ9kFgICAQ9kFgICAQ8WAh8ABQUxNjczOGQCAw9kFgJmD2QWAgIBDzwrABYCAA8WCB8BZx8EZx8CZx8DZGQGD2QQFg5mAgECAgIDAgQCBQIGAgcCCAIJAgoCCwIMAg0WDjwrAAsBABYCHwVmPCsACwEAFgIfBQIBPCsACwEAFgIfBQICPCsACwEAFgIfBQIDPCsACwEAFgIfBQIEPCsACwEAFgIfBQIFPCsACwEAFgIfBQIGPCsACwEAFgIfBQIHPCsACwEAFgIfBQIIPCsACwEAFgIfBQIJPCsACwEAFgIfBQIKPCsACwEAFgIfBQILPCsACwEAFgIfBQIMPCsACwEAFgIfBQINDxYOAgECAQIBAgICAwIDAgMCAwIDAgECAQIBAgECARYDBaABSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbi5DbGFzc2VzLkdyaWRWaWV3RGF0YVRleHRDb2x1bW5UZXh0LCBJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLCBWZXJzaW9uPTMuMC4xLjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49NzE4NjI4MDE3ZmZiOTY2ZQWiAUluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24uQ2xhc3Nlcy5HcmlkVmlld0RhdGFUZXh0Q29sdW1uQW1vdW50LCBJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLCBWZXJzaW9uPTMuMC4xLjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49NzE4NjI4MDE3ZmZiOTY2ZQWgAUluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24uQ2xhc3Nlcy5HcmlkVmlld0RhdGFUZXh0Q29sdW1uRGF0ZSwgSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbiwgVmVyc2lvbj0zLjAuMS4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPTcxODYyODAxN2ZmYjk2NmVkAgIPFgIeBXN0eWxlBQ1kaXNwbGF5Om5vbmU7FgICBQ8WAh4HVmlzaWJsZWgWBAIBDxAWBh4NRGF0YVRleHRGaWVsZAUFVGl0bGUeDkRhdGFWYWx1ZUZpZWxkBQNVcmkeC18hRGF0YUJvdW5kZxAVAQAVAQAUKwMBZxQrAQBkAgMPFgIfCQUNZGlzcGxheTpub25lOxYCZg9kFgICAQ8WAh8JBQ1kaXNwbGF5Om5vbmU7ZBgCBR5fX0NvbnRyb2xzUmVxdWlyZVBvc3RCYWNrS2V5X18WBQUrY3RsMDAkTWFpbkhvbGRlciRkZXRhbGxlQ2hlcXVlJERldGFsbGVQYW5lbAUaY3RsMDAkTWFpbkhvbGRlciREYXRhUGFuZWwFMWN0bDAwJE1haW5Ib2xkZXIkZGV0YWxsZUNvbnN1bHRhQ2hlcXVlcyREYXRhUGFuZWwFP2N0bDAwJE1haW5Ib2xkZXIkZGV0YWxsZUNvbnN1bHRhQ2hlcXVlcyRQcm92aWRlcnNDaGVja3NEYXRhR3JpZAUZY3RsMDAkaW1hZ2VCdXR0b25Db2xsYXBzZQUXY3RsMDAkTWFpbkhvbGRlciR2aXN0YXMPD2QCAWSqMmuyMwoOnNHzd5L02guwuw1rkA==">
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+var theForm = document.forms['aspnetForm'];
+if (!theForm) {
+    theForm = document.aspnetForm;
+}
+function __doPostBack(eventTarget, eventArgument) {
+    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+        theForm.__EVENTTARGET.value = eventTarget;
+        theForm.__EVENTARGUMENT.value = eventArgument;
+        theForm.submit();
+    }
+}
+//]]>
+</script>
+
+
+<script src="./WebResource(2).axd" type="text/javascript"></script>
+
+
+						<style>							
+							P.PanelControlTitleStyle
+							{
+ 								font-family:verdana;
+ 								font-size: 12px;
+								font-weight : bold;
+								text-align: center;  								
+							}
+						</style>						
+						<script language="javascript">
+						function MinMaxPanelControl(cntrlId)
+						{
+						    var imgPath='/App_Themes/Default/Images/';	
+					
+							//Get state from hidden control.													
+							if ( document.getElementById(cntrlId).style.display == 'none' )
+							{
+								document.getElementById(cntrlId).style.display = '';						
+								document.getElementById(cntrlId+'_imgPlusMinus').src = imgPath + 'bot-grid-minus.gif';
+							}
+							else 
+							{
+								document.getElementById(cntrlId).style.display = 'none';								
+								document.getElementById(cntrlId+'_imgPlusMinus').src = imgPath + 'bot-grid-plus.gif';
+							}
+						}
+						</script>
+			
+<script type="text/javascript">
+//<![CDATA[
+var __cultureInfo = '{"name":"es-UY","numberFormat":{"CurrencyDecimalDigits":2,"CurrencyDecimalSeparator":",","IsReadOnly":false,"CurrencyGroupSizes":[3],"NumberGroupSizes":[3],"PercentGroupSizes":[3],"CurrencyGroupSeparator":".","CurrencySymbol":"$U","NaNSymbol":"NeuN","CurrencyNegativePattern":14,"NumberNegativePattern":1,"PercentPositivePattern":0,"PercentNegativePattern":0,"NegativeInfinitySymbol":"-Infinito","NegativeSign":"-","NumberDecimalDigits":2,"NumberDecimalSeparator":",","NumberGroupSeparator":".","CurrencyPositivePattern":2,"PositiveInfinitySymbol":"Infinito","PositiveSign":"+","PercentDecimalDigits":2,"PercentDecimalSeparator":",","PercentGroupSeparator":".","PercentSymbol":"%","PerMilleSymbol":"‰","NativeDigits":["0","1","2","3","4","5","6","7","8","9"],"DigitSubstitution":1},"dateTimeFormat":{"AMDesignator":"a.m.","Calendar":{"MinSupportedDateTime":"\/Date(-62135586000000)\/","MaxSupportedDateTime":"\/Date(253402300799999)\/","AlgorithmType":1,"CalendarType":1,"Eras":[1],"TwoDigitYearMax":2029,"IsReadOnly":false},"DateSeparator":"/","FirstDayOfWeek":1,"CalendarWeekRule":0,"FullDateTimePattern":"dddd, dd\u0027 de \u0027MMMM\u0027 de \u0027yyyy hh:mm:ss tt","LongDatePattern":"dddd, dd\u0027 de \u0027MMMM\u0027 de \u0027yyyy","LongTimePattern":"hh:mm:ss tt","MonthDayPattern":"dd MMMM","PMDesignator":"p.m.","RFC1123Pattern":"ddd, dd MMM yyyy HH\u0027:\u0027mm\u0027:\u0027ss \u0027GMT\u0027","ShortDatePattern":"dd/MM/yyyy","ShortTimePattern":"hh:mm tt","SortableDateTimePattern":"yyyy\u0027-\u0027MM\u0027-\u0027dd\u0027T\u0027HH\u0027:\u0027mm\u0027:\u0027ss","TimeSeparator":":","UniversalSortableDateTimePattern":"yyyy\u0027-\u0027MM\u0027-\u0027dd HH\u0027:\u0027mm\u0027:\u0027ss\u0027Z\u0027","YearMonthPattern":"MMMM\u0027 de \u0027yyyy","AbbreviatedDayNames":["dom","lun","mar","mié","jue","vie","sáb"],"ShortestDayNames":["do","lu","ma","mi","ju","vi","sá"],"DayNames":["domingo","lunes","martes","miércoles","jueves","viernes","sábado"],"AbbreviatedMonthNames":["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic",""],"MonthNames":["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre",""],"IsReadOnly":false,"NativeCalendarName":"calendario gregoriano","AbbreviatedMonthGenitiveNames":["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic",""],"MonthGenitiveNames":["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre",""]}}';//]]>
+</script>
+
+<script src="./ScriptResource.axd" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+if (typeof(Sys) === 'undefined') throw new Error('ASP.NET Ajax client-side framework failed to load.');
+//]]>
+</script>
+
+<script src="./ScriptResource(1).axd" type="text/javascript"></script>
+<div>
+
+	<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEWBwLEkbjbAwKM3OurBQKR7Nr1CwL3nYCDBQKqxZPDBALRqszJDgKJt+C7AUA6PHHRbyPHT2EEkQfTJejFtW/O">
+</div>
+    <script type="text/javascript">
+//<![CDATA[
+Sys.WebForms.PageRequestManager._initialize('ctl00$scriptManager', document.getElementById('aspnetForm'));
+Sys.WebForms.PageRequestManager.getInstance()._updateControls([], [], [], 90);
+//]]>
+</script>
+
+    <input type="hidden" id="PageLinkData" name="PageLinkData" value="">
+    <input type="hidden" id="PageLinkUrl" name="PageLinkUrl" value="">
+    <input type="hidden" id="PageUrl" value="/Pages/ProvidersCheck/ConsultaLoteCheque.aspx">
+    <table id="ctl00_tableContent" width="100%" border="0" cellpadding="0" cellspacing="0" class="ic-content">
+	<tbody><tr>
+		<td class="ic-content-left-aux">
+                <img src="./log-img-aux-left-bottom.gif" width="9" height="110">
+            </td>
+		<td style="width: 100%">
+                <table width="100%" border="0" cellpadding="0" cellspacing="0" class="ic-content-left">
+                    <tbody><tr>
+                        <td id="TdCPM" class="ic-content-space-top" valign="top">
+                            <table id="TablaCPM" width="100%" border="0" cellspacing="0" cellpadding="0">
+                                
+                                <tbody><tr>
+                                    <td>
+                                        <table id="ctl00_tableHeader" width="100%" border="0" cellspacing="0" cellpadding="0">
+			<tbody><tr>
+				<td class="ic-breadcrumb-container">
+                                                    
+                                                    &gt;
+                                                    <span id="ctl00_siteMapNavigator"><a href="Pages/ProvidersCheck/ConsultaLoteCheque.aspx#ctl00_siteMapNavigator_SkipLink"><img alt="Skip Navigation Links" height="0" width="0" src="./WebResource(3).axd" style="border-width:0px;"></a><span><a href="Home.aspx">Posición Consolidada</a></span><span> &gt; </span><span><a>Pago a Proveedores</a></span><span> &gt; </span><span><a>Consulta de Lotes</a></span><span> &gt; </span><span>Cheques</span><a id="ctl00_siteMapNavigator_SkipLink"></a></span>
+                                                    </td>
+				<td class="ic-toolbar-container">
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tbody><tr>
+                                                            <td width="16">
+                                                                <img src="./ico-print.gif" id="ctl00_Img4" width="16" height="16">
+                                                            </td>
+                                                            <td class="ic-links-toolbar">
+                                                                <a href="Pages/ProvidersCheck/ConsultaLoteCheque.aspx#" onclick="javascript: GoPrint();">
+                                                                    Imprimir página</a>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody></table>
+                                                </td>
+			</tr>
+		</tbody></table>
+		
+                                    </td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>
+                                        <span id="ctl00_labelTitle" class="ic-page-title">Detalle Lotes de Cheques</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td id="ctl00_cellRequiered" align="right">&nbsp;</td>
+		
+                                </tr>
+                                <tr>
+                                    <td width="95%" align="center">
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                            <tbody><tr>
+                                                <td align="right">
+                                                    
+                                                    
+                                                </td>
+                                            </tr>
+                                        </tbody></table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="100%" align="center">
+                                        <div id="ic-loading" class="ic-loading-bg" style="display: none;">
+                                            <div class="ic-loading">
+                                                <div id="message">
+                                                    <img src="./cargandoBAR.gif" id="ctl00_imgLoading"><br>
+                                                    <span id="ctl00_WaitingMessage">Procesando...</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="mainContainer">
+                                                
+
+    <script language="javascript" type="text/javascript">
+       function ValidateSelection() {
+           if (ProvidersASPxGridView._getSelectedRowCount() == 0) {
+               alert('Debe seleccionar una operación.');
+               return false;
+           }
+           else 
+           {
+               return true;
+           }
+       }
+    </script>
+    
+            <table class="ic-grid-border" cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+			<tbody><tr>
+				<td><table id="ctl00_MainHolder_DataPanel_thePanel" class="ic-grid" cellspacing="0" cellpadding="0" align="Center" border="0" style="width:100%;border-collapse:collapse;">
+					<tbody><tr class="ic-grid-title-row">
+						<td><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+							<tbody><tr>
+								<td class="ic-grid-title-cell-left">&nbsp;</td><td class="ic-grid-title-cell" align="left" style="white-space:nowrap;">Detalle de la Consulta</td><td class="ic-gridB-title-cell-right"><img id="ctl00_MainHolder_DataPanel_imgPlusMinus" onclick="javascript:MinMaxPanelControl(&#39;ctl00_MainHolder_DataPanel&#39;)" src="./bot-grid-minus.gif" alt="Minimizar/Maximizar el panel" align="absmiddle" style="border-width:0px;cursor:hand;"></td>
+							</tr>
+						</tbody></table></td>
+					</tr><tr>
+						<td align="center"><div id="ctl00_MainHolder_DataPanel" style="color:Black;border-color:DodgerBlue;font-family:verdana;font-size:10pt;width:100%;margin-bottom:0px;display:;">
+	
+                <table id="ctl00_MainHolder_mainTable" width="100%" cellpadding="0" cellspacing="0">
+		<tbody><tr id="ctl00_MainHolder_Tr1">
+			<td class="ic-form-label" style="width:10%">
+                            Nro Solicitud                            
+                        </td>
+			<td class="ic-form-data" style="width:10%">
+                            0
+                        </td>
+			<td class="ic-form-data" style="width:80%">&nbsp;</td>
+		</tr>
+		<tr id="ctl00_MainHolder_Tr2">
+			<td class="ic-form-label" style="width:10%">
+                            Lote                            
+                        </td>
+			<td class="ic-form-data" style="width:10%">
+                            16738
+                        </td>
+			<td class="ic-form-data" style="width:80%">&nbsp;</td>
+		</tr>
+		<tr id="ctl00_MainHolder_Tr3">
+			<td colspan="3" style="width:90%">&nbsp;</td>
+		</tr>
+	</tbody></table>
+	
+            <input name="ctl00$MainHolder$ctl00$MainHolder$DataPanel_hdnMinimizeState" type="text" value="False" id="ctl00_MainHolder_ctl00_MainHolder_DataPanel_hdnMinimizeState" class="ic-control-text" onkeypress="return validCharactersOnly(this, event, &quot;&quot;)" style="display:none">
+</div></td>
+					</tr>
+				</tbody></table></td>
+			</tr>
+		</tbody></table>      
+        
+            <table class="ic-grid-border" cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+			<tbody><tr>
+				<td><table id="ctl00_MainHolder_detalleConsultaCheques_DataPanel_thePanel" class="ic-grid" cellspacing="0" cellpadding="0" align="Center" border="0" style="width:100%;border-collapse:collapse;">
+					<tbody><tr class="ic-grid-title-row">
+						<td><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+							<tbody><tr>
+								<td class="ic-grid-title-cell-left">&nbsp;</td><td class="ic-grid-title-cell" align="left" style="white-space:nowrap;">Detalle de la Consulta</td><td class="ic-gridB-title-cell-right"><img id="ctl00_MainHolder_detalleConsultaCheques_DataPanel_imgPlusMinus" onclick="javascript:MinMaxPanelControl(&#39;ctl00_MainHolder_detalleConsultaCheques_DataPanel&#39;)" src="./bot-grid-minus.gif" alt="Minimizar/Maximizar el panel" align="absmiddle" style="border-width:0px;cursor:hand;"></td>
+							</tr>
+						</tbody></table></td>
+					</tr><tr>
+						<td align="center"><div id="ctl00_MainHolder_detalleConsultaCheques_DataPanel" style="color:Black;border-color:DodgerBlue;font-family:verdana;font-size:10pt;width:100%;margin-bottom:0px;display:;">
+	
+    <input type="hidden"><script id="dxss_1241175972" type="text/javascript">
+<!--
+window.__aspxServerFormID = 'aspnetForm';
+window.__aspxEmptyImageUrl = '/WebResource.axd?d=r8sGQK9x2VC5LfrAIP6hMW5Of0BQVx_5pcDtr_NzGA4Mft0ncv4hE1i-zBmnc8mg561Q33dXnVDmopWX_iwnWZgBELnuoLpA0P4EazLGo0XHyr4FYJEcfil8vQPDw-wMFdsFLo8AfLVBnlRoJ_At_JUEG241&t=636117930523139822';
+//-->
+</script>
+
+	<script id="dxis_136246879" src="./WebResource(4).axd" type="text/javascript"></script>
+	<script id="dxis_73471454" src="./WebResource(5).axd" type="text/javascript"></script>
+	<table class="dxgvControl" cellspacing="0" cellpadding="0" id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid" border="0" style="width:100%;border-collapse:collapse;border-collapse:separate;">
+		<tbody><tr>
+			<td><table id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_DXMainTable" class="dxgvTable" cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;empty-cells:show;">
+				<tbody><tr id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_DXHeadersRow">
+					<td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_DXTDGScol0" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid&#39;, this, event);" style="text-align:Center;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Center;">O. Pago</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_DXTDGScol1" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid&#39;, this, event);" style="text-align:Center;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Center;">N. Cheque</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_DXTDGScol2" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid&#39;, this, event);" style="text-align:Left;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Left;">Beneficiario</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_DXTDGScol3" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid&#39;, this, event);" style="text-align:Right;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Right;">Importe</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_DXTDGScol4" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid&#39;, this, event);" style="text-align:Center;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Center;">F. Pago</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_DXTDGScol5" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid&#39;, this, event);" style="text-align:Center;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Center;">F. Emisión</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_DXTDGScol6" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid&#39;, this, event);" style="text-align:Center;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Center;">F. Entrega</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_DXTDGScol7" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid&#39;, this, event);" style="text-align:Center;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Center;">F. Rechazo</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_DXTDGScol8" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid&#39;, this, event);" style="text-align:Center;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Center;">F. Vencimiento</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_DXTDGScol9" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid&#39;, this, event);" style="text-align:Center;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Center;">Centro Entrega</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_DXTDGScol10" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid&#39;, this, event);" style="text-align:Center;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Center;">Antigüedad</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_DXTDGScol11" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid&#39;, this, event);" style="text-align:Center;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Center;">Pagado Por</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_DXTDGScol12" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid&#39;, this, event);" style="text-align:Center;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Center;">Vencido Por</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_DXTDGScol13" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid&#39;, this, event);" style="text-align:Center;border-left-width:0px;border-top-width:0px;border-right-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Center;">Estado</td>
+						</tr>
+					</tbody></table></td>
+				</tr><tr id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_DXDataRow0" class="dxgvDataRow ic-grid-row01">
+					<td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_tccell0_0" class="dxgv" style="text-align:Center;">2000020777</td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_tccell0_1" class="dxgv" style="text-align:Center;">40735939  </td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_tccell0_2" class="dxgv" style="text-align:Left;">COCA COLA FEMSA DE BUENOS AIRES SA</td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_tccell0_3" class="dxgv" style="text-align:Right;white-space:nowrap;">3.749.383,89</td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_tccell0_4" class="dxgv" style="text-align:Center;">06/05/2016</td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_tccell0_5" class="dxgv" style="text-align:Center;">21/04/2016</td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_tccell0_6" class="dxgv" style="text-align:Center;">25/04/2016</td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_tccell0_7" class="dxgv" style="text-align:Center;"></td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_tccell0_8" class="dxgv" style="text-align:Center;"></td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_tccell0_9" class="dxgv" style="text-align:Center;">AGENCIA MICROCENTRO</td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_tccell0_10" class="dxgv" style="text-align:Center;">4</td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_tccell0_11" class="dxgv" style="text-align:Center;">&nbsp;</td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_tccell0_12" class="dxgv" style="text-align:Center;">&nbsp;</td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_tccell0_13" class="dxgv" style="text-align:Center;border-right-width:0px;">ENTREGADO</td>
+				</tr><tr id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_DXDataRow1" class="dxgvDataRow ic-grid-row01 dxgvDataRowAlt ic-grid-row02">
+					<td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_tccell1_0" class="dxgv" style="text-align:Center;">2000020778</td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_tccell1_1" class="dxgv" style="text-align:Center;">40735940  </td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_tccell1_2" class="dxgv" style="text-align:Left;">UNILEVER DE ARGENTINA S.A</td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_tccell1_3" class="dxgv" style="text-align:Right;white-space:nowrap;">7.375.960,35</td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_tccell1_4" class="dxgv" style="text-align:Center;">09/05/2016</td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_tccell1_5" class="dxgv" style="text-align:Center;">21/04/2016</td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_tccell1_6" class="dxgv" style="text-align:Center;"></td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_tccell1_7" class="dxgv" style="text-align:Center;"></td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_tccell1_8" class="dxgv" style="text-align:Center;"></td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_tccell1_9" class="dxgv" style="text-align:Center;">AGENCIA MICROCENTRO</td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_tccell1_10" class="dxgv" style="text-align:Center;">186</td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_tccell1_11" class="dxgv" style="text-align:Center;">&nbsp;</td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_tccell1_12" class="dxgv" style="text-align:Center;">&nbsp;</td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_tccell1_13" class="dxgv" style="text-align:Center;border-right-width:0px;">DISPONIBLE</td>
+				</tr><tr id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_DXDataRow2" class="dxgvDataRow ic-grid-row01">
+					<td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_tccell2_0" class="dxgv" style="text-align:Center;">2000020779</td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_tccell2_1" class="dxgv" style="text-align:Center;">40735941  </td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_tccell2_2" class="dxgv" style="text-align:Left;">PAPELERA SAMSENG S.A</td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_tccell2_3" class="dxgv" style="text-align:Right;white-space:nowrap;">2.550.667,83</td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_tccell2_4" class="dxgv" style="text-align:Center;">09/05/2016</td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_tccell2_5" class="dxgv" style="text-align:Center;">21/04/2016</td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_tccell2_6" class="dxgv" style="text-align:Center;">22/04/2016</td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_tccell2_7" class="dxgv" style="text-align:Center;"></td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_tccell2_8" class="dxgv" style="text-align:Center;"></td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_tccell2_9" class="dxgv" style="text-align:Center;">AGENCIA MICROCENTRO</td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_tccell2_10" class="dxgv" style="text-align:Center;">1</td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_tccell2_11" class="dxgv" style="text-align:Center;">&nbsp;</td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_tccell2_12" class="dxgv" style="text-align:Center;">&nbsp;</td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_tccell2_13" class="dxgv" style="text-align:Center;border-right-width:0px;">ENTREGADO</td>
+				</tr><tr id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_DXDataRow3" class="dxgvDataRow ic-grid-row01 dxgvDataRowAlt ic-grid-row02">
+					<td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_tccell3_0" class="dxgv" style="text-align:Center;border-bottom-width:0px;">2000020780</td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_tccell3_1" class="dxgv" style="text-align:Center;border-bottom-width:0px;">40735942  </td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_tccell3_2" class="dxgv" style="text-align:Left;border-bottom-width:0px;">ING.Y REFIN. SAN MARTIN DEL TABACAL</td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_tccell3_3" class="dxgv" style="text-align:Right;white-space:nowrap;border-bottom-width:0px;">1.723.578,32</td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_tccell3_4" class="dxgv" style="text-align:Center;border-bottom-width:0px;">09/05/2016</td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_tccell3_5" class="dxgv" style="text-align:Center;border-bottom-width:0px;">21/04/2016</td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_tccell3_6" class="dxgv" style="text-align:Center;border-bottom-width:0px;">22/04/2016</td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_tccell3_7" class="dxgv" style="text-align:Center;border-bottom-width:0px;"></td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_tccell3_8" class="dxgv" style="text-align:Center;border-bottom-width:0px;"></td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_tccell3_9" class="dxgv" style="text-align:Center;border-bottom-width:0px;">AGENCIA MICROCENTRO</td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_tccell3_10" class="dxgv" style="text-align:Center;border-bottom-width:0px;">1</td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_tccell3_11" class="dxgv" style="text-align:Center;border-bottom-width:0px;">&nbsp;</td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_tccell3_12" class="dxgv" style="text-align:Center;border-bottom-width:0px;">&nbsp;</td><td id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_tccell3_13" class="dxgv" style="text-align:Center;border-right-width:0px;border-bottom-width:0px;">ENTREGADO</td>
+				</tr>
+			</tbody></table><img id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_IADD" src="./WebResource(6).axd" alt="|" style="border-width:0px;position:absolute;visibility:hidden;"><img id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_IADU" src="./WebResource(7).axd" alt="|" style="border-width:0px;position:absolute;visibility:hidden;"><img id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_IDHF" src="./WebResource(8).axd" alt="Hide" style="border-width:0px;position:absolute;visibility:hidden;"><table id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_LP" class="dxgvLoadingPanel" cellspacing="0" cellpadding="0" border="0" style="border-collapse:collapse;left:0px;top:0px;z-index:30000;display:none;">
+				<tbody><tr>
+					<td class="dx"><img src="./WebResource(9).axd" alt="" align="middle" style="border-width:0px;"></td><td class="dx" style="padding-left:0px;">Cargando…</td>
+				</tr>
+			</tbody></table><div id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_LD" class="dxgvLoadingDiv" style="display:none;z-index:29999;position:absolute;">
+
+			</div><input type="hidden" name="ctl00$MainHolder$detalleConsultaCheques$ProvidersChecksDataGrid$DXSelInput" id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_DXSelInput"><table id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_DXStyleTable" border="0" style="display:none;">
+				<tbody><tr>
+					<td></td>
+				</tr><tr class="dxgvEditingErrorRow">
+					<td class="dxgv" colspan="14" style="border-right-width:0px;"></td>
+				</tr><tr class="dxgvSelectedRow ic-grid-row01">
+					<td></td>
+				</tr><tr class="dxgvFocusedRow ic-grid-row01">
+					<td></td>
+				</tr><tr class="dxgvFocusedGroupRow">
+					<td></td>
+				</tr><tr class="dxgvDataRow ic-grid-row01">
+					<td></td>
+				</tr><tr class="dxgvDataRow ic-grid-row01 dxgvDataRowAlt ic-grid-row02">
+					<td></td>
+				</tr><tr class="dxgvDataRow ic-grid-row01">
+					<td></td>
+				</tr><tr class="dxgvDataRow ic-grid-row01 dxgvDataRowAlt ic-grid-row02">
+					<td></td>
+				</tr>
+			</tbody></table><input type="hidden" name="ctl00$MainHolder$detalleConsultaCheques$ProvidersChecksDataGrid$CallbackState" id="ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid_CallbackState" value="/wEWBB4ERGF0YQWkFUFBQUFBQVFBQUFBQUFBQUFCQUFBQUFBT0FBQUFDazV5YjE5RGFHVnhkV1VLVG5KdlgwTm9aWEYxWlFjQUFBaFBjbVJmVUdGbmJ3aFBjbVJmVUdGbmJ3Y0FBQXhDWlc1bFptbGphV0Z5YVc4TVFtVnVaV1pwWTJsaGNtbHZCd0FBQlUxdmJuUnZCVTF2Ym5SdkJRQUFDME5sYmw5RmJuUnlaV2RoQzBObGJsOUZiblJ5WldkaEJ3QUFDa0Z1ZEdsbmRXVmtZV1FLUVc1MGFXZDFaV1JoWkFNQUFBcFFZV2RoWkc5ZlVHOXlDbEJoWjJGa2IxOVFiM0lIQUFBTFZtVnVZMmxrYjE5UWIzSUxWbVZ1WTJsa2IxOVFiM0lIQUFBR1JYTjBZV1J2QmtWemRHRmtid2NBQUF4R1pXTm9ZVVZ0YVhOcGIyNE1SbVZqYUdGRmJXbHphVzl1QUw0QlUzbHpkR1Z0TGs1MWJHeGhZbXhsWURGYlcxTjVjM1JsYlM1RVlYUmxWR2x0WlN3Z2JYTmpiM0pzYVdJc0lGWmxjbk5wYjI0OU1pNHdMakF1TUN3Z1EzVnNkSFZ5WlQxdVpYVjBjbUZzTENCUWRXSnNhV05MWlhsVWIydGxiajFpTnpkaE5XTTFOakU1TXpSbE1EZzVYVjBzSUcxelkyOXliR2xpTENCV1pYSnphVzl1UFRJdU1DNHdMakFzSUVOMWJIUjFjbVU5Ym1WMWRISmhiQ3dnVUhWaWJHbGpTMlY1Vkc5clpXNDlZamMzWVRWak5UWXhPVE0wWlRBNE9RQUJDVVpsWTJoaFVHRm5id2xHWldOb1lWQmhaMjhBdmdGVGVYTjBaVzB1VG5Wc2JHRmliR1ZnTVZ0YlUzbHpkR1Z0TGtSaGRHVlVhVzFsTENCdGMyTnZjbXhwWWl3Z1ZtVnljMmx2YmoweUxqQXVNQzR3TENCRGRXeDBkWEpsUFc1bGRYUnlZV3dzSUZCMVlteHBZMHRsZVZSdmEyVnVQV0kzTjJFMVl6VTJNVGt6TkdVd09EbGRYU3dnYlhOamIzSnNhV0lzSUZabGNuTnBiMjQ5TWk0d0xqQXVNQ3dnUTNWc2RIVnlaVDF1WlhWMGNtRnNMQ0JRZFdKc2FXTkxaWGxVYjJ0bGJqMWlOemRoTldNMU5qRTVNelJsTURnNUFBRU1SbVZqYUdGRmJuUnlaV2RoREVabFkyaGhSVzUwY21WbllRQytBVk41YzNSbGJTNU9kV3hzWVdKc1pXQXhXMXRUZVhOMFpXMHVSR0YwWlZScGJXVXNJRzF6WTI5eWJHbGlMQ0JXWlhKemFXOXVQVEl1TUM0d0xqQXNJRU4xYkhSMWNtVTlibVYxZEhKaGJDd2dVSFZpYkdsalMyVjVWRzlyWlc0OVlqYzNZVFZqTlRZeE9UTTBaVEE0T1YxZExDQnRjMk52Y214cFlpd2dWbVZ5YzJsdmJqMHlMakF1TUM0d0xDQkRkV3gwZFhKbFBXNWxkWFJ5WVd3c0lGQjFZbXhwWTB0bGVWUnZhMlZ1UFdJM04yRTFZelUyTVRrek5HVXdPRGtBQVF4R1pXTm9ZVkpsWTJoaGVtOE1SbVZqYUdGU1pXTm9ZWHB2QUw0QlUzbHpkR1Z0TGs1MWJHeGhZbXhsWURGYlcxTjVjM1JsYlM1RVlYUmxWR2x0WlN3Z2JYTmpiM0pzYVdJc0lGWmxjbk5wYjI0OU1pNHdMakF1TUN3Z1EzVnNkSFZ5WlQxdVpYVjBjbUZzTENCUWRXSnNhV05MWlhsVWIydGxiajFpTnpkaE5XTTFOakU1TXpSbE1EZzVYVjBzSUcxelkyOXliR2xpTENCV1pYSnphVzl1UFRJdU1DNHdMakFzSUVOMWJIUjFjbVU5Ym1WMWRISmhiQ3dnVUhWaWJHbGpTMlY1Vkc5clpXNDlZamMzWVRWak5UWXhPVE0wWlRBNE9RQUJFRVpsWTJoaFZtVnVZMmx0YVdWdWRHOFFSbVZqYUdGV1pXNWphVzFwWlc1MGJ3QytBVk41YzNSbGJTNU9kV3hzWVdKc1pXQXhXMXRUZVhOMFpXMHVSR0YwWlZScGJXVXNJRzF6WTI5eWJHbGlMQ0JXWlhKemFXOXVQVEl1TUM0d0xqQXNJRU4xYkhSMWNtVTlibVYxZEhKaGJDd2dVSFZpYkdsalMyVjVWRzlyWlc0OVlqYzNZVFZqTlRZeE9UTTBaVEE0T1YxZExDQnRjMk52Y214cFlpd2dWbVZ5YzJsdmJqMHlMakF1TUM0d0xDQkRkV3gwZFhKbFBXNWxkWFJ5WVd3c0lGQjFZbXhwWTB0bGVWUnZhMlZ1UFdJM04yRTFZelUyTVRrek5HVXdPRGtBQVFVQUFBQUlSbVZqWDFCaFoyOExSbVZqWDBWdGFYTnBiMjRMUm1WalgwVnVkSEpsWjJFTFJtVmpYMUpsWTJoaGVtOFBSbVZqWDFabGJtTnBiV2xsYm5SdkJ3QUhBQWNBQndBRy8vOEhBZ28wTURjek5Ua3pPU0FnQndJS01qQXdNREF5TURjM053Y0NJa05QUTBFZ1EwOU1RU0JHUlUxVFFTQkVSU0JDVlVWT1QxTWdRVWxTUlZNZ1UwRUZBeFViV1JZQUFBQUFBQUFBQUFBQUFnQUhBaE5CUjBWT1EwbEJJRTFKUTFKUFEwVk9WRkpQQXdjRUJ3SUFCd0lBQndJSlJVNVVVa1ZIUVVSUENBSUVBSURSNFhkcDB3Z0lBZ1FBd0FOZVFYWFRDQWdDQkFDQWVJdWNiTk1JQ1FrSEFBY0FCdi8vQndJS05EQTNNelU1TkRBZ0lBY0NDakl3TURBd01qQTNOemdIQWhsVlRrbE1SVlpGVWlCRVJTQkJVa2RGVGxSSlRrRWdVeTVCQlFPRDB2WXJBQUFBQUFBQUFBQUFBQUlBQndJVFFVZEZUa05KUVNCTlNVTlNUME5GVGxSU1R3TUh1Z2NDQUFjQ0FBY0NDa1JKVTFCUFRrbENURVVJQWdRQWdOSGhkMm5UQ0FnQ0JBQUFRZDJjZDlNSUNRa0pCd0FIQUFiLy93Y0NDalF3TnpNMU9UUXhJQ0FIQWdveU1EQXdNREl3TnpjNUJ3SVVVRUZRUlV4RlVrRWdVMEZOVTBWT1J5QlRMa0VGQTU4Q05BOEFBQUFBQUFBQUFBQUFBZ0FIQWhOQlIwVk9RMGxCSUUxSlExSlBRMFZPVkZKUEF3Y0JCd0lBQndJQUJ3SUpSVTVVVWtWSFFVUlBDQUlFQUlEUjRYZHAwd2dJQWdRQUFFSGRuSGZUQ0FnQ0JBQkFPd3hCYXRNSUNRa0hBQWNBQnYvL0J3SUtOREEzTXpVNU5ESWdJQWNDQ2pJd01EQXdNakEzT0RBSEFpTkpUa2N1V1NCU1JVWkpUaTRnVTBGT0lFMUJVbFJKVGlCRVJVd2dWRUZDUVVOQlRBVUR5UGhGQ2dBQUFBQUFBQUFBQUFBQ0FBY0NFMEZIUlU1RFNVRWdUVWxEVWs5RFJVNVVVazhEQndFSEFnQUhBZ0FIQWdsRlRsUlNSVWRCUkU4SUFnUUFnTkhoZDJuVENBZ0NCQUFBUWQyY2Q5TUlDQUlFQUVBN0RFRnEwd2dKQ1E9PR4FU3RhdGUFjAFCdzRIQUFJQkJ3RUNBUWNDQWdFSEF3SUJCd1FDQVFjRkFnRUhCZ0lCQndjQ0FRY0lBZ0VIQ1FJQkJ3b0NBUWNMQWdFSERBSUJCdzBDQVFjQUJ3QUhBQWNBQWdBRy8vOEpBZ3BPY205ZlEyaGxjWFZsQ1FJQUFnQURCd1FDQUFjQUFnRUhBQUlCQndBPQ=="></td>
+		</tr>
+	</tbody></table><script id="dxss_550451286" type="text/javascript">
+<!--
+
+var dxo = new ASPxClientGridView('ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid');
+window['TransactionsASPxGridView'] = dxo;
+dxo.callBack = function(arg) { WebForm_DoCallback('ctl00$MainHolder$detalleConsultaCheques$ProvidersChecksDataGrid',arg,aspxCallback,'ctl00_MainHolder_detalleConsultaCheques_ProvidersChecksDataGrid',aspxCallbackError,true); };
+dxo.uniqueID = 'ctl00$MainHolder$detalleConsultaCheques$ProvidersChecksDataGrid';
+dxo.callBacksEnabled=true;
+dxo.pageRowCount=4;
+dxo.selectedWithoutPageRowCount=0;
+dxo.visibleStartIndex=0;
+dxo.focusedRowIndex=-1;
+dxo.allowFocusedRow=false;
+dxo.allowMultiSelection=false;
+dxo.isColumnsResizable=false;
+dxo.isVerticalScrolling=false;
+dxo.isMainControlResizable=false;
+dxo.callbackOnFocusedRowChanged=false;
+dxo.callbackOnSelectionChanged=false;
+dxo.autoFilterDelay='1200';
+dxo.ClearColumns();
+dxo.CreateColumn('Ord_Pago',0,'Ord_Pago',1);
+dxo.CreateColumn('Nro_Cheque',1,'Nro_Cheque',1);
+dxo.CreateColumn('Beneficiario',2,'Beneficiario',1);
+dxo.CreateColumn('Monto',3,'Monto',1);
+dxo.CreateColumn('FechaPago',4,'FechaPago',1);
+dxo.CreateColumn('FechaEmision',5,'FechaEmision',1);
+dxo.CreateColumn('FechaEntrega',6,'FechaEntrega',1);
+dxo.CreateColumn('FechaRechazo',7,'FechaRechazo',1);
+dxo.CreateColumn('FechaVencimiento',8,'FechaVencimiento',1);
+dxo.CreateColumn('Cen_Entrega',9,'Cen_Entrega',1);
+dxo.CreateColumn('Antiguedad',10,'Antiguedad',1);
+dxo.CreateColumn('Pagado_Por',11,'Pagado_Por',1);
+dxo.CreateColumn('Vencido_Por',12,'Vencido_Por',1);
+dxo.CreateColumn('Estado',13,'Estado',1);
+dxo.keys=['40735939  ','40735940  ','40735941  ','40735942  '];
+dxo.InlineInitialize();
+
+//-->
+</script>
+
+<input name="ctl00$MainHolder$detalleConsultaCheques$ctl00$MainHolder$detalleConsultaCheques$DataPanel_hdnMinimizeState" type="text" value="False" id="ctl00_MainHolder_detalleConsultaCheques_ctl00_MainHolder_detalleConsultaCheques_DataPanel_hdnMinimizeState" class="ic-control-text" onkeypress="return validCharactersOnly(this, event, &quot;&quot;)" style="display:none">
+</div></td>
+					</tr>
+				</tbody></table></td>
+			</tr>
+		</tbody></table>
+
+ 
+
+
+       
+            <table width="100%" border="0">
+                <tbody><tr valign="top">  
+                    <td align="right" style="width:80%">&nbsp;</td>            
+                    <td align="right">
+                        <a id="ctl00_MainHolder_lnkVolver" class="ic-button-navigation" href="javascript:__doPostBack(&#39;ctl00$MainHolder$lnkVolver&#39;,&#39;&#39;)">Volver</a>                
+                    </td>        
+                </tr>
+            </tbody></table>
+
+    
+        
+
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="right">
+                                        <div id="ctl00_validationSummaryFooter" style="color:Red;font-size:10px;display:none;">
+
+		</div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="95%" align="center">
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                            <tbody><tr>
+                                                <td align="right">
+                                                    
+                                                    
+                                                </td>
+                                            </tr>
+                                        </tbody></table>
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="ic-content-footer">
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                <tbody><tr class="ic-content-footer-dottedline">
+                                    <td align="right" nowrap="nowrap" style="width: 90%">
+                                    </td>
+                                    <td align="right" nowrap="nowrap" style="width: 10%">
+                                        <a id="ctl00_LinkButtonTermsAndConditions" class="ic-grid-link" href="javascript:__doPostBack(&#39;ctl00$LinkButtonTermsAndConditions&#39;,&#39;&#39;)">Términos y Condiciones</a>
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                </tbody></table>
+            </td>
+		<td id="ctl00_cellContentRight" class="ic-content-space-top-right" valign="top" style="display:none;">
+                <table class="ic-content-right" border="0" cellspacing="0" cellpadding="0">
+                    <tbody><tr>
+                        <td>
+                            <img src="./pixel.gif" width="8" height="1">
+                        </td>
+                        <td class="ic-right-panel">
+                            <table border="0" cellpadding="0" cellspacing="0" class="ic-right-panel-content">
+                                <tbody><tr>
+                                    <td width="8" class="ic-right-panel-collapse">
+                                        <input type="image" name="ctl00$imageButtonCollapse" id="ctl00_imageButtonCollapse" src="./bot-right-collapse.gif" style="height:47px;width:9px;border-width:0px;">
+                                    </td>
+                                    
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                </tbody></table>
+            </td>
+	</tr>
+</tbody></table>
+
+    
+    
+<script type="text/javascript">
+//<![CDATA[
+var Page_ValidationSummaries =  new Array(document.getElementById("ctl00_validationSummaryFooter"));
+//]]>
+</script>
+
+<script type="text/javascript">
+//<![CDATA[
+var ctl00_validationSummaryFooter = document.all ? document.all["ctl00_validationSummaryFooter"] : document.getElementById("ctl00_validationSummaryFooter");
+ctl00_validationSummaryFooter.headertext = "Formulario inválido, por favor revise los datos ingresados:";
+ctl00_validationSummaryFooter.showsummary = "False";
+//]]>
+</script>
+
+
+<script type="text/javascript">
+//<![CDATA[
+
+WebForm_InitCallback();
+document.getElementById('ctl00_validationSummaryFooter').dispose = function() {
+    Array.remove(Page_ValidationSummaries, document.getElementById('ctl00_validationSummaryFooter'));
+}
+Sys.Application.initialize();
+//]]>
+</script>
+</form>
+
+
+<div class="ui-dialog ui-widget ui-widget-content ui-corner-all" tabindex="-1" role="dialog" aria-labelledby="ui-dialog-title-sessionTimeoutWarning" style="display: none; z-index: 1000; outline: 0px;"><div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix"><span class="ui-dialog-title" id="ui-dialog-title-sessionTimeoutWarning">&nbsp;</span><a href="Pages/ProvidersCheck/ConsultaLoteCheque.aspx#" class="ui-dialog-titlebar-close ui-corner-all" role="button" style="display: none;"><span class="ui-icon ui-icon-closethick">close</span></a></div><div id="sessionTimeoutWarning" style="background-color: rgb(255, 255, 255); padding: 0px; height: 100%;" class="ui-dialog-content ui-widget-content">
+        <div id="sessionTimeoutWarningHeader">
+            <table width="100%">
+                 <tbody><tr>
+                    <td colspan="2" align="center" class="ic-form-data-modal">
+                        La sesión finalizará en <span id="sessionTimeoutCountdown"></span>&nbsp;segundos.
+                        Para seguir operando seleccioná “Continuar”
+                    </td>
+                </tr>
+            </tbody></table>
+        </div>
+    </div><div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix"><div class="ui-dialog-buttonset"><button type="button">Continuar </button><button type="button">Finalizar sesión</button></div></div></div></body></html>
