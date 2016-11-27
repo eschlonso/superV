@@ -1,0 +1,32 @@
+Posición consolidada - OK
+Aprobaciones
+	->aprobaciones OK
+	->HOSTORIAL OK
+Cuentas
+	->movimientos ?
+	-acuerdos ?
+Transferencias ok
+Pago de servicios ?
+Pago a proveedores OK
+Factoring/depósitos ok
+Pago de sueldos ok
+Comercio Exterior  ?
+Fondo Común de inversión ok
+Recaudaciones ?
+Cheques OK
+12
+
+
+Plazo fijo
+Liquidaciones de comercio
+Tarjeta de crédito corporativa
+Préstamos
+Leasing
+Administración
+Cotización de monedas
+Cajas de seguridad
+Administrar CDA
+Configuraciones
+Ayuda
+contacto
+12

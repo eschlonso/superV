@@ -1,0 +1,818 @@
+
+<!-- saved from url=(0033) -->
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><script src="./jquery-1.7.2.min.js.descarga" type="text/javascript"></script>
+<script src="./jquery-1.7.1.js.descarga" type="text/javascript"></script>
+<script src="./jquery-ui-1.8.19.custom.min.js.descarga" type="text/javascript"></script>
+<script src="./jquery.formatCurrency-1.4.0.js.descarga" type="text/javascript"></script>
+<script src="./idle-timer.js.descarga" type="text/javascript"></script>
+<script src="./idle-timer.min.js.descarga" type="text/javascript"></script>
+<script language="javascript" type="text/javascript">
+
+function Logout() {
+        if (confirm("¿ Desea salir del sistema ?") == true) {
+                    
+            window.location =  '/'+ "Logout.aspx";
+        }
+       
+    }
+    
+var focusedFormControl;    
+var dateFormat = 'dd/mm/aaaa';
+var applicationRoot = '/';      
+function OnRowClick(sender, args) {
+    if (sender.GetSelectedRowCount() == 0) {
+        sender.UnselectRowOnPage(args.visibleIndex);
+        SetPageLinkData("");
+    }
+    else {
+        _aspxClearSelection();
+        sender._selectAllRowsOnPage(false);
+        sender.SelectRow(args.visibleIndex, true);
+        SetPageLinkData(sender.GetRowKey(args.visibleIndex));
+    }
+}
+
+if (history.forward(1))
+{
+
+    location.replace(history.forward(1))
+} 
+
+function PrintPage() {
+
+    window.print();
+}
+
+function GoMyOption(select)
+{
+    var url = select.options[select.selectedIndex].value;
+    if( url != "")
+        window.location = url;
+}
+
+function GoFavourites(select)
+{
+
+    var url = select.options[select.selectedIndex].value;
+    if( url != "")
+        window.location = url;
+}
+
+function GoPrint()
+{
+
+window.print();
+}
+
+function addEvent(elm, evType, fn, useCapture)
+{
+
+  if (elm.addEventListener){
+    elm.addEventListener(evType, fn, useCapture);
+    return true;
+  } else if (elm.attachEvent){
+    var r = elm.attachEvent("on"+evType, fn);
+    return r;
+  } else {
+    alert("Handler could not be removed");
+  }
+} 
+
+function SetPageLinkData(data)
+{
+    pageLinkData = document.getElementById('PageLinkData');
+    pageLinkData.value = data;
+}
+
+function SetPageLinkUrl(url)
+{
+    pageLinkUrl = document.getElementById('PageLinkUrl');
+    pageLinkUrl.value = url;
+}
+
+function doPageLink(id)
+{
+    __doPostBack(id, 'PageLinkEvent');
+}
+
+function imprimirEstadoCuenta()
+{
+											
+    var ficha = document.getElementById('printDiv');		
+    var ventimp = window.open('', 'popimpr','height=450, width=550, scrollbars=1');																						
+    var fichaHTML = new String(ficha.innerHTML);
+    fichaHTML = fichaHTML.replace('Seleccione un período y oprima "Consultar".'," ");
+    //var i = document.getElementById('ctl00_MainHolder_panelDetalle_imgPlusMinus');
+    var html  = "<html>\n<head>\n<link rel=\"stylesheet\" type=\"text/css\" href=\"..\\..\\App_Themes\\Default\\Default.css \" />" 
+                + "</head><table width=\"100%\"><tr bgcolor=\"#FF0000\"><td><img src=\"..\\..\\App_Themes\\Default\\Images\\logoSantander.gif\" /></td></tr></table>" 
+                + fichaHTML 
+                + "</html>";
+    ventimp.document.write( html );
+    ventimp.document.close();
+    ventimp.print( );
+    ventimp.close();
+					
+}
+
+ function removeInvalidCharacters(control) {
+ 
+            !(/^[A-zÑñ0-9 ]*$/i).test(control.value) ? control.value = control.value.replace(/[^A-zÑñ0-9 ]/ig, '') : null
+        }
+        
+  function removeInvalidNumbers(control) {
+            !(/^[0-9,]*$/i).test(control.value) ? control.value = control.value.replace(/[^0-9,]/ig, '') : null
+        }
+function showLoading()
+{
+//debugger;
+    // aquí le pasamos la clase o id de nuestro div a centrar (en este caso "caja")
+    $('.ic-loading').css({
+       position:'absolute',
+       left: ($('#mainContainer').width()/2 - $('.ic-loading').outerWidth())/2,
+       //top: ($('#mainContainer').height()/2 - $('.ic-loading').outerHeight())/2
+       top: ($('#mainContainer').height()/2 - $('ic-loading').height()/2)
+    });
+    
+    $('#mainContainer').css('display','none');
+    $('#ic-loading').css('display','block');
+}
+//ModalDialog SessionTimeout
+var idleTime = (parseInt('1170') * 1000); // number of miliseconds until the user is considered idle
+var initialSessionTimeoutMessage = "La sesión finalizará en <span id='sessionTimeoutCountdown'></span> segundos. Para seguir operando seleccioná “Continuar”<br /><br />";
+var sessionTimeoutCountdownId = 'sessionTimeoutCountdown';
+var redirectAfter = (parseInt('30')) ; // number of seconds to wait before redirecting the user
+var redirectTo = '/' + "Logout.aspx"; // URL to relocate the user to once they have timed out
+var keepAliveURL = ''; // URL to call to keep the session alive
+var expiredMessage = ''; // message to show user when the countdown reaches 0
+var running = false; // var to check if the countdown is running 
+var timer; // reference to the setInterval timer so it can be stopped 
+var timerSB;  
+var timeout;  
+    $(document).ready(function() {     
+// create the warning window and set autoOpen to false  
+      var sessionTimeoutWarningDialog = $("#sessionTimeoutWarning"); 
+    $(sessionTimeoutWarningDialog).dialog({         
+        title: '',       
+        autoOpen: false,    // set this to false so we can manually open it         
+        closeOnEscape: false,         
+        draggable: false,         
+        width: 460,         
+        minHeight: 150,         
+        modal: true,           
+        beforeclose: function() { // bind to beforeclose so if the user clicks on the "X" or escape to close the dialog, it will work too             // stop the timer             
+            clearInterval(timer);               // stop countdown
+            running = false;               // ajax call to keep the server-side session alive    
+                  
+            $.ajax({               
+                url: keepAliveURL,               
+                async: false            
+            });         
+        },         
+        buttons: {      
+             'Continuar ': function() {                 
+                // close dialog 
+                window.location.reload();//BM24925: Se agrega esto para que el expired de una cookie se actualice y no se cierre la sesión luego de hacer click en continuar al terminar el timeout del webconfig. El valor del expired se pone en la tabla configuration en la clave SessionMaxMinutes.
+                //var valor = getCookie('ICBWebLogin'); //Esta función la dejo por las dudas, pero no la pude hacer andar poque el document.cookie no me trae las cookies del explorador.                
+                $(this).dialog('close');
+                clearInterval(timerSB);    
+                window.status = "";      
+                StatusBarCountDown();     
+            },
+            'Finalizar sesión': function() {                 
+                // close dialog                 
+                $(sessionTimeoutWarningDialog).html(expiredMessage);
+                $(sessionTimeoutWarningDialog).dialog('disable');                     
+                window.parent.location = redirectTo;           
+            }         
+        },         
+        resizable: false,         
+        open: function() {
+            $('body').css('overflow','auto');         
+        },         
+        close: function() {             
+            // reset overflow             
+            $('body').css('overflow','auto');         
+        }  
+           
+    }); // end of dialog  
+    jQuery("a.ui-dialog-titlebar-close").hide(); 
+          
+    // start the idle timer
+    $.idleTimer(idleTime);
+ 
+});
+
+// BM24925: Función para recuperar el valor de una cookie.
+// name - nombre de la cookie deseada
+// devuelve un string conteniendo el valor de la cookie especificada o null si la cookie no existe
+
+function getCookie(name){
+var micookie = (document.cookie.indexOf('ICBWebLogin=') === -1 ? '' : ("; " + document.cookie).split('; ICBWebLogin=')[1].split(';')[0]);
+
+  var cname = name + "=";               
+  var dc = document.cookie;             
+  if (dc.length > 0) {              
+    begin = dc.indexOf(cname);       
+    if (begin != -1) {           
+      begin += cname.length;       
+      end = dc.indexOf(";", begin);
+      if (end == -1) end = dc.length;
+        return unescape(dc.substring(begin, end));
+    } 
+  }
+  return null;
+}
+
+//Status Bar Countdown Script
+function StatusBarCountDown() 
+{
+    var redirectAfter = (parseInt('30'));
+    var timeout = '1200000';   
+    var redirectTo = '/' + "Logout.aspx"; // URL to relocate the user to once they have timed out   
+    timerSB = setInterval(function(){
+    timeout -= 1000;
+    if(timeout == redirectAfter * 1000)
+    {
+        window.focus();
+    }
+   if(timeout < redirectAfter * 1000)
+   {
+        $("#sessionTimeoutCountdown").html(timeout/1000);
+        $("#sessionTimeoutWarning").dialog('open'); 
+   }
+   if (timeout < 100)
+   {
+        $("#sessionTimeoutWarning").html(expiredMessage);
+        $("#sessionTimeoutWarning").dialog('disable');                     
+        window.parent.location = redirectTo;
+        clearInterval(timerSB);    
+        window.status = "";     
+   }
+        
+   window.status = "Su sesión expirará " + time(timeout) + " minutos";        
+    }, 1000);   
+         
+   function two(x)
+   {
+    return ((x > 9) ? "" : "0") + x
+   }   
+  
+   function time(ms)
+   {   
+       var t = '';   
+       var sec = Math.floor(ms / 1000);   
+       ms = ms % 1000   
+
+       var min = Math.floor(sec / 60);   
+       sec = sec % 60;   
+       t = two(sec);   
+
+       var hr = Math.floor(min / 60);   
+       min = min % 60;   
+       t = two(min) + ":" + t;   
+    return t;
+   }
+}
+
+StatusBarCountDown();
+
+
+
+</script>
+
+<link rel="stylesheet" type="text/css" href="./WebResource.axd">
+<link rel="stylesheet" type="text/css" href="./WebResource(1).axd">
+<link href="./Default.css" type="text/css" rel="stylesheet"><link href="./jquery-ui-1.8.19.custom.css" type="text/css" rel="stylesheet"><title>
+	Posición consolidada
+</title><link rel="stylesheet" type="text/css" href="./Default(1).css"></head>
+<body>
+    <form name="aspnetForm" method="post" action="" id="aspnetForm">
+<div>
+<input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="">
+<input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="">
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUJNTQ0NzM3MzM2D2QWAmYPZBYCAgEPZBYCAgEPZBYCZg9kFgQCAQ9kFgQCAg8PFgIeBFRleHQFFVBvc2ljacOzbiBjb25zb2xpZGFkYWRkAgcPZBYEZg9kFgJmD2QWDAIBD2QWAgIBDxYCHgdWaXNpYmxlaGQCAw9kFgICAQ9kFgJmDzwrABYCAA8WCB4OXyFVc2VWaWV3U3RhdGVnHg9EYXRhU291cmNlQm91bmRnHhFDbGllbnRTdGF0ZUxvYWRlZGceDUNhbGxiYWNrU3RhdGVkZAYPZBAWB2YCAQICAgMCBAIFAgYWBzwrAAsBABYCHg9Db2xWaXNpYmxlSW5kZXhmPCsACwEAFgIfBgIBPCsACwEAFgIfBgICPCsACwEAFgIfBgIDPCsACwEAFgIfBgIEPCsACwEAFgIfBgIFPCsACgEAFgIfBgIGDxYHAgECAQIBAgECAQICAgMWAwWgAUluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24uQ2xhc3Nlcy5HcmlkVmlld0RhdGFUZXh0Q29sdW1uVGV4dCwgSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbiwgVmVyc2lvbj0zLjAuMS4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPTcxODYyODAxN2ZmYjk2NmUFogFJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLkNsYXNzZXMuR3JpZFZpZXdEYXRhVGV4dENvbHVtbkFtb3VudCwgSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbiwgVmVyc2lvbj0zLjAuMS4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPTcxODYyODAxN2ZmYjk2NmUFkwFEZXZFeHByZXNzLldlYi5BU1B4R3JpZFZpZXcuR3JpZFZpZXdEYXRhQ29sdW1uLCBEZXZFeHByZXNzLldlYi5BU1B4R3JpZFZpZXcudjguMywgVmVyc2lvbj04LjMuNS4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWI4OGQxNzU0ZDcwMGU0OWEWAgIBD2QWAmYPZBYCZg9kFgJmD2QWAmYPZBYEBQpEWERhdGFSb3cwD2QWAgUJdGNjZWxsMF82D2QWAgUHY2VsbDBfNg9kFgQCAQ8QDxYCHgtfIURhdGFCb3VuZGdkEBUEDVtTZWxlY2Npb25hcl0LTW92aW1pZW50b3MIQWN1ZXJkb3MTU29saWNpdHVkIENoZXF1ZXJhcxUEACIvUGFnZXMvQWNjb3VudHMvQWNjb3VudFN0YXR1cy5hc3B4Hi9QYWdlcy9BY2NvdW50cy9BZ3JlZW1lbnQuYXNweB4vUGFnZXMvQWNjb3VudHMvQ2hlY2tCb29rLmFzcHgUKwMEZ2dnZ2RkAgMPD2QPEBYBZhYBFgIeDlBhcmFtZXRlclZhbHVlBWx0ZEdhRkxSVXM3TzZUZFBLUWFRbE5GQWx1aE4rMW11MHk4NGVJTlFZU2NZNGhCWWlTQXBud28vZnNlRXhLUjNGVkFoSmpFU0lWZ2tyYUdEeDNmamxuOTFndzJ4dEl3bTArL1RNa0JKSEcvOD0PFgECBxYBBaIBSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbi5DbGFzc2VzLkFTUHhHcmlkVmlld0JpbmRpbmdQYXJhbWV0ZXIsIEluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24sIFZlcnNpb249My4wLjEuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj03MTg2MjgwMTdmZmI5NjZlZGQFCkRYRGF0YVJvdzEPZBYCBQl0Y2NlbGwxXzYPZBYCBQdjZWxsMV82D2QWBAIBDxAPFgIfB2dkEBUEDVtTZWxlY2Npb25hcl0LTW92aW1pZW50b3MIQWN1ZXJkb3MTU29saWNpdHVkIENoZXF1ZXJhcxUEACIvUGFnZXMvQWNjb3VudHMvQWNjb3VudFN0YXR1cy5hc3B4Hi9QYWdlcy9BY2NvdW50cy9BZ3JlZW1lbnQuYXNweB4vUGFnZXMvQWNjb3VudHMvQ2hlY2tCb29rLmFzcHgUKwMEZ2dnZ2RkAgMPD2QPEBYBZhYBFgIfCAVsdGRHYUZMUlVzN082VGRQS1FhUWxOR0xjRXJCdnBORjlTUC93dmFpNVUyL0lDcmdOcjM5K3RtdU9zT3Jxb0tUUU41MWQ0SjY1cm1FU2ZkQ251eGUvSFRYZ2JTNmU5QUJwMkg2d2FWQmgzTFk9DxYBAgcWAQWiAUluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24uQ2xhc3Nlcy5BU1B4R3JpZFZpZXdCaW5kaW5nUGFyYW1ldGVyLCBJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLCBWZXJzaW9uPTMuMC4xLjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49NzE4NjI4MDE3ZmZiOTY2ZWRkAgUPDxYCHwFoZBYCAgEPZBYCZg88KwAWAgAPFggfAmcfA2cfBGgfBWVkBg9kEBYGZgIBAgMCBAIFAgYWBjwrAAsBABYCHwZmPCsACwEAFgIfBgIBPCsACwEAFgIfBgICPCsACwEAFgIfBgIDPCsACwEAFgIfBgIEPCsACgEAFgIfBgIFDxYGAgECAgIBAgECAwIEFgQFoAFJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLkNsYXNzZXMuR3JpZFZpZXdEYXRhVGV4dENvbHVtblRleHQsIEluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24sIFZlcnNpb249My4wLjEuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj03MTg2MjgwMTdmZmI5NjZlBaABSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbi5DbGFzc2VzLkdyaWRWaWV3RGF0YVRleHRDb2x1bW5EYXRlLCBJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLCBWZXJzaW9uPTMuMC4xLjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49NzE4NjI4MDE3ZmZiOTY2ZQWiAUluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24uQ2xhc3Nlcy5HcmlkVmlld0RhdGFUZXh0Q29sdW1uQW1vdW50LCBJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLCBWZXJzaW9uPTMuMC4xLjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49NzE4NjI4MDE3ZmZiOTY2ZQWTAURldkV4cHJlc3MuV2ViLkFTUHhHcmlkVmlldy5HcmlkVmlld0RhdGFDb2x1bW4sIERldkV4cHJlc3MuV2ViLkFTUHhHcmlkVmlldy52OC4zLCBWZXJzaW9uPTguMy41LjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49Yjg4ZDE3NTRkNzAwZTQ5YWQCBw8PFgIfAWhkFgICAQ9kFgJmDzwrABYCAA8WCB8DZx8CZx8EaB8FZWQGD2QQFgVmAgICAwIEAgUWBTwrAAsBABYCHwZmPCsACwEAFgIfBgIBPCsACwEAFgIfBgICPCsACwEAFgIfBgIDPCsACgEAFgIfBgIEDxYFAgECAQICAgMCBBYEBaABSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbi5DbGFzc2VzLkdyaWRWaWV3RGF0YVRleHRDb2x1bW5UZXh0LCBJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLCBWZXJzaW9uPTMuMC4xLjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49NzE4NjI4MDE3ZmZiOTY2ZQWiAUluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24uQ2xhc3Nlcy5HcmlkVmlld0RhdGFUZXh0Q29sdW1uQW1vdW50LCBJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLCBWZXJzaW9uPTMuMC4xLjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49NzE4NjI4MDE3ZmZiOTY2ZQWgAUluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24uQ2xhc3Nlcy5HcmlkVmlld0RhdGFUZXh0Q29sdW1uRGF0ZSwgSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbiwgVmVyc2lvbj0zLjAuMS4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPTcxODYyODAxN2ZmYjk2NmUFkwFEZXZFeHByZXNzLldlYi5BU1B4R3JpZFZpZXcuR3JpZFZpZXdEYXRhQ29sdW1uLCBEZXZFeHByZXNzLldlYi5BU1B4R3JpZFZpZXcudjguMywgVmVyc2lvbj04LjMuNS4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWI4OGQxNzU0ZDcwMGU0OWFkAgkPDxYCHwFoZBYCAgEPZBYCZg88KwAWAgAPFggfA2cfAmcfBGgfBWVkBg9kEBYGAgECAwIEAgUCBgIHFgY8KwALAQAWAh8GZjwrAAsBABYCHwYCATwrAAsBABYCHwYCAjwrAAsBABYCHwYCAzwrAAsBABYCHwYCBDwrAAoBABYCHwYCBQ8WBgIBAgICAgIDAgMCBBYEBaABSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbi5DbGFzc2VzLkdyaWRWaWV3RGF0YVRleHRDb2x1bW5UZXh0LCBJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLCBWZXJzaW9uPTMuMC4xLjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49NzE4NjI4MDE3ZmZiOTY2ZQWgAUluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24uQ2xhc3Nlcy5HcmlkVmlld0RhdGFUZXh0Q29sdW1uRGF0ZSwgSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbiwgVmVyc2lvbj0zLjAuMS4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPTcxODYyODAxN2ZmYjk2NmUFogFJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLkNsYXNzZXMuR3JpZFZpZXdEYXRhVGV4dENvbHVtbkFtb3VudCwgSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbiwgVmVyc2lvbj0zLjAuMS4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPTcxODYyODAxN2ZmYjk2NmUFkwFEZXZFeHByZXNzLldlYi5BU1B4R3JpZFZpZXcuR3JpZFZpZXdEYXRhQ29sdW1uLCBEZXZFeHByZXNzLldlYi5BU1B4R3JpZFZpZXcudjguMywgVmVyc2lvbj04LjMuNS4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWI4OGQxNzU0ZDcwMGU0OWFkAgsPDxYCHwFoZBYCAgEPZBYCZg88KwAWAgAPFggfA2cfAmcfBGgfBWVkBg9kEBYHZgIBAgICAwIEAgUCBhYHPCsACwEAFgIfBgIBPCsACwEAFgIfBmY8KwALAQAWAh8GAgI8KwALAQAWAh8GAgM8KwALAQAWAh8GAgQ8KwALAQAWAh8GAgU8KwALAQAWAh8GAgYPFgcCAQIBAgECAQICAgICAxYDBaABSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbi5DbGFzc2VzLkdyaWRWaWV3RGF0YVRleHRDb2x1bW5UZXh0LCBJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLCBWZXJzaW9uPTMuMC4xLjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49NzE4NjI4MDE3ZmZiOTY2ZQWiAUluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24uQ2xhc3Nlcy5HcmlkVmlld0RhdGFUZXh0Q29sdW1uQW1vdW50LCBJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLCBWZXJzaW9uPTMuMC4xLjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49NzE4NjI4MDE3ZmZiOTY2ZQWgAUluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24uQ2xhc3Nlcy5HcmlkVmlld0RhdGFUZXh0Q29sdW1uRGF0ZSwgSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbiwgVmVyc2lvbj0zLjAuMS4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPTcxODYyODAxN2ZmYjk2NmVkAgEPZBYGAgEPFgIfAAUYMjQvMTAvMjAxNiAxMDo0NTo0NCBhLm0uZAIDDxYCHwAFCTM1IGTDrWFzLmQCBQ8WAh8ABWZMYSB0cmFuc2FjY2nDs24gbnJvLiA1NjA1IGNvcnJlc3BvbmRpZW50ZSBhIHBhZ28gZGUgc3VlbGRvcyBwcm9jZXNhZGEgZWwgZMOtYSAxMy8xMC8yMDE2IDExOjQxOjU3IGEubS5kAgIPZBYCAgUPFgIfAWgWAgIBDxAWBh4NRGF0YVRleHRGaWVsZAUFVGl0bGUeDkRhdGFWYWx1ZUZpZWxkBQNVcmkfB2cQFQEAFQEAFCsDAWcUKwEAZBgCBR5fX0NvbnRyb2xzUmVxdWlyZVBvc3RCYWNrS2V5X18WCAUdY3RsMDAkTWFpbkhvbGRlciRBY2NvdW50UGFuZWwFKWN0bDAwJE1haW5Ib2xkZXIkRml4ZWREZXBvc2l0QWNjb3VudFBhbmVsBRtjdGwwMCRNYWluSG9sZGVyJExvYW5zUGFuZWwFKWN0bDAwJE1haW5Ib2xkZXIkQ3JlZGl0Q2FyZENvcnBvcmF0ZVBhbmVsBSFjdGwwMCRNYWluSG9sZGVyJE11dHVhbEZvdW5kUGFuZWwFJmN0bDAwJE1haW5Ib2xkZXIkVWx0aW1hc0FsZXJ0YXNDT001Mzc0BSpjdGwwMCRNYWluSG9sZGVyJEFjY291bnRHcmlkQ1AkQWNjb3VudFZpZXcFGWN0bDAwJGltYWdlQnV0dG9uQ29sbGFwc2UFFmN0bDAwJE1haW5Ib2xkZXIkdmlld3MPD2RmZK+Str9N5lHqXe1IRKCbmFkMRCQu">
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+var theForm = document.forms['aspnetForm'];
+if (!theForm) {
+    theForm = document.aspnetForm;
+}
+function __doPostBack(eventTarget, eventArgument) {
+    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+        theForm.__EVENTTARGET.value = eventTarget;
+        theForm.__EVENTARGUMENT.value = eventArgument;
+        theForm.submit();
+    }
+}
+//]]>
+</script>
+
+
+<script src="./WebResource(2).axd" type="text/javascript"></script>
+
+
+						<style>							
+							P.PanelControlTitleStyle
+							{
+ 								font-family:verdana;
+ 								font-size: 12px;
+								font-weight : bold;
+								text-align: center;  								
+							}
+						</style>						
+						<script language="javascript">
+						function MinMaxPanelControl(cntrlId)
+						{
+						    var imgPath='App_Themes/Default/Images/';	
+					
+							//Get state from hidden control.													
+							if ( document.getElementById(cntrlId).style.display == 'none' )
+							{
+								document.getElementById(cntrlId).style.display = '';						
+								document.getElementById(cntrlId+'_imgPlusMinus').src = imgPath + 'bot-grid-minus.gif';
+							}
+							else 
+							{
+								document.getElementById(cntrlId).style.display = 'none';								
+								document.getElementById(cntrlId+'_imgPlusMinus').src = imgPath + 'bot-grid-plus.gif';
+							}
+						}
+						</script>
+			
+<script type="text/javascript">
+//<![CDATA[
+var __cultureInfo = '{"name":"es-UY","numberFormat":{"CurrencyDecimalDigits":2,"CurrencyDecimalSeparator":",","IsReadOnly":false,"CurrencyGroupSizes":[3],"NumberGroupSizes":[3],"PercentGroupSizes":[3],"CurrencyGroupSeparator":".","CurrencySymbol":"$U","NaNSymbol":"NeuN","CurrencyNegativePattern":14,"NumberNegativePattern":1,"PercentPositivePattern":0,"PercentNegativePattern":0,"NegativeInfinitySymbol":"-Infinito","NegativeSign":"-","NumberDecimalDigits":2,"NumberDecimalSeparator":",","NumberGroupSeparator":".","CurrencyPositivePattern":2,"PositiveInfinitySymbol":"Infinito","PositiveSign":"+","PercentDecimalDigits":2,"PercentDecimalSeparator":",","PercentGroupSeparator":".","PercentSymbol":"%","PerMilleSymbol":"‰","NativeDigits":["0","1","2","3","4","5","6","7","8","9"],"DigitSubstitution":1},"dateTimeFormat":{"AMDesignator":"a.m.","Calendar":{"MinSupportedDateTime":"\/Date(-62135586000000)\/","MaxSupportedDateTime":"\/Date(253402300799999)\/","AlgorithmType":1,"CalendarType":1,"Eras":[1],"TwoDigitYearMax":2029,"IsReadOnly":false},"DateSeparator":"/","FirstDayOfWeek":1,"CalendarWeekRule":0,"FullDateTimePattern":"dddd, dd\u0027 de \u0027MMMM\u0027 de \u0027yyyy hh:mm:ss tt","LongDatePattern":"dddd, dd\u0027 de \u0027MMMM\u0027 de \u0027yyyy","LongTimePattern":"hh:mm:ss tt","MonthDayPattern":"dd MMMM","PMDesignator":"p.m.","RFC1123Pattern":"ddd, dd MMM yyyy HH\u0027:\u0027mm\u0027:\u0027ss \u0027GMT\u0027","ShortDatePattern":"dd/MM/yyyy","ShortTimePattern":"hh:mm tt","SortableDateTimePattern":"yyyy\u0027-\u0027MM\u0027-\u0027dd\u0027T\u0027HH\u0027:\u0027mm\u0027:\u0027ss","TimeSeparator":":","UniversalSortableDateTimePattern":"yyyy\u0027-\u0027MM\u0027-\u0027dd HH\u0027:\u0027mm\u0027:\u0027ss\u0027Z\u0027","YearMonthPattern":"MMMM\u0027 de \u0027yyyy","AbbreviatedDayNames":["dom","lun","mar","mié","jue","vie","sáb"],"ShortestDayNames":["do","lu","ma","mi","ju","vi","sá"],"DayNames":["domingo","lunes","martes","miércoles","jueves","viernes","sábado"],"AbbreviatedMonthNames":["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic",""],"MonthNames":["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre",""],"IsReadOnly":false,"NativeCalendarName":"calendario gregoriano","AbbreviatedMonthGenitiveNames":["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic",""],"MonthGenitiveNames":["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre",""]}}';//]]>
+</script>
+
+<script src="./ScriptResource.axd" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+if (typeof(Sys) === 'undefined') throw new Error('ASP.NET Ajax client-side framework failed to load.');
+//]]>
+</script>
+
+<script src="./ScriptResource(1).axd" type="text/javascript"></script>
+<div>
+
+	<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEWRQK91IyXDwKv2t6fDQKa0fGlBAKxn7DSDALgsN3eAQKU9ersDwK7/cPPAwKQs4K4CwLBnO+0BgK12diGCAKcupvUDQLn1bqQDgLRqszJDgKJt+C7AQKa0fGlBAKxn7DSDALgsN3eAQKU9ersDwL99/SjCAK7/cPPAwKQs4K4CwLBnO+0BgK12diGCAKa0fGlBAKxn7DSDALgsN3eAQKU9ersDwL99/SjCAK7/cPPAwKQs4K4CwLBnO+0BgK12diGCAK8wJwWAprR8aUEArGfsNIMAuCw3d4BApT16uwPAv339KMIArv9w88DApCzgrgLAsGc77QGArXZ2IYIAprR8aUEArGfsNIMAuCw3d4BApT16uwPAv339KMIArv9w88DApCzgrgLAsGc77QGArXZ2IYIArzAnBYCmtHxpQQCsZ+w0gwC4LDd3gEClPXq7A8C/ff0owgCu/3DzwMCkLOCuAsCwZzvtAYCtdnYhggCmtHxpQQCsZ+w0gwC4LDd3gEClPXq7A8Cu/3DzwMCkLOCuAsCwZzvtAYCtdnYhghBlm2sGEcbSXD/tjsm5+is2yhg1g==">
+</div>
+    <script type="text/javascript">
+//<![CDATA[
+Sys.WebForms.PageRequestManager._initialize('ctl00$scriptManager', document.getElementById('aspnetForm'));
+Sys.WebForms.PageRequestManager.getInstance()._updateControls([], [], [], 90);
+//]]>
+</script>
+
+    <input type="hidden" id="PageLinkData" name="PageLinkData" value="">
+    <input type="hidden" id="PageLinkUrl" name="PageLinkUrl" value="">
+    <input type="hidden" id="PageUrl" value="/Home.aspx">
+    <table id="ctl00_tableContent" width="100%" border="0" cellpadding="0" cellspacing="0" class="ic-content">
+	<tbody><tr>
+		<td class="ic-content-left-aux">
+                <img src="./log-img-aux-left-bottom.gif" width="9" height="110">
+            </td>
+		<td style="width: 100%">
+                <table width="100%" border="0" cellpadding="0" cellspacing="0" class="ic-content-left">
+                    <tbody><tr>
+                        <td id="TdCPM" class="ic-content-space-top" valign="top">
+                            <table id="TablaCPM" width="100%" border="0" cellspacing="0" cellpadding="0">
+                                
+                                <tbody><tr>
+                                    <td>
+                                        <table id="ctl00_tableHeader" width="100%" border="0" cellspacing="0" cellpadding="0">
+			<tbody><tr>
+				<td class="ic-breadcrumb-container">
+                                                    
+                                                    &gt;
+                                                    <span id="ctl00_siteMapNavigator"><a href="#ctl00_siteMapNavigator_SkipLink"><img alt="Skip Navigation Links" height="0" width="0" src="./WebResource(3).axd" style="border-width:0px;"></a><span>Posición Consolidada</span><a id="ctl00_siteMapNavigator_SkipLink"></a></span>
+                                                    </td>
+				<td class="ic-toolbar-container">
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tbody><tr>
+                                                            <td width="16">
+                                                                <img src="./ico-print.gif" id="ctl00_Img4" width="16" height="16">
+                                                            </td>
+                                                            <td class="ic-links-toolbar">
+                                                                <a href="#" onclick="javascript: GoPrint();">
+                                                                    Imprimir página</a>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody></table>
+                                                </td>
+			</tr>
+		</tbody></table>
+		
+                                    </td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>
+                                        <span id="ctl00_labelTitle" class="ic-page-title">Posición consolidada</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td id="ctl00_cellRequiered" align="right">&nbsp;</td>
+		
+                                </tr>
+                                <tr>
+                                    <td width="95%" align="center">
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                            <tbody><tr>
+                                                <td align="right">
+                                                    
+                                                    
+                                                </td>
+                                            </tr>
+                                        </tbody></table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="100%" align="center">
+                                        <div id="ic-loading" class="ic-loading-bg" style="display: none;">
+                                            <div class="ic-loading">
+                                                <div id="message">
+                                                    <img src="./cargandoBAR.gif" id="ctl00_imgLoading"><br>
+                                                    <span id="ctl00_WaitingMessage">Procesando...</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="mainContainer">
+                                            
+    <script language="javascript" type="text/javascript">
+    
+    function GridRowOnChangeHandler(sender, args)
+    {
+		SetPageLinkData(sender.GetRowKey(args.visibleIndex));
+    }
+
+    function SmartLinkHandler(ddoSelected)
+    {
+    	if (ddoSelected.selectedIndex > 0)
+    	{
+			SetPageLinkUrl(ddoSelected.options[ddoSelected.selectedIndex].value);
+			doPageLink(ddoSelected.id);
+        }
+        return false;
+    }
+
+    function autoResize() {
+        try {
+            //debugger;
+            var frame = document.getElementById('ctl00_MainHolder_Iframe1');
+            var innerDoc = (frame.contentDocument) ? frame.contentDocument : frame.contentWindow.document;
+            var heightFinal = innerDoc.body.scrollHeight + "px";
+            document.getElementById('ctl00_MainHolder_Iframe1').height = heightFinal;
+            document.getElementById('ctl00_MainHolder_Iframe1').style.height = heightFinal;
+            document.getElementById('ctl00_MainHolder_Iframe1').contentWindow.document.body.scrollHeight = heightFinal;
+        }
+        catch (err) {
+            window.status = err.message;
+        }
+    }
+    window.onload = function() { autoResize(); };    
+    </script>
+    
+            <div id="ctl00_MainHolder_panelIframe1" style="height:100%;width:100%;">
+			
+                 
+            
+		</div>
+            <table style="width: 100%">
+                <tbody><tr>
+                    <td>
+                        <table class="ic-grid-border" cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+			<tbody><tr>
+				<td><table id="ctl00_MainHolder_AccountPanel_thePanel" class="ic-grid" cellspacing="0" cellpadding="0" align="Center" border="0" style="width:100%;border-collapse:collapse;">
+					<tbody><tr class="ic-grid-title-row">
+						<td><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+							<tbody><tr>
+								<td class="ic-grid-title-cell-left">&nbsp;</td><td class="ic-grid-title-cell" align="left" style="white-space:nowrap;">Cuentas</td><td class="ic-gridB-title-cell-right"><img id="ctl00_MainHolder_AccountPanel_imgPlusMinus" onclick="javascript:MinMaxPanelControl(&#39;ctl00_MainHolder_AccountPanel&#39;)" src="./bot-grid-minus.gif" alt="Minimizar/Maximizar el panel" align="absmiddle" style="border-width:0px;cursor:hand;"></td>
+							</tr>
+						</tbody></table></td>
+					</tr><tr>
+						<td align="center"><div id="ctl00_MainHolder_AccountPanel" style="color:Black;border-color:DodgerBlue;font-family:verdana;font-size:10pt;width:100%;display:;">
+	
+						    <script id="dxss_1241175972" type="text/javascript">
+<!--
+window.__aspxServerFormID = 'aspnetForm';
+window.__aspxEmptyImageUrl = '/WebResource.axd?d=r8sGQK9x2VC5LfrAIP6hMW5Of0BQVx_5pcDtr_NzGA4Mft0ncv4hE1i-zBmnc8mg561Q33dXnVDmopWX_iwnWZgBELnuoLpA0P4EazLGo0XHyr4FYJEcfil8vQPDw-wMFdsFLo8AfLVBnlRoJ_At_JUEG241&t=636117930523139822';
+//-->
+</script>
+
+	<script id="dxis_136246879" src="./WebResource(4).axd" type="text/javascript"></script>
+	<script id="dxis_73471454" src="./WebResource(5).axd" type="text/javascript"></script>
+	<table class="dxgvControl" cellspacing="0" cellpadding="0" id="ctl00_MainHolder_AccountGridCP_AccountView" border="0" style="width:100%;border-collapse:collapse;border-collapse:separate;">
+		<tbody><tr>
+			<td><table id="ctl00_MainHolder_AccountGridCP_AccountView_DXMainTable" class="dxgvTable" cellspacing="0" cellpadding="0" onclick="aspxGVTableClick(&#39;ctl00_MainHolder_AccountGridCP_AccountView&#39;, event);" border="0" style="width:100%;border-collapse:collapse;empty-cells:show;">
+	<tbody><tr id="ctl00_MainHolder_AccountGridCP_AccountView_DXHeadersRow">
+		<td class="dxgvHeader" style="width:0.1%;border-left-width:0px;border-top-width:0px;cursor:default;"><img src="./WebResource(6).axd" alt="" style="height:10px;width:9px;border-width:0px;visibility:hidden;"></td><td id="ctl00_MainHolder_AccountGridCP_AccountView_DXTDGScol0" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_AccountGridCP_AccountView&#39;, this, event);" style="text-align:Left;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+			<tbody><tr>
+				<td style="text-align:Left;">Cuenta</td>
+			</tr>
+		</tbody></table></td><td id="ctl00_MainHolder_AccountGridCP_AccountView_DXTDGScol1" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_AccountGridCP_AccountView&#39;, this, event);" style="text-align:Left;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+			<tbody><tr>
+				<td style="text-align:Left;">Nombre de la cuenta</td>
+			</tr>
+		</tbody></table></td><td id="ctl00_MainHolder_AccountGridCP_AccountView_DXTDGScol2" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_AccountGridCP_AccountView&#39;, this, event);" style="text-align:Left;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+			<tbody><tr>
+				<td style="text-align:Left;">Tipo de cuenta</td>
+			</tr>
+		</tbody></table></td><td id="ctl00_MainHolder_AccountGridCP_AccountView_DXTDGScol3" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_AccountGridCP_AccountView&#39;, this, event);" style="text-align:Left;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+			<tbody><tr>
+				<td style="text-align:Left;">Estado</td>
+			</tr>
+		</tbody></table></td><td id="ctl00_MainHolder_AccountGridCP_AccountView_DXTDGScol4" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_AccountGridCP_AccountView&#39;, this, event);" style="text-align:Center;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+			<tbody><tr>
+				<td style="text-align:Center;">Moneda</td>
+			</tr>
+		</tbody></table></td><td id="ctl00_MainHolder_AccountGridCP_AccountView_DXTDGScol5" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_AccountGridCP_AccountView&#39;, this, event);" style="text-align:Right;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+			<tbody><tr>
+				<td style="text-align:Right;">Saldo</td>
+			</tr>
+		</tbody></table></td><td id="ctl00_MainHolder_AccountGridCP_AccountView_DXTDcol6" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_AccountGridCP_AccountView&#39;, this, event);" style="text-decoration:none;width:120px;border-left-width:0px;border-top-width:0px;border-right-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="text-decoration:none;width:100%;border-collapse:collapse;">
+			<tbody><tr>
+				<td>&nbsp;</td>
+			</tr>
+		</tbody></table></td>
+	</tr><tr id="ctl00_MainHolder_AccountGridCP_AccountView_DXDataRow0" class="dxgvDataRow ic-grid-row01">
+		<td class="dxgvDetailButton dxgv" style="width:0px;border-right-width:0px;"><img onclick="aspxGVShowDetailRow(&#39;ctl00_MainHolder_AccountGridCP_AccountView&#39;,0);event.cancelBubble = true" src="./WebResource(7).axd" alt="[Expand]" style="height:10px;width:9px;border-width:0px;cursor:pointer;"></td><td id="ctl00_MainHolder_AccountGridCP_AccountView_tccell0_0" class="dxgv" style="text-align:Left;">1275</td><td id="ctl00_MainHolder_AccountGridCP_AccountView_tccell0_1" class="dxgv" style="text-align:Left;">DIA ARGENTINA SA</td><td id="ctl00_MainHolder_AccountGridCP_AccountView_tccell0_2" class="dxgv" style="text-align:Left;">Cuenta Corriente</td><td id="ctl00_MainHolder_AccountGridCP_AccountView_tccell0_3" class="dxgv" style="text-align:Left;">NORMAL</td><td id="ctl00_MainHolder_AccountGridCP_AccountView_tccell0_4" class="dxgv" style="text-align:Center;">$</td><td id="ctl00_MainHolder_AccountGridCP_AccountView_tccell0_5" class="dxgv" style="text-align:Right;white-space:nowrap;">1.466.732,84</td><td id="ctl00_MainHolder_AccountGridCP_AccountView_tccell0_6" class="dxgv" style="border-right-width:0px;">
+                <select name="ctl00$MainHolder$AccountGridCP$AccountView$cell0_6$AccountsListAcctions" id="ctl00_MainHolder_AccountGridCP_AccountView_cell0_6_AccountsListAcctions" class="ic-control-select" onchange="SmartLinkHandler(this)" style="width:120px;">
+			<option value="">[Seleccionar]</option>
+			<option value="/Pages/Accounts/AccountStatus.aspx">Movimientos</option>
+			<option value="/Pages/Accounts/Agreement.aspx">Acuerdos</option>
+			<option value="/Pages/Accounts/CheckBook.aspx">Solicitud Chequeras</option>
+
+		</select>
+                
+            </td>
+	</tr><tr id="ctl00_MainHolder_AccountGridCP_AccountView_DXDataRow1" class="dxgvDataRow ic-grid-row01 dxgvDataRowAlt ic-grid-row02">
+		<td class="dxgvDetailButton dxgv" style="width:0px;border-right-width:0px;border-bottom-width:0px;"><img onclick="aspxGVShowDetailRow(&#39;ctl00_MainHolder_AccountGridCP_AccountView&#39;,1);event.cancelBubble = true" src="./WebResource(7).axd" alt="[Expand]" style="height:10px;width:9px;border-width:0px;cursor:pointer;"></td><td id="ctl00_MainHolder_AccountGridCP_AccountView_tccell1_0" class="dxgv" style="text-align:Left;border-bottom-width:0px;">1275</td><td id="ctl00_MainHolder_AccountGridCP_AccountView_tccell1_1" class="dxgv" style="text-align:Left;border-bottom-width:0px;">DIA ARGENTINA SA</td><td id="ctl00_MainHolder_AccountGridCP_AccountView_tccell1_2" class="dxgv" style="text-align:Left;border-bottom-width:0px;">Cuenta Corriente</td><td id="ctl00_MainHolder_AccountGridCP_AccountView_tccell1_3" class="dxgv" style="text-align:Left;border-bottom-width:0px;">NORMAL</td><td id="ctl00_MainHolder_AccountGridCP_AccountView_tccell1_4" class="dxgv" style="text-align:Center;border-bottom-width:0px;">$</td><td id="ctl00_MainHolder_AccountGridCP_AccountView_tccell1_5" class="dxgv" style="text-align:Right;white-space:nowrap;border-bottom-width:0px;">29.403,57</td><td id="ctl00_MainHolder_AccountGridCP_AccountView_tccell1_6" class="dxgv" style="border-right-width:0px;border-bottom-width:0px;">
+                <select name="ctl00$MainHolder$AccountGridCP$AccountView$cell1_6$AccountsListAcctions" id="ctl00_MainHolder_AccountGridCP_AccountView_cell1_6_AccountsListAcctions" class="ic-control-select" onchange="SmartLinkHandler(this)" style="width:120px;">
+			<option value="">[Seleccionar]</option>
+			<option value="/Pages/Accounts/AccountStatus.aspx">Movimientos</option>
+			<option value="/Pages/Accounts/Agreement.aspx">Acuerdos</option>
+			<option value="/Pages/Accounts/CheckBook.aspx">Solicitud Chequeras</option>
+
+		</select>
+                
+            </td>
+	</tr>
+</tbody></table><img id="ctl00_MainHolder_AccountGridCP_AccountView_IADD" src="./WebResource(8).axd" alt="|" style="border-width:0px;position:absolute;visibility:hidden;"><img id="ctl00_MainHolder_AccountGridCP_AccountView_IADU" src="./WebResource(9).axd" alt="|" style="border-width:0px;position:absolute;visibility:hidden;"><img id="ctl00_MainHolder_AccountGridCP_AccountView_IDHF" src="./WebResource(10).axd" alt="Hide" style="border-width:0px;position:absolute;visibility:hidden;"><table id="ctl00_MainHolder_AccountGridCP_AccountView_LP" class="dxgvLoadingPanel" cellspacing="0" cellpadding="0" border="0" style="border-collapse:collapse;left:0px;top:0px;z-index:30000;display:none;">
+	<tbody><tr>
+		<td class="dx"><img src="./WebResource(11).axd" alt="" align="middle" style="border-width:0px;"></td><td class="dx" style="padding-left:0px;">Cargando…</td>
+	</tr>
+</tbody></table><div id="ctl00_MainHolder_AccountGridCP_AccountView_LD" class="dxgvLoadingDiv" style="display:none;z-index:29999;position:absolute;">
+
+</div><input type="hidden" name="ctl00$MainHolder$AccountGridCP$AccountView$DXSelInput" id="ctl00_MainHolder_AccountGridCP_AccountView_DXSelInput"><table id="ctl00_MainHolder_AccountGridCP_AccountView_DXStyleTable" border="0" style="display:none;">
+	<tbody><tr>
+		<td></td>
+	</tr><tr class="dxgvEditingErrorRow">
+		<td class="dxgvIndentCell dxgv" style="width:0px;border-right-width:0px;">&nbsp;</td><td class="dxgv" colspan="7" style="border-right-width:0px;"></td>
+	</tr><tr class="dxgvSelectedRow ic-grid-row01">
+		<td></td>
+	</tr><tr class="dxgvFocusedRow ic-grid-row01">
+		<td></td>
+	</tr><tr class="dxgvFocusedGroupRow">
+		<td></td>
+	</tr><tr class="dxgvDataRow ic-grid-row01">
+		<td></td>
+	</tr><tr class="dxgvDataRow ic-grid-row01 dxgvDataRowAlt ic-grid-row02">
+		<td></td>
+	</tr>
+</tbody></table><input type="hidden" name="ctl00$MainHolder$AccountGridCP$AccountView$CallbackState" id="ctl00_MainHolder_AccountGridCP_AccountView_CallbackState" value="/wEWBB4ERGF0YQWkDkFBQUFBQUlBQUFBQUFBQUFBZ0FBQUFBSEFBQUFCVUZzYVdGekJVRnNhV0Z6QndBQUVFRjJZV2xzWVdKc1pVSmhiR0Z1WTJVUVFYWmhhV3hoWW14bFFtRnNZVzVqWlFVQUFBMUJZMk52ZFc1MFRuVnRZbVZ5RFVGalkyOTFiblJPZFcxaVpYSUhBQUFMUVdOamIzVnVkRlI1Y0dVTFFXTmpiM1Z1ZEZSNWNHVUhBQUFGVTNSaGRHVUZVM1JoZEdVSEFBQU1SVzVqY25sd2RHVmtTMlY1REVWdVkzSjVjSFJsWkV0bGVRY0FBUTVEZFhKeVpXNWplVk41YldKdmJBNURkWEp5Wlc1amVWTjViV0p2YkFjQUFEY0FBQUFJUTNWeWNtVnVZM2tHVkhsd1pVbGtFRU52Ykd4bFkzUmxaRUpoYkdGdVkyVUZUM2R1WlhJR1FuSmhibU5vQ0VKeVlXNWphRWxrQkVOcGRIa01VbVZ6ZEhKcFkzUnBiMjV6RVV4dmJtZEJZMk52ZFc1MFRuVnRZbVZ5SDB4dmJtZEJZMk52ZFc1MFRuVnRZbVZ5VFc5a2RXeGxRM1Z5Y21WdVkza1pURzl1WjBGalkyOTFiblJPZFcxaVpYSkRkWEp5Wlc1amVRdEhjbWxrUVdOamIzVnVkQk5WYm1seGRXVkJZMk52ZFc1MFRuVnRZbVZ5RDBkeWFXUlVlWEJsUVdOamIzVnVkQmxNYjI1blFXTmpiM1Z1ZEU1MWJXSmxjbFJ5WVc1elptVnlCRUpoYm1zT1FteHZZMnRsWkVKaGJHRnVZMlVKVDNabGNtUnlZV1owQjBOdmJYQmhibmtNUkc5amRXMWxiblJVZVhCbERrUnZZM1Z0Wlc1MFRuVnRZbVZ5QmsxdlpIVnNaUVZRWVhCbGNnOVBjR1Z5WVhScGIyNU9kVzFpWlhJU1UzVmlUM0JsY21GMGFXOXVUblZ0WW1WeURVOXdaWEpoZEdsdmJsUjVjR1VUUTNWeWNtVnVZM2xFWlhOamNtbHdkR2x2YmhGTmIyUjFiR1ZFWlhOamNtbHdkR2x2Ymd0Q1lXeGhibU5sUkdGMFpRTkRRbFVVUlhoMGNtRmpkRVp5WlhGMVpXNWplVU52WkdVYlJYaDBjbUZqZEVaeVpYRjFaVzVqZVVSbGMyTnlhWEIwYVc5dUQwVjRkSEpoWTNSVWVYQmxRMjlrWlJaRmVIUnlZV04wVkhsd1pVUmxjMk55YVhCMGFXOXVDMFJoZVhOUGRtVnlaSFZsQ2xCeWIzWnBibU5sU1dRVVNYTlRkWEJsY25acFpXeHNaVUZqWTI5MWJuUU1UMkp6WlhKMllYUnBiMjV6Q2xOaGJXVkliMnhrWlhJSVUzUmhkSFZ6U1dRTlJYaGxZM1YwYVhabFEyOWtaUTFGZUdWamRYUnBkbVZPWVcxbERVVjRhWE4wYzBsdVRHOWpZV3dYUkc5amRXMWxiblJVZVhCbFJHVnpZM0pwY0hScGIyNFVRbUZ1Wld4amIwRmpZMjkxYm5ST2RXMWlaWElSVUhKbFFYQndjbTkyWldSQ1QwNWhiV1VGUlcxaGFXd0VUbUZ0WlFwQlkyTnZkVzUwVDNkdUExUmxZUlZPWlhkVFpYSjJhV05sUjJWMFVISnZaSFZqZEhNR1UzUmhkSFZ6REVGa2FHVnphVzl1Vkhsd1pRbFFjbTlrZFdOMFNXUUxVSEp2WkhWamRFTnZaR1VIQUFjQUJ3QUhBQWIvL3djQ0VFUkpRU0JCVWtkRlRsUkpUa0VnVTBFRkE0UU92Z2dBQUFBQUFBQUFBQUFBQWdBSEFnUXhNamMxQndJUVEzVmxiblJoSUVOdmNuSnBaVzUwWlFjQ0JrNVBVazFCVEFjQ2JIUmtSMkZHVEZKVmN6ZFBObFJrVUV0UllWRnNUa1pCYkhWb1Rpc3hiWFV3ZVRnMFpVbE9VVmxUWTFrMGFFSlphVk5CY0c1M2J5OW1jMlZGZUV0U00wWldRV2hLYWtWVFNWWm5hM0poUjBSNE0yWnFiRzQ1TVdkM01uaDBTWGR0TUNzdlZFMXJRa3BJUnk4NFBRY0NBU1FIQUFjQUJ2Ly9Cd0lRUkVsQklFRlNSMFZPVkVsT1FTQlRRUVVEeGQwc0FBQUFBQUFBQUFBQUFBQUNBQWNDQkRFeU56VUhBaEJEZFdWdWRHRWdRMjl5Y21sbGJuUmxCd0lHVGs5U1RVRk1Cd0pzZEdSSFlVWk1VbFZ6TjA4MlZHUlFTMUZoVVd4T1IweGpSWEpDZG5CT1JqbFRVQzkzZG1GcE5WVXlMMGxEY21kT2NqTTVLM1J0ZFU5elQzSnhiMHRVVVU0MU1XUTBTalkxY20xRlUyWmtRMjUxZUdVdlNGUllaMkpUTm1VNVFVSndNa2cyZDJGV1FtZ3pURms5QndJQkpBPT0eBVN0YXRlBWhCd2NIQUFJQkJ3RUNBUWNDQWdFSEF3SUJCd1FDQVFjRkFnRUhCZ0lCQndBSEFBY0FCd0FDQUFiLy93a0NERVZ1WTNKNWNIUmxaRXRsZVFrQ0FBSUFBd2NFQWdBSEFBSUJCd0FDQVFjQQ==">
+<script id="dxss_1314800160" type="text/javascript">
+<!--
+ctl00_MainHolder_AccountGridCP_AccountView.callBacksEnabled=true;
+ctl00_MainHolder_AccountGridCP_AccountView.pageRowCount=2;
+ctl00_MainHolder_AccountGridCP_AccountView.selectedWithoutPageRowCount=0;
+ctl00_MainHolder_AccountGridCP_AccountView.visibleStartIndex=0;
+ctl00_MainHolder_AccountGridCP_AccountView.focusedRowIndex=-1;
+ctl00_MainHolder_AccountGridCP_AccountView.allowFocusedRow=false;
+ctl00_MainHolder_AccountGridCP_AccountView.allowMultiSelection=false;
+ctl00_MainHolder_AccountGridCP_AccountView.isColumnsResizable=false;
+ctl00_MainHolder_AccountGridCP_AccountView.isVerticalScrolling=false;
+ctl00_MainHolder_AccountGridCP_AccountView.isMainControlResizable=false;
+ctl00_MainHolder_AccountGridCP_AccountView.callbackOnFocusedRowChanged=false;
+ctl00_MainHolder_AccountGridCP_AccountView.callbackOnSelectionChanged=false;
+ctl00_MainHolder_AccountGridCP_AccountView.autoFilterDelay='1200';
+ctl00_MainHolder_AccountGridCP_AccountView.ClearColumns();
+ctl00_MainHolder_AccountGridCP_AccountView.CreateColumn('',0,'AccountNumber',1);
+ctl00_MainHolder_AccountGridCP_AccountView.CreateColumn('',1,'Alias',1);
+ctl00_MainHolder_AccountGridCP_AccountView.CreateColumn('',2,'AccountType',1);
+ctl00_MainHolder_AccountGridCP_AccountView.CreateColumn('',3,'State',1);
+ctl00_MainHolder_AccountGridCP_AccountView.CreateColumn('',4,'CurrencySymbol',1);
+ctl00_MainHolder_AccountGridCP_AccountView.CreateColumn('',5,'AvailableBalance',1);
+ctl00_MainHolder_AccountGridCP_AccountView.CreateColumn('',6,'',1);
+ctl00_MainHolder_AccountGridCP_AccountView.keys=['tdGaFLRUs7O6TdPKQaQlNFAluhN+1mu0y84eINQYScY4hBYiSApnwo/fseExKR3FVAhJjESIVgkraGDx3fjln91gw2xtIwm0+/TMkBJHG/8=','tdGaFLRUs7O6TdPKQaQlNGLcErBvpNF9SP/wvai5U2/ICrgNr39+tmuOsOrqoKTQN51d4J65rmESfdCnuxe/HTXgbS6e9ABp2H6waVBh3LY='];
+
+//-->
+</script>
+</td>
+		</tr>
+	</tbody></table><script id="dxss_1521659232" type="text/javascript">
+<!--
+
+var dxo = new ASPxClientGridView('ctl00_MainHolder_AccountGridCP_AccountView');
+window['ctl00_MainHolder_AccountGridCP_AccountView'] = dxo;
+dxo.callBack = function(arg) { WebForm_DoCallback('ctl00$MainHolder$AccountGridCP$AccountView',arg,aspxCallback,'ctl00_MainHolder_AccountGridCP_AccountView',aspxCallbackError,true); };
+dxo.uniqueID = 'ctl00$MainHolder$AccountGridCP$AccountView';
+dxo.RowClick.AddHandler(function(sender, args) { GridRowOnChangeHandler(sender, args); });
+dxo.callBacksEnabled=true;
+dxo.pageRowCount=2;
+dxo.selectedWithoutPageRowCount=0;
+dxo.visibleStartIndex=0;
+dxo.focusedRowIndex=-1;
+dxo.allowFocusedRow=false;
+dxo.allowMultiSelection=false;
+dxo.isColumnsResizable=false;
+dxo.isVerticalScrolling=false;
+dxo.isMainControlResizable=false;
+dxo.callbackOnFocusedRowChanged=false;
+dxo.callbackOnSelectionChanged=false;
+dxo.autoFilterDelay='1200';
+dxo.ClearColumns();
+dxo.CreateColumn('',0,'AccountNumber',1);
+dxo.CreateColumn('',1,'Alias',1);
+dxo.CreateColumn('',2,'AccountType',1);
+dxo.CreateColumn('',3,'State',1);
+dxo.CreateColumn('',4,'CurrencySymbol',1);
+dxo.CreateColumn('',5,'AvailableBalance',1);
+dxo.CreateColumn('',6,'',1);
+dxo.keys=['tdGaFLRUs7O6TdPKQaQlNFAluhN+1mu0y84eINQYScY4hBYiSApnwo/fseExKR3FVAhJjESIVgkraGDx3fjln91gw2xtIwm0+/TMkBJHG/8=','tdGaFLRUs7O6TdPKQaQlNGLcErBvpNF9SP/wvai5U2/ICrgNr39+tmuOsOrqoKTQN51d4J65rmESfdCnuxe/HTXgbS6e9ABp2H6waVBh3LY='];
+dxo.InlineInitialize();
+
+//-->
+</script>
+
+						<input name="ctl00$MainHolder$ctl00$MainHolder$AccountPanel_hdnMinimizeState" type="text" value="False" id="ctl00_MainHolder_ctl00_MainHolder_AccountPanel_hdnMinimizeState" class="ic-control-text" onkeypress="return validCharactersOnly(this, event, &quot;^[^:;\&lt;&gt;&#39;\&quot;]*$&quot;)" style="display:none">
+</div></td>
+					</tr>
+				</tbody></table></td>
+			</tr>
+		</tbody></table>
+                        &nbsp;
+                        
+                        &nbsp;
+                         
+                        &nbsp;
+                      
+                        &nbsp;
+                        
+                        &nbsp;
+                        
+                    </td>
+                </tr>
+            </tbody></table>
+        
+        <table class="ic-grid-border" cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+			<tbody><tr>
+				<td><table id="ctl00_MainHolder_UltimasAlertasCOM5374_thePanel" class="ic-grid" cellspacing="0" cellpadding="0" align="Center" border="0" style="width:100%;border-collapse:collapse;">
+					<tbody><tr class="ic-grid-title-row">
+						<td><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+							<tbody><tr>
+								<td class="ic-grid-title-cell-left">&nbsp;</td><td class="ic-grid-title-cell" align="left" style="white-space:nowrap;">Últimas alertas</td><td class="ic-gridB-title-cell-right"><img id="ctl00_MainHolder_UltimasAlertasCOM5374_imgPlusMinus" onclick="javascript:MinMaxPanelControl(&#39;ctl00_MainHolder_UltimasAlertasCOM5374&#39;)" src="./bot-grid-minus.gif" alt="Minimizar/Maximizar el panel" align="absmiddle" style="border-width:0px;cursor:hand;"></td>
+							</tr>
+						</tbody></table></td>
+					</tr><tr>
+						<td align="center" style="padding:1px;"><div id="ctl00_MainHolder_UltimasAlertasCOM5374" style="color:Black;border-color:DodgerBlue;font-family:verdana;font-size:10pt;width:100%;display:;">
+	
+    <table width="100%">        
+        <tbody><tr class="ic-form-row" align="left">
+            <td class="ic-form-label" width="20%" align="left">
+                Su último login fué el día:
+            </td>
+            <td class="ic-form-data" width="80%" align="left">
+                24/10/2016 10:45:44 a.m.
+            </td>
+        </tr>
+        <tr class="ic-form-row" align="left">
+            <td class="ic-form-label" width="20%" align="left">
+                Su contraseña vence en:
+            </td>
+            <td class="ic-form-data" width="80%" align="left">
+                35 días.
+            </td>
+        </tr>
+                <tr class="ic-form-row" align="left">
+            <td class="ic-form-label" width="20%" align="left">
+                Su última operación fué:
+            </td>
+            <td class="ic-form-data" width="80%" align="left">
+                La transacción nro. 5605 correspondiente a pago de sueldos procesada el día 13/10/2016 11:41:57 a.m.
+            </td>
+        </tr>
+        
+    </tbody></table>            
+        <input name="ctl00$MainHolder$ctl00$MainHolder$UltimasAlertasCOM5374_hdnMinimizeState" type="text" value="False" id="ctl00_MainHolder_ctl00_MainHolder_UltimasAlertasCOM5374_hdnMinimizeState" class="ic-control-text" onkeypress="return validCharactersOnly(this, event, &quot;^[^:;\&lt;&gt;&#39;\&quot;]*$&quot;)" style="display:none">
+</div></td>
+					</tr>
+				</tbody></table></td>
+			</tr>
+		</tbody></table>
+
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="right">
+                                        <div id="ctl00_validationSummaryFooter" style="color:Red;font-size:10px;display:none;">
+
+		</div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="95%" align="center">
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                            <tbody><tr>
+                                                <td align="right">
+                                                    
+                                                    
+                                                </td>
+                                            </tr>
+                                        </tbody></table>
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="ic-content-footer">
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                <tbody><tr class="ic-content-footer-dottedline">
+                                    <td align="right" nowrap="nowrap" style="width: 90%">
+                                    </td>
+                                    <td align="right" nowrap="nowrap" style="width: 10%">
+                                        <a id="ctl00_LinkButtonTermsAndConditions" class="ic-grid-link" href="terminosCondi.html">Términos y Condiciones</a>
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                </tbody></table>
+            </td>
+		<td id="ctl00_cellContentRight" class="ic-content-space-top-right" valign="top">
+                <table class="ic-content-right" border="0" cellspacing="0" cellpadding="0">
+                    <tbody><tr>
+                        <td>
+                            <img src="./pixel.gif" width="8" height="1">
+                        </td>
+                        <td class="ic-right-panel">
+                            <table border="0" cellpadding="0" cellspacing="0" class="ic-right-panel-content">
+                                <tbody><tr>
+                                    <td width="8" class="ic-right-panel-collapse">
+                                        <input type="image" name="ctl00$imageButtonCollapse" id="ctl00_imageButtonCollapse" src="./bot-right-collapse.gif" style="height:47px;width:9px;border-width:0px;">
+                                    </td>
+                                    
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                </tbody></table>
+            </td>
+	</tr>
+</tbody></table>
+
+    
+    
+<script type="text/javascript">
+//<![CDATA[
+var Page_ValidationSummaries =  new Array(document.getElementById("ctl00_validationSummaryFooter"));
+//]]>
+</script>
+
+<script type="text/javascript">
+//<![CDATA[
+var ctl00_validationSummaryFooter = document.all ? document.all["ctl00_validationSummaryFooter"] : document.getElementById("ctl00_validationSummaryFooter");
+ctl00_validationSummaryFooter.headertext = "Formulario inválido, por favor revise los datos ingresados:";
+ctl00_validationSummaryFooter.showsummary = "False";
+//]]>
+</script>
+
+
+<script type="text/javascript">
+//<![CDATA[
+
+WebForm_InitCallback();
+document.getElementById('ctl00_validationSummaryFooter').dispose = function() {
+    Array.remove(Page_ValidationSummaries, document.getElementById('ctl00_validationSummaryFooter'));
+}
+Sys.Application.initialize();
+//]]>
+</script>
+</form>
+
+
+<div class="ui-dialog ui-widget ui-widget-content ui-corner-all" tabindex="-1" role="dialog" aria-labelledby="ui-dialog-title-sessionTimeoutWarning" style="display: none; z-index: 1000; outline: 0px;"><div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix"><span class="ui-dialog-title" id="ui-dialog-title-sessionTimeoutWarning">&nbsp;</span><a href="#" class="ui-dialog-titlebar-close ui-corner-all" role="button" style="display: none;"><span class="ui-icon ui-icon-closethick">close</span></a></div><div id="sessionTimeoutWarning" style="background-color: rgb(255, 255, 255); padding: 0px; height: 100%;" class="ui-dialog-content ui-widget-content">
+        <div id="sessionTimeoutWarningHeader">
+            <table width="100%">
+                 <tbody><tr>
+                    <td colspan="2" align="center" class="ic-form-data-modal">
+                        La sesión finalizará en <span id="sessionTimeoutCountdown"></span>&nbsp;segundos.
+                        Para seguir operando seleccioná “Continuar”
+                    </td>
+                </tr>
+            </tbody></table>
+        </div>
+    </div><div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix"><div class="ui-dialog-buttonset"><button type="button">Continuar </button><button type="button">Finalizar sesión</button></div></div></div></body></html>

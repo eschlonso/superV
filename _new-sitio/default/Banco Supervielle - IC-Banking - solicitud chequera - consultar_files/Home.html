@@ -1,0 +1,868 @@
+
+<!-- saved from url=(0187)Pages/Accounts/CheckBook.aspx?PageLinkData=tdGaFLRUs7O6TdPKQaQlNFAluhN%2b1mu0y84eINQYScY4hBYiSApnwo%2ffseExKR3FVAhJjESIVgkraGDx3fjln91gw2xtIwm0%2b%2fTMkBJHG%2f8%3d -->
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><script src="./jquery-1.7.2.min.js.descarga" type="text/javascript"></script>
+<script src="./jquery-1.7.1.js.descarga" type="text/javascript"></script>
+<script src="./jquery-ui-1.8.19.custom.min.js.descarga" type="text/javascript"></script>
+<script src="./jquery.formatCurrency-1.4.0.js.descarga" type="text/javascript"></script>
+<script src="./idle-timer.js.descarga" type="text/javascript"></script>
+<script src="./idle-timer.min.js.descarga" type="text/javascript"></script>
+<script language="javascript" type="text/javascript">
+
+function Logout() {
+        if (confirm("¿ Desea salir del sistema ?") == true) {
+                    
+            window.location =  '/'+ "Logout.aspx";
+        }
+       
+    }
+    
+var focusedFormControl;    
+var dateFormat = 'dd/mm/aaaa';
+var applicationRoot = '/';      
+function OnRowClick(sender, args) {
+    if (sender.GetSelectedRowCount() == 0) {
+        sender.UnselectRowOnPage(args.visibleIndex);
+        SetPageLinkData("");
+    }
+    else {
+        _aspxClearSelection();
+        sender._selectAllRowsOnPage(false);
+        sender.SelectRow(args.visibleIndex, true);
+        SetPageLinkData(sender.GetRowKey(args.visibleIndex));
+    }
+}
+
+if (history.forward(1))
+{
+
+    location.replace(history.forward(1))
+} 
+
+function PrintPage() {
+
+    window.print();
+}
+
+function GoMyOption(select)
+{
+    var url = select.options[select.selectedIndex].value;
+    if( url != "")
+        window.location = url;
+}
+
+function GoFavourites(select)
+{
+
+    var url = select.options[select.selectedIndex].value;
+    if( url != "")
+        window.location = url;
+}
+
+function GoPrint()
+{
+
+window.print();
+}
+
+function addEvent(elm, evType, fn, useCapture)
+{
+
+  if (elm.addEventListener){
+    elm.addEventListener(evType, fn, useCapture);
+    return true;
+  } else if (elm.attachEvent){
+    var r = elm.attachEvent("on"+evType, fn);
+    return r;
+  } else {
+    alert("Handler could not be removed");
+  }
+} 
+
+function SetPageLinkData(data)
+{
+    pageLinkData = document.getElementById('PageLinkData');
+    pageLinkData.value = data;
+}
+
+function SetPageLinkUrl(url)
+{
+    pageLinkUrl = document.getElementById('PageLinkUrl');
+    pageLinkUrl.value = url;
+}
+
+function doPageLink(id)
+{
+    __doPostBack(id, 'PageLinkEvent');
+}
+
+function imprimirEstadoCuenta()
+{
+											
+    var ficha = document.getElementById('printDiv');		
+    var ventimp = window.open('', 'popimpr','height=450, width=550, scrollbars=1');																						
+    var fichaHTML = new String(ficha.innerHTML);
+    fichaHTML = fichaHTML.replace('Seleccione un período y oprima "Consultar".'," ");
+    //var i = document.getElementById('ctl00_MainHolder_panelDetalle_imgPlusMinus');
+    var html  = "<html>\n<head>\n<link rel=\"stylesheet\" type=\"text/css\" href=\"..\\..\\App_Themes\\Default\\Default.css \" />" 
+                + "</head><table width=\"100%\"><tr bgcolor=\"#FF0000\"><td><img src=\"..\\..\\App_Themes\\Default\\Images\\logoSantander.gif\" /></td></tr></table>" 
+                + fichaHTML 
+                + "</html>";
+    ventimp.document.write( html );
+    ventimp.document.close();
+    ventimp.print( );
+    ventimp.close();
+					
+}
+
+ function removeInvalidCharacters(control) {
+ 
+            !(/^[A-zÑñ0-9 ]*$/i).test(control.value) ? control.value = control.value.replace(/[^A-zÑñ0-9 ]/ig, '') : null
+        }
+        
+  function removeInvalidNumbers(control) {
+            !(/^[0-9,]*$/i).test(control.value) ? control.value = control.value.replace(/[^0-9,]/ig, '') : null
+        }
+function showLoading()
+{
+//debugger;
+    // aquí le pasamos la clase o id de nuestro div a centrar (en este caso "caja")
+    $('.ic-loading').css({
+       position:'absolute',
+       left: ($('#mainContainer').width()/2 - $('.ic-loading').outerWidth())/2,
+       //top: ($('#mainContainer').height()/2 - $('.ic-loading').outerHeight())/2
+       top: ($('#mainContainer').height()/2 - $('ic-loading').height()/2)
+    });
+    
+    $('#mainContainer').css('display','none');
+    $('#ic-loading').css('display','block');
+}
+//ModalDialog SessionTimeout
+var idleTime = (parseInt('1170') * 1000); // number of miliseconds until the user is considered idle
+var initialSessionTimeoutMessage = "La sesión finalizará en <span id='sessionTimeoutCountdown'></span> segundos. Para seguir operando seleccioná “Continuar”<br /><br />";
+var sessionTimeoutCountdownId = 'sessionTimeoutCountdown';
+var redirectAfter = (parseInt('30')) ; // number of seconds to wait before redirecting the user
+var redirectTo = '/' + "Logout.aspx"; // URL to relocate the user to once they have timed out
+var keepAliveURL = ''; // URL to call to keep the session alive
+var expiredMessage = ''; // message to show user when the countdown reaches 0
+var running = false; // var to check if the countdown is running 
+var timer; // reference to the setInterval timer so it can be stopped 
+var timerSB;  
+var timeout;  
+    $(document).ready(function() {     
+// create the warning window and set autoOpen to false  
+      var sessionTimeoutWarningDialog = $("#sessionTimeoutWarning"); 
+    $(sessionTimeoutWarningDialog).dialog({         
+        title: '',       
+        autoOpen: false,    // set this to false so we can manually open it         
+        closeOnEscape: false,         
+        draggable: false,         
+        width: 460,         
+        minHeight: 150,         
+        modal: true,           
+        beforeclose: function() { // bind to beforeclose so if the user clicks on the "X" or escape to close the dialog, it will work too             // stop the timer             
+            clearInterval(timer);               // stop countdown
+            running = false;               // ajax call to keep the server-side session alive    
+                  
+            $.ajax({               
+                url: keepAliveURL,               
+                async: false            
+            });         
+        },         
+        buttons: {      
+             'Continuar ': function() {                 
+                // close dialog 
+                window.location.reload();//BM24925: Se agrega esto para que el expired de una cookie se actualice y no se cierre la sesión luego de hacer click en continuar al terminar el timeout del webconfig. El valor del expired se pone en la tabla configuration en la clave SessionMaxMinutes.
+                //var valor = getCookie('ICBWebLogin'); //Esta función la dejo por las dudas, pero no la pude hacer andar poque el document.cookie no me trae las cookies del explorador.                
+                $(this).dialog('close');
+                clearInterval(timerSB);    
+                window.status = "";      
+                StatusBarCountDown();     
+            },
+            'Finalizar sesión': function() {                 
+                // close dialog                 
+                $(sessionTimeoutWarningDialog).html(expiredMessage);
+                $(sessionTimeoutWarningDialog).dialog('disable');                     
+                window.parent.location = redirectTo;           
+            }         
+        },         
+        resizable: false,         
+        open: function() {
+            $('body').css('overflow','auto');         
+        },         
+        close: function() {             
+            // reset overflow             
+            $('body').css('overflow','auto');         
+        }  
+           
+    }); // end of dialog  
+    jQuery("a.ui-dialog-titlebar-close").hide(); 
+          
+    // start the idle timer
+    $.idleTimer(idleTime);
+ 
+});
+
+// BM24925: Función para recuperar el valor de una cookie.
+// name - nombre de la cookie deseada
+// devuelve un string conteniendo el valor de la cookie especificada o null si la cookie no existe
+
+function getCookie(name){
+var micookie = (document.cookie.indexOf('ICBWebLogin=') === -1 ? '' : ("; " + document.cookie).split('; ICBWebLogin=')[1].split(';')[0]);
+
+  var cname = name + "=";               
+  var dc = document.cookie;             
+  if (dc.length > 0) {              
+    begin = dc.indexOf(cname);       
+    if (begin != -1) {           
+      begin += cname.length;       
+      end = dc.indexOf(";", begin);
+      if (end == -1) end = dc.length;
+        return unescape(dc.substring(begin, end));
+    } 
+  }
+  return null;
+}
+
+//Status Bar Countdown Script
+function StatusBarCountDown() 
+{
+    var redirectAfter = (parseInt('30'));
+    var timeout = '1200000';   
+    var redirectTo = '/' + "Logout.aspx"; // URL to relocate the user to once they have timed out   
+    timerSB = setInterval(function(){
+    timeout -= 1000;
+    if(timeout == redirectAfter * 1000)
+    {
+        window.focus();
+    }
+   if(timeout < redirectAfter * 1000)
+   {
+        $("#sessionTimeoutCountdown").html(timeout/1000);
+        $("#sessionTimeoutWarning").dialog('open'); 
+   }
+   if (timeout < 100)
+   {
+        $("#sessionTimeoutWarning").html(expiredMessage);
+        $("#sessionTimeoutWarning").dialog('disable');                     
+        window.parent.location = redirectTo;
+        clearInterval(timerSB);    
+        window.status = "";     
+   }
+        
+   window.status = "Su sesión expirará " + time(timeout) + " minutos";        
+    }, 1000);   
+         
+   function two(x)
+   {
+    return ((x > 9) ? "" : "0") + x
+   }   
+  
+   function time(ms)
+   {   
+       var t = '';   
+       var sec = Math.floor(ms / 1000);   
+       ms = ms % 1000   
+
+       var min = Math.floor(sec / 60);   
+       sec = sec % 60;   
+       t = two(sec);   
+
+       var hr = Math.floor(min / 60);   
+       min = min % 60;   
+       t = two(min) + ":" + t;   
+    return t;
+   }
+}
+
+StatusBarCountDown();
+
+
+
+</script>
+
+<link rel="stylesheet" type="text/css" href="WebResource.axd?d=iy9MjAWMPgiXpbYP447bewqZWF80C85g_nTjZxouv9_28zuki5h_eOaKvf1tkY1l2c8eBT6_mGAEQiac67mbOcbXZOzUQLDGhJr9hbfMdxQKPhNnSH4yR5YXyqwMjJu0w1Gd4trw_ivXL6YpXmBTisgDqII1&amp;t=636117930523139822">
+<link rel="stylesheet" type="text/css" href="WebResource.axd?d=ghf52NiK1vMVjAf0uCNCZMhqj8unuPYRPtR0YkZ3L0HQKHl2hw6zWqRbQUgNNB546dU8wjPJRE9q6gSx8XNV3_k_OElFolPWIrPKN6uN-VEFQ1zWM06lhuheqoktRWL5tc27qYWIgYz3_Gi2Ev5k-7-bpl1UzH8ghe-PZme42qS3q9zN0&amp;t=636117930522046151">
+<link rel="stylesheet" type="text/css" href="WebResource.axd?d=rYEktWElwFGbxVy5hxBaZ7NtG62KZbTLKhW1Lu1CdfYFdSzVFSvhEaRw38GgWALlZThSyNBlAj5IPLJaw7V4a35frgkbaS_6g__wO2fRF0q_vozG1Dbwa1x_3R9Ith0sHTIhNGoiVxG69yYSq7PjgnXcffZR2hL85kj9mw99u0L-c5RA0&amp;t=636117930522514986">
+<link href="./Default.css" type="text/css" rel="stylesheet"><link href="./jquery-ui-1.8.19.custom.css" type="text/css" rel="stylesheet"><title>
+	Solicitud Chequeras
+</title></head>
+<body>
+    <form name="aspnetForm" method="post" action="Pages/Accounts/CheckBook.aspx?PageLinkData=tdGaFLRUs7O6TdPKQaQlNFAluhN%2b1mu0y84eINQYScY4hBYiSApnwo%2ffseExKR3FVAhJjESIVgkraGDx3fjln91gw2xtIwm0%2b%2fTMkBJHG%2f8%3d" id="aspnetForm">
+<div>
+<input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="">
+<input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="">
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwULLTE5MzY1Nzg3OTkPFgYeBlJlZlVybAUhaHR0cDovLzEwLjEuNzUuMTA0OjkwODAvSG9tZS5hc3B4HgxQYWdlTGlua0RhdGEFbHRkR2FGTFJVczdPNlRkUEtRYVFsTkZBbHVoTisxbXUweTg0ZUlOUVlTY1k0aEJZaVNBcG53by9mc2VFeEtSM0ZWQWhKakVTSVZna3JhR0R4M2ZqbG45MWd3Mnh0SXdtMCsvVE1rQkpIRy84PR4NU2VsZWN0ZWRJbmRleGYWAmYPZBYCAgEPZBYCAgEPZBYCZg9kFgQCAQ9kFgQCAg8PFgIeBFRleHQFE1NvbGljaXR1ZCBDaGVxdWVyYXNkZAIHD2QWAmYPZBYIZg9kFgICAQ9kFgICAQ9kFgICAQ9kFgJmDzwrABYCAA8WBh4RQ2xpZW50U3RhdGVMb2FkZWRoHg1DYWxsYmFja1N0YXRlZR4OXyFVc2VWaWV3U3RhdGVnZAYPZBAWB2YCAQICAgMCBAIFAgYWBzwrAAwBABYCHg9Db2xWaXNpYmxlSW5kZXhmPCsACwEAFgIfBwIBPCsACwEAFgIfBwICPCsACwEAFgIfBwIDPCsACwEAFgIfBwIEPCsACwEAFgIfBwIFPCsACwEAFgIfBwIGDxYHAgECAgICAgICAgICAgMWAwWWAURldkV4cHJlc3MuV2ViLkFTUHhHcmlkVmlldy5HcmlkVmlld0NvbW1hbmRDb2x1bW4sIERldkV4cHJlc3MuV2ViLkFTUHhHcmlkVmlldy52OC4zLCBWZXJzaW9uPTguMy41LjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49Yjg4ZDE3NTRkNzAwZTQ5YQWgAUluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24uQ2xhc3Nlcy5HcmlkVmlld0RhdGFUZXh0Q29sdW1uVGV4dCwgSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbiwgVmVyc2lvbj0zLjAuMS4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPTcxODYyODAxN2ZmYjk2NmUFogFJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLkNsYXNzZXMuR3JpZFZpZXdEYXRhVGV4dENvbHVtbkFtb3VudCwgSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbiwgVmVyc2lvbj0zLjAuMS4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPTcxODYyODAxN2ZmYjk2NmVkAgEPZBYCZg9kFgJmD2QWAmYPZBYEAgEPZBYCAgEPZBYGZg8WAh8DBQQxMjc1ZAIBDxYCHwMFEERJQSBBUkdFTlRJTkEgU0FkAgIPFgIfAwUFJCAgICBkAgMPZBYCAgEPZBYEZg88KwAWAgAPFggeD0RhdGFTb3VyY2VCb3VuZGcfBGcfBWQfBmdkBg9kEBYHZgIBAgICAwIEAgUCBhYHPCsADAEAFgIfB2Y8KwALAQAWCB8HAgEeCVNvcnRJbmRleAL/////Dx4KR3JvdXBJbmRleAL/////Dx4JU29ydE9yZGVyCyl4RGV2RXhwcmVzcy5EYXRhLkNvbHVtblNvcnRPcmRlciwgRGV2RXhwcmVzcy5EYXRhLnY4LjMsIFZlcnNpb249OC4zLjUuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj1iODhkMTc1NGQ3MDBlNDlhADwrAAsBABYIHwcCAh8JAv////8PHwoC/////w8fCwsrBAA8KwALAQAWCB8HAgMfCQL/////Dx8KAv////8PHwsLKwQAPCsACwEAFggfBwIEHwkC/////w8fCgL/////Dx8LCysEADwrAAsBABYIHwcCBR8JAv////8PHwoC/////w8fCwsrBAA8KwALAQAWCB8HAgYfCQL/////Dx8KAv////8PHwsLKwQADxYHAgECAgICAgICAgICAgIWAgWWAURldkV4cHJlc3MuV2ViLkFTUHhHcmlkVmlldy5HcmlkVmlld0NvbW1hbmRDb2x1bW4sIERldkV4cHJlc3MuV2ViLkFTUHhHcmlkVmlldy52OC4zLCBWZXJzaW9uPTguMy41LjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49Yjg4ZDE3NTRkNzAwZTQ5YQWgAUluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24uQ2xhc3Nlcy5HcmlkVmlld0RhdGFUZXh0Q29sdW1uVGV4dCwgSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbiwgVmVyc2lvbj0zLjAuMS4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPTcxODYyODAxN2ZmYjk2NmVkAgIPD2QPEBYBZhYBFgIeDlBhcmFtZXRlclZhbHVlBWx0ZEdhRkxSVXM3TzZUZFBLUWFRbE5GQWx1aE4rMW11MHk4NGVJTlFZU2NZNGhCWWlTQXBud28vZnNlRXhLUjNGVkFoSmpFU0lWZ2tyYUdEeDNmamxuOTFndzJ4dEl3bTArL1RNa0JKSEcvOD0PFgECBxYBBZYBSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbi5DbGFzc2VzLlJlcXVlc3RQYXJhbWV0ZXIsIEluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24sIFZlcnNpb249My4wLjEuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj03MTg2MjgwMTdmZmI5NjZlZGQCAg9kFgICAQ9kFgQCAw8QDxYGHg1EYXRhVGV4dEZpZWxkBQtEZXNjcmlwdGlvbh4ORGF0YVZhbHVlRmllbGQFD0NoZWNrQm9va1R5cGVJZB4LXyFEYXRhQm91bmRnZBAVBhJDaGVxdWVyYSBDb23Dum4gMTASQ2hlcXVlcmEgQ29tw7puIDI1EkNoZXF1ZXJhIENvbcO6biA1MBlDaGVxdWVyYSAxMCBQYWdvIERpZmVyaWRvGUNoZXF1ZXJhIDI1IFBhZ28gRGlmZXJpZG8ZQ2hlcXVlcmEgNTAgUGFnbyBEaWZlcmlkbxUGATEBMgEzATQBNQE2FCsDBmdnZ2dnZxYBZmQCBw8PFgYeC0NoYXJzRmlsdGVyBQ5eW146O1w8PidcIl0qJB4SQ2hhcnNGaWx0ZXJFbmFibGVkZx8DBQExFgIeCm9ua2V5cHJlc3MFJnJldHVybiBudW1iZXJzb25seSh0aGlzLCBldmVudCwgZmFsc2UpZAIGD2QWAgIBD2QWAmYPZBYCZg9kFgQCAQ9kFgICAQ9kFgZmDxYCHwNlZAIBDxYCHwNlZAICDxYCHwNlZAIDD2QWAgIBD2QWDGYPFgIfAwUGQUNUSVZBZAIBDxYCHwMFGE5vIHNlIHBvc2VlIGluZm9ybWFjacOzbmQCAg8WAh8DBRhObyBzZSBwb3NlZSBpbmZvcm1hY2nDs25kAgMPFgIfAwUYTm8gc2UgcG9zZWUgaW5mb3JtYWNpw7NuZAIEDxYCHwMFFENIRVFVRVJBICg1MCkgQ09Nw5pOZAIFDxYCHwMFAjUwZAICDxYCHgVzdHlsZQUNZGlzcGxheTpub25lOxYCAgUPFgIeB1Zpc2libGVoFgQCAQ8QFgYfDQUFVGl0bGUfDgUDVXJpHw9nEBUBABUBABQrAwFnFCsBAGQCAw8WAh8TBQ1kaXNwbGF5Om5vbmU7FgJmD2QWAgIBDxYCHxMFDWRpc3BsYXk6bm9uZTtkGAQFHl9fQ29udHJvbHNSZXF1aXJlUG9zdEJhY2tLZXlfXxYJBR1jdGwwMCRNYWluSG9sZGVyJEFjY291bnRQYW5lbAUaY3RsMDAkTWFpbkhvbGRlciRJbmZvUGFuZWwFQGN0bDAwJE1haW5Ib2xkZXIkYWNjb3VudEhlYWRlclNlbGVjdGVkQWNjb3VudCRwYW5lbEFjY291bnRIZWFkZXIFPGN0bDAwJE1haW5Ib2xkZXIkYWNjb3VudEhlYWRlclNlbGVjdGVkQWNjb3VudCRDaGVja0Jvb2tQYW5lbAUjY3RsMDAkTWFpbkhvbGRlciRwYW5lbEFjY291bnRIZWFkZXIFRmN0bDAwJE1haW5Ib2xkZXIkYWNjb3VudEhlYWRlclNlbGVjdGVkQWNjb3VudERldGFpbCRwYW5lbEFjY291bnRIZWFkZXIFQmN0bDAwJE1haW5Ib2xkZXIkYWNjb3VudEhlYWRlclNlbGVjdGVkQWNjb3VudERldGFpbCRDaGVja0Jvb2tQYW5lbAVRY3RsMDAkTWFpbkhvbGRlciRhY2NvdW50SGVhZGVyU2VsZWN0ZWRBY2NvdW50JENoZWNrQm9va0dyaWQkQ2hlY2tCb29rQVNQeEdyaWRWaWV3BRljdGwwMCRpbWFnZUJ1dHRvbkNvbGxhcHNlBRpjdGwwMCRNYWluSG9sZGVyJG11bHRpVmlldw8PZAIBZAU5Y3RsMDAkTWFpbkhvbGRlciRhY2NvdW50SGVhZGVyU2VsZWN0ZWRBY2NvdW50RGV0YWlsJHZpZXdzDw9kZmQFM2N0bDAwJE1haW5Ib2xkZXIkYWNjb3VudEhlYWRlclNlbGVjdGVkQWNjb3VudCR2aWV3cw8PZGZkcAQc9v0vcpOMYPH4iyw2IQQx7eI=">
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+var theForm = document.forms['aspnetForm'];
+if (!theForm) {
+    theForm = document.aspnetForm;
+}
+function __doPostBack(eventTarget, eventArgument) {
+    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+        theForm.__EVENTTARGET.value = eventTarget;
+        theForm.__EVENTARGUMENT.value = eventArgument;
+        theForm.submit();
+    }
+}
+//]]>
+</script>
+
+
+<script src="./WebResource.axd" type="text/javascript"></script>
+
+<script src="./DataEntry.js.descarga"></script>
+						<style>							
+							P.PanelControlTitleStyle
+							{
+ 								font-family:verdana;
+ 								font-size: 12px;
+								font-weight : bold;
+								text-align: center;  								
+							}
+						</style>						
+						<script language="javascript">
+						function MinMaxPanelControl(cntrlId)
+						{
+						    var imgPath='App_Themes/Default/Images/';	
+					
+							//Get state from hidden control.													
+							if ( document.getElementById(cntrlId).style.display == 'none' )
+							{
+								document.getElementById(cntrlId).style.display = '';						
+								document.getElementById(cntrlId+'_imgPlusMinus').src = imgPath + 'bot-grid-minus.gif';
+							}
+							else 
+							{
+								document.getElementById(cntrlId).style.display = 'none';								
+								document.getElementById(cntrlId+'_imgPlusMinus').src = imgPath + 'bot-grid-plus.gif';
+							}
+						}
+						</script>
+			
+<script type="text/javascript">
+//<![CDATA[
+var __cultureInfo = '{"name":"es-UY","numberFormat":{"CurrencyDecimalDigits":2,"CurrencyDecimalSeparator":",","IsReadOnly":false,"CurrencyGroupSizes":[3],"NumberGroupSizes":[3],"PercentGroupSizes":[3],"CurrencyGroupSeparator":".","CurrencySymbol":"$U","NaNSymbol":"NeuN","CurrencyNegativePattern":14,"NumberNegativePattern":1,"PercentPositivePattern":0,"PercentNegativePattern":0,"NegativeInfinitySymbol":"-Infinito","NegativeSign":"-","NumberDecimalDigits":2,"NumberDecimalSeparator":",","NumberGroupSeparator":".","CurrencyPositivePattern":2,"PositiveInfinitySymbol":"Infinito","PositiveSign":"+","PercentDecimalDigits":2,"PercentDecimalSeparator":",","PercentGroupSeparator":".","PercentSymbol":"%","PerMilleSymbol":"‰","NativeDigits":["0","1","2","3","4","5","6","7","8","9"],"DigitSubstitution":1},"dateTimeFormat":{"AMDesignator":"a.m.","Calendar":{"MinSupportedDateTime":"\/Date(-62135586000000)\/","MaxSupportedDateTime":"\/Date(253402300799999)\/","AlgorithmType":1,"CalendarType":1,"Eras":[1],"TwoDigitYearMax":2029,"IsReadOnly":false},"DateSeparator":"/","FirstDayOfWeek":1,"CalendarWeekRule":0,"FullDateTimePattern":"dddd, dd\u0027 de \u0027MMMM\u0027 de \u0027yyyy hh:mm:ss tt","LongDatePattern":"dddd, dd\u0027 de \u0027MMMM\u0027 de \u0027yyyy","LongTimePattern":"hh:mm:ss tt","MonthDayPattern":"dd MMMM","PMDesignator":"p.m.","RFC1123Pattern":"ddd, dd MMM yyyy HH\u0027:\u0027mm\u0027:\u0027ss \u0027GMT\u0027","ShortDatePattern":"dd/MM/yyyy","ShortTimePattern":"hh:mm tt","SortableDateTimePattern":"yyyy\u0027-\u0027MM\u0027-\u0027dd\u0027T\u0027HH\u0027:\u0027mm\u0027:\u0027ss","TimeSeparator":":","UniversalSortableDateTimePattern":"yyyy\u0027-\u0027MM\u0027-\u0027dd HH\u0027:\u0027mm\u0027:\u0027ss\u0027Z\u0027","YearMonthPattern":"MMMM\u0027 de \u0027yyyy","AbbreviatedDayNames":["dom","lun","mar","mié","jue","vie","sáb"],"ShortestDayNames":["do","lu","ma","mi","ju","vi","sá"],"DayNames":["domingo","lunes","martes","miércoles","jueves","viernes","sábado"],"AbbreviatedMonthNames":["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic",""],"MonthNames":["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre",""],"IsReadOnly":false,"NativeCalendarName":"calendario gregoriano","AbbreviatedMonthGenitiveNames":["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic",""],"MonthGenitiveNames":["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre",""]}}';//]]>
+</script>
+
+<script src="./ScriptResource.axd" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+if (typeof(Sys) === 'undefined') throw new Error('ASP.NET Ajax client-side framework failed to load.');
+//]]>
+</script>
+
+<script src="./ScriptResource(1).axd" type="text/javascript"></script>
+<div>
+
+	<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEWCQL66YfTBALwmMPjDgKB+v+mAwKOivKwDALK+dmsBgL0pK+rBgLi9NGEAQLRqszJDgKJt+C7AbVfYnbVJBOdIlZVzkRm5uayrSX+">
+</div>
+    <script type="text/javascript">
+//<![CDATA[
+Sys.WebForms.PageRequestManager._initialize('ctl00$scriptManager', document.getElementById('aspnetForm'));
+Sys.WebForms.PageRequestManager.getInstance()._updateControls([], [], [], 90);
+//]]>
+</script>
+
+    <input type="hidden" id="PageLinkData" name="PageLinkData" value="">
+    <input type="hidden" id="PageLinkUrl" name="PageLinkUrl" value="">
+    <input type="hidden" id="PageUrl" value="/Pages/Accounts/CheckBook.aspx">
+    <table id="ctl00_tableContent" width="100%" border="0" cellpadding="0" cellspacing="0" class="ic-content">
+	<tbody><tr>
+		<td class="ic-content-left-aux">
+                <img src="./log-img-aux-left-bottom.gif" width="9" height="110">
+            </td>
+		<td style="width: 100%">
+                <table width="100%" border="0" cellpadding="0" cellspacing="0" class="ic-content-left">
+                    <tbody><tr>
+                        <td id="TdCPM" class="ic-content-space-top" valign="top">
+                            <table id="TablaCPM" width="100%" border="0" cellspacing="0" cellpadding="0">
+                                
+                                <tbody><tr>
+                                    <td>
+                                        <table id="ctl00_tableHeader" width="100%" border="0" cellspacing="0" cellpadding="0">
+			<tbody><tr>
+				<td class="ic-breadcrumb-container">
+                                                    
+                                                    &gt;
+                                                    <span id="ctl00_siteMapNavigator"><a href="Pages/Accounts/CheckBook.aspx?PageLinkData=tdGaFLRUs7O6TdPKQaQlNFAluhN%2b1mu0y84eINQYScY4hBYiSApnwo%2ffseExKR3FVAhJjESIVgkraGDx3fjln91gw2xtIwm0%2b%2fTMkBJHG%2f8%3d#ctl00_siteMapNavigator_SkipLink"><img alt="Skip Navigation Links" height="0" width="0" src="./WebResource(1).axd" style="border-width:0px;"></a><span><a href="">Posición Consolidada</a></span><span> &gt; </span><span><a>Cuentas</a></span><span> &gt; </span><span>Solicitud Chequeras</span><a id="ctl00_siteMapNavigator_SkipLink"></a></span>
+                                                    </td>
+				<td class="ic-toolbar-container">
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tbody><tr>
+                                                            <td width="16">
+                                                                <img src="./ico-print.gif" id="ctl00_Img4" width="16" height="16">
+                                                            </td>
+                                                            <td class="ic-links-toolbar">
+                                                                <a href="Pages/Accounts/CheckBook.aspx?PageLinkData=tdGaFLRUs7O6TdPKQaQlNFAluhN%2b1mu0y84eINQYScY4hBYiSApnwo%2ffseExKR3FVAhJjESIVgkraGDx3fjln91gw2xtIwm0%2b%2fTMkBJHG%2f8%3d#" onclick="javascript: GoPrint();">
+                                                                    Imprimir página</a>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody></table>
+                                                </td>
+			</tr>
+		</tbody></table>
+		
+                                    </td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>
+                                        <span id="ctl00_labelTitle" class="ic-page-title">Solicitud Chequeras</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td id="ctl00_cellRequiered" align="right">&nbsp;</td>
+		
+                                </tr>
+                                <tr>
+                                    <td width="95%" align="center">
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                            <tbody><tr>
+                                                <td align="right">
+                                                    
+                                                    
+                                                </td>
+                                            </tr>
+                                        </tbody></table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="100%" align="center">
+                                        <div id="ic-loading" class="ic-loading-bg" style="display: none;">
+                                            <div class="ic-loading">
+                                                <div id="message">
+                                                    <img src="./cargandoBAR.gif" id="ctl00_imgLoading"><br>
+                                                    <span id="ctl00_WaitingMessage">Procesando...</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="mainContainer">
+                                            
+
+    <script language="javascript" type="text/javascript">
+        function ValidateSelection()
+        {
+         
+            var hasSelection = false;
+            if (AccountASPxGridView._getSelectedRowCount() > 0) {
+             hasSelection = true;}
+             else {
+                    alert('Debe seleccionar una cuenta.');
+             }
+
+            return hasSelection;    
+        }
+
+
+        function ValidateAmount(sender, args) {
+
+            var amount = document.getElementById('ctl00_MainHolder_QuantityTextBox').value;
+            if (amount != null && amount != "" && amount > 0 && amount < 10) {
+                args.IsValid = true;
+            }
+            else {
+                args.IsValid = false;
+            }
+        }
+        
+        function ValidateMaximumAmount(sender, args) {
+
+            var amount = document.getElementById('ctl00_MainHolder_QuantityTextBox').value;
+            if (amount != null && amount != "" && amount < 10) {
+                args.IsValid = true;
+            }
+            else {
+                args.IsValid = false;
+            }
+        }
+        
+        function ValidateSelectionCheckBook(sender, args)
+        {
+         
+            var hasSelection = false;
+            if (CheckBookASPxGridView._getSelectedRowCount() > 0)
+            {
+                hasSelection = true;
+             }
+             else 
+             {
+                    alert('Debe seleccionar un registro.');
+             }                   
+
+            return hasSelection;    
+        }
+        
+    </script>
+
+    
+            
+        <table class="ic-grid-border" cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+			<tbody><tr>
+				<td><table id="ctl00_MainHolder_accountHeaderSelectedAccount_panelAccountHeader_thePanel" class="ic-grid" cellspacing="0" cellpadding="0" align="Center" border="0" style="width:100%;border-collapse:collapse;">
+					<tbody><tr class="ic-grid-title-row">
+						<td><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+							<tbody><tr>
+								<td class="ic-grid-title-cell-left">&nbsp;</td><td class="ic-grid-title-cell" align="left" style="white-space:nowrap;">Información de la Cuenta</td><td class="ic-gridB-title-cell-right"><img id="ctl00_MainHolder_accountHeaderSelectedAccount_panelAccountHeader_imgPlusMinus" onclick="javascript:MinMaxPanelControl(&#39;ctl00_MainHolder_accountHeaderSelectedAccount_panelAccountHeader&#39;)" src="./bot-grid-minus.gif" alt="Minimizar/Maximizar el panel" align="absmiddle" style="border-width:0px;cursor:hand;"></td>
+							</tr>
+						</tbody></table></td>
+					</tr><tr>
+						<td align="center"><div id="ctl00_MainHolder_accountHeaderSelectedAccount_panelAccountHeader" style="color:Black;border-color:DodgerBlue;font-family:verdana;font-size:10pt;width:100%;display:;">
+	
+            <div id="ctl00_MainHolder_accountHeaderSelectedAccount_panelAccountData">
+		
+                    </div><table style="width: 100%" border="0" cellpadding="0" cellspacing="0">
+                <tbody><tr class="ic-form-row">
+                        <td class="ic-form-label" width="20%">
+                            Número de cuenta:
+                        </td>
+                        <td class="ic-form-data" width="30%">
+                            1275
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="ic-form-label" width="20%">
+                            Nombre de la cuenta:
+                        </td>
+                        <td class="ic-form-data" width="30%">
+                            DIA ARGENTINA SA
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="ic-form-label" width="20%">
+                            Moneda:
+                        </td>
+                        <td class="ic-form-data" width="30%">
+                            $    
+                        </td>
+                    </tr>
+                
+	
+            </tbody></table>
+        <input name="ctl00$MainHolder$accountHeaderSelectedAccount$ctl00$MainHolder$accountHeaderSelectedAccount$panelAccountHeader_hdnMinimizeState" type="text" value="False" id="ctl00_MainHolder_accountHeaderSelectedAccount_ctl00_MainHolder_accountHeaderSelectedAccount_panelAccountHeader_hdnMinimizeState" class="ic-control-text" onkeypress="return validCharactersOnly(this, event, &quot;&quot;)" style="display:none">
+</div></td>
+					</tr>
+				</tbody></table></td>
+			</tr>
+		</tbody></table>
+        &nbsp;
+        <table class="ic-grid-border" cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+			<tbody><tr>
+				<td><table id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookPanel_thePanel" class="ic-grid" cellspacing="0" cellpadding="0" align="Center" border="0" style="width:100%;border-collapse:collapse;">
+					<tbody><tr class="ic-grid-title-row">
+						<td><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+							<tbody><tr>
+								<td class="ic-grid-title-cell-left">&nbsp;</td><td class="ic-grid-title-cell" align="left" style="white-space:nowrap;">Chequeras solicitadas</td><td class="ic-gridB-title-cell-right"><img id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookPanel_imgPlusMinus" onclick="javascript:MinMaxPanelControl(&#39;ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookPanel&#39;)" src="./bot-grid-minus.gif" alt="Minimizar/Maximizar el panel" align="absmiddle" style="border-width:0px;cursor:hand;"></td>
+							</tr>
+						</tbody></table></td>
+					</tr><tr>
+						<td align="center"><div id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookPanel" style="color:Black;border-color:DodgerBlue;font-family:verdana;font-size:10pt;width:100%;display:;">
+	
+            <input type="hidden"><script id="dxss_1241175972" type="text/javascript">
+<!--
+window.__aspxServerFormID = 'aspnetForm';
+window.__aspxEmptyImageUrl = '/WebResource.axd?d=r8sGQK9x2VC5LfrAIP6hMW5Of0BQVx_5pcDtr_NzGA4Mft0ncv4hE1i-zBmnc8mg561Q33dXnVDmopWX_iwnWZgBELnuoLpA0P4EazLGo0XHyr4FYJEcfil8vQPDw-wMFdsFLo8AfLVBnlRoJ_At_JUEG241&t=636117930523139822';
+//-->
+</script>
+
+	<script id="dxis_136246879" src="WebResource.axd?d=lpQXfXMd7MA5efK7FgP7xSTptW-isWG9F7xy-p6axiHykSMzKr2vZB9HxF3uiyVeviIDaQhRP--qRoyt7U5Xs23lXUbDg9sZ3eVLA5DfhWzRxrkSaSrLWg0qpGbU0ZD8oFffHg2&amp;t=636117930523139822" type="text/javascript"></script>
+	<script id="dxis_73471454" src="WebResource.axd?d=B6t2vV5hJPe5KNSDsGz0G-Qo_jX6C65gHrQUg-Az319-tJMEtQjd9y6czUWhZQGG3dnoXrHo-ZJaXCHCE5jYHT3eVNuOjaKsJArhIIDUPoSG5mRbicLoQL1ZKA2OpcoJiddmFQCigCacHH_1IQ12JtkIRcWONtuNSb900gzUPkLQsAEW_aZrbQtx-VxFW5LNURMUBA2&amp;t=636117930522514986" type="text/javascript"></script>
+	<table class="dxgvControl" cellspacing="0" cellpadding="0" id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView" border="0" style="width:100%;border-collapse:collapse;border-collapse:separate;">
+		<tbody><tr>
+			<td><table id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_DXMainTable" class="dxgvTable" cellspacing="0" cellpadding="0" onclick="aspxGVTableClick(&#39;ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView&#39;, event);" border="0" style="width:100%;border-collapse:collapse;empty-cells:show;">
+				<tbody><tr id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_DXHeadersRow">
+					<td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_DXTDcol0" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView&#39;, this, event);" style="border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td> </td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_DXTDGScol1" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView&#39;, this, event);" style="text-align:Left;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Left;">Cantidad</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_DXTDGScol2" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView&#39;, this, event);" style="text-align:Left;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Left;">Id del Pedido</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_DXTDGScol3" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView&#39;, this, event);" style="text-align:Left;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Left;">Desde</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_DXTDGScol4" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView&#39;, this, event);" style="text-align:Left;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Left;">Hasta</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_DXTDGScol5" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView&#39;, this, event);" style="text-align:Left;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Left;">Tipo</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_DXTDGScol6" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView&#39;, this, event);" style="text-align:Left;border-left-width:0px;border-top-width:0px;border-right-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Left;">Estado</td>
+						</tr>
+					</tbody></table></td>
+				</tr><tr id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_DXDataRow0" class="dxgvDataRow ic-grid-row01">
+					<td class="dxgvCommandColumn dxgv" align="center"><input id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_DXSelBtn0" class="dxgvCommandColumnItem" type="checkbox" onclick="aspxGVSelectRow(&#39;ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView&#39;,0,this);"></td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell0_1" class="dxgv" style="text-align:Left;">1</td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell0_2" class="dxgv" style="text-align:Left;">0</td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell0_3" class="dxgv" style="text-align:Left;">32107</td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell0_4" class="dxgv" style="text-align:Left;">32108</td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell0_5" class="dxgv" style="text-align:Left;">CHEQUERA 1 CHEQ MIGRACION</td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell0_6" class="dxgv" style="text-align:Left;border-right-width:0px;">ACTIVA</td>
+				</tr><tr id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_DXDataRow1" class="dxgvDataRow ic-grid-row01 dxgvDataRowAlt ic-grid-row02">
+					<td class="dxgvCommandColumn dxgv" align="center"><input id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_DXSelBtn1" class="dxgvCommandColumnItem" type="checkbox" onclick="aspxGVSelectRow(&#39;ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView&#39;,1,this);"></td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell1_1" class="dxgv" style="text-align:Left;">50</td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell1_2" class="dxgv" style="text-align:Left;">0</td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell1_3" class="dxgv" style="text-align:Left;">36732451</td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell1_4" class="dxgv" style="text-align:Left;">36732501</td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell1_5" class="dxgv" style="text-align:Left;">CHEQUERA (50) COMÚN</td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell1_6" class="dxgv" style="text-align:Left;border-right-width:0px;">ACTIVA</td>
+				</tr><tr id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_DXDataRow2" class="dxgvDataRow ic-grid-row01">
+					<td class="dxgvCommandColumn dxgv" align="center"><input id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_DXSelBtn2" class="dxgvCommandColumnItem" type="checkbox" onclick="aspxGVSelectRow(&#39;ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView&#39;,2,this);"></td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell2_1" class="dxgv" style="text-align:Left;">50</td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell2_2" class="dxgv" style="text-align:Left;">0</td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell2_3" class="dxgv" style="text-align:Left;">41086551</td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell2_4" class="dxgv" style="text-align:Left;">41086601</td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell2_5" class="dxgv" style="text-align:Left;">CHEQUERA (50) COMÚN</td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell2_6" class="dxgv" style="text-align:Left;border-right-width:0px;">ACTIVA</td>
+				</tr><tr id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_DXDataRow3" class="dxgvDataRow ic-grid-row01 dxgvDataRowAlt ic-grid-row02">
+					<td class="dxgvCommandColumn dxgv" align="center"><input id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_DXSelBtn3" class="dxgvCommandColumnItem" type="checkbox" onclick="aspxGVSelectRow(&#39;ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView&#39;,3,this);"></td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell3_1" class="dxgv" style="text-align:Left;">50</td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell3_2" class="dxgv" style="text-align:Left;">0</td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell3_3" class="dxgv" style="text-align:Left;">41231901</td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell3_4" class="dxgv" style="text-align:Left;">41231951</td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell3_5" class="dxgv" style="text-align:Left;">CHEQUERA (50) COMÚN</td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell3_6" class="dxgv" style="text-align:Left;border-right-width:0px;">ACTIVA</td>
+				</tr><tr id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_DXDataRow4" class="dxgvDataRow ic-grid-row01">
+					<td class="dxgvCommandColumn dxgv" align="center"><input id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_DXSelBtn4" class="dxgvCommandColumnItem" type="checkbox" onclick="aspxGVSelectRow(&#39;ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView&#39;,4,this);"></td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell4_1" class="dxgv" style="text-align:Left;">50</td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell4_2" class="dxgv" style="text-align:Left;">0</td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell4_3" class="dxgv" style="text-align:Left;">41447301</td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell4_4" class="dxgv" style="text-align:Left;">41447351</td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell4_5" class="dxgv" style="text-align:Left;">CHEQUERA (50) COMÚN</td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell4_6" class="dxgv" style="text-align:Left;border-right-width:0px;">ACTIVA</td>
+				</tr><tr id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_DXDataRow5" class="dxgvDataRow ic-grid-row01 dxgvDataRowAlt ic-grid-row02">
+					<td class="dxgvCommandColumn dxgv" align="center"><input id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_DXSelBtn5" class="dxgvCommandColumnItem" type="checkbox" onclick="aspxGVSelectRow(&#39;ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView&#39;,5,this);"></td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell5_1" class="dxgv" style="text-align:Left;">50</td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell5_2" class="dxgv" style="text-align:Left;">0</td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell5_3" class="dxgv" style="text-align:Left;">41552351</td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell5_4" class="dxgv" style="text-align:Left;">41552401</td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell5_5" class="dxgv" style="text-align:Left;">CHEQUERA (50) COMÚN</td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell5_6" class="dxgv" style="text-align:Left;border-right-width:0px;">ACTIVA</td>
+				</tr><tr id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_DXDataRow6" class="dxgvDataRow ic-grid-row01">
+					<td class="dxgvCommandColumn dxgv" align="center"><input id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_DXSelBtn6" class="dxgvCommandColumnItem" type="checkbox" onclick="aspxGVSelectRow(&#39;ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView&#39;,6,this);"></td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell6_1" class="dxgv" style="text-align:Left;">50</td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell6_2" class="dxgv" style="text-align:Left;">0</td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell6_3" class="dxgv" style="text-align:Left;">41736801</td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell6_4" class="dxgv" style="text-align:Left;">41736851</td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell6_5" class="dxgv" style="text-align:Left;">CHEQUERA (50) COMÚN</td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell6_6" class="dxgv" style="text-align:Left;border-right-width:0px;">ACTIVA</td>
+				</tr><tr id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_DXDataRow7" class="dxgvDataRow ic-grid-row01 dxgvDataRowAlt ic-grid-row02">
+					<td class="dxgvCommandColumn dxgv" align="center"><input id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_DXSelBtn7" class="dxgvCommandColumnItem" type="checkbox" onclick="aspxGVSelectRow(&#39;ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView&#39;,7,this);"></td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell7_1" class="dxgv" style="text-align:Left;">10</td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell7_2" class="dxgv" style="text-align:Left;">0</td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell7_3" class="dxgv" style="text-align:Left;">42275576</td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell7_4" class="dxgv" style="text-align:Left;">42275586</td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell7_5" class="dxgv" style="text-align:Left;">CHEQUERA (10) COMÚN</td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell7_6" class="dxgv" style="text-align:Left;border-right-width:0px;">ACTIVA</td>
+				</tr><tr id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_DXDataRow8" class="dxgvDataRow ic-grid-row01">
+					<td class="dxgvCommandColumn dxgv" align="center"><input id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_DXSelBtn8" class="dxgvCommandColumnItem" type="checkbox" onclick="aspxGVSelectRow(&#39;ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView&#39;,8,this);"></td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell8_1" class="dxgv" style="text-align:Left;">10</td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell8_2" class="dxgv" style="text-align:Left;">0</td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell8_3" class="dxgv" style="text-align:Left;">42275586</td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell8_4" class="dxgv" style="text-align:Left;">42275596</td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell8_5" class="dxgv" style="text-align:Left;">CHEQUERA (10) COMÚN</td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell8_6" class="dxgv" style="text-align:Left;border-right-width:0px;">ACTIVA</td>
+				</tr><tr id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_DXDataRow9" class="dxgvDataRow ic-grid-row01 dxgvDataRowAlt ic-grid-row02">
+					<td class="dxgvCommandColumn dxgv" align="center"><input id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_DXSelBtn9" class="dxgvCommandColumnItem" type="checkbox" onclick="aspxGVSelectRow(&#39;ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView&#39;,9,this);"></td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell9_1" class="dxgv" style="text-align:Left;">10</td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell9_2" class="dxgv" style="text-align:Left;">0</td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell9_3" class="dxgv" style="text-align:Left;">42275596</td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell9_4" class="dxgv" style="text-align:Left;">42275606</td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell9_5" class="dxgv" style="text-align:Left;">CHEQUERA (10) COMÚN</td><td id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_tccell9_6" class="dxgv" style="text-align:Left;border-right-width:0px;">ACTIVA</td>
+				</tr>
+			</tbody></table><img id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_IADD" src="WebResource.axd?d=zmjMpr80GYAmEwmv6PTO4jHm-iUXGMxrGFPjteATWk_EtNGf3iDVw-aT4G08ZRytI7cXqygxu5NbcH53j5nFDgPy1n-J3RwnV_jYE955-iIBWT619zx969RYTGwI4T_oLncH9fE1zU7TDu7ujRo6kFn7cDJwuKBtb5i7REKouGcnOJ20FVOpZXRHGMNSVF1As9mSBA2&amp;t=636117930522514986" alt="|" style="border-width:0px;position:absolute;visibility:hidden;"><img id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_IADU" src="WebResource.axd?d=d53ekbEwGfyQeJyFp6vk2dPCjrraV-Xk4udzB8gS9-2LzVLgK5vJH4SzBpqspPHjQosH6xo2H7Q8_JeAgna-wexHfSLAnsCSbFXCNaDFazRliBSPaEQBGELlUTQwpdDMTrR62G2DaHBNtGeu8d-5sHwHTZIkRoz3zflJuc3iE5aKuFKZdv604J-PkuIcArrq5h5f6g2&amp;t=636117930522514986" alt="|" style="border-width:0px;position:absolute;visibility:hidden;"><img id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_IDHF" src="WebResource.axd?d=Jqg0e7JfkM6PiB_6avGUC6p_8XDlbI_kh4QnNdjRzKmGD_ubqo43OOzhzBGwkTiUk2d5hWcbqzMsaSlyTTWwkVEBMOov5Rk7G0yn4vJxUX0GPVvoLog38leGhYhR_BNK3GcWS5PseT1NEt2SaZ7qpKnYgEFUkImGJaNUWllvARKJ8w7t8WgLvdhBTmaqT6ksbdaNiN5l1xPW5CDhLHZA40SIbZw1&amp;t=636117930522514986" alt="Hide" style="border-width:0px;position:absolute;visibility:hidden;"><div class="dxgvPagerBottomPanel">
+				<input type="hidden"><table class="dxpControl" cellspacing="0" cellpadding="0" id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_DXPagerBottom" border="0" style="border-collapse:collapse;border-collapse:separate;">
+					<tbody><tr>
+						<td><table cellspacing="0" cellpadding="0" border="0" style="border-collapse:collapse;border-collapse:separate;">
+							<tbody><tr>
+								<td class="dxpSummary" style="white-space:nowrap;">Página 1 de 19 (182 items)</td><td style="width:4px;"><div style="height:1px;width:4px;overflow:hidden;">
+
+								</div></td><td class="dxpButton dxpDisabledButton dxpDisabled"><img src="WebResource.axd?d=b7ar1SGTkethF5yEOec9mlv38hrRtI3LQdW2WNa1UcTyvWfVICy1qgAWAj3pUCK2eia4e813_KU9MZ5ngTrLSfcmBFttjue6h5v0Cm3RccDTQImBG1UXHLbHmiliUJO9J2sygn9sJ7PZLXAQ5Y_NezZJ9nw1&amp;t=636117930523139822" alt="Prev" style="height:17px;width:16px;border-width:0px;"></td><td style="width:4px;"><div style="height:1px;width:4px;overflow:hidden;">
+
+								</div></td><td class="dxpPageNumber dxpCurrentPageNumber">[1]</td><td style="width:4px;"><div style="height:1px;width:4px;overflow:hidden;">
+
+								</div></td><td class="dxpPageNumber" onclick="aspxGVPagerOnClick(&#39;ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView&#39;,&#39;PN1&#39;);" style="cursor:pointer;">2</td><td style="width:4px;"><div style="height:1px;width:4px;overflow:hidden;">
+
+								</div></td><td class="dxpPageNumber" onclick="aspxGVPagerOnClick(&#39;ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView&#39;,&#39;PN2&#39;);" style="cursor:pointer;">3</td><td style="width:4px;"><div style="height:1px;width:4px;overflow:hidden;">
+
+								</div></td><td class="dxpPageNumber" onclick="aspxGVPagerOnClick(&#39;ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView&#39;,&#39;PN3&#39;);" style="cursor:pointer;">4</td><td style="width:4px;"><div style="height:1px;width:4px;overflow:hidden;">
+
+								</div></td><td class="dxpPageNumber" onclick="aspxGVPagerOnClick(&#39;ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView&#39;,&#39;PN4&#39;);" style="cursor:pointer;">5</td><td style="width:4px;"><div style="height:1px;width:4px;overflow:hidden;">
+
+								</div></td><td class="dxpPageNumber" onclick="aspxGVPagerOnClick(&#39;ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView&#39;,&#39;PN5&#39;);" style="cursor:pointer;">6</td><td style="width:4px;"><div style="height:1px;width:4px;overflow:hidden;">
+
+								</div></td><td class="dxpPageNumber" onclick="aspxGVPagerOnClick(&#39;ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView&#39;,&#39;PN6&#39;);" style="cursor:pointer;">7</td><td style="width:4px;"><div style="height:1px;width:4px;overflow:hidden;">
+
+								</div></td><td class="dxpSummary">…</td><td style="width:4px;"><div style="height:1px;width:4px;overflow:hidden;">
+
+								</div></td><td class="dxpPageNumber" onclick="aspxGVPagerOnClick(&#39;ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView&#39;,&#39;PN16&#39;);" style="cursor:pointer;">17</td><td style="width:4px;"><div style="height:1px;width:4px;overflow:hidden;">
+
+								</div></td><td class="dxpPageNumber" onclick="aspxGVPagerOnClick(&#39;ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView&#39;,&#39;PN17&#39;);" style="cursor:pointer;">18</td><td style="width:4px;"><div style="height:1px;width:4px;overflow:hidden;">
+
+								</div></td><td class="dxpPageNumber" onclick="aspxGVPagerOnClick(&#39;ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView&#39;,&#39;PN18&#39;);" style="cursor:pointer;">19</td><td style="width:4px;"><div style="height:1px;width:4px;overflow:hidden;">
+
+								</div></td><td class="dxpButton" onclick="aspxGVPagerOnClick(&#39;ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView&#39;,&#39;PBN&#39;);" style="cursor:pointer;"><img src="WebResource.axd?d=rXCpX6YOGe9PS4bEu3cIUxpNQDw7vangOM8QjqUmUShvuX5ImAzHsAMxSIRMGQRGqEtmMpfDPs4ZCoq7yGNoAW9DiF0CzwrOUHqk7D9sZsAo0oWm4JN-Z_1UCcn3eQANoY9q-KRBtHDPvh_dCaae1tn6NXE1&amp;t=636117930523139822" alt="Siguiente" style="height:17px;width:16px;border-width:0px;"></td>
+							</tr>
+						</tbody></table></td>
+					</tr>
+				</tbody></table>
+			</div><table id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_LP" class="dxgvLoadingPanel" cellspacing="0" cellpadding="0" border="0" style="border-collapse:collapse;left:0px;top:0px;z-index:30000;display:none;">
+				<tbody><tr>
+					<td class="dx"><img src="WebResource.axd?d=Q1zJhO9k4HAiRL2QLiZDSHXpXYcJfyJhMEQ3H7oV3rTCTz8ihH17Pz42qs3LeWJyPhFH6JA-cAqdsZSa8-LgIKUTz9cp5E_d6O949Sz0gw0Lim3fyo3xRXOyw6PpvRtr5NoefX3qKbFgOhGWrrtYhr-E8CJeOwnFgV1SsFSQj4SyyKI224ZD2tWitFsKQJHgJBtAyA2&amp;t=636117930522514986" alt="" align="middle" style="border-width:0px;"></td><td class="dx" style="padding-left:0px;">Cargando…</td>
+				</tr>
+			</tbody></table><div id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_LD" class="dxgvLoadingDiv" style="display:none;z-index:29999;position:absolute;">
+
+			</div><input type="hidden" name="ctl00$MainHolder$accountHeaderSelectedAccount$CheckBookGrid$CheckBookASPxGridView$DXSelInput" id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_DXSelInput"><table id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_DXStyleTable" border="0" style="display:none;">
+				<tbody><tr>
+					<td></td>
+				</tr><tr class="dxgvEditingErrorRow">
+					<td class="dxgv" colspan="7" style="border-right-width:0px;"></td>
+				</tr><tr class="dxgvSelectedRow ic-grid-row01">
+					<td></td>
+				</tr><tr class="dxgvFocusedRow ic-grid-row01">
+					<td></td>
+				</tr><tr class="dxgvFocusedGroupRow">
+					<td></td>
+				</tr><tr class="dxgvDataRow ic-grid-row01">
+					<td></td>
+				</tr><tr class="dxgvDataRow ic-grid-row01 dxgvDataRowAlt ic-grid-row02">
+					<td></td>
+				</tr><tr class="dxgvDataRow ic-grid-row01">
+					<td></td>
+				</tr><tr class="dxgvDataRow ic-grid-row01 dxgvDataRowAlt ic-grid-row02">
+					<td></td>
+				</tr><tr class="dxgvDataRow ic-grid-row01">
+					<td></td>
+				</tr><tr class="dxgvDataRow ic-grid-row01 dxgvDataRowAlt ic-grid-row02">
+					<td></td>
+				</tr><tr class="dxgvDataRow ic-grid-row01">
+					<td></td>
+				</tr><tr class="dxgvDataRow ic-grid-row01 dxgvDataRowAlt ic-grid-row02">
+					<td></td>
+				</tr><tr class="dxgvDataRow ic-grid-row01">
+					<td></td>
+				</tr><tr class="dxgvDataRow ic-grid-row01 dxgvDataRowAlt ic-grid-row02">
+					<td></td>
+				</tr>
+			</tbody></table><input type="hidden" name="ctl00$MainHolder$accountHeaderSelectedAccount$CheckBookGrid$CheckBookASPxGridView$CallbackState" id="ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView_CallbackState" value="/wEWBB4ERGF0YQWwC0FBQUFBTFlBQUFBQUFBQUFDZ0FBQUFBSEFBQUFDME5vWldOclFtOXZhMGxrQzBOb1pXTnJRbTl2YTBsa0J3QUFHRU5vWldOclltOXZhMVI1Y0dWRVpYTmpjbWx3ZEdsdmJoaERhR1ZqYTJKdmIydFVlWEJsUkdWelkzSnBjSFJwYjI0SEFBQVJRMmhsWTJ0aWIyOXJVWFZoYm5ScGRIa1JRMmhsWTJ0aWIyOXJVWFZoYm5ScGRIa0NBQUFSUTJobFkydFRaWEYxWlc1alpVWnliMjBSUTJobFkydFRaWEYxWlc1alpVWnliMjBIQUFBUFEyaGxZMnRUWlhGMVpXNWpaVlJ2RDBOb1pXTnJVMlZ4ZFdWdVkyVlVid2NBQUF4amFHVmphMEp2YjJ0SmJtTU1ZMmhsWTJ0Q2IyOXJTVzVqQXdBQUJsTjBZWFIxY3daVGRHRjBkWE1IQUFBUEFBQUFEVUZqWTI5MWJuUk9kVzFpWlhJRFEzTjFFVU5vWldOclltOXZhMVI1Y0dWRGIyUmxBME51ZEFORmMzUURTV1F4QTBsa01nTkpaRE1EUkc5dEExTjFjZ3BUZEdGMGRYTkRiMlJsQmxCbGNtbHZaQTlFWVhSbFNHOTFjbEpsY1hWbGMzUUxWWE5sY2xKbGNYVmxjM1FFUkdGMFpRY0FCd0FIQUFjQUJ2Ly9Cd0lCTUFjQ0dVTklSVkZWUlZKQklERWdRMGhGVVNCTlNVZFNRVU5KVDA0Q0J3RUhBZ1V6TWpFd053Y0NCVE15TVRBNEF3Y0FCd0lHUVVOVVNWWkJCd0FIQUFiLy93Y0NBVEFIQWhSRFNFVlJWVVZTUVNBb05UQXBJRU5QVGNPYVRnSUhNZ2NDQ0RNMk56TXlORFV4QndJSU16WTNNekkxTURFREJ3RUhBZ1pCUTFSSlZrRUhBQWNBQnYvL0J3SUJNQWNDRkVOSVJWRlZSVkpCSUNnMU1Da2dRMDlOdzVwT0FnY3lCd0lJTkRFd09EWTFOVEVIQWdnME1UQTROall3TVFNSEFnY0NCa0ZEVkVsV1FRY0FCd0FHLy84SEFnRXdCd0lVUTBoRlVWVkZVa0VnS0RVd0tTQkRUMDNEbWs0Q0J6SUhBZ2cwTVRJek1Ua3dNUWNDQ0RReE1qTXhPVFV4QXdjREJ3SUdRVU5VU1ZaQkJ3QUhBQWIvL3djQ0FUQUhBaFJEU0VWUlZVVlNRU0FvTlRBcElFTlBUY09hVGdJSE1nY0NDRFF4TkRRM016QXhCd0lJTkRFME5EY3pOVEVEQndRSEFnWkJRMVJKVmtFSEFBY0FCdi8vQndJQk1BY0NGRU5JUlZGVlJWSkJJQ2cxTUNrZ1EwOU53NXBPQWdjeUJ3SUlOREUxTlRJek5URUhBZ2cwTVRVMU1qUXdNUU1IQlFjQ0JrRkRWRWxXUVFjQUJ3QUcvLzhIQWdFd0J3SVVRMGhGVVZWRlVrRWdLRFV3S1NCRFQwM0RtazRDQnpJSEFnZzBNVGN6Tmpnd01RY0NDRFF4TnpNMk9EVXhBd2NHQndJR1FVTlVTVlpCQndBSEFBYi8vd2NDQVRBSEFoUkRTRVZSVlVWU1FTQW9NVEFwSUVOUFRjT2FUZ0lIQ2djQ0NEUXlNamMxTlRjMkJ3SUlOREl5TnpVMU9EWURCd2NIQWdaQlExUkpWa0VIQUFjQUJ2Ly9Cd0lCTUFjQ0ZFTklSVkZWUlZKQklDZ3hNQ2tnUTA5Tnc1cE9BZ2NLQndJSU5ESXlOelUxT0RZSEFnZzBNakkzTlRVNU5nTUhDQWNDQmtGRFZFbFdRUWNBQndBRy8vOEhBZ0V3QndJVVEwaEZVVlZGVWtFZ0tERXdLU0JEVDAzRG1rNENCd29IQWdnME1qSTNOVFU1TmdjQ0NEUXlNamMxTmpBMkF3Y0pCd0lHUVVOVVNWWkIeBVN0YXRlBWhCd2NIQUFJQkJ3RUNBUWNDQWdFSEF3SUJCd1FDQVFjRkFnRUhCZ0lCQndBSEFBY0FCd0FDQUFiLy93a0NER05vWldOclFtOXZhMGx1WXdrQ0FBSUFBd2NFQWdBSEFBSUJCd0FDQVFjQQ=="></td>
+		</tr>
+	</tbody></table><script id="dxss_2121246616" type="text/javascript">
+<!--
+
+var dxo = new ASPxClientGridView('ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView');
+window['CheckBookASPxGridView'] = dxo;
+dxo.callBack = function(arg) { WebForm_DoCallback('ctl00$MainHolder$accountHeaderSelectedAccount$CheckBookGrid$CheckBookASPxGridView',arg,aspxCallback,'ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookGrid_CheckBookASPxGridView',aspxCallbackError,true); };
+dxo.uniqueID = 'ctl00$MainHolder$accountHeaderSelectedAccount$CheckBookGrid$CheckBookASPxGridView';
+dxo.RowClick.AddHandler(function(sender, args) {OnRowClick(sender, args); });
+dxo.callBacksEnabled=true;
+dxo.pageRowCount=10;
+dxo.selectedWithoutPageRowCount=0;
+dxo.visibleStartIndex=0;
+dxo.focusedRowIndex=-1;
+dxo.allowFocusedRow=false;
+dxo.allowMultiSelection=false;
+dxo.isColumnsResizable=false;
+dxo.isVerticalScrolling=false;
+dxo.isMainControlResizable=false;
+dxo.callbackOnFocusedRowChanged=false;
+dxo.callbackOnSelectionChanged=false;
+dxo.autoFilterDelay='1200';
+dxo.ClearColumns();
+dxo.CreateColumn('',0,null,1);
+dxo.CreateColumn('',1,'CheckbookQuantity',1);
+dxo.CreateColumn('',2,'CheckBookId',1);
+dxo.CreateColumn('',3,'CheckSequenceFrom',1);
+dxo.CreateColumn('',4,'CheckSequenceTo',1);
+dxo.CreateColumn('',5,'CheckbookTypeDescription',1);
+dxo.CreateColumn('',6,'Status',1);
+dxo.keys=['0','1','2','3','4','5','6','7','8','9'];
+dxo.InlineInitialize();
+
+//-->
+</script>
+    
+
+
+        <input name="ctl00$MainHolder$accountHeaderSelectedAccount$ctl00$MainHolder$accountHeaderSelectedAccount$CheckBookPanel_hdnMinimizeState" type="text" value="False" id="ctl00_MainHolder_accountHeaderSelectedAccount_ctl00_MainHolder_accountHeaderSelectedAccount_CheckBookPanel_hdnMinimizeState" class="ic-control-text" onkeypress="return validCharactersOnly(this, event, &quot;&quot;)" style="display:none">
+</div></td>
+					</tr>
+				</tbody></table></td>
+			</tr>
+		</tbody></table>
+    
+
+            <table width="100%">
+                <tbody><tr>
+                    <td class="ic-message" style="width: 100%">
+                        Si es ésta la Cuenta para la cual desea solicitar chequeras, presione "Solicitar".
+                    </td>    
+                    <td align="right" nowrap="nowrap">
+                        <a id="ctl00_MainHolder_linkButtonBackToFrom" class="ic-button-navigation" href="javascript:__doPostBack(&#39;ctl00$MainHolder$linkButtonBackToFrom&#39;,&#39;&#39;)">Volver</a>
+                    </td>                
+                    <td align="right" nowrap="nowrap">
+                        <a onclick="return ValidateSelectionCheckBook();" id="ctl00_MainHolder_linkButtonConsultar" class="ic-button-navigation" href="javascript:__doPostBack(&#39;ctl00$MainHolder$linkButtonConsultar&#39;,&#39;&#39;)">Consultar</a>
+                    </td>                    
+                    <td align="right" nowrap="nowrap">
+                        <a id="ctl00_MainHolder_CheckBookRequest" class="ic-button-navigation" href="javascript:__doPostBack(&#39;ctl00$MainHolder$CheckBookRequest&#39;,&#39;&#39;)">Solicitar</a>
+                    </td>
+                </tr>
+            </tbody></table>
+        
+
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="right">
+                                        <div id="ctl00_validationSummaryFooter" style="color:Red;font-size:10px;display:none;">
+
+		</div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="95%" align="center">
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                            <tbody><tr>
+                                                <td align="right">
+                                                    
+                                                    
+                                                </td>
+                                            </tr>
+                                        </tbody></table>
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="ic-content-footer">
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                <tbody><tr class="ic-content-footer-dottedline">
+                                    <td align="right" nowrap="nowrap" style="width: 90%">
+                                    </td>
+                                    <td align="right" nowrap="nowrap" style="width: 10%">
+                                        <a id="ctl00_LinkButtonTermsAndConditions" class="ic-grid-link" href="terminosCondi.html">Términos y Condiciones</a>
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                </tbody></table>
+            </td>
+		<td id="ctl00_cellContentRight" class="ic-content-space-top-right" valign="top" style="display:none;">
+                <table class="ic-content-right" border="0" cellspacing="0" cellpadding="0">
+                    <tbody><tr>
+                        <td>
+                            <img src="./pixel.gif" width="8" height="1">
+                        </td>
+                        <td class="ic-right-panel">
+                            <table border="0" cellpadding="0" cellspacing="0" class="ic-right-panel-content">
+                                <tbody><tr>
+                                    <td width="8" class="ic-right-panel-collapse">
+                                        <input type="image" name="ctl00$imageButtonCollapse" id="ctl00_imageButtonCollapse" src="./bot-right-collapse.gif" style="height:47px;width:9px;border-width:0px;">
+                                    </td>
+                                    
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                </tbody></table>
+            </td>
+	</tr>
+</tbody></table>
+
+    
+    
+<script type="text/javascript">
+//<![CDATA[
+var Page_ValidationSummaries =  new Array(document.getElementById("ctl00_validationSummaryFooter"));
+//]]>
+</script>
+
+<script type="text/javascript">
+//<![CDATA[
+var ctl00_validationSummaryFooter = document.all ? document.all["ctl00_validationSummaryFooter"] : document.getElementById("ctl00_validationSummaryFooter");
+ctl00_validationSummaryFooter.headertext = "Formulario inválido, por favor revise los datos ingresados:";
+ctl00_validationSummaryFooter.showsummary = "False";
+//]]>
+</script>
+
+
+<script type="text/javascript">
+//<![CDATA[
+
+WebForm_InitCallback();
+document.getElementById('ctl00_validationSummaryFooter').dispose = function() {
+    Array.remove(Page_ValidationSummaries, document.getElementById('ctl00_validationSummaryFooter'));
+}
+Sys.Application.initialize();
+//]]>
+</script>
+</form>
+
+
+<div class="ui-dialog ui-widget ui-widget-content ui-corner-all" tabindex="-1" role="dialog" aria-labelledby="ui-dialog-title-sessionTimeoutWarning" style="display: none; z-index: 1000; outline: 0px;"><div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix"><span class="ui-dialog-title" id="ui-dialog-title-sessionTimeoutWarning">&nbsp;</span><a href="Pages/Accounts/CheckBook.aspx?PageLinkData=tdGaFLRUs7O6TdPKQaQlNFAluhN%2b1mu0y84eINQYScY4hBYiSApnwo%2ffseExKR3FVAhJjESIVgkraGDx3fjln91gw2xtIwm0%2b%2fTMkBJHG%2f8%3d#" class="ui-dialog-titlebar-close ui-corner-all" role="button" style="display: none;"><span class="ui-icon ui-icon-closethick">close</span></a></div><div id="sessionTimeoutWarning" style="background-color: rgb(255, 255, 255); padding: 0px; height: 100%;" class="ui-dialog-content ui-widget-content">
+        <div id="sessionTimeoutWarningHeader">
+            <table width="100%">
+                 <tbody><tr>
+                    <td colspan="2" align="center" class="ic-form-data-modal">
+                        La sesión finalizará en <span id="sessionTimeoutCountdown"></span>&nbsp;segundos.
+                        Para seguir operando seleccioná “Continuar”
+                    </td>
+                </tr>
+            </tbody></table>
+        </div>
+    </div><div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix"><div class="ui-dialog-buttonset"><button type="button">Continuar </button><button type="button">Finalizar sesión</button></div></div></div></body></html>

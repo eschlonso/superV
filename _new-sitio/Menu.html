@@ -1,0 +1,854 @@
+
+<!-- saved from url=(0033) -->
+<html xmlns="http://www.w3.org/1999/xhtml"><head id="Head1"><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+
+<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+<script src="http://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<script src="rutas.js"></script> 
+
+
+
+
+
+<script type="text/javascript">
+    var selectedMenuItem = null;
+    
+
+function OpenItem(subMenuItem) {
+    window.top.frames.mainFrame.location = subMenuItem;
+
+
+}
+
+function ActivateMenuItem(item) {    
+    if (selectedMenuItem != null) {
+        if (selectedMenuItem.childNodes[0].className == "ic-menu-item-ico-active") {
+            selectedMenuItem.childNodes[0].className = "ic-menu-item-ico";
+        }
+        else {
+            selectedMenuItem.childNodes[0].className = "ic-menu-item-ico-end";
+        }
+
+        if (selectedMenuItem.childNodes.length == 2) {
+            if (selectedMenuItem.childNodes[1].className == "ic-menu-item-active") {
+                selectedMenuItem.childNodes[1].className = "ic-menu-item";
+            }
+            else {
+                selectedMenuItem.childNodes[1].className = "ic-menu-item-end";
+            }
+        }
+    }
+
+    selectedMenuItem = item;
+
+    if (item.childNodes[0].className == "ic-menu-item-ico") {
+        item.childNodes[0].className = "ic-menu-item-ico-active";
+    }
+    else {
+        item.childNodes[0].className = "ic-menu-item-ico-end-active";
+    }
+
+    if (item.childNodes.length == 2) {
+        if (item.childNodes[1].className == "ic-menu-item") {
+            item.childNodes[1].className = "ic-menu-item-active";
+        }
+        else {
+            item.childNodes[1].className = "ic-menu-item-end-active";
+        }
+    }
+}
+
+function ShowSubMenuItem(subMenuTableID, parentID) {    
+    if (document.getElementById(subMenuTableID).className == "ic-menu-item_level_2_with_Child_collapse") {
+        document.getElementById(subMenuTableID).className = "ic-menu-item_level_2_with_Child";
+        document.getElementById(parentID).className = "ic-menu-item_level_3_Extended";    
+    }
+    else {
+        document.getElementById(subMenuTableID).className = "ic-menu-item_level_2_with_Child_collapse";
+        document.getElementById(parentID).className = "ic-menu-item_level_3";
+    }
+}
+
+function ChangeMenuSize(expand) {    
+    if (expand) {
+        parent.document.getElementById('frameMenuHome').cols = "220,*";
+    }
+    else {
+        parent.document.getElementById('frameMenuHome').cols = "70,*";
+    }
+}
+</script>
+<link href="Menu.css" type="text/css" rel="stylesheet"><title>
+
+</title></head>
+<body>
+    <form name="form1" method="post" action="" id="form1">
+<div>
+<input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="">
+<input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="">
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUKMTA2NjkxMDYwN2QYAgUeX19Db250cm9sc1JlcXVpcmVQb3N0QmFja0tleV9fFgIFDlF1b3RhdGlvblBhbmVsBRBsYW5ndWFnZVNlbGVjdG9yBQltdWx0aVZpZXcPD2RmZDeOn1MRXEhs707uJG9YcyQ5cpn5">
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+var theForm = document.forms['form1'];
+if (!theForm) {
+    theForm = document.form1;
+}
+function __doPostBack(eventTarget, eventArgument) {
+    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+        theForm.__EVENTTARGET.value = eventTarget;
+        theForm.__EVENTARGUMENT.value = eventArgument;
+        theForm.submit();
+    }
+}
+//]]>
+</script>
+
+
+
+<script type="text/javascript">
+//<![CDATA[
+function ShowSubMenu(subMenuTable) {
+    if (subMenuTable.className == 'ic-menu-item_level_2') {
+        subMenuTable.className = 'ic-menu-item_level_2_collapse';
+    }
+    else {
+        document.getElementById('ctl17').className = 'ic-menu-item_level_2_collapse';
+ctl17
+        document.getElementById('ctl33').className = 'ic-menu-item_level_2_collapse';
+ctl33
+        document.getElementById('ctl61').className = 'ic-menu-item_level_2_collapse';
+ctl61
+        document.getElementById('ctl99').className = 'ic-menu-item_level_2_collapse';
+ctl99
+        document.getElementById('ctl127').className = 'ic-menu-item_level_2_collapse';
+ctl127
+        document.getElementById('ctl139').className = 'ic-menu-item_level_2_collapse';
+ctl139
+        document.getElementById('ctl166').className = 'ic-menu-item_level_2_collapse';
+ctl166
+        document.getElementById('ctl178').className = 'ic-menu-item_level_2_collapse';
+ctl178
+        document.getElementById('ctl190').className = 'ic-menu-item_level_2_collapse';
+ctl190
+        document.getElementById('ctl250').className = 'ic-menu-item_level_2_collapse';
+ctl250
+        document.getElementById('ctl306').className = 'ic-menu-item_level_2_collapse';
+ctl306
+        document.getElementById('ctl352').className = 'ic-menu-item_level_2_collapse';
+ctl352
+        document.getElementById('ctl397').className = 'ic-menu-item_level_2_collapse';
+ctl397
+        document.getElementById('ctl464').className = 'ic-menu-item_level_2_collapse';
+ctl464
+        document.getElementById('ctl476').className = 'ic-menu-item_level_2_collapse';
+ctl476
+        document.getElementById('ctl513').className = 'ic-menu-item_level_2_collapse';
+ctl513
+        subMenuTable.className = 'ic-menu-item_level_2';
+    }
+}
+//]]>
+</script>
+
+						<style>							
+							P.PanelControlTitleStyle
+							{
+ 								font-family:verdana;
+ 								font-size: 12px;
+								font-weight : bold;
+								text-align: center;  								
+							}
+						</style>						
+						<script language="javascript">
+						function MinMaxPanelControl(cntrlId)
+						{
+						    var imgPath='/App_Themes/Menu/Images/';	
+					
+							//Get state from hidden control.													
+							if ( document.getElementById(cntrlId).style.display == 'none' )
+							{
+								document.getElementById(cntrlId).style.display = '';						
+								document.getElementById(cntrlId+'_imgPlusMinus').src = imgPath + 'bot-grid-minus.gif';
+							}
+							else 
+							{
+								document.getElementById(cntrlId).style.display = 'none';								
+								document.getElementById(cntrlId+'_imgPlusMinus').src = imgPath + 'bot-grid-plus.gif';
+							}
+						}
+						</script>
+			
+<div>
+
+	<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEWAwK+9LXtCwKCz8mXCwK40MygD4E+NR5CUFDoRdCGOXSjsCOVckKn">
+</div>
+        
+                <table border="0" cellpadding="0" cellspacing="0" style="background-image: url('images/img-left-panel1.gif'); background-repeat: repeat-y;width:100%; height:100%" class="" > <!--  ic-content-left-->
+                    <tbody><tr>
+                       <td class="ic-content-space-top-left" valign="top">
+                        <table border="0" cellpadding="0" cellspacing="0">
+                            <tbody><tr>
+                                <td valign="top">
+                                    <table border="0" cellspacing="0" cellpadding="0">
+                                    <tbody><tr>
+                                        <td class="ic-left-panel">
+                                            <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                                <tbody><tr>
+                                                    <td width="10" class="ic-menu-left">
+                                                        <img src="./img-menu-left.gif" style="height:1px;width:10px;border-width:0px;">
+                                                    </td>
+                                                    <td valign="top" width="183">
+                                                        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="ic-menu-content">
+                                                            <tbody><tr>
+                                                                <td class="ic-menu-title" style="background-image: url(images/fondo-menu.png);">Menú</td>
+                                                                
+                                                                </tr>
+                                                                <tr>
+                                                                <td colspan="2">
+                                                                <div class="ic-menu-overflow">
+                                                                    <table id="tableMenuExpanded" width="100%" border="0" cellspacing="0" cellpadding="0" class="ic-menu-content">
+	<tbody><tr>
+		<td align="center" class="ic-menu-item-ico"><img src="images/icon_home.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a id="bot3">Posición Consolidada</a>
+
+
+
+<!-- OpenItem(&#39;/Home.aspx&#39;); 
+onclick="ActivateMenuItem(this.parentNode.parentNode);"-->
+
+
+		</td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="images/icon_transferencias.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item">
+<!--
+<a id="bot4">Aprobaciones 4</a>
+-->
+
+		<a id="bot4" onclick="ActivateMenuItem(this.parentNode.parentNode);ShowSubMenu(ctl17);">Aprobaciones</a>
+
+		</td>
+	</tr>
+	<tr>
+		<td colspan="2"><table id="ctl17" class="ic-menu-item_level_2_collapse" width="100%" border="0" cellpadding="0" cellspacing="0">
+			<tbody><tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot5">Aprobaciones</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot6">Historial</a></td>
+			</tr>
+		</tbody></table>
+		</td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="images/icon_cuentas.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a id="bot7" onclick="ActivateMenuItem(this.parentNode.parentNode);ShowSubMenu(ctl33);" >Cuentas</a></td>
+	</tr>
+	<tr>
+		<td colspan="2"><table id="ctl33" class="ic-menu-item_level_2_collapse" width="100%" border="0" cellpadding="0" cellspacing="0">
+			<tbody><tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot8">Movimientos</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot9">Acuerdos</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot10">Solicitud Chequeras</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot11">Resumen digital</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot158">Adhesión al resumen digital</a></td>
+			</tr>
+		</tbody></table>
+		</td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="images/icon_transferencias.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a id="bot13" onclick="ActivateMenuItem(this.parentNode.parentNode);ShowSubMenu(ctl61);">Transferencias</a></td>
+	</tr>
+	<tr>
+		<td colspan="2"><table id="ctl61" class="ic-menu-item_level_2_collapse" width="100%" border="0" cellpadding="0" cellspacing="0">
+			<tbody><tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot176">Mis cuentas de crédito</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><table id="ctl69" class="ic-menu-item_level_3">
+					<tbody><tr>
+						<td><a id="bot159" onclick="ShowSubMenuItem(&#39;ctl73&#39;, &#39;ctl69&#39;);">Transferencias Inmediatas</a></td>
+					</tr>
+				</tbody></table>
+				<table id="ctl73" class="ic-menu-item_level_2_with_Child_collapse">
+					<tbody><tr>
+						<td class="ic-menu-item_level_2_with_Child"><a id="bot16"  onclick="">Entre ctas Supervielle</a></td>
+					</tr>
+					<tr>
+						<td class="ic-menu-item_level_2_with_Child"><a id="bot160" onclick="">A ctas de otros bancos</a></td>
+					</tr>
+				</tbody></table>
+				</td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot17" onclick="">Transferencias 24/48 horas</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot18" onclick="">Aprobaciones</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot161" onclick="">Historial</a></td>
+			</tr>
+		</tbody></table>
+		</td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="images/icon_cuentas.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a id="bot20" onclick="ActivateMenuItem(this.parentNode.parentNode);ShowSubMenu(ctl99);">Pago de Servicios</a></td>
+	</tr>
+	<tr>
+		<td colspan="2"><table id="ctl99" class="ic-menu-item_level_2_collapse" width="100%" border="0" cellpadding="0" cellspacing="0">
+			<tbody><tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot21" onclick="">Pagos</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot22" onclick="">Aprobaciones</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot162">Adhesión de Servicios</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot24" onclick="">Consultas</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot25" onclick="">Notificaciones</a></td>
+			</tr>
+		</tbody></table>
+		</td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="images/icon_cheques.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a id="bot80" onclick="ActivateMenuItem(this.parentNode.parentNode);ShowSubMenu(ctl127);">Cheques</a></td>
+	</tr>
+	<tr>
+		<td colspan="2"><table id="ctl127" class="ic-menu-item_level_2_collapse" width="100%" border="0" cellpadding="0" cellspacing="0">
+			<tbody><tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot81"  onclick="">Detalles</a></td>
+			</tr>
+		</tbody></table>
+		</td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="images/icon_plazoFijo.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a id="bot101" onclick="ActivateMenuItem(this.parentNode.parentNode);ShowSubMenu(ctl139);">Plazos Fijos</a></td>
+	</tr>
+	<tr>
+		<td colspan="2"><table id="ctl139" class="ic-menu-item_level_2_collapse" width="100%" border="0" cellpadding="0" cellspacing="0">
+			<tbody><tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot101" onclick="">Detalles</a></td>
+			</tr>
+		</tbody></table>
+		</td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="images/icon_tarjetasCredito.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a id="bot102"  onclick="ActivateMenuItem(this.parentNode.parentNode);">Liquidaciones de Comercio</a></td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="images/icon_tarjetasCredito.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a id="bot177">Tarjetas de Crédito Corporativas</a></td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="images/icon_transferencias.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a id="bot178";">Club de Puntos</a></td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="images/icon_prestamos.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a id="bot172" onclick="ActivateMenuItem(this.parentNode.parentNode);ShowSubMenu(ctl166)">Préstamos</a></td>
+	</tr>
+	<tr>
+		<td colspan="2"><table id="ctl166" class="ic-menu-item_level_2_collapse" width="100%" border="0" cellpadding="0" cellspacing="0">
+			<tbody><tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot173">Detalles</a></td>
+			</tr>
+		</tbody></table>
+		</td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="images/icon_leasing.png" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a id="bot174" onclick="ActivateMenuItem(this.parentNode.parentNode);ShowSubMenu(ctl178);">Leasing</a></td>
+	</tr>
+	<tr>
+		<td colspan="2"><table id="ctl178" class="ic-menu-item_level_2_collapse" width="100%" border="0" cellpadding="0" cellspacing="0">
+			<tbody><tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot175">Detalles</a></td>
+			</tr>
+		</tbody></table>
+		</td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="images/icon_factoring.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a id="bot40" onclick="ActivateMenuItem(this.parentNode.parentNode);ShowSubMenu(ctl190);">Factoring/Depósitos</a></td>
+	</tr>
+	<tr>
+		<td colspan="2"><table id="ctl190" class="ic-menu-item_level_2_collapse" width="100%" border="0" cellpadding="0" cellspacing="0">
+			<tbody><tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot179">Resumen</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot117">Detalle</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot118">Custodia</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot119">Carga de Cheques</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot120">Ingreso de Operaciones</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><table id="ctl214" class="ic-menu-item_level_3">
+					<tbody><tr>
+						<td><a id="bot121" onclick="ShowSubMenuItem(&#39;ctl218&#39;, &#39;ctl214&#39;);">Consultas</a></td>
+					</tr>
+				</tbody></table>
+				<table id="ctl218" class="ic-menu-item_level_2_with_Child_collapse">
+					<tbody><tr>
+						<td class="ic-menu-item_level_2_with_Child"><a id="bot180">Operaciones</a></td>
+					</tr>
+					<tr>
+						<td class="ic-menu-item_level_2_with_Child"><a id="bot122">Documentos</a></td>
+					</tr>
+					<tr>
+						<td class="ic-menu-item_level_2_with_Child"><a id="bot123">Doc. No Tomados</a></td>
+					</tr>
+					<tr>
+						<td class="ic-menu-item_level_2_with_Child"><a id="bot124">Bandeja de Pendientes</a></td>
+					</tr>
+				</tbody></table>
+				</td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot125">Aprobaciones</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot126">Historial</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot127">Contratos</a></td>
+			</tr>
+		</tbody></table>
+		</td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="images/icon_factoring.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a id="bot70" onclick="ActivateMenuItem(this.parentNode.parentNode);ShowSubMenu(ctl250);">Fondo Común de Inversión</a></td>
+	</tr>
+	<tr>
+		<td colspan="2"><table id="ctl250" class="ic-menu-item_level_2_collapse" width="100%" border="0" cellpadding="0" cellspacing="0">
+			<tbody><tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot146">Tenencia</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot147">Resumen de Cuenta</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot148">Liquidaciones</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot149">Valorización Histórica</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot150">Mis Solicitudes</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot151">Consulta de Publicaciones</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot152">Certificaciones</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="#" onclick="">Suscripción</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot153">Rescate</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot154">Selección de Cuentas</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot155">Historial</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot156">Aprobaciones</a></td>
+			</tr>
+		</tbody></table>
+		</td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="images/icon_pagoProveedores.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a id="bot30" onclick="ActivateMenuItem(this.parentNode.parentNode);ShowSubMenu(ctl306);">Pago a Proveedores</a></td>
+	</tr>
+	<tr>
+		<td colspan="2"><table id="ctl306" class="ic-menu-item_level_2_collapse" width="100%" border="0" cellpadding="0" cellspacing="0">
+			<tbody><tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot165";">Resumen de Operaciones</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><table id="ctl314" class="ic-menu-item_level_3">
+					<tbody><tr>
+						<td><a id="bot163" onclick="ShowSubMenuItem(&#39;ctl318&#39;, &#39;ctl314&#39;);">Consulta de Lotes</a></td>
+					</tr>
+				</tbody></table>
+				<table id="ctl318" class="ic-menu-item_level_2_with_Child_collapse">
+					<tbody><tr>
+						<td class="ic-menu-item_level_2_with_Child"><a id="bot164">Cheques</a></td>
+					</tr>
+					<tr>
+						<td class="ic-menu-item_level_2_with_Child"><a id="bot166">Transferencias</a></td>
+					</tr>
+				</tbody></table>
+				</td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot167">Consulta de Cheques</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot168">Ingreso por Archivo</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot169">Ingreso Manual</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot170">Aprobaciones</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot171">Historial</a></td>
+			</tr>
+		</tbody></table>
+		</td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="images/icon_pagoSueldos.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a id="bot50" onclick="ActivateMenuItem(this.parentNode.parentNode);ShowSubMenu(ctl352);">Pago de Sueldos</a></td>
+	</tr>
+	<tr>
+		<td colspan="2"><table id="ctl352" class="ic-menu-item_level_2_collapse" width="100%" border="0" cellpadding="0" cellspacing="0">
+			<tbody><tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot50">Consulta de Nómina</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><table id="ctl360" class="ic-menu-item_level_3">
+					<tbody><tr>
+						<td><a id="bot128" onclick="ShowSubMenuItem(&#39;ctl364&#39;, &#39;ctl360&#39;);">Alta de Nómina</a></td>
+					</tr>
+				</tbody></table>
+				<table id="ctl364" class="ic-menu-item_level_2_with_Child_collapse">
+					<tbody><tr>
+						<td class="ic-menu-item_level_2_with_Child"><a id="bot128">Por Archivo</a></td>
+					</tr>
+				</tbody></table>
+				</td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><table id="ctl371" class="ic-menu-item_level_3">
+					<tbody><tr>
+						<td><a id="bot129" onclick="ShowSubMenuItem(&#39;ctl375&#39;, &#39;ctl371&#39;);">Acreditación</a></td>
+					</tr>
+				</tbody></table>
+				<table id="ctl375" class="ic-menu-item_level_2_with_Child_collapse">
+					<tbody><tr>
+						<td class="ic-menu-item_level_2_with_Child"><a id="bot129">Por Archivo</a></td>
+					</tr>
+					<tr>
+						<td class="ic-menu-item_level_2_with_Child"><a id="bot130">Manual</a></td>
+					</tr>
+				</tbody></table>
+				</td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot131">Aprobaciones</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot132">Historial</a></td>
+			</tr>
+		</tbody></table>
+		</td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="images/icon_comercioExterior.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a id="bot134" onclick="ActivateMenuItem(this.parentNode.parentNode);ShowSubMenu(ctl397);">Comercio Exterior</a></td>
+	</tr>
+	<tr>
+		<td colspan="2"><table id="ctl397" class="ic-menu-item_level_2_collapse" width="100%" border="0" cellpadding="0" cellspacing="0">
+			<tbody><tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot134">Consulta de Operaciones</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot135">Permisos de Embarque</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot136">Financiaciones</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><table id="ctl413" class="ic-menu-item_level_3">
+					<tbody><tr>
+						<td><a id="bot137" onclick="ShowSubMenuItem(&#39;ctl417&#39;, &#39;ctl413&#39;);">Sepa Impo</a></td>
+					</tr>
+				</tbody></table>
+				<table id="ctl417" class="ic-menu-item_level_2_with_Child_collapse">
+					<tbody><tr>
+						<td class="ic-menu-item_level_2_with_Child"><a id="bot137">Pagos Anticipados</a></td>
+					</tr>
+					<tr>
+						<td class="ic-menu-item_level_2_with_Child"><a id="bot138">Despachos</a></td>
+					</tr>
+				</tbody></table>
+				</td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot139">Alerta de Vencimientos</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot140">Alerta de Órdenes de Pago</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot141">Alerta de Regímenes</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot142">Formularios y Circulares</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot143">Ingreso de Operaciones</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot144">Aprobaciones</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot145">Historial</a></td>
+			</tr>
+		</tbody></table>
+		</td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="images/icon_financialinformation.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a id="bot103" onclick="ActivateMenuItem(this.parentNode.parentNode);">Cotización de monedas</a></td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="images/icon_cajasSeguridad.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a href="#" onclick="ActivateMenuItem(this.parentNode.parentNode);ShowSubMenu(ctl464);OpenItem(&#39;/Pages/SafeDepositBoxes/SafeDepositBox.aspx&#39;);">Cajas de Seguridad</a></td>
+	</tr>
+	<tr>
+		<td colspan="2"><table id="ctl464" class="ic-menu-item_level_2_collapse" width="100%" border="0" cellpadding="0" cellspacing="0">
+			<tbody><tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="#" onclick="OpenItem(&#39;/Pages/SafeDepositBoxes/SafeDepositBox.aspx&#39;);">Detalles</a></td>
+			</tr>
+		</tbody></table>
+		</td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="images/icon_administracion.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a id="bot106" onclick="ActivateMenuItem(this.parentNode.parentNode);ShowSubMenu(ctl476);">Administración</a></td>
+	</tr>
+	<tr>
+		<td colspan="2"><table id="ctl476" class="ic-menu-item_level_2_collapse" width="100%" border="0" cellpadding="0" cellspacing="0">
+			<tbody><tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot107">Usuarios</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot108">Cuentas</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot109">Generar clave CET</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot110">Permisos</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot111">Esquemas de firmas</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot112">Formularios</a></td>
+			</tr>
+		</tbody></table>
+		</td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="images/icon_personalize.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a id="bot105" onclick="ActivateMenuItem(this.parentNode.parentNode); OpenItem(&#39;/Pages/Administration/UpdatePhoneNumber.aspx&#39;);">Administrar CDA</a></td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="images/icon_personalize.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a id="bot114" onclick="ActivateMenuItem(this.parentNode.parentNode);ShowSubMenu(ctl513);OpenItem(&#39;/Pages/Common/Personalize.aspx&#39;);">Configuraciones</a></td>
+	</tr>
+	<tr>
+		<td colspan="2"><table id="ctl513" class="ic-menu-item_level_2_collapse" width="100%" border="0" cellpadding="0" cellspacing="0">
+			<tbody><tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot115" onclick="OpenItem(&#39;/Pages/Common/Personalize.aspx&#39;);">Mis favoritos</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a id="bot116" onclick="">Mis empresas</a></td>
+			</tr>
+		</tbody></table>
+		</td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="images/icon_help.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a href="#" onclick="ActivateMenuItem(this.parentNode.parentNode); ">Ayuda</a></td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico-end"><img src="images/icon_logout.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item-end"><a id="bot1a" href="#">Salir del sistema</a></td>
+	</tr>
+</tbody></table>
+
+                                                                </div>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody></table>
+                                                    </td>
+                                                    <td width="10" class="ic-menu-right">&nbsp;</td>
+                                               </tr>
+                                               <tr>
+                                                 <td colspan="3" height="12">
+                                                    <table width="100%" border="0" cellpadding="0" cellspacing="0" class="ic-menu-bottom">
+                                                               <tbody><tr>
+                                                                 <td></td>
+                                                                 <td width="10">
+
+
+<!-- 
+                                                                 <img src="./img-menu-bottom-right.gif" width="15" height="12">
+-->
+
+                                                                 </td>
+                                                               </tr>
+                                                    </tbody></table>
+                                                 </td>
+                                               </tr>
+                                             </tbody></table>
+                                            </td>
+                                            <td style="width:9px" class="ic-left-collapase" rowspan="2">
+                                                
+                                            </td>
+                            </tr>
+                            <tr>
+                                <td class="ic-left-panel" valign="top" style="padding-left:7px; padding-right:6px">
+                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                    <tbody><tr>
+                                        <td class="ic-left-panel-separator">&nbsp;
+                                        </td>
+                                    </tr>
+                                    </tbody></table>
+                                </td>
+                            </tr>
+                        </tbody></table>
+                        </td>
+                    </tr> 
+                </tbody></table>
+            
+        <div style="width:95%; padding-left:7px">
+            
+             <table class="ic-grid-border" cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+	<tbody><tr>
+		<td><table id="QuotationPanel_thePanel" class="ic-grid" cellspacing="0" cellpadding="0" align="Center" border="0" style="width:100%;border-collapse:collapse;">
+			<tbody><tr class="ic-grid-title-row">
+				<td><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+					<tbody><tr>
+						<td class="ic-grid-title-cell-left">&nbsp;</td><td class="ic-grid-title-cell" align="left" style="white-space:nowrap;">Información de contacto</td>
+					</tr>
+				</tbody></table></td>
+			</tr><tr>
+				<td align="center" style="padding:1px;"><div id="QuotationPanel" style="color:Black;border-color:DodgerBlue;font-family:verdana;font-size:10pt;width:100%;display:;">
+	
+            
+            <img src="./ContactoHB.jpg">
+        
+</div></td>
+			</tr>
+		</tbody></table></td>
+	</tr>
+</tbody></table>
+        </div>
+       
+    
+
+</td></tr></tbody></table></form></body></html>

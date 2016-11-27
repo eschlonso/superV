@@ -1,0 +1,896 @@
+
+<!-- saved from url=(0058)Pages/EComex/PagosAnticipados.aspx -->
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><script src="./jquery-1.7.2.min.js.descarga" type="text/javascript"></script>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<link href="Default.css" type="text/css" rel="stylesheet">
+<link href="Menu.css" type="text/css" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="Estilo.css">
+<script src="rutas.js"></script> 
+
+<script src="./jquery-1.7.1.js.descarga" type="text/javascript"></script>
+<script src="./jquery-ui-1.8.19.custom.min.js.descarga" type="text/javascript"></script>
+<script src="./jquery.formatCurrency-1.4.0.js.descarga" type="text/javascript"></script>
+<script src="./idle-timer.js.descarga" type="text/javascript"></script>
+<script src="./idle-timer.min.js.descarga" type="text/javascript"></script>
+<script language="javascript" type="text/javascript">
+
+function Logout() {
+        if (confirm("¿ Desea salir del sistema ?") == true) {
+                    
+            window.location =  '/'+ "Logout.aspx";
+        }
+       
+    }
+    
+var focusedFormControl;    
+var dateFormat = 'dd/mm/aaaa';
+var applicationRoot = '/';      
+function OnRowClick(sender, args) {
+    if (sender.GetSelectedRowCount() == 0) {
+        sender.UnselectRowOnPage(args.visibleIndex);
+        SetPageLinkData("");
+    }
+    else {
+        _aspxClearSelection();
+        sender._selectAllRowsOnPage(false);
+        sender.SelectRow(args.visibleIndex, true);
+        SetPageLinkData(sender.GetRowKey(args.visibleIndex));
+    }
+}
+
+if (history.forward(1))
+{
+
+    location.replace(history.forward(1))
+} 
+
+function PrintPage() {
+
+    window.print();
+}
+
+function GoMyOption(select)
+{
+    var url = select.options[select.selectedIndex].value;
+    if( url != "")
+        window.location = url;
+}
+
+function GoFavourites(select)
+{
+
+    var url = select.options[select.selectedIndex].value;
+    if( url != "")
+        window.location = url;
+}
+
+function GoPrint()
+{
+
+window.print();
+}
+
+function addEvent(elm, evType, fn, useCapture)
+{
+
+  if (elm.addEventListener){
+    elm.addEventListener(evType, fn, useCapture);
+    return true;
+  } else if (elm.attachEvent){
+    var r = elm.attachEvent("on"+evType, fn);
+    return r;
+  } else {
+    alert("Handler could not be removed");
+  }
+} 
+
+function SetPageLinkData(data)
+{
+    pageLinkData = document.getElementById('PageLinkData');
+    pageLinkData.value = data;
+}
+
+function SetPageLinkUrl(url)
+{
+    pageLinkUrl = document.getElementById('PageLinkUrl');
+    pageLinkUrl.value = url;
+}
+
+function doPageLink(id)
+{
+    __doPostBack(id, 'PageLinkEvent');
+}
+
+function imprimirEstadoCuenta()
+{
+                      
+    var ficha = document.getElementById('printDiv');    
+    var ventimp = window.open('', 'popimpr','height=450, width=550, scrollbars=1');                                           
+    var fichaHTML = new String(ficha.innerHTML);
+    fichaHTML = fichaHTML.replace('Seleccione un período y oprima "Consultar".'," ");
+    //var i = document.getElementById('ctl00_MainHolder_panelDetalle_imgPlusMinus');
+    var html  = "<html>\n<head>\n<link rel=\"stylesheet\" type=\"text/css\" href=\"..\\..\\App_Themes\\Default\\Default.css \" />" 
+                + "</head><table width=\"100%\"><tr bgcolor=\"#FF0000\"><td><img src=\"..\\..\\App_Themes\\Default\\Images\\logoSantander.gif\" /></td></tr></table>" 
+                + fichaHTML 
+                + "</html>";
+    ventimp.document.write( html );
+    ventimp.document.close();
+    ventimp.print( );
+    ventimp.close();
+          
+}
+
+ function removeInvalidCharacters(control) {
+ 
+            !(/^[A-zÑñ0-9 ]*$/i).test(control.value) ? control.value = control.value.replace(/[^A-zÑñ0-9 ]/ig, '') : null
+        }
+        
+  function removeInvalidNumbers(control) {
+            !(/^[0-9,]*$/i).test(control.value) ? control.value = control.value.replace(/[^0-9,]/ig, '') : null
+        }
+function showLoading()
+{
+//debugger;
+    // aquí le pasamos la clase o id de nuestro div a centrar (en este caso "caja")
+    $('.ic-loading').css({
+       position:'absolute',
+       left: ($('#mainContainer').width()/2 - $('.ic-loading').outerWidth())/2,
+       //top: ($('#mainContainer').height()/2 - $('.ic-loading').outerHeight())/2
+       top: ($('#mainContainer').height()/2 - $('ic-loading').height()/2)
+    });
+    
+    $('#mainContainer').css('display','none');
+    $('#ic-loading').css('display','block');
+}
+//ModalDialog SessionTimeout
+var idleTime = (parseInt('1170') * 1000); // number of miliseconds until the user is considered idle
+var initialSessionTimeoutMessage = "La sesión finalizará en <span id='sessionTimeoutCountdown'></span> segundos. Para seguir operando seleccioná “Continuar”<br /><br />";
+var sessionTimeoutCountdownId = 'sessionTimeoutCountdown';
+var redirectAfter = (parseInt('30')) ; // number of seconds to wait before redirecting the user
+var redirectTo = '/' + "Logout.aspx"; // URL to relocate the user to once they have timed out
+var keepAliveURL = ''; // URL to call to keep the session alive
+var expiredMessage = ''; // message to show user when the countdown reaches 0
+var running = false; // var to check if the countdown is running 
+var timer; // reference to the setInterval timer so it can be stopped 
+var timerSB;  
+var timeout;  
+    $(document).ready(function() {     
+// create the warning window and set autoOpen to false  
+      var sessionTimeoutWarningDialog = $("#sessionTimeoutWarning"); 
+    $(sessionTimeoutWarningDialog).dialog({         
+        title: '',       
+        autoOpen: false,    // set this to false so we can manually open it         
+        closeOnEscape: false,         
+        draggable: false,         
+        width: 460,         
+        minHeight: 150,         
+        modal: true,           
+        beforeclose: function() { // bind to beforeclose so if the user clicks on the "X" or escape to close the dialog, it will work too             // stop the timer             
+            clearInterval(timer);               // stop countdown
+            running = false;               // ajax call to keep the server-side session alive    
+                  
+            $.ajax({               
+                url: keepAliveURL,               
+                async: false            
+            });         
+        },         
+        buttons: {      
+             'Continuar ': function() {                 
+                // close dialog 
+                window.location.reload();//BM24925: Se agrega esto para que el expired de una cookie se actualice y no se cierre la sesión luego de hacer click en continuar al terminar el timeout del webconfig. El valor del expired se pone en la tabla configuration en la clave SessionMaxMinutes.
+                //var valor = getCookie('ICBWebLogin'); //Esta función la dejo por las dudas, pero no la pude hacer andar poque el document.cookie no me trae las cookies del explorador.                
+                $(this).dialog('close');
+                clearInterval(timerSB);    
+                window.status = "";      
+                StatusBarCountDown();     
+            },
+            'Finalizar sesión': function() {                 
+                // close dialog                 
+                $(sessionTimeoutWarningDialog).html(expiredMessage);
+                $(sessionTimeoutWarningDialog).dialog('disable');                     
+                window.parent.location = redirectTo;           
+            }         
+        },         
+        resizable: false,         
+        open: function() {
+            $('body').css('overflow','auto');         
+        },         
+        close: function() {             
+            // reset overflow             
+            $('body').css('overflow','auto');         
+        }  
+           
+    }); // end of dialog  
+    jQuery("a.ui-dialog-titlebar-close").hide(); 
+          
+    // start the idle timer
+    $.idleTimer(idleTime);
+ 
+});
+
+// BM24925: Función para recuperar el valor de una cookie.
+// name - nombre de la cookie deseada
+// devuelve un string conteniendo el valor de la cookie especificada o null si la cookie no existe
+
+function getCookie(name){
+var micookie = (document.cookie.indexOf('ICBWebLogin=') === -1 ? '' : ("; " + document.cookie).split('; ICBWebLogin=')[1].split(';')[0]);
+
+  var cname = name + "=";               
+  var dc = document.cookie;             
+  if (dc.length > 0) {              
+    begin = dc.indexOf(cname);       
+    if (begin != -1) {           
+      begin += cname.length;       
+      end = dc.indexOf(";", begin);
+      if (end == -1) end = dc.length;
+        return unescape(dc.substring(begin, end));
+    } 
+  }
+  return null;
+}
+
+//Status Bar Countdown Script
+function StatusBarCountDown() 
+{
+    var redirectAfter = (parseInt('30'));
+    var timeout = '1200000';   
+    var redirectTo = '/' + "Logout.aspx"; // URL to relocate the user to once they have timed out   
+    timerSB = setInterval(function(){
+    timeout -= 1000;
+    if(timeout == redirectAfter * 1000)
+    {
+        window.focus();
+    }
+   if(timeout < redirectAfter * 1000)
+   {
+        $("#sessionTimeoutCountdown").html(timeout/1000);
+        $("#sessionTimeoutWarning").dialog('open'); 
+   }
+   if (timeout < 100)
+   {
+        $("#sessionTimeoutWarning").html(expiredMessage);
+        $("#sessionTimeoutWarning").dialog('disable');                     
+        window.parent.location = redirectTo;
+        clearInterval(timerSB);    
+        window.status = "";     
+   }
+        
+   window.status = "Su sesión expirará " + time(timeout) + " minutos";        
+    }, 1000);   
+         
+   function two(x)
+   {
+    return ((x > 9) ? "" : "0") + x
+   }   
+  
+   function time(ms)
+   {   
+       var t = '';   
+       var sec = Math.floor(ms / 1000);   
+       ms = ms % 1000   
+
+       var min = Math.floor(sec / 60);   
+       sec = sec % 60;   
+       t = two(sec);   
+
+       var hr = Math.floor(min / 60);   
+       min = min % 60;   
+       t = two(min) + ":" + t;   
+    return t;
+   }
+}
+
+StatusBarCountDown();
+
+
+
+</script>
+
+<link rel="stylesheet" type="text/css" href="./WebResource.axd">
+<link rel="stylesheet" type="text/css" href="./WebResource(1).axd">
+<link href="./Default.css" type="text/css" rel="stylesheet"><link href="./jquery-ui-1.8.19.custom.css" type="text/css" rel="stylesheet"><title>
+  Detalle de Operaciones / SEPA IMPO/ Pagos Anticipados
+</title></head>
+<body>
+    <form name="aspnetForm" method="post" action="Pages/EComex/PagosAnticipados.aspx" onsubmit="javascript:return WebForm_OnSubmit();" id="aspnetForm">
+<div>
+<input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="">
+<input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="">
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwULLTE5ODE2NDc2NzkPZBYCZg9kFgICAQ9kFgICAQ9kFgJmD2QWBAIBD2QWBAICDw8WAh4EVGV4dAU1RGV0YWxsZSBkZSBPcGVyYWNpb25lcyAvIFNFUEEgSU1QTy8gUGFnb3MgQW50aWNpcGFkb3NkZAIHD2QWBAIBD2QWAmYPZBYGAgEPDxYEHgtDaGFyc0ZpbHRlcgUOXlteOjtcPD4nXCJdKiQeEkNoYXJzRmlsdGVyRW5hYmxlZGcWAh4Kb25rZXlwcmVzcwU5cmV0dXJuIHZhbGlkQ2hhcmFjdGVyc09ubHkodGhpcywgZXZlbnQsICJeW146O1w8PidcIl0qJCIpZAIEDw8WCB8ABQowMy8xMC8yMDE2HwEFDl5bXjo7XDw+J1wiXSokHwJnHglNYXhMZW5ndGgCChYCHwMFI3JldHVybiBkYXRlTnVtYmVyc09ubHkodGhpcywgZXZlbnQpZAIHDw8WCB8ABQoyNC8xMC8yMDE2HwEFDl5bXjo7XDw+J1wiXSokHwJnHwQCChYCHwMFI3JldHVybiBkYXRlTnVtYmVyc09ubHkodGhpcywgZXZlbnQpZAIHDxYCHgdWaXNpYmxlZxYCZg9kFgICAQ9kFgJmD2QWAgIBDzwrABYCAA8WCB4PRGF0YVNvdXJjZUJvdW5kZx4OXyFVc2VWaWV3U3RhdGVnHhFDbGllbnRTdGF0ZUxvYWRlZGceDUNhbGxiYWNrU3RhdGVkZAYPZBAWCGYCAQICAgMCBAIFAgYCBxYIPCsADAEAFgIeD0NvbFZpc2libGVJbmRleGY8KwALAQAWAh8KAgE8KwALAQAWAh8KAgI8KwALAQAWAh8KAgM8KwALAQAWAh8KAgQ8KwALAQAWAh8KAgU8KwALAQAWAh8KAgY8KwALAQAWAh8KAgcPFggCAQICAgMCAgICAgICAgIEFgQFlgFEZXZFeHByZXNzLldlYi5BU1B4R3JpZFZpZXcuR3JpZFZpZXdDb21tYW5kQ29sdW1uLCBEZXZFeHByZXNzLldlYi5BU1B4R3JpZFZpZXcudjguMywgVmVyc2lvbj04LjMuNS4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWI4OGQxNzU0ZDcwMGU0OWEFoAFJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLkNsYXNzZXMuR3JpZFZpZXdEYXRhVGV4dENvbHVtblRleHQsIEluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24sIFZlcnNpb249My4wLjEuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj03MTg2MjgwMTdmZmI5NjZlBaABSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbi5DbGFzc2VzLkdyaWRWaWV3RGF0YVRleHRDb2x1bW5EYXRlLCBJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLCBWZXJzaW9uPTMuMC4xLjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49NzE4NjI4MDE3ZmZiOTY2ZQWiAUluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24uQ2xhc3Nlcy5HcmlkVmlld0RhdGFUZXh0Q29sdW1uQW1vdW50LCBJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLCBWZXJzaW9uPTMuMC4xLjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49NzE4NjI4MDE3ZmZiOTY2ZWQCAg8WAh4Fc3R5bGUFDWRpc3BsYXk6bm9uZTsWAgIFDxYCHwVoFgQCAQ8QFgYeDURhdGFUZXh0RmllbGQFBVRpdGxlHg5EYXRhVmFsdWVGaWVsZAUDVXJpHgtfIURhdGFCb3VuZGcQFQEAFQEAFCsDAWcUKwEAZAIDDxYCHwsFDWRpc3BsYXk6bm9uZTsWAmYPZBYCAgEPFgIfCwUNZGlzcGxheTpub25lO2QYAgUeX19Db250cm9sc1JlcXVpcmVQb3N0QmFja0tleV9fFgQFLWN0bDAwJE1haW5Ib2xkZXIkcGFfbWFzdGVyJE1hc3RlclBhbmVsQ29udHJvbAUmY3RsMDAkTWFpbkhvbGRlciRwYV9ncmlkJHBuT3BlcmFjaW9uZXMFLWN0bDAwJE1haW5Ib2xkZXIkcGFfZ3JpZCRQYWdvc0FudGljaXBhZG9zR3JpZAUZY3RsMDAkaW1hZ2VCdXR0b25Db2xsYXBzZQUYY3RsMDAkTWFpbkhvbGRlciRtdWx0aVBBDw9kZmQlwF4cjOW0Nphg00bqC4ji8rJ48g==">
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+var theForm = document.forms['aspnetForm'];
+if (!theForm) {
+    theForm = document.aspnetForm;
+}
+function __doPostBack(eventTarget, eventArgument) {
+    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+        theForm.__EVENTTARGET.value = eventTarget;
+        theForm.__EVENTARGUMENT.value = eventArgument;
+        theForm.submit();
+    }
+}
+//]]>
+</script>
+
+
+<script src="./WebResource(2).axd" type="text/javascript"></script>
+
+<script src="./DataEntry.js.descarga"></script><script src="./DataEntry.js.descarga"></script>
+            <style>             
+              P.PanelControlTitleStyle
+              {
+                font-family:verdana;
+                font-size: 12px;
+                font-weight : bold;
+                text-align: center;                 
+              }
+            </style>            
+            <script language="javascript">
+            function MinMaxPanelControl(cntrlId)
+            {
+                var imgPath='/App_Themes/Default/Images/';  
+          
+              //Get state from hidden control.                          
+              if ( document.getElementById(cntrlId).style.display == 'none' )
+              {
+                document.getElementById(cntrlId).style.display = '';            
+                document.getElementById(cntrlId+'_imgPlusMinus').src = imgPath + 'bot-grid-minus.gif';
+              }
+              else 
+              {
+                document.getElementById(cntrlId).style.display = 'none';                
+                document.getElementById(cntrlId+'_imgPlusMinus').src = imgPath + 'bot-grid-plus.gif';
+              }
+            }
+            </script>
+      
+<script src="./ScriptResource.axd" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+var __cultureInfo = '{"name":"es-UY","numberFormat":{"CurrencyDecimalDigits":2,"CurrencyDecimalSeparator":",","IsReadOnly":false,"CurrencyGroupSizes":[3],"NumberGroupSizes":[3],"PercentGroupSizes":[3],"CurrencyGroupSeparator":".","CurrencySymbol":"$U","NaNSymbol":"NeuN","CurrencyNegativePattern":14,"NumberNegativePattern":1,"PercentPositivePattern":0,"PercentNegativePattern":0,"NegativeInfinitySymbol":"-Infinito","NegativeSign":"-","NumberDecimalDigits":2,"NumberDecimalSeparator":",","NumberGroupSeparator":".","CurrencyPositivePattern":2,"PositiveInfinitySymbol":"Infinito","PositiveSign":"+","PercentDecimalDigits":2,"PercentDecimalSeparator":",","PercentGroupSeparator":".","PercentSymbol":"%","PerMilleSymbol":"‰","NativeDigits":["0","1","2","3","4","5","6","7","8","9"],"DigitSubstitution":1},"dateTimeFormat":{"AMDesignator":"a.m.","Calendar":{"MinSupportedDateTime":"\/Date(-62135586000000)\/","MaxSupportedDateTime":"\/Date(253402300799999)\/","AlgorithmType":1,"CalendarType":1,"Eras":[1],"TwoDigitYearMax":2029,"IsReadOnly":false},"DateSeparator":"/","FirstDayOfWeek":1,"CalendarWeekRule":0,"FullDateTimePattern":"dddd, dd\u0027 de \u0027MMMM\u0027 de \u0027yyyy hh:mm:ss tt","LongDatePattern":"dddd, dd\u0027 de \u0027MMMM\u0027 de \u0027yyyy","LongTimePattern":"hh:mm:ss tt","MonthDayPattern":"dd MMMM","PMDesignator":"p.m.","RFC1123Pattern":"ddd, dd MMM yyyy HH\u0027:\u0027mm\u0027:\u0027ss \u0027GMT\u0027","ShortDatePattern":"dd/MM/yyyy","ShortTimePattern":"hh:mm tt","SortableDateTimePattern":"yyyy\u0027-\u0027MM\u0027-\u0027dd\u0027T\u0027HH\u0027:\u0027mm\u0027:\u0027ss","TimeSeparator":":","UniversalSortableDateTimePattern":"yyyy\u0027-\u0027MM\u0027-\u0027dd HH\u0027:\u0027mm\u0027:\u0027ss\u0027Z\u0027","YearMonthPattern":"MMMM\u0027 de \u0027yyyy","AbbreviatedDayNames":["dom","lun","mar","mié","jue","vie","sáb"],"ShortestDayNames":["do","lu","ma","mi","ju","vi","sá"],"DayNames":["domingo","lunes","martes","miércoles","jueves","viernes","sábado"],"AbbreviatedMonthNames":["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic",""],"MonthNames":["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre",""],"IsReadOnly":false,"NativeCalendarName":"calendario gregoriano","AbbreviatedMonthGenitiveNames":["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic",""],"MonthGenitiveNames":["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre",""]}}';//]]>
+</script>
+
+<script src="./ScriptResource(1).axd" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+if (typeof(Sys) === 'undefined') throw new Error('ASP.NET Ajax client-side framework failed to load.');
+//]]>
+</script>
+
+<script src="./ScriptResource(2).axd" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+function WebForm_OnSubmit() {
+if (typeof(ValidatorOnSubmit) == "function" && ValidatorOnSubmit() == false) return false;
+return true;
+}
+//]]>
+</script>
+
+<div>
+
+  <input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEWDQKv+P7cBgK30bO9CwKx0bO9CwLp9v7aBALj35PVCwKX85C+BQLw6omGDALXvYvzBQKrkNu4DwKarZjOCwKky+bFCQLRqszJDgKJt+C7ATeJVOLE7TxSs1CZmoUuysMYN4Du">
+</div>
+    <script type="text/javascript">
+//<![CDATA[
+Sys.WebForms.PageRequestManager._initialize('ctl00$scriptManager', document.getElementById('aspnetForm'));
+Sys.WebForms.PageRequestManager.getInstance()._updateControls([], [], [], 90);
+//]]>
+</script>
+
+    <input type="hidden" id="PageLinkData" name="PageLinkData" value="">
+    <input type="hidden" id="PageLinkUrl" name="PageLinkUrl" value="">
+    <input type="hidden" id="PageUrl" value="/Pages/EComex/PagosAnticipados.aspx">
+    <table id="ctl00_tableContent" width="100%" border="0" cellpadding="0" cellspacing="0" class="ic-content">
+  <tbody><tr>
+    <td class="ic-content-left-aux">
+                <img src="./log-img-aux-left-bottom.gif" width="9" height="110">
+            </td>
+    <td style="width: 100%">
+                <table width="100%" border="0" cellpadding="0" cellspacing="0" class="ic-content-left">
+                    <tbody><tr>
+                        <td id="TdCPM" class="ic-content-space-top" valign="top">
+                            <table id="TablaCPM" width="100%" border="0" cellspacing="0" cellpadding="0">
+                                
+                                <tbody><tr>
+                                    <td>
+                                        <table id="ctl00_tableHeader" width="100%" border="0" cellspacing="0" cellpadding="0">
+      <tbody><tr>
+        <td class="ic-breadcrumb-container">
+                                                    
+                                                    &gt;
+                                                    <span id="ctl00_siteMapNavigator"><a href="Pages/EComex/PagosAnticipados.aspx#ctl00_siteMapNavigator_SkipLink"><img alt="Skip Navigation Links" height="0" width="0" src="./WebResource(3).axd" style="border-width:0px;"></a><span><a href="Home.aspx">Posición Consolidada</a></span><span> &gt; </span><span><a>Comercio Exterior</a></span><span> &gt; </span><span><a>Sepa Impo</a></span><span> &gt; </span><span>Pagos Anticipados</span><a id="ctl00_siteMapNavigator_SkipLink"></a></span>
+                                                    </td>
+        <td class="ic-toolbar-container">
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tbody><tr>
+                                                            <td width="16">
+                                                                <img src="./ico-print.gif" id="ctl00_Img4" width="16" height="16">
+                                                            </td>
+                                                            <td class="ic-links-toolbar">
+                                                                <a href="Pages/EComex/PagosAnticipados.aspx#" onclick="javascript: GoPrint();">
+                                                                    Imprimir página</a>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody></table>
+                                                </td>
+      </tr>
+    </tbody></table>
+    
+                                    </td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>
+                                        <span id="ctl00_labelTitle" class="ic-page-title">Detalle de Operaciones / SEPA IMPO/ Pagos Anticipados</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td id="ctl00_cellRequiered" align="right">
+                                        <img src="./ic_img-data-required.gif" id="ctl00_Img5" border="0">
+                                        <span>
+                                            Campo requerido</span>
+                                    </td>
+    
+                                </tr>
+                                <tr>
+                                    <td width="95%" align="center">
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                            <tbody><tr>
+                                                <td align="right">
+                                                    
+                                                    
+                                                </td>
+                                            </tr>
+                                        </tbody></table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="100%" align="center">
+                                        <div id="ic-loading" class="ic-loading-bg" style="display: none;">
+                                            <div class="ic-loading">
+                                                <div id="message">
+                                                    <img src="./cargandoBAR.gif" id="ctl00_imgLoading"><br>
+                                                    <span id="ctl00_WaitingMessage">Procesando...</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="mainContainer">
+                                            
+    <script language="javascript" type="text/javascript">
+    function ValidateUpdateSelection()
+    {
+        var hasSelection = false;
+
+        if (PagosAnticipadosGrid._getSelectedRowCount() > 0) {
+            hasSelection = true;
+        }
+        else {
+            alert('Debe seleccionar un Pago Anticipado para ver su detalle');
+        }
+        
+        return hasSelection;
+    }
+</script>
+    
+    <table class="ic-grid-border" cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+      <tbody><tr>
+        <td><table id="ctl00_MainHolder_pa_master_MasterPanelControl_thePanel" class="ic-grid" cellspacing="0" cellpadding="0" align="Center" border="0" style="width:100%;border-collapse:collapse;">
+          <tbody><tr class="ic-grid-title-row">
+            <td><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+              <tbody><tr>
+                <td class="ic-grid-title-cell-left">&nbsp;</td><td class="ic-grid-title-cell" align="left" style="white-space:nowrap;">Datos a Consultar</td>
+              </tr>
+            </tbody></table></td>
+          </tr><tr>
+            <td align="center"><div id="ctl00_MainHolder_pa_master_MasterPanelControl" style="color:Black;border-color:DodgerBlue;font-family:verdana;font-size:10pt;width:100%;display:;">
+  
+    <table cellspacing="0" cellpadding="0" border="0" width="100%">
+        <tbody><tr>
+            <td width="20%" class="ic-form-label">
+                Estado:
+            </td>
+            <td width="80%" class="ic-form-data">
+                <select name="ctl00$MainHolder$pa_master$ddlEstado" id="ctl00_MainHolder_pa_master_ddlEstado" tabindex="1" class="ic-control-select">
+    <option selected="selected" value="V">Vigentes</option>
+    <option value="T">Terminadas</option>
+
+  </select>
+            </td>
+         </tr>
+         <tr>
+            <td width="20%" class="ic-form-label">Ref.MSD:</td>
+            <td width="80%" class="ic-form-data">
+                <input name="ctl00$MainHolder$pa_master$txtMSD" type="text" maxlength="16" id="ctl00_MainHolder_pa_master_txtMSD" tabindex="2" class="ic-control-text" onkeypress="return validCharactersOnly(this, event, &quot;^[^:;\&lt;&gt;&#39;\&quot;]*$&quot;)" style="width:150px;">
+                <span id="ctl00_MainHolder_pa_master_validadorTipo" style="color:Red;display:none;">En Ref. MSD sólo se pueden ingresar valores alfanuméricos</span>
+                    <span id="ctl00_MainHolder_pa_master_RegularExpressionValidator1" style="color:Red;visibility:hidden;">En Ref. MSD se deben ingresar al menos 3 dígitos.</span>
+            </td>
+        </tr>
+        <tr>
+            <td width="20%" class="ic-form-label">Fecha de Pago:</td>
+            <td width="80%" class="ic-form-data">
+                desde: 
+                <input name="ctl00$MainHolder$pa_master$txtFechaDesde" type="text" value="03/10/2016" maxlength="10" size="8" id="ctl00_MainHolder_pa_master_txtFechaDesde" tabindex="3" class="ic-control-text" onkeypress="return dateNumbersOnly(this, event)">
+                <span id="ctl00_MainHolder_pa_master_requiredFieldValidatorDateFrom" style="color:Red;display:none;">Campo requerido</span>
+                <span id="ctl00_MainHolder_pa_master_dateValidatorDateFrom" style="color:Red;display:none;">Formato válido dd/mm/yyyy</span>
+                
+                hasta: 
+                <input name="ctl00$MainHolder$pa_master$txtFechaHasta" type="text" value="24/10/2016" maxlength="10" size="8" id="ctl00_MainHolder_pa_master_txtFechaHasta" tabindex="4" class="ic-control-text" onkeypress="return dateNumbersOnly(this, event)">
+                <span id="ctl00_MainHolder_pa_master_requiredFieldValidatorDateTo" style="color:Red;display:none;">Campo requerido</span>
+                <span id="ctl00_MainHolder_pa_master_dateValidatorDateTo" style="color:Red;display:none;">Formato válido dd/mm/yyyy</span>
+                
+                <span id="ctl00_MainHolder_pa_master_CompareValidator1" style="color:Red;display:none;">'Hasta' debe ser mayor que 'Desde'.</span>  
+                (dd/mm/aaaa)
+            </td>
+            
+        </tr>  
+     </tbody></table>
+
+</div></td>
+          </tr>
+        </tbody></table></td>
+      </tr>
+    </tbody></table>
+    <table width="100%">
+        <tbody><tr>
+            <td align="left" nowrap="nowrap" width="100%" class="ic-message">
+                <span id="ctl00_MainHolder_lblMensaje">Seleccione los datos y oprima "Consultar"</span> 
+            </td>
+            <td align="right" nowrap="nowrap">
+             <a id="noDisponible3" class="ic-button">Consultar</a>
+                <a id="ctl00_MainHolder_btnConsultar" tabindex="9" class="ic-button-navigation" href="javascript:WebForm_DoPostBackWithOptions(new WebForm_PostBackOptions(&quot;ctl00$MainHolder$btnConsultar&quot;, &quot;&quot;, true, &quot;&quot;, &quot;&quot;, false, true))">Consultar</a>
+            </td>
+        </tr>
+    </tbody></table>
+    
+            <table class="ic-grid-border" cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+      <tbody><tr>
+        <td><table id="ctl00_MainHolder_pa_grid_pnOperaciones_thePanel" class="ic-grid" cellspacing="0" cellpadding="0" align="Center" border="0" style="width:100%;border-collapse:collapse;">
+          <tbody><tr class="ic-grid-title-row">
+            <td><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+              <tbody><tr>
+                <td class="ic-grid-title-cell-left">&nbsp;</td><td class="ic-grid-title-cell" align="left" style="white-space:nowrap;">Detalle de la Consulta</td>
+              </tr>
+            </tbody></table></td>
+          </tr><tr>
+            <td align="center"><div id="ctl00_MainHolder_pa_grid_pnOperaciones" style="color:Black;border-color:DodgerBlue;font-family:verdana;font-size:10pt;width:100%;display:;">
+  
+    
+<input type="hidden"><script id="dxss_1241175972" type="text/javascript">
+<!--
+window.__aspxServerFormID = 'aspnetForm';
+window.__aspxEmptyImageUrl = '/WebResource.axd?d=r8sGQK9x2VC5LfrAIP6hMW5Of0BQVx_5pcDtr_NzGA4Mft0ncv4hE1i-zBmnc8mg561Q33dXnVDmopWX_iwnWZgBELnuoLpA0P4EazLGo0XHyr4FYJEcfil8vQPDw-wMFdsFLo8AfLVBnlRoJ_At_JUEG241&t=636117930523139822';
+//-->
+</script>
+
+  <script id="dxis_136246879" src="./WebResource(4).axd" type="text/javascript"></script>
+  <script id="dxis_73471454" src="./WebResource(5).axd" type="text/javascript"></script>
+  <table class="dxgvControl" cellspacing="0" cellpadding="0" id="ctl00_MainHolder_pa_grid_PagosAnticipadosGrid" border="0" style="width:100%;border-collapse:collapse;border-collapse:separate;">
+    <tbody><tr>
+      <td><table id="ctl00_MainHolder_pa_grid_PagosAnticipadosGrid_DXMainTable" class="dxgvTable" cellspacing="0" cellpadding="0" onclick="aspxGVTableClick(&#39;ctl00_MainHolder_pa_grid_PagosAnticipadosGrid&#39;, event);" border="0" style="width:100%;border-collapse:collapse;empty-cells:show;">
+        <tbody><tr id="ctl00_MainHolder_pa_grid_PagosAnticipadosGrid_DXHeadersRow">
+          <td id="ctl00_MainHolder_pa_grid_PagosAnticipadosGrid_DXTDcol0" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_pa_grid_PagosAnticipadosGrid&#39;, this, event);" style="color:#B20000;background-color:#F4F4F4;border-style:None;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10px;font-weight:bold;cursor:pointer;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="color:#B20000;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10px;font-weight:bold;width:100%;border-collapse:collapse;">
+            <tbody><tr>
+              <td> </td>
+            </tr>
+          </tbody></table></td><td id="ctl00_MainHolder_pa_grid_PagosAnticipadosGrid_DXTDGScol1" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_pa_grid_PagosAnticipadosGrid&#39;, this, event);" style="color:#B20000;background-color:#F4F4F4;border-style:None;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10px;font-weight:bold;cursor:pointer;text-align:Left;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="color:#B20000;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10px;font-weight:bold;width:100%;border-collapse:collapse;">
+            <tbody><tr>
+              <td style="text-align:Left;">Ref.MSD</td>
+            </tr>
+          </tbody></table></td><td id="ctl00_MainHolder_pa_grid_PagosAnticipadosGrid_DXTDGScol2" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_pa_grid_PagosAnticipadosGrid&#39;, this, event);" style="color:#B20000;background-color:#F4F4F4;border-style:None;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10px;font-weight:bold;cursor:pointer;text-align:Center;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="color:#B20000;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10px;font-weight:bold;width:100%;border-collapse:collapse;">
+            <tbody><tr>
+              <td style="text-align:Center;">Fec.Pago</td>
+            </tr>
+          </tbody></table></td><td id="ctl00_MainHolder_pa_grid_PagosAnticipadosGrid_DXTDGScol3" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_pa_grid_PagosAnticipadosGrid&#39;, this, event);" style="color:#B20000;background-color:#F4F4F4;border-style:None;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10px;font-weight:bold;cursor:pointer;text-align:Left;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="color:#B20000;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10px;font-weight:bold;width:100%;border-collapse:collapse;">
+            <tbody><tr>
+              <td style="text-align:Left;">Ref.Op.</td>
+            </tr>
+          </tbody></table></td><td id="ctl00_MainHolder_pa_grid_PagosAnticipadosGrid_DXTDGScol4" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_pa_grid_PagosAnticipadosGrid&#39;, this, event);" style="color:#B20000;background-color:#F4F4F4;border-style:None;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10px;font-weight:bold;cursor:pointer;text-align:Left;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="color:#B20000;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10px;font-weight:bold;width:100%;border-collapse:collapse;">
+            <tbody><tr>
+              <td style="text-align:Left;">B.C.R.A.</td>
+            </tr>
+          </tbody></table></td><td id="ctl00_MainHolder_pa_grid_PagosAnticipadosGrid_DXTDGScol5" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_pa_grid_PagosAnticipadosGrid&#39;, this, event);" style="color:#B20000;background-color:#F4F4F4;border-style:None;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10px;font-weight:bold;cursor:pointer;text-align:Left;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="color:#B20000;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10px;font-weight:bold;width:100%;border-collapse:collapse;">
+            <tbody><tr>
+              <td style="text-align:Left;">Nro.Boleto</td>
+            </tr>
+          </tbody></table></td><td id="ctl00_MainHolder_pa_grid_PagosAnticipadosGrid_DXTDGScol6" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_pa_grid_PagosAnticipadosGrid&#39;, this, event);" style="color:#B20000;background-color:#F4F4F4;border-style:None;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10px;font-weight:bold;cursor:pointer;text-align:Left;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="color:#B20000;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10px;font-weight:bold;width:100%;border-collapse:collapse;">
+            <tbody><tr>
+              <td style="text-align:Left;">Divisa</td>
+            </tr>
+          </tbody></table></td><td id="ctl00_MainHolder_pa_grid_PagosAnticipadosGrid_DXTDGScol7" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_pa_grid_PagosAnticipadosGrid&#39;, this, event);" style="color:#B20000;background-color:#F4F4F4;border-style:None;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10px;font-weight:bold;cursor:pointer;text-align:Right;border-left-width:0px;border-top-width:0px;border-right-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="color:#B20000;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10px;font-weight:bold;width:100%;border-collapse:collapse;">
+            <tbody><tr>
+              <td style="text-align:Right;">Importe</td>
+            </tr>
+          </tbody></table></td>
+        </tr><tr class="dxgvEmptyDataRow">
+          <td class="dxgv" colspan="8" style="border-bottom-width:0px;"><div>
+            Sin datos
+          </div></td>
+        </tr>
+      </tbody></table><img id="ctl00_MainHolder_pa_grid_PagosAnticipadosGrid_IADD" src="./WebResource(6).axd" alt="|" style="border-width:0px;position:absolute;visibility:hidden;"><img id="ctl00_MainHolder_pa_grid_PagosAnticipadosGrid_IADU" src="./WebResource(7).axd" alt="|" style="border-width:0px;position:absolute;visibility:hidden;"><img id="ctl00_MainHolder_pa_grid_PagosAnticipadosGrid_IDHF" src="./WebResource(8).axd" alt="Hide" style="border-width:0px;position:absolute;visibility:hidden;"><table id="ctl00_MainHolder_pa_grid_PagosAnticipadosGrid_LP" class="dxgvLoadingPanel" cellspacing="0" cellpadding="0" border="0" style="border-collapse:collapse;left:0px;top:0px;z-index:30000;display:none;">
+        <tbody><tr>
+          <td class="dx"><img src="./WebResource(9).axd" alt="" align="middle" style="border-width:0px;"></td><td class="dx" style="padding-left:0px;">Cargando…</td>
+        </tr>
+      </tbody></table><div id="ctl00_MainHolder_pa_grid_PagosAnticipadosGrid_LD" class="dxgvLoadingDiv" style="display:none;z-index:29999;position:absolute;">
+
+      </div><input type="hidden" name="ctl00$MainHolder$pa_grid$PagosAnticipadosGrid$DXSelInput" id="ctl00_MainHolder_pa_grid_PagosAnticipadosGrid_DXSelInput"><table id="ctl00_MainHolder_pa_grid_PagosAnticipadosGrid_DXStyleTable" border="0" style="display:none;">
+        <tbody><tr>
+          <td></td>
+        </tr><tr class="dxgvEditingErrorRow">
+          <td class="dxgv" colspan="8" style="border-right-width:0px;"></td>
+        </tr><tr class="dxgvSelectedRow" style="font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10px;">
+          <td></td>
+        </tr><tr class="dxgvFocusedRow" style="font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10px;">
+          <td></td>
+        </tr><tr class="dxgvFocusedGroupRow">
+          <td></td>
+        </tr>
+      </tbody></table><input type="hidden" name="ctl00$MainHolder$pa_grid$PagosAnticipadosGrid$CallbackState" id="ctl00_MainHolder_pa_grid_PagosAnticipadosGrid_CallbackState" value="/wEWBB4ERGF0YQWUA0FBQUFBQUFBQUFBQUFBQUFBQUFBQUFBSUFBQUFCbEpsWmsxVFJBWlNaV1pOVTBRSEFBQUpSbVZqYUdGUVlXZHZDVVpsWTJoaFVHRm5id2dBQUF4U1pXWlBjR1Z5WVdOcGIyNE1VbVZtVDNCbGNtRmphVzl1QndBQUQwTnZaRU52Ym1ObGNIUnZRa05TUVE5RGIyUkRiMjVqWlhCMGIwSkRVa0VEQUFBTFUybG5iR0ZFYVhacGMyRUxVMmxuYkdGRWFYWnBjMkVIQUFBSlRuSnZRbTlzWlhSdkNVNXliMEp2YkdWMGJ3TUFBQWRKYlhCdmNuUmxCMGx0Y0c5eWRHVUZBQUFDU1VRQ1NVUUhBQUVIQUFBQUVFWmxZMmhoVm5SdlQzSnBaMmx1WVd3VFJtVmphR0ZXZEc5RGIyNVFjbTl5Y205bllSSk9iMjFpY21WQ1pXNWxabWxqYVdGeWFXOE1SR2xoYzFCeWIzSnliMmRoQmtWemRHRmtid2hCY0d4cFkyRmtid1ZUWVd4a2J3Y0FCd0E9HgVTdGF0ZQVgQndnSEFBSUJCd0VDQVFjQ0FnRUhBd0lCQndRQ0FRY0ZBZ0VIQmdJQkJ3Y0NBUWNBQndBSEFBY0FBZ0FHLy84SkFnSkpSQWtDQUFJQUF3Y0VBZ0FIQUFJQkJ3QUNBUWNB"></td>
+    </tr>
+  </tbody></table><script id="dxss_1075236924" type="text/javascript">
+<!--
+
+var dxo = new ASPxClientGridView('ctl00_MainHolder_pa_grid_PagosAnticipadosGrid');
+window['PagosAnticipadosGrid'] = dxo;
+dxo.callBack = function(arg) { WebForm_DoCallback('ctl00$MainHolder$pa_grid$PagosAnticipadosGrid',arg,aspxCallback,'ctl00_MainHolder_pa_grid_PagosAnticipadosGrid',aspxCallbackError,true); };
+dxo.uniqueID = 'ctl00$MainHolder$pa_grid$PagosAnticipadosGrid';
+dxo.RowClick.AddHandler(function(sender, args) { OnRowClick(sender, args);});
+dxo.callBacksEnabled=true;
+dxo.pageRowCount=0;
+dxo.selectedWithoutPageRowCount=0;
+dxo.visibleStartIndex=0;
+dxo.focusedRowIndex=-1;
+dxo.allowFocusedRow=false;
+dxo.allowMultiSelection=false;
+dxo.isColumnsResizable=false;
+dxo.isVerticalScrolling=false;
+dxo.isMainControlResizable=false;
+dxo.callbackOnFocusedRowChanged=false;
+dxo.callbackOnSelectionChanged=false;
+dxo.autoFilterDelay='1200';
+dxo.ClearColumns();
+dxo.CreateColumn('',0,null,1);
+dxo.CreateColumn('RefMSD:0',1,'RefMSD',1);
+dxo.CreateColumn('FechaPago:0',2,'FechaPago',1);
+dxo.CreateColumn('RefOperacion:0',3,'RefOperacion',1);
+dxo.CreateColumn('CodConceptoBCRA:0',4,'CodConceptoBCRA',1);
+dxo.CreateColumn('NroBoleto:0',5,'NroBoleto',1);
+dxo.CreateColumn('SiglaDivisa:0',6,'SiglaDivisa',1);
+dxo.CreateColumn('Importe:0',7,'Importe',1);
+dxo.keys=[];
+dxo.InlineInitialize();
+
+//-->
+</script>
+
+    
+</div></td>
+          </tr>
+        </tbody></table></td>
+      </tr>
+    </tbody></table>
+            <table width="100%">
+                <tbody><tr>
+                    <td align="right" nowrap="nowrap" style="width: 100%">
+                        &nbsp;
+                    </td>
+                    <td align="right" nowrap="nowrap">
+                     <a id="noDisponible" class="ic-button">Ver Detalle</a>
+                        <a onclick="return ValidateUpdateSelection();" id="ctl00_MainHolder_btnDetalle" class="ic-button-navigation" href="javascript:WebForm_DoPostBackWithOptions(new WebForm_PostBackOptions(&quot;ctl00$MainHolder$btnDetalle&quot;, &quot;&quot;, true, &quot;&quot;, &quot;&quot;, false, true))">Ver Detalle</a>
+                     </td>
+                     <td align="right" nowrap="nowrap">
+                     <a id="noDisponible1" class="ic-button">Exportar Excel</a>
+                        <a id="ctl00_MainHolder_btnExportar" class="ic-button-navigation-large" href="javascript:WebForm_DoPostBackWithOptions(new WebForm_PostBackOptions(&quot;ctl00$MainHolder$btnExportar&quot;, &quot;&quot;, true, &quot;&quot;, &quot;&quot;, false, true))">Exportar Excel</a>
+                     </td>
+                     <td align="right" nowrap="nowrap">
+                     <a id="noDisponible2" class="ic-button">Imprimir</a>
+                        <a id="ctl00_MainHolder_btnPrint" class="ic-button-navigation" href="javascript:WebForm_DoPostBackWithOptions(new WebForm_PostBackOptions(&quot;ctl00$MainHolder$btnPrint&quot;, &quot;&quot;, true, &quot;&quot;, &quot;&quot;, false, true))">Imprimir</a>
+                     </td>
+                </tr>
+            </tbody></table>
+        
+
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="right">
+                                        <div id="ctl00_validationSummaryFooter" style="color:Red;font-size:10px;display:none;">
+
+    </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="95%" align="center">
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                            <tbody><tr>
+                                                <td align="right">
+                                                    
+                                                    
+                                                </td>
+                                            </tr>
+                                        </tbody></table>
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="ic-content-footer">
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                <tbody><tr class="ic-content-footer-dottedline">
+                                    <td align="right" nowrap="nowrap" style="width: 90%">
+                                    </td>
+                                    <td align="right" nowrap="nowrap" style="width: 10%">
+                                        <a id="ctl00_LinkButtonTermsAndConditions" class="ic-grid-link" href="javascript:__doPostBack(&#39;ctl00$LinkButtonTermsAndConditions&#39;,&#39;&#39;)">Términos y Condiciones</a>
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                </tbody></table>
+            </td>
+    <td id="ctl00_cellContentRight" class="ic-content-space-top-right" valign="top" style="display:none;">
+                <table class="ic-content-right" border="0" cellspacing="0" cellpadding="0">
+                    <tbody><tr>
+                        <td>
+                            <img src="./pixel.gif" width="8" height="1">
+                        </td>
+                        <td class="ic-right-panel">
+                            <table border="0" cellpadding="0" cellspacing="0" class="ic-right-panel-content">
+                                <tbody><tr>
+                                    <td width="8" class="ic-right-panel-collapse">
+                                        <input type="image" name="ctl00$imageButtonCollapse" id="ctl00_imageButtonCollapse" src="./bot-right-collapse.gif" style="height:47px;width:9px;border-width:0px;">
+                                    </td>
+                                    
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                </tbody></table>
+            </td>
+  </tr>
+</tbody></table>
+
+    
+    
+<script type="text/javascript">
+//<![CDATA[
+var Page_ValidationSummaries =  new Array(document.getElementById("ctl00_validationSummaryFooter"));
+var Page_Validators =  new Array(document.getElementById("ctl00_MainHolder_pa_master_validadorTipo"), document.getElementById("ctl00_MainHolder_pa_master_RegularExpressionValidator1"), document.getElementById("ctl00_MainHolder_pa_master_requiredFieldValidatorDateFrom"), document.getElementById("ctl00_MainHolder_pa_master_dateValidatorDateFrom"), document.getElementById("ctl00_MainHolder_pa_master_requiredFieldValidatorDateTo"), document.getElementById("ctl00_MainHolder_pa_master_dateValidatorDateTo"), document.getElementById("ctl00_MainHolder_pa_master_CompareValidator1"));
+//]]>
+</script>
+
+<script type="text/javascript">
+//<![CDATA[
+var ctl00_MainHolder_pa_master_validadorTipo = document.all ? document.all["ctl00_MainHolder_pa_master_validadorTipo"] : document.getElementById("ctl00_MainHolder_pa_master_validadorTipo");
+ctl00_MainHolder_pa_master_validadorTipo.controltovalidate = "ctl00_MainHolder_pa_master_txtMSD";
+ctl00_MainHolder_pa_master_validadorTipo.focusOnError = "t";
+ctl00_MainHolder_pa_master_validadorTipo.errormessage = "En Ref. MSD sólo se pueden ingresar valores alfanuméricos";
+ctl00_MainHolder_pa_master_validadorTipo.display = "Dynamic";
+ctl00_MainHolder_pa_master_validadorTipo.evaluationfunction = "RegularExpressionValidatorEvaluateIsValid";
+ctl00_MainHolder_pa_master_validadorTipo.validationexpression = "^[a-zA0-Z9]+$";
+var ctl00_MainHolder_pa_master_RegularExpressionValidator1 = document.all ? document.all["ctl00_MainHolder_pa_master_RegularExpressionValidator1"] : document.getElementById("ctl00_MainHolder_pa_master_RegularExpressionValidator1");
+ctl00_MainHolder_pa_master_RegularExpressionValidator1.controltovalidate = "ctl00_MainHolder_pa_master_txtMSD";
+ctl00_MainHolder_pa_master_RegularExpressionValidator1.errormessage = "En Ref. MSD se deben ingresar al menos 3 dígitos.";
+ctl00_MainHolder_pa_master_RegularExpressionValidator1.evaluationfunction = "RegularExpressionValidatorEvaluateIsValid";
+ctl00_MainHolder_pa_master_RegularExpressionValidator1.validationexpression = ".{3}.*";
+var ctl00_MainHolder_pa_master_requiredFieldValidatorDateFrom = document.all ? document.all["ctl00_MainHolder_pa_master_requiredFieldValidatorDateFrom"] : document.getElementById("ctl00_MainHolder_pa_master_requiredFieldValidatorDateFrom");
+ctl00_MainHolder_pa_master_requiredFieldValidatorDateFrom.controltovalidate = "ctl00_MainHolder_pa_master_txtFechaDesde";
+ctl00_MainHolder_pa_master_requiredFieldValidatorDateFrom.focusOnError = "t";
+ctl00_MainHolder_pa_master_requiredFieldValidatorDateFrom.errormessage = "Campo requerido";
+ctl00_MainHolder_pa_master_requiredFieldValidatorDateFrom.display = "Dynamic";
+ctl00_MainHolder_pa_master_requiredFieldValidatorDateFrom.evaluationfunction = "RequiredFieldValidatorEvaluateIsValid";
+ctl00_MainHolder_pa_master_requiredFieldValidatorDateFrom.initialvalue = "";
+var ctl00_MainHolder_pa_master_dateValidatorDateFrom = document.all ? document.all["ctl00_MainHolder_pa_master_dateValidatorDateFrom"] : document.getElementById("ctl00_MainHolder_pa_master_dateValidatorDateFrom");
+ctl00_MainHolder_pa_master_dateValidatorDateFrom.controltovalidate = "ctl00_MainHolder_pa_master_txtFechaDesde";
+ctl00_MainHolder_pa_master_dateValidatorDateFrom.focusOnError = "t";
+ctl00_MainHolder_pa_master_dateValidatorDateFrom.errormessage = "Formato de fecha inválida.";
+ctl00_MainHolder_pa_master_dateValidatorDateFrom.display = "Dynamic";
+ctl00_MainHolder_pa_master_dateValidatorDateFrom.evaluationfunction = "CustomValidatorEvaluateIsValid";
+ctl00_MainHolder_pa_master_dateValidatorDateFrom.clientvalidationfunction = "isValidDate";
+var ctl00_MainHolder_pa_master_requiredFieldValidatorDateTo = document.all ? document.all["ctl00_MainHolder_pa_master_requiredFieldValidatorDateTo"] : document.getElementById("ctl00_MainHolder_pa_master_requiredFieldValidatorDateTo");
+ctl00_MainHolder_pa_master_requiredFieldValidatorDateTo.controltovalidate = "ctl00_MainHolder_pa_master_txtFechaHasta";
+ctl00_MainHolder_pa_master_requiredFieldValidatorDateTo.focusOnError = "t";
+ctl00_MainHolder_pa_master_requiredFieldValidatorDateTo.errormessage = "Campo requerido";
+ctl00_MainHolder_pa_master_requiredFieldValidatorDateTo.display = "Dynamic";
+ctl00_MainHolder_pa_master_requiredFieldValidatorDateTo.evaluationfunction = "RequiredFieldValidatorEvaluateIsValid";
+ctl00_MainHolder_pa_master_requiredFieldValidatorDateTo.initialvalue = "";
+var ctl00_MainHolder_pa_master_dateValidatorDateTo = document.all ? document.all["ctl00_MainHolder_pa_master_dateValidatorDateTo"] : document.getElementById("ctl00_MainHolder_pa_master_dateValidatorDateTo");
+ctl00_MainHolder_pa_master_dateValidatorDateTo.controltovalidate = "ctl00_MainHolder_pa_master_txtFechaHasta";
+ctl00_MainHolder_pa_master_dateValidatorDateTo.focusOnError = "t";
+ctl00_MainHolder_pa_master_dateValidatorDateTo.errormessage = "Formato de fecha inválida.";
+ctl00_MainHolder_pa_master_dateValidatorDateTo.display = "Dynamic";
+ctl00_MainHolder_pa_master_dateValidatorDateTo.evaluationfunction = "CustomValidatorEvaluateIsValid";
+ctl00_MainHolder_pa_master_dateValidatorDateTo.clientvalidationfunction = "isValidDate";
+var ctl00_MainHolder_pa_master_CompareValidator1 = document.all ? document.all["ctl00_MainHolder_pa_master_CompareValidator1"] : document.getElementById("ctl00_MainHolder_pa_master_CompareValidator1");
+ctl00_MainHolder_pa_master_CompareValidator1.controltovalidate = "ctl00_MainHolder_pa_master_txtFechaHasta";
+ctl00_MainHolder_pa_master_CompareValidator1.focusOnError = "t";
+ctl00_MainHolder_pa_master_CompareValidator1.errormessage = "\'Hasta\' debe ser mayor que \'Desde\'.";
+ctl00_MainHolder_pa_master_CompareValidator1.display = "Dynamic";
+ctl00_MainHolder_pa_master_CompareValidator1.type = "Date";
+ctl00_MainHolder_pa_master_CompareValidator1.dateorder = "dmy";
+ctl00_MainHolder_pa_master_CompareValidator1.cutoffyear = "2029";
+ctl00_MainHolder_pa_master_CompareValidator1.century = "2000";
+ctl00_MainHolder_pa_master_CompareValidator1.evaluationfunction = "CompareValidatorEvaluateIsValid";
+ctl00_MainHolder_pa_master_CompareValidator1.controltocompare = "ctl00_MainHolder_pa_master_txtFechaDesde";
+ctl00_MainHolder_pa_master_CompareValidator1.controlhookup = "ctl00_MainHolder_pa_master_txtFechaDesde";
+ctl00_MainHolder_pa_master_CompareValidator1.operator = "GreaterThanEqual";
+var ctl00_validationSummaryFooter = document.all ? document.all["ctl00_validationSummaryFooter"] : document.getElementById("ctl00_validationSummaryFooter");
+ctl00_validationSummaryFooter.headertext = "Formulario inválido, por favor revise los datos ingresados:";
+ctl00_validationSummaryFooter.showsummary = "False";
+//]]>
+</script>
+
+
+<script type="text/javascript">
+//<![CDATA[
+
+var Page_ValidationActive = false;
+if (typeof(ValidatorOnLoad) == "function") {
+    ValidatorOnLoad();
+}
+
+function ValidatorOnSubmit() {
+    if (Page_ValidationActive) {
+        return ValidatorCommonOnSubmit();
+    }
+    else {
+        return true;
+    }
+}
+        
+WebForm_InitCallback();
+document.getElementById('ctl00_validationSummaryFooter').dispose = function() {
+    Array.remove(Page_ValidationSummaries, document.getElementById('ctl00_validationSummaryFooter'));
+}
+Sys.Application.initialize();
+
+document.getElementById('ctl00_MainHolder_pa_master_validadorTipo').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_pa_master_validadorTipo'));
+}
+
+document.getElementById('ctl00_MainHolder_pa_master_RegularExpressionValidator1').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_pa_master_RegularExpressionValidator1'));
+}
+
+document.getElementById('ctl00_MainHolder_pa_master_requiredFieldValidatorDateFrom').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_pa_master_requiredFieldValidatorDateFrom'));
+}
+
+document.getElementById('ctl00_MainHolder_pa_master_dateValidatorDateFrom').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_pa_master_dateValidatorDateFrom'));
+}
+
+document.getElementById('ctl00_MainHolder_pa_master_requiredFieldValidatorDateTo').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_pa_master_requiredFieldValidatorDateTo'));
+}
+
+document.getElementById('ctl00_MainHolder_pa_master_dateValidatorDateTo').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_pa_master_dateValidatorDateTo'));
+}
+
+document.getElementById('ctl00_MainHolder_pa_master_CompareValidator1').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_pa_master_CompareValidator1'));
+}
+//]]>
+</script>
+</form>
+
+
+<div class="ui-dialog ui-widget ui-widget-content ui-corner-all" tabindex="-1" role="dialog" aria-labelledby="ui-dialog-title-sessionTimeoutWarning" style="display: none; z-index: 1000; outline: 0px;"><div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix"><span class="ui-dialog-title" id="ui-dialog-title-sessionTimeoutWarning">&nbsp;</span><a href="Pages/EComex/PagosAnticipados.aspx#" class="ui-dialog-titlebar-close ui-corner-all" role="button" style="display: none;"><span class="ui-icon ui-icon-closethick">close</span></a></div><div id="sessionTimeoutWarning" style="background-color: rgb(255, 255, 255); padding: 0px; height: 100%;" class="ui-dialog-content ui-widget-content">
+        <div id="sessionTimeoutWarningHeader">
+            <table width="100%">
+                 <tbody><tr>
+                    <td colspan="2" align="center" class="ic-form-data-modal">
+                        La sesión finalizará en <span id="sessionTimeoutCountdown"></span>&nbsp;segundos.
+                        Para seguir operando seleccioná “Continuar”
+                    </td>
+                </tr>
+            </tbody></table>
+        </div>
+    </div><div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix"><div class="ui-dialog-buttonset"><button type="button">Continuar </button><button type="button">Finalizar sesión</button></div></div></div></body></html>

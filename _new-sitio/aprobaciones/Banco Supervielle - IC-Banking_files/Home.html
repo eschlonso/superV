@@ -1,0 +1,786 @@
+
+<!-- saved from url=(0061)Pages/Common/Transaction_Aproved.aspx -->
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><script src="./jquery-1.7.2.min.js.descarga" type="text/javascript"></script>
+<script src="./jquery-1.7.1.js.descarga" type="text/javascript"></script>
+<script src="./jquery-ui-1.8.19.custom.min.js.descarga" type="text/javascript"></script>
+<script src="./jquery.formatCurrency-1.4.0.js.descarga" type="text/javascript"></script>
+<script src="./idle-timer.js.descarga" type="text/javascript"></script>
+<script src="./idle-timer.min.js.descarga" type="text/javascript"></script>
+<script language="javascript" type="text/javascript">
+
+function Logout() {
+        if (confirm("¿ Desea salir del sistema ?") == true) {
+                    
+            window.location =  '/'+ "Logout.aspx";
+        }
+       
+    }
+    
+var focusedFormControl;    
+var dateFormat = 'dd/mm/aaaa';
+var applicationRoot = '/';      
+function OnRowClick(sender, args) {
+    if (sender.GetSelectedRowCount() == 0) {
+        sender.UnselectRowOnPage(args.visibleIndex);
+        SetPageLinkData("");
+    }
+    else {
+        _aspxClearSelection();
+        sender._selectAllRowsOnPage(false);
+        sender.SelectRow(args.visibleIndex, true);
+        SetPageLinkData(sender.GetRowKey(args.visibleIndex));
+    }
+}
+
+if (history.forward(1))
+{
+
+    location.replace(history.forward(1))
+} 
+
+function PrintPage() {
+
+    window.print();
+}
+
+function GoMyOption(select)
+{
+    var url = select.options[select.selectedIndex].value;
+    if( url != "")
+        window.location = url;
+}
+
+function GoFavourites(select)
+{
+
+    var url = select.options[select.selectedIndex].value;
+    if( url != "")
+        window.location = url;
+}
+
+function GoPrint()
+{
+
+window.print();
+}
+
+function addEvent(elm, evType, fn, useCapture)
+{
+
+  if (elm.addEventListener){
+    elm.addEventListener(evType, fn, useCapture);
+    return true;
+  } else if (elm.attachEvent){
+    var r = elm.attachEvent("on"+evType, fn);
+    return r;
+  } else {
+    alert("Handler could not be removed");
+  }
+} 
+
+function SetPageLinkData(data)
+{
+    pageLinkData = document.getElementById('PageLinkData');
+    pageLinkData.value = data;
+}
+
+function SetPageLinkUrl(url)
+{
+    pageLinkUrl = document.getElementById('PageLinkUrl');
+    pageLinkUrl.value = url;
+}
+
+function doPageLink(id)
+{
+    __doPostBack(id, 'PageLinkEvent');
+}
+
+function imprimirEstadoCuenta()
+{
+											
+    var ficha = document.getElementById('printDiv');		
+    var ventimp = window.open('', 'popimpr','height=450, width=550, scrollbars=1');																						
+    var fichaHTML = new String(ficha.innerHTML);
+    fichaHTML = fichaHTML.replace('Seleccione un período y oprima "Consultar".'," ");
+    //var i = document.getElementById('ctl00_MainHolder_panelDetalle_imgPlusMinus');
+    var html  = "<html>\n<head>\n<link rel=\"stylesheet\" type=\"text/css\" href=\"..\\..\\App_Themes\\Default\\Default.css \" />" 
+                + "</head><table width=\"100%\"><tr bgcolor=\"#FF0000\"><td><img src=\"..\\..\\App_Themes\\Default\\Images\\logoSantander.gif\" /></td></tr></table>" 
+                + fichaHTML 
+                + "</html>";
+    ventimp.document.write( html );
+    ventimp.document.close();
+    ventimp.print( );
+    ventimp.close();
+					
+}
+
+ function removeInvalidCharacters(control) {
+ 
+            !(/^[A-zÑñ0-9 ]*$/i).test(control.value) ? control.value = control.value.replace(/[^A-zÑñ0-9 ]/ig, '') : null
+        }
+        
+  function removeInvalidNumbers(control) {
+            !(/^[0-9,]*$/i).test(control.value) ? control.value = control.value.replace(/[^0-9,]/ig, '') : null
+        }
+function showLoading()
+{
+//debugger;
+    // aquí le pasamos la clase o id de nuestro div a centrar (en este caso "caja")
+    $('.ic-loading').css({
+       position:'absolute',
+       left: ($('#mainContainer').width()/2 - $('.ic-loading').outerWidth())/2,
+       //top: ($('#mainContainer').height()/2 - $('.ic-loading').outerHeight())/2
+       top: ($('#mainContainer').height()/2 - $('ic-loading').height()/2)
+    });
+    
+    $('#mainContainer').css('display','none');
+    $('#ic-loading').css('display','block');
+}
+//ModalDialog SessionTimeout
+var idleTime = (parseInt('1170') * 1000); // number of miliseconds until the user is considered idle
+var initialSessionTimeoutMessage = "La sesión finalizará en <span id='sessionTimeoutCountdown'></span> segundos. Para seguir operando seleccioná “Continuar”<br /><br />";
+var sessionTimeoutCountdownId = 'sessionTimeoutCountdown';
+var redirectAfter = (parseInt('30')) ; // number of seconds to wait before redirecting the user
+var redirectTo = '/' + "Logout.aspx"; // URL to relocate the user to once they have timed out
+var keepAliveURL = ''; // URL to call to keep the session alive
+var expiredMessage = ''; // message to show user when the countdown reaches 0
+var running = false; // var to check if the countdown is running 
+var timer; // reference to the setInterval timer so it can be stopped 
+var timerSB;  
+var timeout;  
+    $(document).ready(function() {     
+// create the warning window and set autoOpen to false  
+      var sessionTimeoutWarningDialog = $("#sessionTimeoutWarning"); 
+    $(sessionTimeoutWarningDialog).dialog({         
+        title: '',       
+        autoOpen: false,    // set this to false so we can manually open it         
+        closeOnEscape: false,         
+        draggable: false,         
+        width: 460,         
+        minHeight: 150,         
+        modal: true,           
+        beforeclose: function() { // bind to beforeclose so if the user clicks on the "X" or escape to close the dialog, it will work too             // stop the timer             
+            clearInterval(timer);               // stop countdown
+            running = false;               // ajax call to keep the server-side session alive    
+                  
+            $.ajax({               
+                url: keepAliveURL,               
+                async: false            
+            });         
+        },         
+        buttons: {      
+             'Continuar ': function() {                 
+                // close dialog 
+                window.location.reload();//BM24925: Se agrega esto para que el expired de una cookie se actualice y no se cierre la sesión luego de hacer click en continuar al terminar el timeout del webconfig. El valor del expired se pone en la tabla configuration en la clave SessionMaxMinutes.
+                //var valor = getCookie('ICBWebLogin'); //Esta función la dejo por las dudas, pero no la pude hacer andar poque el document.cookie no me trae las cookies del explorador.                
+                $(this).dialog('close');
+                clearInterval(timerSB);    
+                window.status = "";      
+                StatusBarCountDown();     
+            },
+            'Finalizar sesión': function() {                 
+                // close dialog                 
+                $(sessionTimeoutWarningDialog).html(expiredMessage);
+                $(sessionTimeoutWarningDialog).dialog('disable');                     
+                window.parent.location = redirectTo;           
+            }         
+        },         
+        resizable: false,         
+        open: function() {
+            $('body').css('overflow','auto');         
+        },         
+        close: function() {             
+            // reset overflow             
+            $('body').css('overflow','auto');         
+        }  
+           
+    }); // end of dialog  
+    jQuery("a.ui-dialog-titlebar-close").hide(); 
+          
+    // start the idle timer
+    $.idleTimer(idleTime);
+ 
+});
+
+// BM24925: Función para recuperar el valor de una cookie.
+// name - nombre de la cookie deseada
+// devuelve un string conteniendo el valor de la cookie especificada o null si la cookie no existe
+
+function getCookie(name){
+var micookie = (document.cookie.indexOf('ICBWebLogin=') === -1 ? '' : ("; " + document.cookie).split('; ICBWebLogin=')[1].split(';')[0]);
+
+  var cname = name + "=";               
+  var dc = document.cookie;             
+  if (dc.length > 0) {              
+    begin = dc.indexOf(cname);       
+    if (begin != -1) {           
+      begin += cname.length;       
+      end = dc.indexOf(";", begin);
+      if (end == -1) end = dc.length;
+        return unescape(dc.substring(begin, end));
+    } 
+  }
+  return null;
+}
+
+//Status Bar Countdown Script
+function StatusBarCountDown() 
+{
+    var redirectAfter = (parseInt('30'));
+    var timeout = '1200000';   
+    var redirectTo = '/' + "Logout.aspx"; // URL to relocate the user to once they have timed out   
+    timerSB = setInterval(function(){
+    timeout -= 1000;
+    if(timeout == redirectAfter * 1000)
+    {
+        window.focus();
+    }
+   if(timeout < redirectAfter * 1000)
+   {
+        $("#sessionTimeoutCountdown").html(timeout/1000);
+        $("#sessionTimeoutWarning").dialog('open'); 
+   }
+   if (timeout < 100)
+   {
+        $("#sessionTimeoutWarning").html(expiredMessage);
+        $("#sessionTimeoutWarning").dialog('disable');                     
+        window.parent.location = redirectTo;
+        clearInterval(timerSB);    
+        window.status = "";     
+   }
+        
+   window.status = "Su sesión expirará " + time(timeout) + " minutos";        
+    }, 1000);   
+         
+   function two(x)
+   {
+    return ((x > 9) ? "" : "0") + x
+   }   
+  
+   function time(ms)
+   {   
+       var t = '';   
+       var sec = Math.floor(ms / 1000);   
+       ms = ms % 1000   
+
+       var min = Math.floor(sec / 60);   
+       sec = sec % 60;   
+       t = two(sec);   
+
+       var hr = Math.floor(min / 60);   
+       min = min % 60;   
+       t = two(min) + ":" + t;   
+    return t;
+   }
+}
+
+StatusBarCountDown();
+
+
+
+</script>
+
+<link rel="stylesheet" type="text/css" href="./WebResource.axd">
+<link rel="stylesheet" type="text/css" href="./WebResource(1).axd">
+<link rel="stylesheet" type="text/css" href="./WebResource(2).axd">
+<link href="./Default.css" type="text/css" rel="stylesheet"><link href="./jquery-ui-1.8.19.custom.css" type="text/css" rel="stylesheet"><title>
+	Aprobaciones
+</title></head>
+<body>
+    <form name="aspnetForm" method="post" action="Pages/Common/Transaction_Aproved.aspx" id="aspnetForm">
+<div>
+<input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="">
+<input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="">
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwULLTE2MDEzODgzMjQPZBYCZg9kFgICAQ9kFgICAQ9kFgJmD2QWBAIBD2QWBAICDw8WAh4EVGV4dAUMQXByb2JhY2lvbmVzZGQCBw9kFgICAQ9kFg5mD2QWAgIDD2QWAgIBDzwrABYCAA8WCB4PRGF0YVNvdXJjZUJvdW5kZx4RQ2xpZW50U3RhdGVMb2FkZWRnHg1DYWxsYmFja1N0YXRlZB4OXyFVc2VWaWV3U3RhdGVnZAYPZBAWB2YCAQICAgMCBAIFAgYWBzwrAAwBABYCHg9Db2xWaXNpYmxlSW5kZXhmPCsACwEAFgIfBQIBPCsACwEAFgIfBQICPCsACwEAFgIfBQIDPCsACwEAFgIfBQIEPCsACwEAFgIfBQIFPCsACwEAFgIfBQIGDxYHAgECAgICAgMCAgIEAgIWBAWWAURldkV4cHJlc3MuV2ViLkFTUHhHcmlkVmlldy5HcmlkVmlld0NvbW1hbmRDb2x1bW4sIERldkV4cHJlc3MuV2ViLkFTUHhHcmlkVmlldy52OC4zLCBWZXJzaW9uPTguMy41LjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49Yjg4ZDE3NTRkNzAwZTQ5YQWgAUluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24uQ2xhc3Nlcy5HcmlkVmlld0RhdGFUZXh0Q29sdW1uVGV4dCwgSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbiwgVmVyc2lvbj0zLjAuMS4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPTcxODYyODAxN2ZmYjk2NmUFoAFJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLkNsYXNzZXMuR3JpZFZpZXdEYXRhVGV4dENvbHVtbkRhdGUsIEluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24sIFZlcnNpb249My4wLjEuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj03MTg2MjgwMTdmZmI5NjZlBaIBSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbi5DbGFzc2VzLkdyaWRWaWV3RGF0YVRleHRDb2x1bW5BbW91bnQsIEluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24sIFZlcnNpb249My4wLjEuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj03MTg2MjgwMTdmZmI5NjZlFgICAQ9kFgJmD2QWAmYPZBYCZg9kFgJmD2QWAgUMRFhIZWFkZXJzUm93D2QWAgUIRFhURGNvbDAPZBYCBQdoZWFkZXIwD2QWAgIBDzwrAAQBAA8WBB8BZx8EZ2RkAgEPZBYEAgEPZBYCAgEPPCsAFgIADxYGHwRnHwJoHwNlZAYPZBAWB2YCAQICAgMCBAIFAgYWBzwrAAsBABYCHwVmPCsACwEAFgIfBQIBPCsACwEAFgIfBQICPCsACwEAFgIfBQIDPCsACwEAFgIfBQIEPCsACwEAFgIfBQIFPCsACwEAFgIfBQIGDxYHAgECAQIBAgICAQIDAgEWAwWgAUluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24uQ2xhc3Nlcy5HcmlkVmlld0RhdGFUZXh0Q29sdW1uVGV4dCwgSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbiwgVmVyc2lvbj0zLjAuMS4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPTcxODYyODAxN2ZmYjk2NmUFoAFJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLkNsYXNzZXMuR3JpZFZpZXdEYXRhVGV4dENvbHVtbkRhdGUsIEluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24sIFZlcnNpb249My4wLjEuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj03MTg2MjgwMTdmZmI5NjZlBaIBSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbi5DbGFzc2VzLkdyaWRWaWV3RGF0YVRleHRDb2x1bW5BbW91bnQsIEluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24sIFZlcnNpb249My4wLjEuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj03MTg2MjgwMTdmZmI5NjZlZAIDD2QWAmYPZBYEZg9kFgICAQ9kFggCAw8PFgQeC0NoYXJzRmlsdGVyBQ5eW146O1w8PidcIl0qJB4SQ2hhcnNGaWx0ZXJFbmFibGVkZxYCHgpvbmtleXByZXNzBTlyZXR1cm4gdmFsaWRDaGFyYWN0ZXJzT25seSh0aGlzLCBldmVudCwgIl5bXjo7XDw+J1wiXSokIilkAgUPDxYCHgdFbmFibGVkaGRkAgcPDxYCHwloZGQCCQ8PFgIfCWhkZAIBD2QWAgIBD2QWAgIDD2QWAmYPZBYCAgEPDxYEHwYFDl5bXjo7XDw+J1wiXSokHwdnFgIfCAU5cmV0dXJuIHZhbGlkQ2hhcmFjdGVyc09ubHkodGhpcywgZXZlbnQsICJeW146O1w8PidcIl0qJCIpZAICD2QWAgIBD2QWAgIBDzwrABYCAA8WBh8EZx8CaB8DZWQGD2QQFgVmAgECAgIDAgQWBTwrAAsBABYCHwVmPCsACwEAFgIfBQIBPCsACwEAFgIfBQICPCsACwEAFgIfBQIDPCsACwEAFgIfBQIEDxYFAgECAgICAgMCAhYDBaABSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbi5DbGFzc2VzLkdyaWRWaWV3RGF0YVRleHRDb2x1bW5EYXRlLCBJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLCBWZXJzaW9uPTMuMC4xLjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49NzE4NjI4MDE3ZmZiOTY2ZQWgAUluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24uQ2xhc3Nlcy5HcmlkVmlld0RhdGFUZXh0Q29sdW1uVGV4dCwgSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbiwgVmVyc2lvbj0zLjAuMS4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPTcxODYyODAxN2ZmYjk2NmUFogFJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLkNsYXNzZXMuR3JpZFZpZXdEYXRhVGV4dENvbHVtbkFtb3VudCwgSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbiwgVmVyc2lvbj0zLjAuMS4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPTcxODYyODAxN2ZmYjk2NmVkAgUPZBYCAgEPZBYCAgEPZBYCAgEPPCsAFgIADxYGHwJoHwNlHwRnZAYPZBAWCmYCAgIDAgQCBQIGAgcCCAIJAgoWCjwrAAwBABYCHwVmPCsACwEAFgIfBQIBPCsACwEAFgIfBQICPCsACwEAFgIfBQIDPCsACwEAFgIfBQIEPCsACwEAFgIfBQIFPCsACwEAFgIfBQIGPCsACwEAFgIfBQIHPCsACwEAFgIfBQIIPCsACwEAFgIfBQIJDxYKAgECAgICAgICAwIEAgICAgICAgIWBAWWAURldkV4cHJlc3MuV2ViLkFTUHhHcmlkVmlldy5HcmlkVmlld0NvbW1hbmRDb2x1bW4sIERldkV4cHJlc3MuV2ViLkFTUHhHcmlkVmlldy52OC4zLCBWZXJzaW9uPTguMy41LjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49Yjg4ZDE3NTRkNzAwZTQ5YQWgAUluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24uQ2xhc3Nlcy5HcmlkVmlld0RhdGFUZXh0Q29sdW1uVGV4dCwgSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbiwgVmVyc2lvbj0zLjAuMS4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPTcxODYyODAxN2ZmYjk2NmUFoAFJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLkNsYXNzZXMuR3JpZFZpZXdEYXRhVGV4dENvbHVtbkRhdGUsIEluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24sIFZlcnNpb249My4wLjEuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj03MTg2MjgwMTdmZmI5NjZlBaIBSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbi5DbGFzc2VzLkdyaWRWaWV3RGF0YVRleHRDb2x1bW5BbW91bnQsIEluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24sIFZlcnNpb249My4wLjEuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj03MTg2MjgwMTdmZmI5NjZlZAIGD2QWAgIBD2QWCmYPZBYCAgEPPCsAFgIADxYIHwRnHwFnHwJoHwNlZAYPZBAWA2YCAQICFgM8KwALAQAWAh8FZjwrAAsBABYCHwUCATwrAAsBABYCHwUCAg8WAwIBAgECARYBBaABSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbi5DbGFzc2VzLkdyaWRWaWV3RGF0YVRleHRDb2x1bW5UZXh0LCBJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLCBWZXJzaW9uPTMuMC4xLjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49NzE4NjI4MDE3ZmZiOTY2ZWQCAg9kFgICAQ9kFgICAQ88KwAWAgAPFgYfBGcfAmgfA2VkBg9kEBYHZgIBAgICAwIEAgUCBhYHPCsADAEAFgQfBWYeCkNvbFZpc2libGVoPCsACwEAFgIfBWY8KwALAQAWAh8FAgE8KwALAQAWAh8FAgI8KwALAQAWAh8FAgM8KwALAQAWAh8FAgQ8KwALAQAWAh8FAgUPFgcCAQICAgICAgIDAgICBBYEBZYBRGV2RXhwcmVzcy5XZWIuQVNQeEdyaWRWaWV3LkdyaWRWaWV3Q29tbWFuZENvbHVtbiwgRGV2RXhwcmVzcy5XZWIuQVNQeEdyaWRWaWV3LnY4LjMsIFZlcnNpb249OC4zLjUuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj1iODhkMTc1NGQ3MDBlNDlhBaABSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbi5DbGFzc2VzLkdyaWRWaWV3RGF0YVRleHRDb2x1bW5UZXh0LCBJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLCBWZXJzaW9uPTMuMC4xLjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49NzE4NjI4MDE3ZmZiOTY2ZQWgAUluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24uQ2xhc3Nlcy5HcmlkVmlld0RhdGFUZXh0Q29sdW1uRGF0ZSwgSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbiwgVmVyc2lvbj0zLjAuMS4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPTcxODYyODAxN2ZmYjk2NmUFogFJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLkNsYXNzZXMuR3JpZFZpZXdEYXRhVGV4dENvbHVtbkFtb3VudCwgSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbiwgVmVyc2lvbj0zLjAuMS4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPTcxODYyODAxN2ZmYjk2NmVkAgQPZBYCAgEPZBYCAgEPPCsAFgIADxYGHwRnHwJoHwNlZAYPZBAWDWYCAQICAgMCBAIFAgYCBwIIAgkCCgILAgwWDTwrAAwBABYEHwVmHwpoPCsACwEAFgIfBWY8KwALAQAWAh8FAgE8KwALAQAWAh8FAgI8KwALAQAWAh8FAgM8KwALAQAWAh8FAgQ8KwALAQAWAh8FAgU8KwALAQAWAh8FAgY8KwALAQAWAh8FAgc8KwALAQAWAh8FAgg8KwALAQAWAh8FAgk8KwALAQAWAh8FAgo8KwALAQAWAh8FAgsPFg0CAQICAgICAgICAgICAwICAgQCBQIEAgQCBBYFBZYBRGV2RXhwcmVzcy5XZWIuQVNQeEdyaWRWaWV3LkdyaWRWaWV3Q29tbWFuZENvbHVtbiwgRGV2RXhwcmVzcy5XZWIuQVNQeEdyaWRWaWV3LnY4LjMsIFZlcnNpb249OC4zLjUuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj1iODhkMTc1NGQ3MDBlNDlhBaABSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbi5DbGFzc2VzLkdyaWRWaWV3RGF0YVRleHRDb2x1bW5UZXh0LCBJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLCBWZXJzaW9uPTMuMC4xLjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49NzE4NjI4MDE3ZmZiOTY2ZQWgAUluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24uQ2xhc3Nlcy5HcmlkVmlld0RhdGFUZXh0Q29sdW1uRGF0ZSwgSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbiwgVmVyc2lvbj0zLjAuMS4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPTcxODYyODAxN2ZmYjk2NmUFogFJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLkNsYXNzZXMuR3JpZFZpZXdEYXRhVGV4dENvbHVtbkFtb3VudCwgSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbiwgVmVyc2lvbj0zLjAuMS4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPTcxODYyODAxN2ZmYjk2NmUFowFJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLkNsYXNzZXMuR3JpZFZpZXdEYXRhVGV4dENvbHVtbkFtb3VudDQsIEluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24sIFZlcnNpb249My4wLjEuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj03MTg2MjgwMTdmZmI5NjZlZAIGD2QWAgIBD2QWAgIBDzwrABYCAA8WBh8EZx8CaB8DZWQGD2QQFgVmAgECAgIDAgQWBTwrAAwBABYEHwVmHwpoPCsACwEAFgIfBWY8KwALAQAWAh8FAgE8KwALAQAWAh8FAgI8KwALAQAWAh8FAgMPFgUCAQICAgICAgICFgIFlgFEZXZFeHByZXNzLldlYi5BU1B4R3JpZFZpZXcuR3JpZFZpZXdDb21tYW5kQ29sdW1uLCBEZXZFeHByZXNzLldlYi5BU1B4R3JpZFZpZXcudjguMywgVmVyc2lvbj04LjMuNS4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWI4OGQxNzU0ZDcwMGU0OWEFoAFJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLkNsYXNzZXMuR3JpZFZpZXdEYXRhVGV4dENvbHVtblRleHQsIEluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24sIFZlcnNpb249My4wLjEuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj03MTg2MjgwMTdmZmI5NjZlZAIID2QWBAIFDxYCHwAFATBkAgcPFgIfAAUEMCwwMGQCBw9kFgICAQ9kFgJmD2QWAgIBDzwrABYCAA8WBh8CaB8DZR8EZ2QGD2QQFgZmAgECAgIDAgQCBRYGPCsACwEAFgIfBWY8KwALAQAWAh8FAgE8KwALAQAWAh8FAgI8KwALAQAWAh8FAgM8KwALAQAWAh8FAgQ8KwALAQAWAh8FAgUPFgYCAQIBAgECAQICAgEWAgWgAUluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24uQ2xhc3Nlcy5HcmlkVmlld0RhdGFUZXh0Q29sdW1uVGV4dCwgSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbiwgVmVyc2lvbj0zLjAuMS4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPTcxODYyODAxN2ZmYjk2NmUFogFJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLkNsYXNzZXMuR3JpZFZpZXdEYXRhVGV4dENvbHVtbkFtb3VudCwgSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbiwgVmVyc2lvbj0zLjAuMS4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPTcxODYyODAxN2ZmYjk2NmVkAgoPZBYCAgEPZBYCZg9kFgICAQ9kFgICAQ88KwAWAgAPFggfAWcfBGcfAmgfA2VkBg9kEBYIAgECAgIDAgQCBQIGAgcCCBYIPCsACwEAFgIfBWY8KwALAQAWAh8FAgE8KwALAQAWAh8FAgI8KwALAQAWAh8FAgM8KwALAQAWAh8FAgQ8KwALAQAWAh8FAgU8KwALAQAWAh8FAgY8KwALAQAWAh8FAgcPFggCAQIBAgECAQIBAgICAQIBFgIFoAFJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLkNsYXNzZXMuR3JpZFZpZXdEYXRhVGV4dENvbHVtblRleHQsIEluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24sIFZlcnNpb249My4wLjEuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj03MTg2MjgwMTdmZmI5NjZlBaABSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbi5DbGFzc2VzLkdyaWRWaWV3RGF0YVRleHRDb2x1bW5EYXRlLCBJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLCBWZXJzaW9uPTMuMC4xLjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49NzE4NjI4MDE3ZmZiOTY2ZWQCAg8WAh4Fc3R5bGUFDWRpc3BsYXk6bm9uZTsWAgIFDxYCHgdWaXNpYmxlaBYEAgEPEBYGHg1EYXRhVGV4dEZpZWxkBQVUaXRsZR4ORGF0YVZhbHVlRmllbGQFA1VyaR4LXyFEYXRhQm91bmRnEBUBABUBABQrAwFnFCsBAGQCAw8WAh8LBQ1kaXNwbGF5Om5vbmU7FgJmD2QWAgIBDxYCHwsFDWRpc3BsYXk6bm9uZTtkGAMFHl9fQ29udHJvbHNSZXF1aXJlUG9zdEJhY2tLZXlfXxYSBR1jdGwwMCRNYWluSG9sZGVyJHRyYW5zYWN0aW9ucwUqY3RsMDAkTWFpbkhvbGRlciRUcmFuc2FuY3Rpb25Db25maXJtQWN0aW9uBShjdGwwMCRNYWluSG9sZGVyJFRva2VuU29saWNpdGF0aW9uJHBjTUFDBSpjdGwwMCRNYWluSG9sZGVyJFRva2VuU29saWNpdGF0aW9uJHBjVG9rZW4FHmN0bDAwJE1haW5Ib2xkZXIkcGFuZWxDb25zdWx0YQU1Y3RsMDAkTWFpbkhvbGRlciRBUEhlYWRlciRwYW5lbE9wZXJhdGlvblJlcXVlc3RIZWFkZXIFOWN0bDAwJE1haW5Ib2xkZXIkQVBEZXRhbGxlR3JpbGxhJFRyYW5zYWN0aW9uc0hpc3RvcnlQYW5lbAUyY3RsMDAkTWFpbkhvbGRlciREZXRhbGxlTG90ZVBhZ28kcG5sRGV0YWxsZU9yZGVuZXMFOGN0bDAwJE1haW5Ib2xkZXIkRGV0YWxsZUxvdGVQYWdvJHBubERldGFsbGVMaXF1aWRhY2lvbmVzBTZjdGwwMCRNYWluSG9sZGVyJERldGFsbGVMb3RlUGFnbyRwbmxEZXRhbGxlUmV0ZW5jaW9uZXMFOWN0bDAwJE1haW5Ib2xkZXIkRGV0YWxsZUxvdGVQYWdvJHBubERldGFsbGVBdXRvcml6YWNpb25lcwUyY3RsMDAkTWFpbkhvbGRlciREZXRhbGxlTG90ZVBhZ28kcG5sRGV0YWxsZUNvbnRyb2wFPWN0bDAwJE1haW5Ib2xkZXIkUGF5bWVudFNhbGFyeURldGFpbCRUcmFuc2FjdGlvbnNIaXN0b3J5UGFuZWwFMGN0bDAwJE1haW5Ib2xkZXIkRkNJRGV0YWxsZSRUcmFuc2ZlckRldGFpbHNQYW5lbAU6Y3RsMDAkTWFpbkhvbGRlciREUEZEZXRhaWwkRml4ZWREZXBvc2l0RGV0YWlsc1BhbmVsQ29udHJvbAU+Y3RsMDAkTWFpbkhvbGRlciRQYXlyb2xsSW5xdWlyeURldGFpbCRUcmFuc2FjdGlvbnNIaXN0b3J5UGFuZWwFIGN0bDAwJE1haW5Ib2xkZXIkVHJhbnNhY3Rpb25HcmlkBRljdGwwMCRpbWFnZUJ1dHRvbkNvbGxhcHNlBRdjdGwwMCRNYWluSG9sZGVyJHZpc3Rhcw8PZGZkBSpjdGwwMCRNYWluSG9sZGVyJFRva2VuU29saWNpdGF0aW9uJG12VG9rZW4PD2RmZGJSNqtfzjULKZYU42kJwmPCmd9E">
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+var theForm = document.forms['aspnetForm'];
+if (!theForm) {
+    theForm = document.aspnetForm;
+}
+function __doPostBack(eventTarget, eventArgument) {
+    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+        theForm.__EVENTTARGET.value = eventTarget;
+        theForm.__EVENTARGUMENT.value = eventArgument;
+        theForm.submit();
+    }
+}
+//]]>
+</script>
+
+
+<script src="./WebResource(3).axd" type="text/javascript"></script>
+
+<script src="./DataEntry.js.descarga"></script>
+						<style>							
+							P.PanelControlTitleStyle
+							{
+ 								font-family:verdana;
+ 								font-size: 12px;
+								font-weight : bold;
+								text-align: center;  								
+							}
+						</style>						
+						<script language="javascript">
+						function MinMaxPanelControl(cntrlId)
+						{
+						    var imgPath='App_Themes/Default/Images/';	
+					
+							//Get state from hidden control.													
+							if ( document.getElementById(cntrlId).style.display == 'none' )
+							{
+								document.getElementById(cntrlId).style.display = '';						
+								document.getElementById(cntrlId+'_imgPlusMinus').src = imgPath + 'bot-grid-minus.gif';
+							}
+							else 
+							{
+								document.getElementById(cntrlId).style.display = 'none';								
+								document.getElementById(cntrlId+'_imgPlusMinus').src = imgPath + 'bot-grid-plus.gif';
+							}
+						}
+						</script>
+			
+<script type="text/javascript">
+//<![CDATA[
+var __cultureInfo = '{"name":"es-UY","numberFormat":{"CurrencyDecimalDigits":2,"CurrencyDecimalSeparator":",","IsReadOnly":false,"CurrencyGroupSizes":[3],"NumberGroupSizes":[3],"PercentGroupSizes":[3],"CurrencyGroupSeparator":".","CurrencySymbol":"$U","NaNSymbol":"NeuN","CurrencyNegativePattern":14,"NumberNegativePattern":1,"PercentPositivePattern":0,"PercentNegativePattern":0,"NegativeInfinitySymbol":"-Infinito","NegativeSign":"-","NumberDecimalDigits":2,"NumberDecimalSeparator":",","NumberGroupSeparator":".","CurrencyPositivePattern":2,"PositiveInfinitySymbol":"Infinito","PositiveSign":"+","PercentDecimalDigits":2,"PercentDecimalSeparator":",","PercentGroupSeparator":".","PercentSymbol":"%","PerMilleSymbol":"‰","NativeDigits":["0","1","2","3","4","5","6","7","8","9"],"DigitSubstitution":1},"dateTimeFormat":{"AMDesignator":"a.m.","Calendar":{"MinSupportedDateTime":"\/Date(-62135586000000)\/","MaxSupportedDateTime":"\/Date(253402300799999)\/","AlgorithmType":1,"CalendarType":1,"Eras":[1],"TwoDigitYearMax":2029,"IsReadOnly":false},"DateSeparator":"/","FirstDayOfWeek":1,"CalendarWeekRule":0,"FullDateTimePattern":"dddd, dd\u0027 de \u0027MMMM\u0027 de \u0027yyyy hh:mm:ss tt","LongDatePattern":"dddd, dd\u0027 de \u0027MMMM\u0027 de \u0027yyyy","LongTimePattern":"hh:mm:ss tt","MonthDayPattern":"dd MMMM","PMDesignator":"p.m.","RFC1123Pattern":"ddd, dd MMM yyyy HH\u0027:\u0027mm\u0027:\u0027ss \u0027GMT\u0027","ShortDatePattern":"dd/MM/yyyy","ShortTimePattern":"hh:mm tt","SortableDateTimePattern":"yyyy\u0027-\u0027MM\u0027-\u0027dd\u0027T\u0027HH\u0027:\u0027mm\u0027:\u0027ss","TimeSeparator":":","UniversalSortableDateTimePattern":"yyyy\u0027-\u0027MM\u0027-\u0027dd HH\u0027:\u0027mm\u0027:\u0027ss\u0027Z\u0027","YearMonthPattern":"MMMM\u0027 de \u0027yyyy","AbbreviatedDayNames":["dom","lun","mar","mié","jue","vie","sáb"],"ShortestDayNames":["do","lu","ma","mi","ju","vi","sá"],"DayNames":["domingo","lunes","martes","miércoles","jueves","viernes","sábado"],"AbbreviatedMonthNames":["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic",""],"MonthNames":["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre",""],"IsReadOnly":false,"NativeCalendarName":"calendario gregoriano","AbbreviatedMonthGenitiveNames":["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic",""],"MonthGenitiveNames":["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre",""]}}';//]]>
+</script>
+
+<script src="./ScriptResource.axd" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+if (typeof(Sys) === 'undefined') throw new Error('ASP.NET Ajax client-side framework failed to load.');
+//]]>
+</script>
+
+<script src="./ScriptResource(1).axd" type="text/javascript"></script>
+<div>
+
+	<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEWCAKYzviPAwKPvLMnAp3oyKkDAvDqiYYMAoHazfwDAoPJg+0IAtGqzMkOAom34LsByVxJqHy7PY8WCSV1kQULnSp1Oeo=">
+</div>
+    <script type="text/javascript">
+//<![CDATA[
+Sys.WebForms.PageRequestManager._initialize('ctl00$scriptManager', document.getElementById('aspnetForm'));
+Sys.WebForms.PageRequestManager.getInstance()._updateControls([], [], [], 90);
+//]]>
+</script>
+
+    <input type="hidden" id="PageLinkData" name="PageLinkData" value="">
+    <input type="hidden" id="PageLinkUrl" name="PageLinkUrl" value="">
+    <input type="hidden" id="PageUrl" value="/Pages/Common/Transaction_Aproved.aspx">
+    <table id="ctl00_tableContent" width="100%" border="0" cellpadding="0" cellspacing="0" class="ic-content">
+	<tbody><tr>
+		<td class="ic-content-left-aux">
+                <img src="./log-img-aux-left-bottom.gif" width="9" height="110">
+            </td>
+		<td style="width: 100%">
+                <table width="100%" border="0" cellpadding="0" cellspacing="0" class="ic-content-left">
+                    <tbody><tr>
+                        <td id="TdCPM" class="ic-content-space-top" valign="top">
+                            <table id="TablaCPM" width="100%" border="0" cellspacing="0" cellpadding="0">
+                                
+                                <tbody><tr>
+                                    <td>
+                                        <table id="ctl00_tableHeader" width="100%" border="0" cellspacing="0" cellpadding="0">
+			<tbody><tr>
+				<td class="ic-breadcrumb-container">
+                                                    
+                                                    &gt;
+                                                    <span id="ctl00_siteMapNavigator"><a href="Pages/Common/Transaction_Aproved.aspx#ctl00_siteMapNavigator_SkipLink"><img alt="Skip Navigation Links" height="0" width="0" src="./WebResource(4).axd" style="border-width:0px;"></a><span><a href="">Posición Consolidada</a></span><span> &gt; </span><span><a title="Approvals">Aprobaciones</a></span><span> &gt; </span><span>Aprobaciones</span><a id="ctl00_siteMapNavigator_SkipLink"></a></span>
+                                                    </td>
+				<td class="ic-toolbar-container">
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tbody><tr>
+                                                            <td width="16">
+                                                                <img src="./ico-print.gif" id="ctl00_Img4" width="16" height="16">
+                                                            </td>
+                                                            <td class="ic-links-toolbar">
+                                                                <a href="Pages/Common/Transaction_Aproved.aspx#" onclick="javascript: GoPrint();">
+                                                                    Imprimir página</a>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody></table>
+                                                </td>
+			</tr>
+		</tbody></table>
+		
+                                    </td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>
+                                        <span id="ctl00_labelTitle" class="ic-page-title">Aprobaciones</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td id="ctl00_cellRequiered" align="right">&nbsp;</td>
+		
+                                </tr>
+                                <tr>
+                                    <td width="95%" align="center">
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                            <tbody><tr>
+                                                <td align="right">
+                                                    
+                                                    
+                                                </td>
+                                            </tr>
+                                        </tbody></table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="100%" align="center">
+                                        <div id="ic-loading" class="ic-loading-bg" style="display: none;">
+                                            <div class="ic-loading">
+                                                <div id="message">
+                                                    <img src="./cargandoBAR.gif" id="ctl00_imgLoading"><br>
+                                                    <span id="ctl00_WaitingMessage">Procesando...</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="mainContainer">
+                                            
+
+    <script language="javascript" type="text/javascript">
+        function ValidateOneSelection() {
+            var hasSelection = false;
+
+            if (TransactionGrid._getSelectedRowCount() == 1) {
+                hasSelection = true;
+            }
+            else {
+                alert('Debe seleccionar un registro');
+            }
+
+            return hasSelection;
+        }
+
+        function ValidateAllSelection() {
+            var hasSelection = false;
+
+            if (TransactionGrid._getSelectedRowCount() > 0) {
+                hasSelection = true;
+            }
+            else {
+                alert('Debe seleccionar por lo menos un registro');
+            }
+
+            return hasSelection;
+        }
+    </script>
+
+    
+            
+
+            <table class="ic-grid-border" cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+			<tbody><tr>
+				<td><table id="ctl00_MainHolder_transactions_thePanel" class="ic-grid" cellspacing="0" cellpadding="0" align="Center" border="0" style="width:100%;border-collapse:collapse;">
+					<tbody><tr class="ic-grid-title-row">
+						<td><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+							<tbody><tr>
+								<td class="ic-grid-title-cell-left">&nbsp;</td><td class="ic-grid-title-cell" align="left" style="white-space:nowrap;">Autorizaciones Pendientes</td>
+							</tr>
+						</tbody></table></td>
+					</tr><tr>
+						<td align="center"><div id="ctl00_MainHolder_transactions" style="color:Black;border-color:DodgerBlue;font-family:verdana;font-size:10pt;width:100%;display:;">
+	
+                <script id="dxss_1241175972" type="text/javascript">
+<!--
+window.__aspxServerFormID = 'aspnetForm';
+window.__aspxEmptyImageUrl = '/WebResource.axd?d=r8sGQK9x2VC5LfrAIP6hMW5Of0BQVx_5pcDtr_NzGA4Mft0ncv4hE1i-zBmnc8mg561Q33dXnVDmopWX_iwnWZgBELnuoLpA0P4EazLGo0XHyr4FYJEcfil8vQPDw-wMFdsFLo8AfLVBnlRoJ_At_JUEG241&t=636117930523139822';
+//-->
+</script>
+
+	<script id="dxis_136246879" src="./WebResource(5).axd" type="text/javascript"></script>
+	<script id="dxis_73471454" src="./WebResource(6).axd" type="text/javascript"></script>
+	<table class="dxgvControl" cellspacing="0" cellpadding="0" id="ctl00_MainHolder_TransactionGrid" border="0" style="width:100%;border-collapse:collapse;border-collapse:separate;">
+		<tbody><tr>
+			<td><table id="ctl00_MainHolder_TransactionGrid_DXMainTable" class="dxgvTable" cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;empty-cells:show;">
+				<tbody><tr id="ctl00_MainHolder_TransactionGrid_DXHeadersRow">
+					<td id="ctl00_MainHolder_TransactionGrid_DXTDcol0" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_TransactionGrid&#39;, this, event);" style="text-align:Center;border-left-width:0px;border-top-width:0px;">
+                                <script id="dxis_1310972430" src="./WebResource(7).axd" type="text/javascript"></script>
+					<span class="dxeBase" id="ctl00_MainHolder_TransactionGrid_header0_selectAll"><input id="ctl00_MainHolder_TransactionGrid_header0_selectAll_S" type="hidden" name="ctl00$MainHolder$TransactionGrid$header0$selectAll" value="N"><input id="ctl00_MainHolder_TransactionGrid_header0_selectAll_I" type="checkbox" value="" onclick="aspxChkOnClick(&#39;ctl00_MainHolder_TransactionGrid_header0_selectAll&#39;)"></span><script id="dxss_1937154206" type="text/javascript">
+<!--
+
+var dxo = new ASPxClientCheckBox('ctl00_MainHolder_TransactionGrid_header0_selectAll');
+window['ctl00_MainHolder_TransactionGrid_header0_selectAll'] = dxo;
+dxo.uniqueID = 'ctl00$MainHolder$TransactionGrid$header0$selectAll';
+aspxAddDisabledItems('ctl00_MainHolder_TransactionGrid_header0_selectAll',[['dxeDisabled','',['']]]);
+dxo.CheckedChanged.AddHandler(function(s, e) { TransactionGrid.SelectAllRowsOnPage(s.GetChecked()); });
+dxo.InlineInitialize();
+
+//-->
+</script>
+
+                            <input type="hidden" name="ctl00$MainHolder$TransactionGrid$header0$selectAll$CVS" value=""></td><td id="ctl00_MainHolder_TransactionGrid_DXTDGScol1" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_TransactionGrid&#39;, this, event);" style="text-align:Left;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Left;">Tipo </td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_TransactionGrid_DXTDGScol2" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_TransactionGrid&#39;, this, event);" style="text-align:Left;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Left;">Descripción</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_TransactionGrid_DXTDGScol3" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_TransactionGrid&#39;, this, event);" style="text-align:Center;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Center;">Fecha</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_TransactionGrid_DXTDGScol4" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_TransactionGrid&#39;, this, event);" style="text-align:Center;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Center;">Moneda</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_TransactionGrid_DXTDGScol5" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_TransactionGrid&#39;, this, event);" style="text-align:Right;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Right;">Importe</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_TransactionGrid_DXTDGScol6" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_TransactionGrid&#39;, this, event);" style="text-align:Left;border-left-width:0px;border-top-width:0px;border-right-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Left;">Usuario</td>
+						</tr>
+					</tbody></table></td>
+				</tr><tr id="ctl00_MainHolder_TransactionGrid_DXDataRow0" class="dxgvDataRow ic-grid-row01">
+					<td class="dxgvCommandColumn dxgv" align="center"><input id="ctl00_MainHolder_TransactionGrid_DXSelBtn0" class="dxgvCommandColumnItem" type="checkbox" onclick="aspxGVSelectRow(&#39;ctl00_MainHolder_TransactionGrid&#39;,0,this);"></td><td id="ctl00_MainHolder_TransactionGrid_tccell0_1" class="dxgv" style="text-align:Left;">Pago Prov. c/ Cheques</td><td id="ctl00_MainHolder_TransactionGrid_tccell0_2" class="dxgv" style="text-align:Left;">100-1275-1</td><td id="ctl00_MainHolder_TransactionGrid_tccell0_3" class="dxgv" style="text-align:Center;">22/05/2015</td><td id="ctl00_MainHolder_TransactionGrid_tccell0_4" class="dxgv" style="text-align:Center;">$    </td><td id="ctl00_MainHolder_TransactionGrid_tccell0_5" class="dxgv" style="text-align:Right;white-space:nowrap;">25,03</td><td id="ctl00_MainHolder_TransactionGrid_tccell0_6" class="dxgv" style="text-align:Left;border-right-width:0px;">Jorge Centirion</td>
+				</tr><tr id="ctl00_MainHolder_TransactionGrid_DXDataRow1" class="dxgvDataRow ic-grid-row01 dxgvDataRowAlt ic-grid-row02">
+					<td class="dxgvCommandColumn dxgv" align="center"><input id="ctl00_MainHolder_TransactionGrid_DXSelBtn1" class="dxgvCommandColumnItem" type="checkbox" onclick="aspxGVSelectRow(&#39;ctl00_MainHolder_TransactionGrid&#39;,1,this);"></td><td id="ctl00_MainHolder_TransactionGrid_tccell1_1" class="dxgv" style="text-align:Left;">Pago Prov. c/ Cheques</td><td id="ctl00_MainHolder_TransactionGrid_tccell1_2" class="dxgv" style="text-align:Left;">100-1275-1</td><td id="ctl00_MainHolder_TransactionGrid_tccell1_3" class="dxgv" style="text-align:Center;">22/05/2015</td><td id="ctl00_MainHolder_TransactionGrid_tccell1_4" class="dxgv" style="text-align:Center;">$    </td><td id="ctl00_MainHolder_TransactionGrid_tccell1_5" class="dxgv" style="text-align:Right;white-space:nowrap;">25,03</td><td id="ctl00_MainHolder_TransactionGrid_tccell1_6" class="dxgv" style="text-align:Left;border-right-width:0px;">Jorge Centirion</td>
+				</tr><tr id="ctl00_MainHolder_TransactionGrid_DXDataRow2" class="dxgvDataRow ic-grid-row01">
+					<td class="dxgvCommandColumn dxgv" align="center"><input id="ctl00_MainHolder_TransactionGrid_DXSelBtn2" class="dxgvCommandColumnItem" type="checkbox" onclick="aspxGVSelectRow(&#39;ctl00_MainHolder_TransactionGrid&#39;,2,this);"></td><td id="ctl00_MainHolder_TransactionGrid_tccell2_1" class="dxgv" style="text-align:Left;">Pago Prov. c/ Cheques</td><td id="ctl00_MainHolder_TransactionGrid_tccell2_2" class="dxgv" style="text-align:Left;">100-1275-1</td><td id="ctl00_MainHolder_TransactionGrid_tccell2_3" class="dxgv" style="text-align:Center;">26/05/2015</td><td id="ctl00_MainHolder_TransactionGrid_tccell2_4" class="dxgv" style="text-align:Center;">$    </td><td id="ctl00_MainHolder_TransactionGrid_tccell2_5" class="dxgv" style="text-align:Right;white-space:nowrap;">7.037,01</td><td id="ctl00_MainHolder_TransactionGrid_tccell2_6" class="dxgv" style="text-align:Left;border-right-width:0px;">Jorge Centirion</td>
+				</tr><tr id="ctl00_MainHolder_TransactionGrid_DXDataRow3" class="dxgvDataRow ic-grid-row01 dxgvDataRowAlt ic-grid-row02">
+					<td class="dxgvCommandColumn dxgv" align="center"><input id="ctl00_MainHolder_TransactionGrid_DXSelBtn3" class="dxgvCommandColumnItem" type="checkbox" onclick="aspxGVSelectRow(&#39;ctl00_MainHolder_TransactionGrid&#39;,3,this);"></td><td id="ctl00_MainHolder_TransactionGrid_tccell3_1" class="dxgv" style="text-align:Left;">Pago Prov. c/ Cheques</td><td id="ctl00_MainHolder_TransactionGrid_tccell3_2" class="dxgv" style="text-align:Left;">100-1275-1</td><td id="ctl00_MainHolder_TransactionGrid_tccell3_3" class="dxgv" style="text-align:Center;">26/05/2015</td><td id="ctl00_MainHolder_TransactionGrid_tccell3_4" class="dxgv" style="text-align:Center;">$    </td><td id="ctl00_MainHolder_TransactionGrid_tccell3_5" class="dxgv" style="text-align:Right;white-space:nowrap;">25,03</td><td id="ctl00_MainHolder_TransactionGrid_tccell3_6" class="dxgv" style="text-align:Left;border-right-width:0px;">Jorge Centirion</td>
+				</tr><tr id="ctl00_MainHolder_TransactionGrid_DXDataRow4" class="dxgvDataRow ic-grid-row01">
+					<td class="dxgvCommandColumn dxgv" align="center"><input id="ctl00_MainHolder_TransactionGrid_DXSelBtn4" class="dxgvCommandColumnItem" type="checkbox" onclick="aspxGVSelectRow(&#39;ctl00_MainHolder_TransactionGrid&#39;,4,this);"></td><td id="ctl00_MainHolder_TransactionGrid_tccell4_1" class="dxgv" style="text-align:Left;">Pago Prov. c/ Cheques</td><td id="ctl00_MainHolder_TransactionGrid_tccell4_2" class="dxgv" style="text-align:Left;">100-1275-1</td><td id="ctl00_MainHolder_TransactionGrid_tccell4_3" class="dxgv" style="text-align:Center;">26/05/2015</td><td id="ctl00_MainHolder_TransactionGrid_tccell4_4" class="dxgv" style="text-align:Center;">$    </td><td id="ctl00_MainHolder_TransactionGrid_tccell4_5" class="dxgv" style="text-align:Right;white-space:nowrap;">25,03</td><td id="ctl00_MainHolder_TransactionGrid_tccell4_6" class="dxgv" style="text-align:Left;border-right-width:0px;">Jorge Centirion</td>
+				</tr><tr id="ctl00_MainHolder_TransactionGrid_DXDataRow5" class="dxgvDataRow ic-grid-row01 dxgvDataRowAlt ic-grid-row02">
+					<td class="dxgvCommandColumn dxgv" align="center"><input id="ctl00_MainHolder_TransactionGrid_DXSelBtn5" class="dxgvCommandColumnItem" type="checkbox" onclick="aspxGVSelectRow(&#39;ctl00_MainHolder_TransactionGrid&#39;,5,this);"></td><td id="ctl00_MainHolder_TransactionGrid_tccell5_1" class="dxgv" style="text-align:Left;">Pago Prov. c/ Cheques</td><td id="ctl00_MainHolder_TransactionGrid_tccell5_2" class="dxgv" style="text-align:Left;">100-1275-1</td><td id="ctl00_MainHolder_TransactionGrid_tccell5_3" class="dxgv" style="text-align:Center;">26/05/2015</td><td id="ctl00_MainHolder_TransactionGrid_tccell5_4" class="dxgv" style="text-align:Center;">$    </td><td id="ctl00_MainHolder_TransactionGrid_tccell5_5" class="dxgv" style="text-align:Right;white-space:nowrap;">25,03</td><td id="ctl00_MainHolder_TransactionGrid_tccell5_6" class="dxgv" style="text-align:Left;border-right-width:0px;">Jorge Centirion</td>
+				</tr><tr id="ctl00_MainHolder_TransactionGrid_DXDataRow6" class="dxgvDataRow ic-grid-row01">
+					<td class="dxgvCommandColumn dxgv" align="center"><input id="ctl00_MainHolder_TransactionGrid_DXSelBtn6" class="dxgvCommandColumnItem" type="checkbox" onclick="aspxGVSelectRow(&#39;ctl00_MainHolder_TransactionGrid&#39;,6,this);"></td><td id="ctl00_MainHolder_TransactionGrid_tccell6_1" class="dxgv" style="text-align:Left;">Pago Prov. c/ Cheques</td><td id="ctl00_MainHolder_TransactionGrid_tccell6_2" class="dxgv" style="text-align:Left;">100-1275-1</td><td id="ctl00_MainHolder_TransactionGrid_tccell6_3" class="dxgv" style="text-align:Center;">26/05/2015</td><td id="ctl00_MainHolder_TransactionGrid_tccell6_4" class="dxgv" style="text-align:Center;">$    </td><td id="ctl00_MainHolder_TransactionGrid_tccell6_5" class="dxgv" style="text-align:Right;white-space:nowrap;">25,03</td><td id="ctl00_MainHolder_TransactionGrid_tccell6_6" class="dxgv" style="text-align:Left;border-right-width:0px;">Jorge Centirion</td>
+				</tr><tr id="ctl00_MainHolder_TransactionGrid_DXDataRow7" class="dxgvDataRow ic-grid-row01 dxgvDataRowAlt ic-grid-row02">
+					<td class="dxgvCommandColumn dxgv" align="center"><input id="ctl00_MainHolder_TransactionGrid_DXSelBtn7" class="dxgvCommandColumnItem" type="checkbox" onclick="aspxGVSelectRow(&#39;ctl00_MainHolder_TransactionGrid&#39;,7,this);"></td><td id="ctl00_MainHolder_TransactionGrid_tccell7_1" class="dxgv" style="text-align:Left;">Pago Prov. c/ Cheques</td><td id="ctl00_MainHolder_TransactionGrid_tccell7_2" class="dxgv" style="text-align:Left;">100-1275-1</td><td id="ctl00_MainHolder_TransactionGrid_tccell7_3" class="dxgv" style="text-align:Center;">26/05/2015</td><td id="ctl00_MainHolder_TransactionGrid_tccell7_4" class="dxgv" style="text-align:Center;">$    </td><td id="ctl00_MainHolder_TransactionGrid_tccell7_5" class="dxgv" style="text-align:Right;white-space:nowrap;">25,03</td><td id="ctl00_MainHolder_TransactionGrid_tccell7_6" class="dxgv" style="text-align:Left;border-right-width:0px;">Jorge Centirion</td>
+				</tr><tr id="ctl00_MainHolder_TransactionGrid_DXDataRow8" class="dxgvDataRow ic-grid-row01">
+					<td class="dxgvCommandColumn dxgv" align="center"><input id="ctl00_MainHolder_TransactionGrid_DXSelBtn8" class="dxgvCommandColumnItem" type="checkbox" onclick="aspxGVSelectRow(&#39;ctl00_MainHolder_TransactionGrid&#39;,8,this);"></td><td id="ctl00_MainHolder_TransactionGrid_tccell8_1" class="dxgv" style="text-align:Left;">Pago Prov. c/ Cheques</td><td id="ctl00_MainHolder_TransactionGrid_tccell8_2" class="dxgv" style="text-align:Left;">100-1275-1</td><td id="ctl00_MainHolder_TransactionGrid_tccell8_3" class="dxgv" style="text-align:Center;">26/05/2015</td><td id="ctl00_MainHolder_TransactionGrid_tccell8_4" class="dxgv" style="text-align:Center;">$    </td><td id="ctl00_MainHolder_TransactionGrid_tccell8_5" class="dxgv" style="text-align:Right;white-space:nowrap;">25,03</td><td id="ctl00_MainHolder_TransactionGrid_tccell8_6" class="dxgv" style="text-align:Left;border-right-width:0px;">Jorge Centirion</td>
+				</tr><tr id="ctl00_MainHolder_TransactionGrid_DXDataRow9" class="dxgvDataRow ic-grid-row01 dxgvDataRowAlt ic-grid-row02">
+					<td class="dxgvCommandColumn dxgv" align="center"><input id="ctl00_MainHolder_TransactionGrid_DXSelBtn9" class="dxgvCommandColumnItem" type="checkbox" onclick="aspxGVSelectRow(&#39;ctl00_MainHolder_TransactionGrid&#39;,9,this);"></td><td id="ctl00_MainHolder_TransactionGrid_tccell9_1" class="dxgv" style="text-align:Left;">Pago Prov. c/ Cheques</td><td id="ctl00_MainHolder_TransactionGrid_tccell9_2" class="dxgv" style="text-align:Left;">100-1275-1</td><td id="ctl00_MainHolder_TransactionGrid_tccell9_3" class="dxgv" style="text-align:Center;">26/05/2015</td><td id="ctl00_MainHolder_TransactionGrid_tccell9_4" class="dxgv" style="text-align:Center;">$    </td><td id="ctl00_MainHolder_TransactionGrid_tccell9_5" class="dxgv" style="text-align:Right;white-space:nowrap;">25,03</td><td id="ctl00_MainHolder_TransactionGrid_tccell9_6" class="dxgv" style="text-align:Left;border-right-width:0px;">Jorge Centirion</td>
+				</tr>
+			</tbody></table><img id="ctl00_MainHolder_TransactionGrid_IADD" src="./WebResource(8).axd" alt="|" style="border-width:0px;position:absolute;visibility:hidden;"><img id="ctl00_MainHolder_TransactionGrid_IADU" src="./WebResource(9).axd" alt="|" style="border-width:0px;position:absolute;visibility:hidden;"><img id="ctl00_MainHolder_TransactionGrid_IDHF" src="./WebResource(10).axd" alt="Hide" style="border-width:0px;position:absolute;visibility:hidden;"><div class="dxgvPagerBottomPanel">
+				<table class="dxpControl" cellspacing="0" cellpadding="0" id="ctl00_MainHolder_TransactionGrid_DXPagerBottom" border="0" style="border-collapse:collapse;border-collapse:separate;">
+					<tbody><tr>
+						<td><table cellspacing="0" cellpadding="0" border="0" style="border-collapse:collapse;border-collapse:separate;">
+							<tbody><tr>
+								<td class="dxpSummary" style="white-space:nowrap;">Página 1 de 4 (38 items)</td><td style="width:4px;"><div style="height:1px;width:4px;overflow:hidden;">
+
+								</div></td><td class="dxpButton dxpDisabledButton dxpDisabled"><img src="./WebResource(11).axd" alt="Prev" style="height:17px;width:16px;border-width:0px;"></td><td style="width:4px;"><div style="height:1px;width:4px;overflow:hidden;">
+
+								</div></td><td class="dxpPageNumber dxpCurrentPageNumber">[1]</td><td style="width:4px;"><div style="height:1px;width:4px;overflow:hidden;">
+
+								</div></td><td class="dxpPageNumber" onclick="aspxGVPagerOnClick(&#39;ctl00_MainHolder_TransactionGrid&#39;,&#39;PN1&#39;);" style="cursor:pointer;">2</td><td style="width:4px;"><div style="height:1px;width:4px;overflow:hidden;">
+
+								</div></td><td class="dxpPageNumber" onclick="aspxGVPagerOnClick(&#39;ctl00_MainHolder_TransactionGrid&#39;,&#39;PN2&#39;);" style="cursor:pointer;">3</td><td style="width:4px;"><div style="height:1px;width:4px;overflow:hidden;">
+
+								</div></td><td class="dxpPageNumber" onclick="aspxGVPagerOnClick(&#39;ctl00_MainHolder_TransactionGrid&#39;,&#39;PN3&#39;);" style="cursor:pointer;">4</td><td style="width:4px;"><div style="height:1px;width:4px;overflow:hidden;">
+
+								</div></td><td class="dxpButton" onclick="aspxGVPagerOnClick(&#39;ctl00_MainHolder_TransactionGrid&#39;,&#39;PBN&#39;);" style="cursor:pointer;"><img src="./WebResource(12).axd" alt="Siguiente" style="height:17px;width:16px;border-width:0px;"></td>
+							</tr>
+						</tbody></table></td>
+					</tr>
+				</tbody></table>
+			</div><table id="ctl00_MainHolder_TransactionGrid_LP" class="dxgvLoadingPanel" cellspacing="0" cellpadding="0" border="0" style="border-collapse:collapse;left:0px;top:0px;z-index:30000;display:none;">
+				<tbody><tr>
+					<td class="dx"><img src="./WebResource(13).axd" alt="" align="middle" style="border-width:0px;"></td><td class="dx" style="padding-left:0px;">Cargando…</td>
+				</tr>
+			</tbody></table><div id="ctl00_MainHolder_TransactionGrid_LD" class="dxgvLoadingDiv" style="display:none;z-index:29999;position:absolute;">
+
+			</div><input type="hidden" name="ctl00$MainHolder$TransactionGrid$DXSelInput" id="ctl00_MainHolder_TransactionGrid_DXSelInput"><table id="ctl00_MainHolder_TransactionGrid_DXStyleTable" border="0" style="display:none;">
+				<tbody><tr>
+					<td></td>
+				</tr><tr class="dxgvEditingErrorRow">
+					<td class="dxgv" colspan="7" style="border-right-width:0px;"></td>
+				</tr><tr class="dxgvSelectedRow ic-grid-row01">
+					<td></td>
+				</tr><tr class="dxgvFocusedRow ic-grid-row01">
+					<td></td>
+				</tr><tr class="dxgvFocusedGroupRow">
+					<td></td>
+				</tr><tr class="dxgvDataRow ic-grid-row01">
+					<td></td>
+				</tr><tr class="dxgvDataRow ic-grid-row01 dxgvDataRowAlt ic-grid-row02">
+					<td></td>
+				</tr><tr class="dxgvDataRow ic-grid-row01">
+					<td></td>
+				</tr><tr class="dxgvDataRow ic-grid-row01 dxgvDataRowAlt ic-grid-row02">
+					<td></td>
+				</tr><tr class="dxgvDataRow ic-grid-row01">
+					<td></td>
+				</tr><tr class="dxgvDataRow ic-grid-row01 dxgvDataRowAlt ic-grid-row02">
+					<td></td>
+				</tr><tr class="dxgvDataRow ic-grid-row01">
+					<td></td>
+				</tr><tr class="dxgvDataRow ic-grid-row01 dxgvDataRowAlt ic-grid-row02">
+					<td></td>
+				</tr><tr class="dxgvDataRow ic-grid-row01">
+					<td></td>
+				</tr><tr class="dxgvDataRow ic-grid-row01 dxgvDataRowAlt ic-grid-row02">
+					<td></td>
+				</tr>
+			</tbody></table><input type="hidden" name="ctl00$MainHolder$TransactionGrid$CallbackState" id="ctl00_MainHolder_TransactionGrid_CallbackState" value="/wEWBB4ERGF0YQXkFUFBQUFBQ1lBQUFBQUFBQUFDZ0FBQUFBSEFBQUFGbFJ5WVc1ellXTjBhVzl1UkdWelkzSnBjSFJwYjI0V1ZISmhibk5oWTNScGIyNUVaWE5qY21sd2RHbHZiZ2NBQUExRlptWmxZM1JwZG1WRVlYUmxEVVZtWm1WamRHbDJaVVJoZEdVSUFBQUdRVzF2ZFc1MEJrRnRiM1Z1ZEFVQUFBMVVjbUZ1YzJGamRHbHZia2xrRFZSeVlXNXpZV04wYVc5dVNXUUVBQUFPUTNWeWNtVnVZM2xUZVcxaWIyd09RM1Z5Y21WdVkzbFRlVzFpYjJ3SEFBQUlUM0JsY21GMGIzSUlUM0JsY21GMGIzSUhBQUFMUkdWelkzSnBjSFJwYjI0TFJHVnpZM0pwY0hScGIyNEhBQUE5QUFBQUVHTnZiR3hsWTNSbFpFSmhiR0Z1WTJVSVRtOXRZbkpsVWs4TVEzSmxZWFJwYjI1RVlYUmxEMVJ5WVc1ellXTjBhVzl1Vkhsd1pRbFNaV1psY21WdVkyVU5SR1ZpYVhSUGNrTnlaV1JwZEJCQlpuUmxjbFJ5WVc1ellXTjBhVzl1REU5aWMyVnlkbUYwYVc5dWN3cERZWEprVG5WdFltVnlDa05oY21Sb2IyeGtaWElHVTJWamRHOXlCbFZ6WlhKSlpCZHdjbWx1WTJsd1lXeEViMk4xYldWdWRFNTFiV0psY2hCdmNtZGhibWw2WVhScGIyNU9ZVzFsQzFCeWIyUjFZM1JEYjJSbENHTnZiVzFsYm5SekNFbHRjRWRoYm1GdUNGTjBZWFIxYzBsa0NFTjFjbkpsYm1ONUVVWnliMjFCWTJOdmRXNTBUblZ0WW1WeUQxUnZRV05qYjNWdWRFNTFiV0psY2c5RGRYSnlaVzVqZVZGMWIzUnBibWNHVTNSaGRIVnpFRTl5WjJGdWFYcGhkR2x2YmtOMWFYUVBSbkp2YlVGalkyOTFiblJEYjJSbENVUmhlWE5EYjNWdWRCQlBjbWRoYm1sNllYUnBiMjVPWVcxbEQwbHVjM1J5ZFdOMGFXOXVWSGx3WlF0RGNtVmhkRzl5VlhObGNoWkdjbTl0UVdOamIzVnVkRU52WkdWU1pYTjFiV1ZrQjBOdmJtTmxjSFFJVUhKdmRtbHVZMlVPUkc5amRXMWxiblJVZVhCbFNXUU9SRzlqZFcxbGJuUk9kVzFpWlhJRVRtRnRaUXBUWVcxbFNHOXNaR1Z5Q0ZSbGVIUkdjbVZsQzBSbGMzUnBibUYwYVc5dUUwSmhiblJ2ZEdGc1EyOXljbVZzWVhScGRtVU9RbUZ1ZEc5MFlXeFRkR0YwZFhNUVFtRnVkRzkwWVd4VGRHRjBkWE5KWkF4TmIyUnBabWxsWkVSaGRHVUpUVzkyWlcxbGJuUnpDME52Y25KbGJHRjBhWFpsQ1ZCeWIyUjFZM1JKWkJGVWNtRnVjMkZqZEdsdmJsUjVjR1ZKUkFwVGRHRjBkWE5IY21sa0VVeHZibWRCWTJOdmRXNTBUblZ0WW1WeUVrTnZibU5sY0hSRVpYTmpjbWx3ZEdsdmJnNVBjbWRoYm1sNllYUnBiMjVKWkFoSmJuUmxjbVZ6ZEF4SmJuUmxjbVZ6ZEZKaGRHVUxVR0Y1YldWdWRFUmhkR1VJUkdWaFpFeHBibVVVUTJGc1kzVnNZWFJsVkc5MFlXeEJiVzkxYm5RVlJHVnpZM0pwY0hScGIyNVdhWE4xWVd4R2RXNWtERWxrVm1semRXRnNSblZ1WkF4T2RXMVBjR1Z5WVhScGIyNEZVWFZ2ZEdFTFNYTkpibTFsWkdsaGRHVWFWSEpoYm5OaFkzUnBiMjVVZVhCbFJHVnpZM0pwY0hScGIyNEhBQWNBQndBSEFBYi8vd2NDRlZCaFoyOGdVSEp2ZGk0Z1l5OGdRMmhsY1hWbGN3Z0NCRkFkVlZySVl0SUlCUVBIQ1FBQUFBQUFBQUFBQUFBQUFBSUFCQWF4RUFjQ0JTUWdJQ0FnQndJUFNtOXlaMlVnUTJWdWRHbHlhVzl1QndJS01UQXdMVEV5TnpVdE1RY0FCd0FHLy84SEFoVlFZV2R2SUZCeWIzWXVJR012SUVOb1pYRjFaWE1JQWdSd3JKUDR5R0xTQ0FVRHh3a0FBQUFBQUFBQUFBQUFBQUFDQUFRR3NoQUhBZ1VrSUNBZ0lBY0NEMHB2Y21kbElFTmxiblJwY21sdmJnY0NDakV3TUMweE1qYzFMVEVIQUFjQUJ2Ly9Cd0lWVUdGbmJ5QlFjbTkyTGlCakx5QkRhR1Z4ZFdWekNBSUU0UEFQaGIxbDBnZ0ZBOVc4Q2dBQUFBQUFBQUFBQUFBQUFnQUVCck1RQndJRkpDQWdJQ0FIQWc5S2IzSm5aU0JEWlc1MGFYSnBiMjRIQWdveE1EQXRNVEkzTlMweEJ3QUhBQWIvL3djQ0ZWQmhaMjhnVUhKdmRpNGdZeThnUTJobGNYVmxjd2dDQkNCMXFtYStaZElJQlFQSENRQUFBQUFBQUFBQUFBQUFBQUlBQkFhMEVBY0NCU1FnSUNBZ0J3SVBTbTl5WjJVZ1EyVnVkR2x5YVc5dUJ3SUtNVEF3TFRFeU56VXRNUWNBQndBRy8vOEhBaFZRWVdkdklGQnliM1l1SUdNdklFTm9aWEYxWlhNSUFnUndQMDVSd0dYU0NBVUR4d2tBQUFBQUFBQUFBQUFBQUFBQ0FBUUd0eEFIQWdVa0lDQWdJQWNDRDBwdmNtZGxJRU5sYm5ScGNtbHZiZ2NDQ2pFd01DMHhNamMxTFRFSEFBY0FCdi8vQndJVlVHRm5ieUJRY205MkxpQmpMeUJEYUdWeGRXVnpDQUlFd0dPWUQ4RmwwZ2dGQThjSkFBQUFBQUFBQUFBQUFBQUFBZ0FFQnJnUUJ3SUZKQ0FnSUNBSEFnOUtiM0puWlNCRFpXNTBhWEpwYjI0SEFnb3hNREF0TVRJM05TMHhCd0FIQUFiLy93Y0NGVkJoWjI4Z1VISnZkaTRnWXk4Z1EyaGxjWFZsY3dnQ0JKQjlXSm5FWmRJSUJRUEhDUUFBQUFBQUFBQUFBQUFBQUFJQUJBYTZFQWNDQlNRZ0lDQWdCd0lQU205eVoyVWdRMlZ1ZEdseWFXOXVCd0lLTVRBd0xURXlOelV0TVFjQUJ3QUcvLzhIQWhWUVlXZHZJRkJ5YjNZdUlHTXZJRU5vWlhGMVpYTUlBZ1NRRVdKQnhXWFNDQVVEeHdrQUFBQUFBQUFBQUFBQUFBQUNBQVFHdXhBSEFnVWtJQ0FnSUFjQ0QwcHZjbWRsSUVObGJuUnBjbWx2YmdjQ0NqRXdNQzB4TWpjMUxURUhBQWNBQnYvL0J3SVZVR0ZuYnlCUWNtOTJMaUJqTHlCRGFHVnhkV1Z6Q0FJRVFLQk9LTWRsMGdnRkE4Y0pBQUFBQUFBQUFBQUFBQUFBQWdBRUJyd1FCd0lGSkNBZ0lDQUhBZzlLYjNKblpTQkRaVzUwYVhKcGIyNEhBZ294TURBdE1USTNOUzB4QndBSEFBYi8vd2NDRlZCaFoyOGdVSEp2ZGk0Z1l5OGdRMmhsY1hWbGN3Z0NCSEFndFIzS1pkSUlCUVBIQ1FBQUFBQUFBQUFBQUFBQUFBSUFCQWE5RUFjQ0JTUWdJQ0FnQndJUFNtOXlaMlVnUTJWdWRHbHlhVzl1QndJS01UQXdMVEV5TnpVdE1RPT0eBVN0YXRlBWxCd2NIQUFJQkJ3RUNBUWNDQWdFSEF3SUJCd1FDQVFjRkFnRUhCZ0lCQndBSEFBY0FCd0FDQUFiLy93a0NEVlJ5WVc1ellXTjBhVzl1U1dRSkFnQUNBQU1IQkFJQUJ3QUNBUWNBQWdFSEFBPT0="></td>
+		</tr>
+	</tbody></table><script id="dxss_1758034763" type="text/javascript">
+<!--
+
+var dxo = new ASPxClientGridView('ctl00_MainHolder_TransactionGrid');
+window['TransactionGrid'] = dxo;
+dxo.callBack = function(arg) { WebForm_DoCallback('ctl00$MainHolder$TransactionGrid',arg,aspxCallback,'ctl00_MainHolder_TransactionGrid',aspxCallbackError,true); };
+dxo.uniqueID = 'ctl00$MainHolder$TransactionGrid';
+dxo.callBacksEnabled=true;
+dxo.pageRowCount=10;
+dxo.selectedWithoutPageRowCount=0;
+dxo.visibleStartIndex=0;
+dxo.focusedRowIndex=-1;
+dxo.allowFocusedRow=false;
+dxo.allowMultiSelection=false;
+dxo.isColumnsResizable=false;
+dxo.isVerticalScrolling=false;
+dxo.isMainControlResizable=false;
+dxo.callbackOnFocusedRowChanged=false;
+dxo.callbackOnSelectionChanged=false;
+dxo.autoFilterDelay='1200';
+dxo.ClearColumns();
+dxo.CreateColumn('',0,null,1);
+dxo.CreateColumn('',1,'TransactionDescription',1);
+dxo.CreateColumn('',2,'Description',1);
+dxo.CreateColumn('',3,'EffectiveDate',1);
+dxo.CreateColumn('',4,'CurrencySymbol',1);
+dxo.CreateColumn('',5,'Amount',1);
+dxo.CreateColumn('',6,'Operator',1);
+dxo.keys=['4273','4274','4275','4276','4279','4280','4282','4283','4284','4285'];
+dxo.InlineInitialize();
+
+//-->
+</script>
+
+                
+            
+</div></td>
+					</tr>
+				</tbody></table></td>
+			</tr>
+		</tbody></table>
+            <table width="100%">
+                <tbody><tr>
+                    <td nowrap="nowrap" style="width: 100%">
+                        
+                    </td>
+                    <td align="right" nowrap="nowrap">
+                        <a onclick="return ValidateOneSelection();" id="ctl00_MainHolder_btnConsultar" class="ic-button-navigation" href="javascript:__doPostBack(&#39;ctl00$MainHolder$btnConsultar&#39;,&#39;&#39;)">Consultar</a>
+                    </td>
+                    <td align="right" nowrap="nowrap">
+                        <a onclick="return ValidateAllSelection();" id="ctl00_MainHolder_btnRechazar" class="ic-button-navigation" href="javascript:__doPostBack(&#39;ctl00$MainHolder$btnRechazar&#39;,&#39;&#39;)">Rechazar</a>
+                    </td>
+                    <td align="right" nowrap="nowrap">
+                        <a onclick="return ValidateAllSelection();" id="ctl00_MainHolder_btnAprobar" class="ic-button-navigation" href="javascript:__doPostBack(&#39;ctl00$MainHolder$btnAprobar&#39;,&#39;&#39;)">Aprobar</a>
+                    </td>
+                </tr>
+            </tbody></table>
+        
+
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="right">
+                                        <div id="ctl00_validationSummaryFooter" style="color:Red;font-size:10px;display:none;">
+
+		</div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="95%" align="center">
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                            <tbody><tr>
+                                                <td align="right">
+                                                    
+                                                    
+                                                </td>
+                                            </tr>
+                                        </tbody></table>
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="ic-content-footer">
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                <tbody><tr class="ic-content-footer-dottedline">
+                                    <td align="right" nowrap="nowrap" style="width: 90%">
+                                    </td>
+                                    <td align="right" nowrap="nowrap" style="width: 10%">
+                                        <a id="ctl00_LinkButtonTermsAndConditions" class="ic-grid-link" href="terminosCondi.html">Términos y Condiciones</a>
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                </tbody></table>
+            </td>
+		<td id="ctl00_cellContentRight" class="ic-content-space-top-right" valign="top" style="display:none;">
+                <table class="ic-content-right" border="0" cellspacing="0" cellpadding="0">
+                    <tbody><tr>
+                        <td>
+                            <img src="./pixel.gif" width="8" height="1">
+                        </td>
+                        <td class="ic-right-panel">
+                            <table border="0" cellpadding="0" cellspacing="0" class="ic-right-panel-content">
+                                <tbody><tr>
+                                    <td width="8" class="ic-right-panel-collapse">
+                                        <input type="image" name="ctl00$imageButtonCollapse" id="ctl00_imageButtonCollapse" src="./bot-right-collapse.gif" style="height:47px;width:9px;border-width:0px;">
+                                    </td>
+                                    
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                </tbody></table>
+            </td>
+	</tr>
+</tbody></table>
+
+    
+    
+<script type="text/javascript">
+//<![CDATA[
+var Page_ValidationSummaries =  new Array(document.getElementById("ctl00_validationSummaryFooter"));
+//]]>
+</script>
+
+<script type="text/javascript">
+//<![CDATA[
+var ctl00_validationSummaryFooter = document.all ? document.all["ctl00_validationSummaryFooter"] : document.getElementById("ctl00_validationSummaryFooter");
+ctl00_validationSummaryFooter.headertext = "Formulario inválido, por favor revise los datos ingresados:";
+ctl00_validationSummaryFooter.showsummary = "False";
+//]]>
+</script>
+
+
+<script type="text/javascript">
+//<![CDATA[
+
+WebForm_InitCallback();
+document.getElementById('ctl00_validationSummaryFooter').dispose = function() {
+    Array.remove(Page_ValidationSummaries, document.getElementById('ctl00_validationSummaryFooter'));
+}
+Sys.Application.initialize();
+//]]>
+</script>
+</form>
+
+
+<div class="ui-dialog ui-widget ui-widget-content ui-corner-all" tabindex="-1" role="dialog" aria-labelledby="ui-dialog-title-sessionTimeoutWarning" style="display: none; z-index: 1000; outline: 0px;"><div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix"><span class="ui-dialog-title" id="ui-dialog-title-sessionTimeoutWarning">&nbsp;</span><a href="Pages/Common/Transaction_Aproved.aspx#" class="ui-dialog-titlebar-close ui-corner-all" role="button" style="display: none;"><span class="ui-icon ui-icon-closethick">close</span></a></div><div id="sessionTimeoutWarning" style="background-color: rgb(255, 255, 255); padding: 0px; height: 100%;" class="ui-dialog-content ui-widget-content">
+        <div id="sessionTimeoutWarningHeader">
+            <table width="100%">
+                 <tbody><tr>
+                    <td colspan="2" align="center" class="ic-form-data-modal">
+                        La sesión finalizará en <span id="sessionTimeoutCountdown"></span>&nbsp;segundos.
+                        Para seguir operando seleccioná “Continuar”
+                    </td>
+                </tr>
+            </tbody></table>
+        </div>
+    </div><div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix"><div class="ui-dialog-buttonset"><button type="button">Continuar </button><button type="button">Finalizar sesión</button></div></div></div></body></html>

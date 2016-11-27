@@ -1,0 +1,1427 @@
+
+<!-- saved from url=(0058)Pages/ProvidersCheck/LoadData.aspx -->
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><script src="./jquery-1.7.2.min.js.descarga" type="text/javascript"></script>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<link href="Default.css" type="text/css" rel="stylesheet">
+<link href="Menu.css" type="text/css" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="Estilo.css">
+<script src="rutas.js"></script> 
+
+<script src="./jquery-1.7.1.js.descarga" type="text/javascript"></script>
+<script src="./jquery-ui-1.8.19.custom.min.js.descarga" type="text/javascript"></script>
+<script src="./jquery.formatCurrency-1.4.0.js.descarga" type="text/javascript"></script>
+<script src="./idle-timer.js.descarga" type="text/javascript"></script>
+<script src="./idle-timer.min.js.descarga" type="text/javascript"></script>
+<script language="javascript" type="text/javascript">
+
+function Logout() {
+        if (confirm("¿ Desea salir del sistema ?") == true) {
+                    
+            window.location =  '/'+ "Logout.aspx";
+        }
+       
+    }
+    
+var focusedFormControl;    
+var dateFormat = 'dd/mm/aaaa';
+var applicationRoot = '/';      
+function OnRowClick(sender, args) {
+    if (sender.GetSelectedRowCount() == 0) {
+        sender.UnselectRowOnPage(args.visibleIndex);
+        SetPageLinkData("");
+    }
+    else {
+        _aspxClearSelection();
+        sender._selectAllRowsOnPage(false);
+        sender.SelectRow(args.visibleIndex, true);
+        SetPageLinkData(sender.GetRowKey(args.visibleIndex));
+    }
+}
+
+if (history.forward(1))
+{
+
+    location.replace(history.forward(1))
+} 
+
+function PrintPage() {
+
+    window.print();
+}
+
+function GoMyOption(select)
+{
+    var url = select.options[select.selectedIndex].value;
+    if( url != "")
+        window.location = url;
+}
+
+function GoFavourites(select)
+{
+
+    var url = select.options[select.selectedIndex].value;
+    if( url != "")
+        window.location = url;
+}
+
+function GoPrint()
+{
+
+window.print();
+}
+
+function addEvent(elm, evType, fn, useCapture)
+{
+
+  if (elm.addEventListener){
+    elm.addEventListener(evType, fn, useCapture);
+    return true;
+  } else if (elm.attachEvent){
+    var r = elm.attachEvent("on"+evType, fn);
+    return r;
+  } else {
+    alert("Handler could not be removed");
+  }
+} 
+
+function SetPageLinkData(data)
+{
+    pageLinkData = document.getElementById('PageLinkData');
+    pageLinkData.value = data;
+}
+
+function SetPageLinkUrl(url)
+{
+    pageLinkUrl = document.getElementById('PageLinkUrl');
+    pageLinkUrl.value = url;
+}
+
+function doPageLink(id)
+{
+    __doPostBack(id, 'PageLinkEvent');
+}
+
+function imprimirEstadoCuenta()
+{
+											
+    var ficha = document.getElementById('printDiv');		
+    var ventimp = window.open('', 'popimpr','height=450, width=550, scrollbars=1');																						
+    var fichaHTML = new String(ficha.innerHTML);
+    fichaHTML = fichaHTML.replace('Seleccione un período y oprima "Consultar".'," ");
+    //var i = document.getElementById('ctl00_MainHolder_panelDetalle_imgPlusMinus');
+    var html  = "<html>\n<head>\n<link rel=\"stylesheet\" type=\"text/css\" href=\"..\\..\\App_Themes\\Default\\Default.css \" />" 
+                + "</head><table width=\"100%\"><tr bgcolor=\"#FF0000\"><td><img src=\"..\\..\\App_Themes\\Default\\Images\\logoSantander.gif\" /></td></tr></table>" 
+                + fichaHTML 
+                + "</html>";
+    ventimp.document.write( html );
+    ventimp.document.close();
+    ventimp.print( );
+    ventimp.close();
+					
+}
+
+ function removeInvalidCharacters(control) {
+ 
+            !(/^[A-zÑñ0-9 ]*$/i).test(control.value) ? control.value = control.value.replace(/[^A-zÑñ0-9 ]/ig, '') : null
+        }
+        
+  function removeInvalidNumbers(control) {
+            !(/^[0-9,]*$/i).test(control.value) ? control.value = control.value.replace(/[^0-9,]/ig, '') : null
+        }
+function showLoading()
+{
+//debugger;
+    // aquí le pasamos la clase o id de nuestro div a centrar (en este caso "caja")
+    $('.ic-loading').css({
+       position:'absolute',
+       left: ($('#mainContainer').width()/2 - $('.ic-loading').outerWidth())/2,
+       //top: ($('#mainContainer').height()/2 - $('.ic-loading').outerHeight())/2
+       top: ($('#mainContainer').height()/2 - $('ic-loading').height()/2)
+    });
+    
+    $('#mainContainer').css('display','none');
+    $('#ic-loading').css('display','block');
+}
+//ModalDialog SessionTimeout
+var idleTime = (parseInt('1170') * 1000); // number of miliseconds until the user is considered idle
+var initialSessionTimeoutMessage = "La sesión finalizará en <span id='sessionTimeoutCountdown'></span> segundos. Para seguir operando seleccioná “Continuar”<br /><br />";
+var sessionTimeoutCountdownId = 'sessionTimeoutCountdown';
+var redirectAfter = (parseInt('30')) ; // number of seconds to wait before redirecting the user
+var redirectTo = '/' + "Logout.aspx"; // URL to relocate the user to once they have timed out
+var keepAliveURL = ''; // URL to call to keep the session alive
+var expiredMessage = ''; // message to show user when the countdown reaches 0
+var running = false; // var to check if the countdown is running 
+var timer; // reference to the setInterval timer so it can be stopped 
+var timerSB;  
+var timeout;  
+    $(document).ready(function() {     
+// create the warning window and set autoOpen to false  
+      var sessionTimeoutWarningDialog = $("#sessionTimeoutWarning"); 
+    $(sessionTimeoutWarningDialog).dialog({         
+        title: '',       
+        autoOpen: false,    // set this to false so we can manually open it         
+        closeOnEscape: false,         
+        draggable: false,         
+        width: 460,         
+        minHeight: 150,         
+        modal: true,           
+        beforeclose: function() { // bind to beforeclose so if the user clicks on the "X" or escape to close the dialog, it will work too             // stop the timer             
+            clearInterval(timer);               // stop countdown
+            running = false;               // ajax call to keep the server-side session alive    
+                  
+            $.ajax({               
+                url: keepAliveURL,               
+                async: false            
+            });         
+        },         
+        buttons: {      
+             'Continuar ': function() {                 
+                // close dialog 
+                window.location.reload();//BM24925: Se agrega esto para que el expired de una cookie se actualice y no se cierre la sesión luego de hacer click en continuar al terminar el timeout del webconfig. El valor del expired se pone en la tabla configuration en la clave SessionMaxMinutes.
+                //var valor = getCookie('ICBWebLogin'); //Esta función la dejo por las dudas, pero no la pude hacer andar poque el document.cookie no me trae las cookies del explorador.                
+                $(this).dialog('close');
+                clearInterval(timerSB);    
+                window.status = "";      
+                StatusBarCountDown();     
+            },
+            'Finalizar sesión': function() {                 
+                // close dialog                 
+                $(sessionTimeoutWarningDialog).html(expiredMessage);
+                $(sessionTimeoutWarningDialog).dialog('disable');                     
+                window.parent.location = redirectTo;           
+            }         
+        },         
+        resizable: false,         
+        open: function() {
+            $('body').css('overflow','auto');         
+        },         
+        close: function() {             
+            // reset overflow             
+            $('body').css('overflow','auto');         
+        }  
+           
+    }); // end of dialog  
+    jQuery("a.ui-dialog-titlebar-close").hide(); 
+          
+    // start the idle timer
+    $.idleTimer(idleTime);
+ 
+});
+
+// BM24925: Función para recuperar el valor de una cookie.
+// name - nombre de la cookie deseada
+// devuelve un string conteniendo el valor de la cookie especificada o null si la cookie no existe
+
+function getCookie(name){
+var micookie = (document.cookie.indexOf('ICBWebLogin=') === -1 ? '' : ("; " + document.cookie).split('; ICBWebLogin=')[1].split(';')[0]);
+
+  var cname = name + "=";               
+  var dc = document.cookie;             
+  if (dc.length > 0) {              
+    begin = dc.indexOf(cname);       
+    if (begin != -1) {           
+      begin += cname.length;       
+      end = dc.indexOf(";", begin);
+      if (end == -1) end = dc.length;
+        return unescape(dc.substring(begin, end));
+    } 
+  }
+  return null;
+}
+
+//Status Bar Countdown Script
+function StatusBarCountDown() 
+{
+    var redirectAfter = (parseInt('30'));
+    var timeout = '1200000';   
+    var redirectTo = '/' + "Logout.aspx"; // URL to relocate the user to once they have timed out   
+    timerSB = setInterval(function(){
+    timeout -= 1000;
+    if(timeout == redirectAfter * 1000)
+    {
+        window.focus();
+    }
+   if(timeout < redirectAfter * 1000)
+   {
+        $("#sessionTimeoutCountdown").html(timeout/1000);
+        $("#sessionTimeoutWarning").dialog('open'); 
+   }
+   if (timeout < 100)
+   {
+        $("#sessionTimeoutWarning").html(expiredMessage);
+        $("#sessionTimeoutWarning").dialog('disable');                     
+        window.parent.location = redirectTo;
+        clearInterval(timerSB);    
+        window.status = "";     
+   }
+        
+   window.status = "Su sesión expirará " + time(timeout) + " minutos";        
+    }, 1000);   
+         
+   function two(x)
+   {
+    return ((x > 9) ? "" : "0") + x
+   }   
+  
+   function time(ms)
+   {   
+       var t = '';   
+       var sec = Math.floor(ms / 1000);   
+       ms = ms % 1000   
+
+       var min = Math.floor(sec / 60);   
+       sec = sec % 60;   
+       t = two(sec);   
+
+       var hr = Math.floor(min / 60);   
+       min = min % 60;   
+       t = two(min) + ":" + t;   
+    return t;
+   }
+}
+
+StatusBarCountDown();
+
+
+
+</script>
+
+<link rel="stylesheet" type="text/css" href="./WebResource.axd">
+<link rel="stylesheet" type="text/css" href="./WebResource(1).axd">
+<link href="./Default.css" type="text/css" rel="stylesheet"><link href="./jquery-ui-1.8.19.custom.css" type="text/css" rel="stylesheet"><link href="./WebResource(2).axd" type="text/css" rel="stylesheet"><title>
+	Ingreso Manual
+</title></head>
+<body>
+    <form name="aspnetForm" method="post" action="Pages/ProvidersCheck/LoadData.aspx" onsubmit="javascript:return WebForm_OnSubmit();" id="aspnetForm">
+<div>
+<input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="">
+<input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="">
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUKLTM4ODU2MjUzOA9kFgJmD2QWAgIBD2QWAgIBD2QWAmYPZBYEAgEPZBYEAgIPDxYCHgRUZXh0BQ5JbmdyZXNvIE1hbnVhbGRkAgcPZBYCAgEPZBYOZg9kFgICAQ9kFgQCAQ9kFi5mDxAPFgYeDkRhdGFWYWx1ZUZpZWxkBQpWYWx1ZUZpZWxkHg1EYXRhVGV4dEZpZWxkBQlUZXh0RmllbGQeC18hRGF0YUJvdW5kZ2QQFQIKMTAwLTEyNzUtMQoxMDAtMTI3NS0zFQIENzA5MgQ3MDk0FCsDAmdnZGQCAQ8PFgYfAGUeC0NoYXJzRmlsdGVyBQ5eW146O1w8PidcIl0qJB4SQ2hhcnNGaWx0ZXJFbmFibGVkZxYCHgpvbmtleXByZXNzBSZyZXR1cm4gbnVtYmVyc29ubHkodGhpcywgZXZlbnQsIGZhbHNlKWQCAw8PFgYfAGUfBAUOXlteOjtcPD4nXCJdKiQfBWcWAh8GBSZyZXR1cm4gbnVtYmVyc29ubHkodGhpcywgZXZlbnQsIGZhbHNlKWQCBQ8PFgYfAGUfBAUOXlteOjtcPD4nXCJdKiQfBWcWAh8GBTlyZXR1cm4gdmFsaWRDaGFyYWN0ZXJzT25seSh0aGlzLCBldmVudCwgIl5bXjo7XDw+J1wiXSokIilkAgcPDxYGHwBlHwQFDl5bXjo7XDw+J1wiXSokHwVnFgIfBgUmcmV0dXJuIG51bWJlcnNvbmx5KHRoaXMsIGV2ZW50LCBmYWxzZSlkAgoPDxYGHwBlHwQFDl5bXjo7XDw+J1wiXSokHwVnFgIfBgUmcmV0dXJuIG51bWJlcnNvbmx5KHRoaXMsIGV2ZW50LCBmYWxzZSlkAgsPDxYIHwBlHwQFDl5bXjo7XDw+J1wiXSokHwVnHglNYXhMZW5ndGgCHBYCHwYFKnJldHVybiBudW1iZXJzb25seSh0aGlzLCBldmVudCwgdHJ1ZSwgJywnKWQCDg8PFggfBwILHwBlHwQFDl5bXjo7XDw+J1wiXSokHwVnFgIfBgUmcmV0dXJuIG51bWJlcnNvbmx5KHRoaXMsIGV2ZW50LCBmYWxzZSlkAhEPDxYGHwBlHwQFDl5bXjo7XDw+J1wiXSokHwVnFgIfBgUmcmV0dXJuIG51bWJlcnNvbmx5KHRoaXMsIGV2ZW50LCBmYWxzZSlkAhQPDxYIHwcCCx8AZR8EBQ5eW146O1w8PidcIl0qJB8FZxYCHwYFJnJldHVybiBudW1iZXJzb25seSh0aGlzLCBldmVudCwgZmFsc2UpZAIWDw8WBh8AZR8EBQ5eW146O1w8PidcIl0qJB8FZxYCHwYFJnJldHVybiBudW1iZXJzb25seSh0aGlzLCBldmVudCwgZmFsc2UpZAIXD2QWAmYPZBYCZg9kFgRmD2QWAgIBDw8WCB8ABRgyNC8xMC8yMDE2IDEyOjAwOjAwIGEubS4fBAUOXlteOjtcPD4nXCJdKiQfBWcfB2YWAh8GBSNyZXR1cm4gZGF0ZU51bWJlcnNPbmx5KHRoaXMsIGV2ZW50KWQCAQ9kFgICBQ8WGh4WQ3VsdHVyZVRpbWVQbGFjZWhvbGRlcgUBOh4bQ3VsdHVyZVRob3VzYW5kc1BsYWNlaG9sZGVyBQEuHhFDdWx0dXJlRGF0ZUZvcm1hdAUDRE1ZHhZDdWx0dXJlRGF0ZVBsYWNlaG9sZGVyBQEvHgxEaXNwbGF5TW9uZXkLKYYBQWpheENvbnRyb2xUb29sa2l0Lk1hc2tlZEVkaXRTaG93U3ltYm9sLCBBamF4Q29udHJvbFRvb2xraXQsIFZlcnNpb249My4wLjIwMjI5LjIwODQzLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPTI4ZjAxYjBlODRiNmQ1M2UAHg5BY2NlcHROZWdhdGl2ZQsrBAAeE092ZXJyaWRlUGFnZUN1bHR1cmVoHhlDdWx0dXJlRGVjaW1hbFBsYWNlaG9sZGVyBQEsHhZDdWx0dXJlQU1QTVBsYWNlaG9sZGVyBQlhLm0uO3AubS4eIEN1bHR1cmVDdXJyZW5jeVN5bWJvbFBsYWNlaG9sZGVyBQIkVR4LQ3VsdHVyZU5hbWUFBWVzLVVZHg5JbnB1dERpcmVjdGlvbgspigFBamF4Q29udHJvbFRvb2xraXQuTWFza2VkRWRpdElucHV0RGlyZWN0aW9uLCBBamF4Q29udHJvbFRvb2xraXQsIFZlcnNpb249My4wLjIwMjI5LjIwODQzLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPTI4ZjAxYjBlODRiNmQ1M2UAHgpBY2NlcHRBbVBtaGQCGg8PFggfBwILHwBlHwQFDl5bXjo7XDw+J1wiXSokHwVnFgIfBgUmcmV0dXJuIG51bWJlcnNvbmx5KHRoaXMsIGV2ZW50LCBmYWxzZSlkAhwPDxYGHwBlHwQFDl5bXjo7XDw+J1wiXSokHwVnFgIfBgU5cmV0dXJuIHZhbGlkQ2hhcmFjdGVyc09ubHkodGhpcywgZXZlbnQsICJeW146O1w8PidcIl0qJCIpZAIdD2QWAmYPZBYCZg9kFgRmD2QWAgIBDw8WCB8ABRgyNS8xMC8yMDE2IDEyOjAwOjAwIGEubS4fBAUOXlteOjtcPD4nXCJdKiQfBWcfB2YWAh8GBSNyZXR1cm4gZGF0ZU51bWJlcnNPbmx5KHRoaXMsIGV2ZW50KWQCAQ9kFgICBQ8WGh8IBQE6HwkFAS4fCgUDRE1ZHwsFAS8fDAsrBAAfDQsrBAAfDmgfDwUBLB8QBQlhLm0uO3AubS4fEQUCJFUfEgUFZXMtVVkfEwsrBQAfFGhkAiAPDxYIHwcCCx8AZR8EBQ5eW146O1w8PidcIl0qJB8FZxYCHwYFJnJldHVybiBudW1iZXJzb25seSh0aGlzLCBldmVudCwgZmFsc2UpZAIiDxAPFgYfAgUFVmFsdWUfAQUDS2V5HwNnZBAVGC1DQVBJVEFMIEZFREVSQUwgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgQlVFTk9TIEFJUkVTICAgICAgICAgICAgICAgICAgICAgQ0FUQU1BUkNBICAgICAgICAgICAgICAgICAgICAgICAgQ09SRE9CQSAgICAgICAgICAgICAgICAgICAgICAgICAgQ09SUklFTlRFUyAgICAgICAgICAgICAgICAgICAgICAgQ0hBQ08gICAgICAgICAgICAgICAgICAgICAgICAgICAgQ0hVQlVUICAgICAgICAgICAgICAgICAgICAgICAgICAgRU5UUkUgUklPUyAgICAgICAgICAgICAgICAgICAgICAgSlVKVVkgICAgICAgICAgICAgICAgICAgICAgICAgICAgTEEgUEFNUEEgICAgICAgICAgICAgICAgICAgICAgICAgTEEgUklPSkEgICAgICAgICAgICAgICAgICAgICAgICAgTUVORE9aQSAgICAgICAgICAgICAgICAgICAgICAgICAgTUlTSU9ORVMgICAgICAgICAgICAgICAgICAgICAgICAgTkVVUVVFTiAgICAgICAgICAgICAgICAgICAgICAgICAgUklPIE5FR1JPICAgICAgICAgICAgICAgICAgICAgICAgU0FMVEEgICAgICAgICAgICAgICAgICAgICAgICAgICAgU0FOIEpVQU4gICAgICAgICAgICAgICAgICAgICAgICAgU0FOIExVSVMgICAgICAgICAgICAgICAgICAgICAgICAgU0FOVEEgQ1JVWiAgICAgICAgICAgICAgICAgICAgICAgU0FOVEEgRkUgICAgICAgICAgICAgICAgICAgICAgICAgU0FOVElBR08gREVMIEVTVEVSTyAgICAgICAgICAgICAZVFVDVU1BTiAgICAgICAgICAgICAgICAgICRULiBERUwgRlVFR08sIEFOVEFSLiBFIEkuICAgICAgICAgICAZRk9STU9TQSAgICAgICAgICAgICAgICAgIBUYAjAxAjAyAjAzAjA0AjA1AjA2AjA3AjA4AjEwAjExAjEyAjEzAjE0AjE1AjE2AjE3AjE4AjE5AjIwAjIxAjIyAjIzAjQwATkUKwMYZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZGQCJQ8PFggfBwILHwBlHwQFDl5bXjo7XDw+J1wiXSokHwVnFgIfBgUmcmV0dXJuIG51bWJlcnNvbmx5KHRoaXMsIGV2ZW50LCBmYWxzZSlkAiYPDxYGHwBlHwQFDl5bXjo7XDw+J1wiXSokHwVnFgIfBgU5cmV0dXJuIHZhbGlkQ2hhcmFjdGVyc09ubHkodGhpcywgZXZlbnQsICJeW146O1w8PidcIl0qJCIpZAIrDw8WBh8AZR8EBQ5eW146O1w8PidcIl0qJB8FZxYCHwYFJnJldHVybiBudW1iZXJzb25seSh0aGlzLCBldmVudCwgZmFsc2UpZAIuDw8WBh8AZR8EBQ5eW146O1w8PidcIl0qJB8FZxYCHwYFOXJldHVybiB2YWxpZENoYXJhY3RlcnNPbmx5KHRoaXMsIGV2ZW50LCAiXlteOjtcPD4nXCJdKiQiKWQCMQ8PFgYfAGUfBAUOXlteOjtcPD4nXCJdKiQfBWcWAh8GBTlyZXR1cm4gdmFsaWRDaGFyYWN0ZXJzT25seSh0aGlzLCBldmVudCwgIl5bXjo7XDw+J1wiXSokIilkAjMPDxYIHwcCCx8AZR8EBQ5eW146O1w8PidcIl0qJB8FZxYCHwYFJnJldHVybiBudW1iZXJzb25seSh0aGlzLCBldmVudCwgZmFsc2UpZAIFD2QWAgIBDzwrABYCAA8WCB4PRGF0YVNvdXJjZUJvdW5kZx4OXyFVc2VWaWV3U3RhdGVnHhFDbGllbnRTdGF0ZUxvYWRlZGceDUNhbGxiYWNrU3RhdGVkZAYPZBAWF2YCAQICAgMCBAIFAgYCBwIIAgkCCgILAgwCDQIOAg8CEAIRAhICEwIUAhUCFhYXPCsADAEAFgQeD0NvbFZpc2libGVJbmRleGYeCkNvbFZpc2libGVnPCsACwEAFgIfGQIBPCsACwEAFgIfGQICPCsACwEAFgIfGQIDPCsACwEAFgIfGQIEPCsACwEAFgQfGQIFHxpoPCsACwEAFgIfGQIFPCsACwEAFgIfGQIGPCsACwEAFgIfGQIHPCsACwEAFgIfGQIIPCsACwEAFgIfGQIJPCsACwEAFgQfGQIKHxpoPCsACwEAFgQfGQIKHxpoPCsACwEAFgQfGQIKHxpoPCsACwEAFgQfGQIKHxpoPCsACwEAFgQfGQIKHxpoPCsACwEAFgQfGQIKHxpoPCsACwEAFgQfGQIKHxpoPCsACwEAFgQfGQIKHxpoPCsACwEAFgQfGQIKHxpoPCsACwEAFgQfGQIKHxpoPCsACwEAFgQfGQIKHxpoPCsACwEAFgQfGQIKHxpoDxYXAgECAgICAgMCAgICAgICAgIEAgQCAgICAgICAgICAgICAgICAgICAgICAgICAhYEBZYBRGV2RXhwcmVzcy5XZWIuQVNQeEdyaWRWaWV3LkdyaWRWaWV3Q29tbWFuZENvbHVtbiwgRGV2RXhwcmVzcy5XZWIuQVNQeEdyaWRWaWV3LnY4LjMsIFZlcnNpb249OC4zLjUuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj1iODhkMTc1NGQ3MDBlNDlhBaABSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbi5DbGFzc2VzLkdyaWRWaWV3RGF0YVRleHRDb2x1bW5UZXh0LCBJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLCBWZXJzaW9uPTMuMC4xLjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49NzE4NjI4MDE3ZmZiOTY2ZQWiAUluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24uQ2xhc3Nlcy5HcmlkVmlld0RhdGFUZXh0Q29sdW1uQW1vdW50LCBJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLCBWZXJzaW9uPTMuMC4xLjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49NzE4NjI4MDE3ZmZiOTY2ZQWgAUluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24uQ2xhc3Nlcy5HcmlkVmlld0RhdGFUZXh0Q29sdW1uRGF0ZSwgSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbiwgVmVyc2lvbj0zLjAuMS4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPTcxODYyODAxN2ZmYjk2NmVkAgEPZBYCAgEPZBYEAgEPZBYCAgEPZBYMZg8QZGQWAGQCAQ8PFgYfBwILHwQFDl5bXjo7XDw+J1wiXSokHwVnFgIfBgUmcmV0dXJuIG51bWJlcnNvbmx5KHRoaXMsIGV2ZW50LCBmYWxzZSlkAgIPEGRkFgFmZAIDD2QWAmYPZBYCZg9kFgJmD2QWAgIBDw8WCB8ABRgyNS8xMC8yMDE2IDEyOjAwOjAwIGEubS4fBAUOXlteOjtcPD4nXCJdKiQfBWcfB2YWBB4Ib25jaGFuZ2UFJlZhbGlkYXJSYW5nb0ZlY2hhKHRoaXMsIDI0LCAxMCwgMjAxNik7HwYFI3JldHVybiBkYXRlTnVtYmVyc09ubHkodGhpcywgZXZlbnQpZAIEDw8WBB8EBQ5eW146O1w8PidcIl0qJB8FZxYCHwYFJnJldHVybiBudW1iZXJzb25seSh0aGlzLCBldmVudCwgZmFsc2UpZAIFDw8WBB8EBQ5eW146O1w8PidcIl0qJB8FZxYCHwYFKnJldHVybiBudW1iZXJzb25seSh0aGlzLCBldmVudCwgdHJ1ZSwgJywnKWQCBQ9kFgICAQ88KwAWAgAPFgYfFmcfF2gfGGVkBg9kEBYHZgIBAgICAwIEAgUCBhYHPCsADAEAFgQfGWYfGmg8KwALAQAWAh8ZZjwrAAsBABYCHxkCATwrAAsBABYCHxkCAjwrAAsBABYCHxkCAzwrAAsBABYCHxkCBDwrAAsBABYCHxkCBQ8WBwIBAgICAgICAgMCAgIEFgQFlgFEZXZFeHByZXNzLldlYi5BU1B4R3JpZFZpZXcuR3JpZFZpZXdDb21tYW5kQ29sdW1uLCBEZXZFeHByZXNzLldlYi5BU1B4R3JpZFZpZXcudjguMywgVmVyc2lvbj04LjMuNS4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWI4OGQxNzU0ZDcwMGU0OWEFoAFJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLkNsYXNzZXMuR3JpZFZpZXdEYXRhVGV4dENvbHVtblRleHQsIEluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24sIFZlcnNpb249My4wLjEuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj03MTg2MjgwMTdmZmI5NjZlBaABSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbi5DbGFzc2VzLkdyaWRWaWV3RGF0YVRleHRDb2x1bW5EYXRlLCBJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLCBWZXJzaW9uPTMuMC4xLjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49NzE4NjI4MDE3ZmZiOTY2ZQWiAUluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24uQ2xhc3Nlcy5HcmlkVmlld0RhdGFUZXh0Q29sdW1uQW1vdW50LCBJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLCBWZXJzaW9uPTMuMC4xLjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49NzE4NjI4MDE3ZmZiOTY2ZWQCAg9kFgICAQ9kFgQCAQ9kFgICAQ9kFhhmDxBkZBYAZAIBDw8WBB8EBQ5eW146O1w8PidcIl0qJB8FZxYCHwYFOXJldHVybiB2YWxpZENoYXJhY3RlcnNPbmx5KHRoaXMsIGV2ZW50LCAiXlteOjtcPD4nXCJdKiQiKWQCAw8PFgQfBAUOXlteOjtcPD4nXCJdKiQfBWcWAh8GBTlyZXR1cm4gdmFsaWRDaGFyYWN0ZXJzT25seSh0aGlzLCBldmVudCwgIl5bXjo7XDw+J1wiXSokIilkAgQPDxYEHwQFDl5bXjo7XDw+J1wiXSokHwVnFgIfBgU5cmV0dXJuIHZhbGlkQ2hhcmFjdGVyc09ubHkodGhpcywgZXZlbnQsICJeW146O1w8PidcIl0qJCIpZAIGDw8WBh8HAgsfBAUOXlteOjtcPD4nXCJdKiQfBWcWAh8GBSZyZXR1cm4gbnVtYmVyc29ubHkodGhpcywgZXZlbnQsIGZhbHNlKWQCCA9kFgJmD2QWAmYPZBYCZg9kFgICAQ8PFggfAAUYMjUvMTAvMjAxNiAxMjowMDowMCBhLm0uHwQFDl5bXjo7XDw+J1wiXSokHwVnHwdmFgQfGwUmVmFsaWRhclJhbmdvRmVjaGEodGhpcywgMjQsIDEwLCAyMDE2KTsfBgUjcmV0dXJuIGRhdGVOdW1iZXJzT25seSh0aGlzLCBldmVudClkAgkPZBYCZg9kFgJmD2QWAmYPZBYCAgEPDxYGHwQFDl5bXjo7XDw+J1wiXSokHwVnHwdmFgIfBgUjcmV0dXJuIGRhdGVOdW1iZXJzT25seSh0aGlzLCBldmVudClkAgoPDxYEHwQFDl5bXjo7XDw+J1wiXSokHwVnFgIfBgUqcmV0dXJuIG51bWJlcnNvbmx5KHRoaXMsIGV2ZW50LCB0cnVlLCAnLCcpZAIMDw8WBB8EBQ5eW146O1w8PidcIl0qJB8FZxYCHwYFKnJldHVybiBudW1iZXJzb25seSh0aGlzLCBldmVudCwgdHJ1ZSwgJywnKWQCDg8PFgQfBAUOXlteOjtcPD4nXCJdKiQfBWcWAh8GBSpyZXR1cm4gbnVtYmVyc29ubHkodGhpcywgZXZlbnQsIHRydWUsICcsJylkAhAPDxYEHwQFDl5bXjo7XDw+J1wiXSokHwVnFgIfBgUqcmV0dXJuIG51bWJlcnNvbmx5KHRoaXMsIGV2ZW50LCB0cnVlLCAnLCcpZAIRDw8WBB8EBQ5eW146O1w8PidcIl0qJB8FZxYCHwYFKnJldHVybiBudW1iZXJzb25seSh0aGlzLCBldmVudCwgdHJ1ZSwgJywnKWQCBQ9kFgICAQ88KwAWAgAPFgYfFmcfF2gfGGVkBg9kEBYNZgIBAgICAwIEAgUCBgIHAggCCQIKAgsCDBYNPCsADAEAFgQfGWYfGmg8KwALAQAWAh8ZZjwrAAsBABYCHxkCATwrAAsBABYCHxkCAjwrAAsBABYCHxkCAzwrAAsBABYCHxkCBDwrAAsBABYCHxkCBTwrAAsBABYCHxkCBjwrAAsBABYCHxkCBzwrAAsBABYCHxkCCDwrAAsBABYCHxkCCTwrAAsBABYCHxkCCjwrAAsBABYCHxkCCw8WDQIBAgICAgICAgICAgIDAgICBAIFAgQCBAIEFgUFlgFEZXZFeHByZXNzLldlYi5BU1B4R3JpZFZpZXcuR3JpZFZpZXdDb21tYW5kQ29sdW1uLCBEZXZFeHByZXNzLldlYi5BU1B4R3JpZFZpZXcudjguMywgVmVyc2lvbj04LjMuNS4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWI4OGQxNzU0ZDcwMGU0OWEFoAFJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLkNsYXNzZXMuR3JpZFZpZXdEYXRhVGV4dENvbHVtblRleHQsIEluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24sIFZlcnNpb249My4wLjEuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj03MTg2MjgwMTdmZmI5NjZlBaABSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbi5DbGFzc2VzLkdyaWRWaWV3RGF0YVRleHRDb2x1bW5EYXRlLCBJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLCBWZXJzaW9uPTMuMC4xLjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49NzE4NjI4MDE3ZmZiOTY2ZQWiAUluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24uQ2xhc3Nlcy5HcmlkVmlld0RhdGFUZXh0Q29sdW1uQW1vdW50LCBJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLCBWZXJzaW9uPTMuMC4xLjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49NzE4NjI4MDE3ZmZiOTY2ZQWjAUluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24uQ2xhc3Nlcy5HcmlkVmlld0RhdGFUZXh0Q29sdW1uQW1vdW50NCwgSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbiwgVmVyc2lvbj0zLjAuMS4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPTcxODYyODAxN2ZmYjk2NmVkAgMPZBYCAgEPZBYEAgEPZBYCAgEPZBYIZg8QZGQWAGQCAQ8QZGQWAWZkAgIPDxYGHwcCCx8EBQ5eW146O1w8PidcIl0qJB8FZxYCHwYFJnJldHVybiBudW1iZXJzb25seSh0aGlzLCBldmVudCwgZmFsc2UpZAIEDw8WBB8EBQ5eW146O1w8PidcIl0qJB8FZxYCHwYFOXJldHVybiB2YWxpZENoYXJhY3RlcnNPbmx5KHRoaXMsIGV2ZW50LCAiXlteOjtcPD4nXCJdKiQiKWQCBQ9kFgICAQ88KwAWAgAPFgYfFmcfF2gfGGVkBg9kEBYFZgIBAgICAwIEFgU8KwAMAQAWBB8ZZh8aaDwrAAsBABYCHxlmPCsACwEAFgIfGQIBPCsACwEAFgIfGQICPCsACwEAFgIfGQIDDxYFAgECAgICAgICAhYCBZYBRGV2RXhwcmVzcy5XZWIuQVNQeEdyaWRWaWV3LkdyaWRWaWV3Q29tbWFuZENvbHVtbiwgRGV2RXhwcmVzcy5XZWIuQVNQeEdyaWRWaWV3LnY4LjMsIFZlcnNpb249OC4zLjUuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj1iODhkMTc1NGQ3MDBlNDlhBaABSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbi5DbGFzc2VzLkdyaWRWaWV3RGF0YVRleHRDb2x1bW5UZXh0LCBJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLCBWZXJzaW9uPTMuMC4xLjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49NzE4NjI4MDE3ZmZiOTY2ZWQCBA9kFgICAQ9kFgICAQ8WAh8AZWQCBQ9kFgICAQ9kFgpmD2QWAgIBDzwrABYCAA8WCB8WZx8VZx8XaB8YZWQGD2QQFgNmAgECAhYDPCsACwEAFgIfGWY8KwALAQAWAh8ZAgE8KwALAQAWAh8ZAgIPFgMCAQIBAgEWAQWgAUluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24uQ2xhc3Nlcy5HcmlkVmlld0RhdGFUZXh0Q29sdW1uVGV4dCwgSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbiwgVmVyc2lvbj0zLjAuMS4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPTcxODYyODAxN2ZmYjk2NmVkAgIPZBYCAgEPZBYCAgEPPCsAFgIADxYIHxVnHxZnHxdoHxhlZAYPZBAWB2YCAQICAgMCBAIFAgYWBzwrAAwBABYEHxlmHxpoPCsACwEAFgIfGWY8KwALAQAWAh8ZAgE8KwALAQAWAh8ZAgI8KwALAQAWAh8ZAgM8KwALAQAWAh8ZAgQ8KwALAQAWAh8ZAgUPFgcCAQICAgICAgIDAgICBBYEBZYBRGV2RXhwcmVzcy5XZWIuQVNQeEdyaWRWaWV3LkdyaWRWaWV3Q29tbWFuZENvbHVtbiwgRGV2RXhwcmVzcy5XZWIuQVNQeEdyaWRWaWV3LnY4LjMsIFZlcnNpb249OC4zLjUuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj1iODhkMTc1NGQ3MDBlNDlhBaABSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbi5DbGFzc2VzLkdyaWRWaWV3RGF0YVRleHRDb2x1bW5UZXh0LCBJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLCBWZXJzaW9uPTMuMC4xLjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49NzE4NjI4MDE3ZmZiOTY2ZQWgAUluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24uQ2xhc3Nlcy5HcmlkVmlld0RhdGFUZXh0Q29sdW1uRGF0ZSwgSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbiwgVmVyc2lvbj0zLjAuMS4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPTcxODYyODAxN2ZmYjk2NmUFogFJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLkNsYXNzZXMuR3JpZFZpZXdEYXRhVGV4dENvbHVtbkFtb3VudCwgSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbiwgVmVyc2lvbj0zLjAuMS4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPTcxODYyODAxN2ZmYjk2NmVkAgQPZBYCAgEPZBYCAgEPPCsAFgIADxYIHxVnHxZnHxdoHxhlZAYPZBAWDWYCAQICAgMCBAIFAgYCBwIIAgkCCgILAgwWDTwrAAwBABYEHxlmHxpoPCsACwEAFgIfGWY8KwALAQAWAh8ZAgE8KwALAQAWAh8ZAgI8KwALAQAWAh8ZAgM8KwALAQAWAh8ZAgQ8KwALAQAWAh8ZAgU8KwALAQAWAh8ZAgY8KwALAQAWAh8ZAgc8KwALAQAWAh8ZAgg8KwALAQAWAh8ZAgk8KwALAQAWAh8ZAgo8KwALAQAWAh8ZAgsPFg0CAQICAgICAgICAgICAwICAgQCBQIEAgQCBBYFBZYBRGV2RXhwcmVzcy5XZWIuQVNQeEdyaWRWaWV3LkdyaWRWaWV3Q29tbWFuZENvbHVtbiwgRGV2RXhwcmVzcy5XZWIuQVNQeEdyaWRWaWV3LnY4LjMsIFZlcnNpb249OC4zLjUuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj1iODhkMTc1NGQ3MDBlNDlhBaABSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbi5DbGFzc2VzLkdyaWRWaWV3RGF0YVRleHRDb2x1bW5UZXh0LCBJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLCBWZXJzaW9uPTMuMC4xLjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49NzE4NjI4MDE3ZmZiOTY2ZQWgAUluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24uQ2xhc3Nlcy5HcmlkVmlld0RhdGFUZXh0Q29sdW1uRGF0ZSwgSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbiwgVmVyc2lvbj0zLjAuMS4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPTcxODYyODAxN2ZmYjk2NmUFogFJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLkNsYXNzZXMuR3JpZFZpZXdEYXRhVGV4dENvbHVtbkFtb3VudCwgSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbiwgVmVyc2lvbj0zLjAuMS4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPTcxODYyODAxN2ZmYjk2NmUFowFJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLkNsYXNzZXMuR3JpZFZpZXdEYXRhVGV4dENvbHVtbkFtb3VudDQsIEluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24sIFZlcnNpb249My4wLjEuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj03MTg2MjgwMTdmZmI5NjZlZAIGD2QWAgIBD2QWAgIBDzwrABYCAA8WCB8VZx8WZx8XaB8YZWQGD2QQFgVmAgECAgIDAgQWBTwrAAwBABYEHxlmHxpoPCsACwEAFgIfGWY8KwALAQAWAh8ZAgE8KwALAQAWAh8ZAgI8KwALAQAWAh8ZAgMPFgUCAQICAgICAgICFgIFlgFEZXZFeHByZXNzLldlYi5BU1B4R3JpZFZpZXcuR3JpZFZpZXdDb21tYW5kQ29sdW1uLCBEZXZFeHByZXNzLldlYi5BU1B4R3JpZFZpZXcudjguMywgVmVyc2lvbj04LjMuNS4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWI4OGQxNzU0ZDcwMGU0OWEFoAFJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLkNsYXNzZXMuR3JpZFZpZXdEYXRhVGV4dENvbHVtblRleHQsIEluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24sIFZlcnNpb249My4wLjEuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj03MTg2MjgwMTdmZmI5NjZlZAIID2QWBAIFDxYCHwAFATJkAgcPFgIfAAUFMjUsMDNkAgYPZBYCAgEPZBYCZg9kFgRmD2QWAgIBD2QWCAIDDw8WBB8EBQ5eW146O1w8PidcIl0qJB8FZxYCHwYFOXJldHVybiB2YWxpZENoYXJhY3RlcnNPbmx5KHRoaXMsIGV2ZW50LCAiXlteOjtcPD4nXCJdKiQiKWQCBQ8PFgIeB0VuYWJsZWRoZGQCBw8PFgIfHGhkZAIJDw8WAh8caGRkAgEPZBYCAgEPZBYCAgMPZBYCZg9kFgICAQ8PFgQfBAUOXlteOjtcPD4nXCJdKiQfBWcWAh8GBTlyZXR1cm4gdmFsaWRDaGFyYWN0ZXJzT25seSh0aGlzLCBldmVudCwgIl5bXjo7XDw+J1wiXSokIilkAgIPFgIeBXN0eWxlBQ1kaXNwbGF5Om5vbmU7FgICBQ8WAh4HVmlzaWJsZWgWBAIBDxAWBh8CBQVUaXRsZR8BBQNVcmkfA2cQFQEAFQEAFCsDAWcUKwEAZAIDDxYCHx0FDWRpc3BsYXk6bm9uZTsWAmYPZBYCAgEPFgIfHQUNZGlzcGxheTpub25lO2QYAwUeX19Db250cm9sc1JlcXVpcmVQb3N0QmFja0tleV9fFhAFImN0bDAwJE1haW5Ib2xkZXIkcG5sRGV0YWxsZU9yZGVuZXMFKGN0bDAwJE1haW5Ib2xkZXIkcG5sRGV0YWxsZUxpcXVpZGFjaW9uZXMFJmN0bDAwJE1haW5Ib2xkZXIkcG5sRGV0YWxsZVJldGVuY2lvbmVzBSljdGwwMCRNYWluSG9sZGVyJHBubERldGFsbGVBdXRvcml6YWNpb25lcwUeY3RsMDAkTWFpbkhvbGRlciRQYW5lbENvbnRyb2wxBTJjdGwwMCRNYWluSG9sZGVyJERldGFsbGVMb3RlUGFnbyRwbmxEZXRhbGxlT3JkZW5lcwU4Y3RsMDAkTWFpbkhvbGRlciREZXRhbGxlTG90ZVBhZ28kcG5sRGV0YWxsZUxpcXVpZGFjaW9uZXMFNmN0bDAwJE1haW5Ib2xkZXIkRGV0YWxsZUxvdGVQYWdvJHBubERldGFsbGVSZXRlbmNpb25lcwU5Y3RsMDAkTWFpbkhvbGRlciREZXRhbGxlTG90ZVBhZ28kcG5sRGV0YWxsZUF1dG9yaXphY2lvbmVzBTJjdGwwMCRNYWluSG9sZGVyJERldGFsbGVMb3RlUGFnbyRwbmxEZXRhbGxlQ29udHJvbAUoY3RsMDAkTWFpbkhvbGRlciRUb2tlblNvbGljaXRhdGlvbiRwY01BQwUqY3RsMDAkTWFpbkhvbGRlciRUb2tlblNvbGljaXRhdGlvbiRwY1Rva2VuBThjdGwwMCRNYWluSG9sZGVyJFBheW1lbnRPcmRlciRkc2FGZWNoYUVtaXNpb24kSW1nQm50Q2FsYwU1Y3RsMDAkTWFpbkhvbGRlciRQYXltZW50T3JkZXIkZHNhRmVjaGFQYWdvJEltZ0JudENhbGMFNmN0bDAwJE1haW5Ib2xkZXIkUGF5bWVudE9yZGVyR3JpZCRQYXltZW50T3JkZXJHcmlkVmlldwUZY3RsMDAkaW1hZ2VCdXR0b25Db2xsYXBzZQUaY3RsMDAkTWFpbkhvbGRlciRtdWx0aVZpZXcPD2RmZAUqY3RsMDAkTWFpbkhvbGRlciRUb2tlblNvbGljaXRhdGlvbiRtdlRva2VuDw9kZmQ+zlZ6momwTzXd/2TMTB6JbxnDWg==">
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+var theForm = document.forms['aspnetForm'];
+if (!theForm) {
+    theForm = document.aspnetForm;
+}
+function __doPostBack(eventTarget, eventArgument) {
+    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+        theForm.__EVENTTARGET.value = eventTarget;
+        theForm.__EVENTARGUMENT.value = eventArgument;
+        theForm.submit();
+    }
+}
+//]]>
+</script>
+
+
+<script src="./WebResource(3).axd" type="text/javascript"></script>
+
+<script src="./DataEntry.js.descarga"></script><script src="./DataEntry.js.descarga"></script><script src="./DataEntry.js.descarga"></script><script src="./date.js.descarga"></script><script src="./DataEntry.js.descarga"></script><script language="javascript" type="text/javascript">function ValidarRangoFecha(fechaSel, diaActual, mesActual, anioActual) {var diaSel = parseInt(fechaSel.value.substring(0, 2), 10);var mesSel = parseInt(fechaSel.value.substring(3, 5), 10);var anioSel = parseInt(fechaSel.value.substring(6, 10), 10);var dateSel = new Date(anioSel, mesSel, diaSel);var dateActual = new Date(anioActual, mesActual, diaActual);if (dateSel <= dateActual) {window.document.getElementById('ctl00_MainHolder_Settlement_dsaFechaComprobante_dateTextBox').value = '';alert('No se puede seleccionar una fecha igual o menor a la del día.');}}</script>
+						<style>							
+							P.PanelControlTitleStyle
+							{
+ 								font-family:verdana;
+ 								font-size: 12px;
+								font-weight : bold;
+								text-align: center;  								
+							}
+						</style>						
+						<script language="javascript">
+						function MinMaxPanelControl(cntrlId)
+						{
+						    var imgPath='/App_Themes/Default/Images/';	
+					
+							//Get state from hidden control.													
+							if ( document.getElementById(cntrlId).style.display == 'none' )
+							{
+								document.getElementById(cntrlId).style.display = '';						
+								document.getElementById(cntrlId+'_imgPlusMinus').src = imgPath + 'bot-grid-minus.gif';
+							}
+							else 
+							{
+								document.getElementById(cntrlId).style.display = 'none';								
+								document.getElementById(cntrlId+'_imgPlusMinus').src = imgPath + 'bot-grid-plus.gif';
+							}
+						}
+						</script>
+			
+<script src="./ScriptResource.axd" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+var __cultureInfo = '{"name":"es-UY","numberFormat":{"CurrencyDecimalDigits":2,"CurrencyDecimalSeparator":",","IsReadOnly":false,"CurrencyGroupSizes":[3],"NumberGroupSizes":[3],"PercentGroupSizes":[3],"CurrencyGroupSeparator":".","CurrencySymbol":"$U","NaNSymbol":"NeuN","CurrencyNegativePattern":14,"NumberNegativePattern":1,"PercentPositivePattern":0,"PercentNegativePattern":0,"NegativeInfinitySymbol":"-Infinito","NegativeSign":"-","NumberDecimalDigits":2,"NumberDecimalSeparator":",","NumberGroupSeparator":".","CurrencyPositivePattern":2,"PositiveInfinitySymbol":"Infinito","PositiveSign":"+","PercentDecimalDigits":2,"PercentDecimalSeparator":",","PercentGroupSeparator":".","PercentSymbol":"%","PerMilleSymbol":"‰","NativeDigits":["0","1","2","3","4","5","6","7","8","9"],"DigitSubstitution":1},"dateTimeFormat":{"AMDesignator":"a.m.","Calendar":{"MinSupportedDateTime":"\/Date(-62135586000000)\/","MaxSupportedDateTime":"\/Date(253402300799999)\/","AlgorithmType":1,"CalendarType":1,"Eras":[1],"TwoDigitYearMax":2029,"IsReadOnly":false},"DateSeparator":"/","FirstDayOfWeek":1,"CalendarWeekRule":0,"FullDateTimePattern":"dddd, dd\u0027 de \u0027MMMM\u0027 de \u0027yyyy hh:mm:ss tt","LongDatePattern":"dddd, dd\u0027 de \u0027MMMM\u0027 de \u0027yyyy","LongTimePattern":"hh:mm:ss tt","MonthDayPattern":"dd MMMM","PMDesignator":"p.m.","RFC1123Pattern":"ddd, dd MMM yyyy HH\u0027:\u0027mm\u0027:\u0027ss \u0027GMT\u0027","ShortDatePattern":"dd/MM/yyyy","ShortTimePattern":"hh:mm tt","SortableDateTimePattern":"yyyy\u0027-\u0027MM\u0027-\u0027dd\u0027T\u0027HH\u0027:\u0027mm\u0027:\u0027ss","TimeSeparator":":","UniversalSortableDateTimePattern":"yyyy\u0027-\u0027MM\u0027-\u0027dd HH\u0027:\u0027mm\u0027:\u0027ss\u0027Z\u0027","YearMonthPattern":"MMMM\u0027 de \u0027yyyy","AbbreviatedDayNames":["dom","lun","mar","mié","jue","vie","sáb"],"ShortestDayNames":["do","lu","ma","mi","ju","vi","sá"],"DayNames":["domingo","lunes","martes","miércoles","jueves","viernes","sábado"],"AbbreviatedMonthNames":["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic",""],"MonthNames":["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre",""],"IsReadOnly":false,"NativeCalendarName":"calendario gregoriano","AbbreviatedMonthGenitiveNames":["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic",""],"MonthGenitiveNames":["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre",""]}}';//]]>
+</script>
+
+<script src="./ScriptResource(1).axd" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+if (typeof(Sys) === 'undefined') throw new Error('ASP.NET Ajax client-side framework failed to load.');
+//]]>
+</script>
+
+<script src="./ScriptResource(2).axd" type="text/javascript"></script>
+<script src="./ScriptResource(3).axd" type="text/javascript"></script>
+<script src="./ScriptResource(4).axd" type="text/javascript"></script>
+<script src="./ScriptResource(5).axd" type="text/javascript"></script>
+<script src="./ScriptResource(6).axd" type="text/javascript"></script>
+<script src="./ScriptResource(7).axd" type="text/javascript"></script>
+<script src="./ScriptResource(8).axd" type="text/javascript"></script>
+<script src="./ScriptResource(9).axd" type="text/javascript"></script>
+<script src="./ScriptResource(10).axd" type="text/javascript"></script>
+<script src="./ScriptResource(11).axd" type="text/javascript"></script>
+<script src="./ScriptResource(12).axd" type="text/javascript"></script>
+<script src="./ScriptResource(13).axd" type="text/javascript"></script>
+<script src="./ScriptResource(14).axd" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+function WebForm_OnSubmit() {
+if (typeof(ValidatorOnSubmit) == "function" && ValidatorOnSubmit() == false) return false;
+return true;
+}
+//]]>
+</script>
+
+<div>
+
+	<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEWVwKnm63nCwLAsPGfBgLAsImlBwKfk+LLCgLtv5GFDgLszdm6BwKQ2viLDQKa+bL1CgKF+bL1CgK72t/jBwLYytLCDQKIr9aHCAKIr9qHCAKIr+qHCALJ/fzGDQK5i7W4AQK3s+DCBgK2s+DCBgKIr6qECAKIr6aECAKIr5aECALJ/bjYBwKMi5yjAQKE/ILECQLmjpLHDQL4oZWyDQKIr66ECAKIr6KECAKIr5KECALJ/aT9DgLhi+bwBQKKquWKAQL81MiMCQKiupe0CgKIr8KHCAKIr86HCAKIr/6HCALJ/cC1AwLepYr0CgLepY70CgLepbL0CgLepbb0CgLepbr0CgLepb70CgLepaL0CgLepeb3CgLBpYb0CgLBpYr0CgLBpY70CgLBpbL0CgLBpbb0CgLBpbr0CgLBpb70CgLBpaL0CgLBpeb3CgLBper3CgLApYb0CgLApYr0CgLApY70CgLApbL0CgLCpYb0CgLZpcb3CgLQr+kPAs+v6Q8CgYXTCwKBhd8LAoGF7wsC067UoA8Ci46TGwLiqfO3BQL9qfO3BQLj39txAuiC2J0HApOmiPQEAoKmiPQEArjFvpcCAvPPwYUCApfPu7wIAp2xgMEIAriYmAsC0fSJ+AECufmmJAL1oeNtAu7d6KMNAuzJoPoIAtGqzMkOAom34LsB6gbySEZkX5zbEZfxRpUcww0ZB+g=">
+</div>
+    <script type="text/javascript">
+//<![CDATA[
+Sys.WebForms.PageRequestManager._initialize('ctl00$scriptManager', document.getElementById('aspnetForm'));
+Sys.WebForms.PageRequestManager.getInstance()._updateControls([], [], [], 90);
+//]]>
+</script>
+
+    <input type="hidden" id="PageLinkData" name="PageLinkData" value="">
+    <input type="hidden" id="PageLinkUrl" name="PageLinkUrl" value="">
+    <input type="hidden" id="PageUrl" value="/Pages/ProvidersCheck/LoadData.aspx">
+    <table id="ctl00_tableContent" width="100%" border="0" cellpadding="0" cellspacing="0" class="ic-content">
+	<tbody><tr>
+		<td class="ic-content-left-aux">
+                <img src="./log-img-aux-left-bottom.gif" width="9" height="110">
+            </td>
+		<td style="width: 100%">
+                <table width="100%" border="0" cellpadding="0" cellspacing="0" class="ic-content-left">
+                    <tbody><tr>
+                        <td id="TdCPM" class="ic-content-space-top" valign="top">
+                            <table id="TablaCPM" width="100%" border="0" cellspacing="0" cellpadding="0">
+                                
+                                <tbody><tr>
+                                    <td>
+                                        <table id="ctl00_tableHeader" width="100%" border="0" cellspacing="0" cellpadding="0">
+			<tbody><tr>
+				<td class="ic-breadcrumb-container">
+                                                    
+                                                    &gt;
+                                                    <span id="ctl00_siteMapNavigator"><a href="Pages/ProvidersCheck/LoadData.aspx#ctl00_siteMapNavigator_SkipLink"><img alt="Skip Navigation Links" height="0" width="0" src="./WebResource(4).axd" style="border-width:0px;"></a><span><a href="Home.aspx">Posición Consolidada</a></span><span> &gt; </span><span><a>Pago a Proveedores</a></span><span> &gt; </span><span>Ingreso Manual</span><a id="ctl00_siteMapNavigator_SkipLink"></a></span>
+                                                    </td>
+				<td class="ic-toolbar-container">
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tbody><tr>
+                                                            <td width="16">
+                                                                <img src="./ico-print.gif" id="ctl00_Img4" width="16" height="16">
+                                                            </td>
+                                                            <td class="ic-links-toolbar">
+                                                                <a href="Pages/ProvidersCheck/LoadData.aspx#" onclick="javascript: GoPrint();">
+                                                                    Imprimir página</a>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody></table>
+                                                </td>
+			</tr>
+		</tbody></table>
+		
+                                    </td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>
+                                        <span id="ctl00_labelTitle" class="ic-page-title">Ingreso Manual</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td id="ctl00_cellRequiered" align="right">
+                                        <img src="./ic_img-data-required.gif" id="ctl00_Img5" border="0">
+                                        <span>
+                                            Campo requerido</span>
+                                    </td>
+		
+                                </tr>
+                                <tr>
+                                    <td width="95%" align="center">
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                            <tbody><tr>
+                                                <td align="right">
+                                                    
+                                                    
+                                                </td>
+                                            </tr>
+                                        </tbody></table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="100%" align="center">
+                                        <div id="ic-loading" class="ic-loading-bg" style="display: none;">
+                                            <div class="ic-loading">
+                                                <div id="message">
+                                                    <img src="./cargandoBAR.gif" id="ctl00_imgLoading"><br>
+                                                    <span id="ctl00_WaitingMessage">Procesando...</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="mainContainer">
+                                            
+
+ <script lang="javascript" type="text/javascript">
+    function Eliminar() {
+        
+        if (PaymentOrderGridView._getSelectedRowCount() > 0) {
+            return confirm('Confirma eliminar la orden?')
+        }
+        else {
+            alert('Debe seleccionar al menos una orden.');
+            return false;
+        }
+    }
+    
+    
+    function EliminarHolding(){
+        if (HoldingGridView._getSelectedRowCount() > 0) {
+                return confirm('Confirma eliminar la retención?')
+            }
+        else {
+            alert('Debe seleccionar al menos una retención.');
+            return false;
+        }
+    }
+    function EliminarSettlement(){
+        if (SettlementGridView._getSelectedRowCount() > 0) {
+                return confirm('Confirma eliminar la liquidación?')
+            }
+        else {
+            alert('Debe seleccionar al menos una liquidación.');
+            return false;
+        }
+    }
+    function EliminarAutorization(){
+        if (AutorizationGridView._getSelectedRowCount() > 0) {
+                return confirm('Confirma eliminar la autorización?')
+            }
+        else {
+            alert('Debe seleccionar al menos una autorización.');
+            return false;
+        }
+    }
+    function ExistenOrdenes(){
+        if (PaymentOrderGridView.GetVisibleRowsOnPage() > 0){
+            return true;
+        }
+        else{    
+            alert('Primero debe ingresar una orden de Pago.');
+            return false;
+        }
+    }
+
+  </script>
+  
+    
+            <table class="ic-grid-border" cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+			<tbody><tr>
+				<td><table id="ctl00_MainHolder_pnlDetalleOrdenes_thePanel" class="ic-grid" cellspacing="0" cellpadding="0" align="Center" border="0" style="width:100%;border-collapse:collapse;">
+					<tbody><tr class="ic-grid-title-row">
+						<td><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+							<tbody><tr>
+								<td class="ic-grid-title-cell-left">&nbsp;</td><td class="ic-grid-title-cell" align="left" style="white-space:nowrap;">Ordenes de Pago</td><td class="ic-gridB-title-cell-right"><img id="ctl00_MainHolder_pnlDetalleOrdenes_imgPlusMinus" onclick="javascript:MinMaxPanelControl(&#39;ctl00_MainHolder_pnlDetalleOrdenes&#39;)" src="./bot-grid-minus.gif" alt="Minimizar/Maximizar el panel" align="absmiddle" style="border-width:0px;cursor:hand;"></td>
+							</tr>
+						</tbody></table></td>
+					</tr><tr>
+						<td align="center"><div id="ctl00_MainHolder_pnlDetalleOrdenes" style="color:Black;border-color:DodgerBlue;font-family:verdana;font-size:10pt;width:100%;display:;">
+	
+            <table border="1" width="100%">
+                <tbody><tr>
+                    <td align="left">
+                        
+<script lang="javascript" type="text/javascript">
+    $(document).ready(function () {
+        $('#ctl00_MainHolder_PaymentOrder_ddl_InstrumentoPago').blur(function () {
+            $('#ctl00_MainHolder_PaymentOrder_dsaFechaPago_dateTextBox').prop('disabled', $(this)[0][0].selected);
+            $('#ctl00_MainHolder_PaymentOrder_dsaFechaPago_ImgBntCalc').prop('disabled', $(this)[0][0].selected);
+        });
+       
+            $('#ctl00_MainHolder_PaymentOrder_dsaFechaPago_dateTextBox').prop('disabled', $('#ctl00_MainHolder_PaymentOrder_ddl_InstrumentoPago')[0][0].selected);
+            $('#ctl00_MainHolder_PaymentOrder_dsaFechaPago_ImgBntCalc').prop('disabled', $('#ctl00_MainHolder_PaymentOrder_ddl_InstrumentoPago')[0][0].selected);
+    });
+</script>
+<table with="100%" border="0">
+    <tbody><tr class="ic-form-label-title">
+        <td>Cuenta</td>
+        <td colspan="5" class="ic-form-data-required" style="border-bottom: 0px">
+            <select name="ctl00$MainHolder$PaymentOrder$ddl_Cta" id="ctl00_MainHolder_PaymentOrder_ddl_Cta" class="ic-control-select" style="width:120px;">
+		<option value="7092">100-1275-1</option>
+		<option value="7094">100-1275-3</option>
+
+	</select>
+        </td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+    </tr>
+    <tr class="ic-form-label-title">
+        <td style="width: 10%">
+            O. de Pago
+        </td>
+        <td class="ic-form-data-required" style="border-bottom: 0px">
+            <input name="ctl00$MainHolder$PaymentOrder$txtOrdenPago" type="text" maxlength="10" id="ctl00_MainHolder_PaymentOrder_txtOrdenPago" tabindex="1" class="ic-control-text" onkeypress="return numbersonly(this, event, false)" style="width:100px;">
+            <span id="ctl00_MainHolder_PaymentOrder_OrdenPagoRequiredFieldValidator" title="Campo requerido" style="color:Red;display:none;"></span>
+        </td>
+        <td style="width: 10%">
+            Centro Entrega
+        </td>
+        <td class="ic-form-data-required" style="border-bottom: 0px">
+            <input name="ctl00$MainHolder$PaymentOrder$txtCentroEntrega" type="text" maxlength="5" id="ctl00_MainHolder_PaymentOrder_txtCentroEntrega" tabindex="10" class="ic-control-text" onkeypress="return numbersonly(this, event, false)" style="width:100px;">
+            <span id="ctl00_MainHolder_PaymentOrder_RequiredFieldValidator1" title="Campo requerido" style="color:Red;display:none;"></span>
+        </td>
+        <td style="width: 10%">
+            Calle
+        </td>
+        <td style="padding-left: 10px">
+            <input name="ctl00$MainHolder$PaymentOrder$txtCalleRet" type="text" maxlength="30" id="ctl00_MainHolder_PaymentOrder_txtCalleRet" tabindex="25" class="ic-control-text" onkeypress="return validCharactersOnly(this, event, &quot;^[^:;\&lt;&gt;&#39;\&quot;]*$&quot;)" style="width:100px;">
+            <span id="ctl00_MainHolder_PaymentOrder_validadorCalle" title="Debe ingresar la calle para el certificado de Retención" style="color:Red;display:none;"></span>
+        </td>
+    </tr>
+    <tr class="ic-form-label-title" style="width: 10%">
+        <td>
+            Nro. Cheque
+        </td>
+        <td>&nbsp;&nbsp;
+            <input name="ctl00$MainHolder$PaymentOrder$txtNroCheque" type="text" maxlength="10" id="ctl00_MainHolder_PaymentOrder_txtNroCheque" tabindex="2" class="ic-control-text" onkeypress="return numbersonly(this, event, false)" style="width:100px;">
+            <span id="ctl00_MainHolder_PaymentOrder_validadorNroCheque" title="No hay coherencia en la información de cheques." style="color:Red;display:none;"></span>
+        </td>
+        <td style="width: 10%">
+            Ret. Agrupadas
+        </td>
+        <td>&nbsp;&nbsp;&nbsp;
+            <select name="ctl00$MainHolder$PaymentOrder$ddl_RetAgrupadas" id="ctl00_MainHolder_PaymentOrder_ddl_RetAgrupadas" tabindex="11" class="ic-control-select" style="width:40px;">
+		<option value="0">No</option>
+		<option value="1">Si</option>
+
+	</select>
+        </td>
+        <td style="width: 10%">
+            Número
+        </td>
+        <td>&nbsp;&nbsp;&nbsp;
+            <input name="ctl00$MainHolder$PaymentOrder$nroRet" type="text" maxlength="5" id="ctl00_MainHolder_PaymentOrder_nroRet" tabindex="26" class="ic-control-text" onkeypress="return numbersonly(this, event, false)" style="width:50px;">
+        </td>
+    </tr>
+    <tr class="ic-form-label-title">
+        <td style="width: 10%">
+            Importe
+        </td>
+        <td class="ic-form-data-required" style="border-bottom: 0px">
+            <input name="ctl00$MainHolder$PaymentOrder$txtImporte" type="text" maxlength="28" id="ctl00_MainHolder_PaymentOrder_txtImporte" tabindex="3" class="ic-control-text" onkeypress="return numbersonly(this, event, true, &#39;,&#39;)" style="width:100px;">
+            <span id="ctl00_MainHolder_PaymentOrder_ImporteRequiredFieldValidator" title="Campo requerido" style="color:Red;display:none;"></span>
+        </td>
+        <td style="width: 10%">
+            Firmante 1
+        </td>
+        <td class="ic-form-data-required" style="border-bottom: 0px">
+            <select name="ctl00$MainHolder$PaymentOrder$ddl_TipoDocFirmante1" id="ctl00_MainHolder_PaymentOrder_ddl_TipoDocFirmante1" tabindex="12" class="ic-control-select" style="width:55px;">
+		<option value="35">CUIT</option>
+		<option selected="selected" value="34">CUIL</option>
+		<option value="30">CDI</option>
+
+	</select>
+            <input name="ctl00$MainHolder$PaymentOrder$txtNroDocFirmante1" type="text" maxlength="11" id="ctl00_MainHolder_PaymentOrder_txtNroDocFirmante1" tabindex="12" class="ic-control-text" onkeypress="return numbersonly(this, event, false)" style="width:100px;">
+            <span id="ctl00_MainHolder_PaymentOrder_NroDocFirmante1RequiredFieldValidator" title="Campo requerido" style="color:Red;display:none;"></span>
+            <span id="ctl00_MainHolder_PaymentOrder_CustomValidator2" title="El CUIT ingresado es inválido." style="color:Red;display:none;"></span>
+        </td>
+        <td style="width: 10%">
+            Piso
+        </td>
+        <td>&nbsp;&nbsp;&nbsp;
+            <input name="ctl00$MainHolder$PaymentOrder$pisoRet" type="text" maxlength="10" id="ctl00_MainHolder_PaymentOrder_pisoRet" tabindex="27" class="ic-control-text" onkeypress="return numbersonly(this, event, false)" style="width:50px;">
+        </td>
+    </tr>
+    <tr class="ic-form-label-title">
+        <td style="width: 10%">
+            Inst. Pago
+        </td>
+        <td>&nbsp;&nbsp;&nbsp;
+            <select name="ctl00$MainHolder$PaymentOrder$ddl_InstrumentoPago" id="ctl00_MainHolder_PaymentOrder_ddl_InstrumentoPago" tabindex="4" class="ic-control-select" style="width:120px;">
+		<option value="1">Cheque Común</option>
+		<option value="2">Cheque Diferido</option>
+
+	</select>
+
+        </td>
+
+        <td style="width: 10%">
+            Firmante 2 
+        </td>
+        <td>&nbsp;&nbsp;&nbsp;
+            <select name="ctl00$MainHolder$PaymentOrder$ddl_TipoDocFirmante2" id="ctl00_MainHolder_PaymentOrder_ddl_TipoDocFirmante2" tabindex="14" class="ic-control-select" style="width:55px;">
+		<option value="35">CUIT</option>
+		<option selected="selected" value="34">CUIL</option>
+		<option value="30">CDI</option>
+
+	</select>
+            <input name="ctl00$MainHolder$PaymentOrder$txtNroDocFirmante2" type="text" maxlength="11" id="ctl00_MainHolder_PaymentOrder_txtNroDocFirmante2" tabindex="15" class="ic-control-text" onkeypress="return numbersonly(this, event, false)" style="width:100px;">
+            <span id="ctl00_MainHolder_PaymentOrder_CustomValidator3" title="El CUIT ingresado es inválido." style="color:Red;display:none;"></span>
+        </td>
+        <td style="width: 10%">
+            Código postal
+        </td>
+        <td>&nbsp;&nbsp;&nbsp;
+            <input name="ctl00$MainHolder$PaymentOrder$cpRet" type="text" maxlength="5" id="ctl00_MainHolder_PaymentOrder_cpRet" tabindex="28" class="ic-control-text" onkeypress="return numbersonly(this, event, false)" style="width:50px;">
+        </td>
+    </tr>
+    <tr class="ic-form-label-title">
+        <td style="width: 10%">
+            F. Emisión
+        </td>
+        <td>
+            <div style="padding-left: 10px">
+                <table id="ctl00_MainHolder_PaymentOrder_dsaFechaEmision_mainTable" cellpadding="0" cellspacing="0">
+		<tbody><tr>
+			<td class="ic-form-data-period-TextBox">                    
+            <input name="ctl00$MainHolder$PaymentOrder$dsaFechaEmision$dateTextBox" type="text" value="24/10/2016 12:00:00 a.m." id="ctl00_MainHolder_PaymentOrder_dsaFechaEmision_dateTextBox" class="ic-control-text" onkeypress="return dateNumbersOnly(this, event)" style="width:103px;">
+        </td>
+			<td class="ic-form-data-period-Image" style="padding-right:8px">    
+            <input type="image" name="ctl00$MainHolder$PaymentOrder$dsaFechaEmision$ImgBntCalc" id="ctl00_MainHolder_PaymentOrder_dsaFechaEmision_ImgBntCalc" src="./ic-calendar-schedule.png" align="absbottom" style="border-width:0px;">
+            
+            <input type="hidden" name="ctl00$MainHolder$PaymentOrder$dsaFechaEmision$MaskedEditExtenderdateTextBox_ClientState" id="ctl00_MainHolder_PaymentOrder_dsaFechaEmision_MaskedEditExtenderdateTextBox_ClientState">
+            <span id="ctl00_MainHolder_PaymentOrder_dsaFechaEmision_dateValidator" style="color:Red;display:none;">Formato válido dd/mm/yyyy</span>                        
+        </td>
+		</tr>
+	</tbody></table>
+	
+
+            
+                <span id="ctl00_MainHolder_PaymentOrder_CustomValidator6" title="La fecha de emisión debe ser igual o posterior a hoy" style="color:Red;display:none;"></span>
+            </div>
+        </td>
+        <td style="width: 10%">
+            Firmante 3
+        </td>
+        <td>&nbsp;&nbsp;&nbsp;
+            <select name="ctl00$MainHolder$PaymentOrder$ddl_TipoDocFirmante3" id="ctl00_MainHolder_PaymentOrder_ddl_TipoDocFirmante3" tabindex="16" class="ic-control-select" style="width:55px;">
+		<option value="35">CUIT</option>
+		<option selected="selected" value="34">CUIL</option>
+		<option value="30">CDI</option>
+
+	</select>
+            <input name="ctl00$MainHolder$PaymentOrder$txtNroDocFirmante3" type="text" maxlength="11" id="ctl00_MainHolder_PaymentOrder_txtNroDocFirmante3" tabindex="17" class="ic-control-text" onkeypress="return numbersonly(this, event, false)" style="width:100px;">
+            <span id="ctl00_MainHolder_PaymentOrder_CustomValidator4" title="El CUIT ingresado es inválido." style="color:Red;display:none;"></span>
+        </td>
+        <td style="width: 10%">
+            Localidad
+        </td>
+        <td>&nbsp;&nbsp;&nbsp;
+            <input name="ctl00$MainHolder$PaymentOrder$locRet" type="text" maxlength="20" id="ctl00_MainHolder_PaymentOrder_locRet" tabindex="28" class="ic-control-text" onkeypress="return validCharactersOnly(this, event, &quot;^[^:;\&lt;&gt;&#39;\&quot;]*$&quot;)" style="width:80px;">
+        </td>
+    </tr>
+    <tr class="ic-form-label-title">
+        <td style="width: 10%">
+            F. Pago
+        </td>
+        <td>
+            <div style="padding-left: 10px">
+                <table id="ctl00_MainHolder_PaymentOrder_dsaFechaPago_mainTable" cellpadding="0" cellspacing="0">
+		<tbody><tr>
+			<td class="ic-form-data-period-TextBox">                    
+            <input name="ctl00$MainHolder$PaymentOrder$dsaFechaPago$dateTextBox" type="text" value="25/10/2016 12:00:00 a.m." id="ctl00_MainHolder_PaymentOrder_dsaFechaPago_dateTextBox" class="ic-control-text" onkeypress="return dateNumbersOnly(this, event)" style="width:103px;" disabled="">
+        </td>
+			<td class="ic-form-data-period-Image" style="padding-right:8px">    
+            <input type="image" name="ctl00$MainHolder$PaymentOrder$dsaFechaPago$ImgBntCalc" id="ctl00_MainHolder_PaymentOrder_dsaFechaPago_ImgBntCalc" src="./ic-calendar-schedule.png" align="absbottom" style="border-width:0px;" disabled="">
+            
+            <input type="hidden" name="ctl00$MainHolder$PaymentOrder$dsaFechaPago$MaskedEditExtenderdateTextBox_ClientState" id="ctl00_MainHolder_PaymentOrder_dsaFechaPago_MaskedEditExtenderdateTextBox_ClientState">
+            <span id="ctl00_MainHolder_PaymentOrder_dsaFechaPago_dateValidator" style="color:Red;display:none;">Formato válido dd/mm/yyyy</span>                        
+        </td>
+		</tr>
+	</tbody></table>
+	
+
+                
+                <span id="ctl00_MainHolder_PaymentOrder_FechasCustomValidator" title="La fecha de pago debe ser posterior a la fecha de emisión" style="color:Red;display:none;"></span>
+            </div>
+        </td>
+        <td style="width: 10%">
+            Firmante 4
+        </td>
+        <td>&nbsp;&nbsp;&nbsp;
+            <select name="ctl00$MainHolder$PaymentOrder$ddl_TipoDocFirmante4" id="ctl00_MainHolder_PaymentOrder_ddl_TipoDocFirmante4" tabindex="18" class="ic-control-select" style="width:55px;">
+		<option value="35">CUIT</option>
+		<option selected="selected" value="34">CUIL</option>
+		<option value="30">CDI</option>
+
+	</select>
+            <input name="ctl00$MainHolder$PaymentOrder$txtNroDocFirmante4" type="text" maxlength="11" id="ctl00_MainHolder_PaymentOrder_txtNroDocFirmante4" tabindex="19" class="ic-control-text" onkeypress="return numbersonly(this, event, false)" style="width:100px;">
+            <span id="ctl00_MainHolder_PaymentOrder_CustomValidator5" title="El CUIT ingresado es inválido." style="color:Red;display:none;"></span>
+        </td>
+        <td style="width: 10%">
+            Provincia
+        </td>
+        <td>&nbsp;&nbsp;&nbsp;
+            <select name="ctl00$MainHolder$PaymentOrder$ProvincesDropDownList" id="ctl00_MainHolder_PaymentOrder_ProvincesDropDownList" tabindex="29" class="ic-control-select">
+		<option value="01">CAPITAL FEDERAL                              </option>
+		<option value="02">BUENOS AIRES                    </option>
+		<option value="03">CATAMARCA                       </option>
+		<option value="04">CORDOBA                         </option>
+		<option value="05">CORRIENTES                      </option>
+		<option value="06">CHACO                           </option>
+		<option value="07">CHUBUT                          </option>
+		<option value="08">ENTRE RIOS                      </option>
+		<option value="10">JUJUY                           </option>
+		<option value="11">LA PAMPA                        </option>
+		<option value="12">LA RIOJA                        </option>
+		<option value="13">MENDOZA                         </option>
+		<option value="14">MISIONES                        </option>
+		<option value="15">NEUQUEN                         </option>
+		<option value="16">RIO NEGRO                       </option>
+		<option value="17">SALTA                           </option>
+		<option value="18">SAN JUAN                        </option>
+		<option value="19">SAN LUIS                        </option>
+		<option value="20">SANTA CRUZ                      </option>
+		<option value="21">SANTA FE                        </option>
+		<option value="22">SANTIAGO DEL ESTERO             </option>
+		<option value="23">TUCUMAN                  </option>
+		<option value="40">T. DEL FUEGO, ANTAR. E I.           </option>
+		<option value="9">FORMOSA                  </option>
+
+	</select>
+        </td>
+    </tr>
+    <tr class="ic-form-label-title">
+        <td style="width: 10%">
+            Cruzado
+        </td>
+        <td>&nbsp;&nbsp;&nbsp;
+            <select name="ctl00$MainHolder$PaymentOrder$ddl_Cruzado" id="ctl00_MainHolder_PaymentOrder_ddl_Cruzado" tabindex="7" class="ic-control-select" style="width:40px;">
+		<option value="1">Si</option>
+		<option value="0">No</option>
+
+	</select>
+        </td>
+        <td style="width: 10%">
+            Firmante Ret.
+        </td>
+        <td>&nbsp;&nbsp;&nbsp;
+            <select name="ctl00$MainHolder$PaymentOrder$ddl_TipoDocFirmanteRet" id="ctl00_MainHolder_PaymentOrder_ddl_TipoDocFirmanteRet" tabindex="20" class="ic-control-select" style="width:55px;">
+		<option value="35">CUIT</option>
+		<option selected="selected" value="34">CUIL</option>
+		<option value="30">CDI</option>
+
+	</select>
+            <input name="ctl00$MainHolder$PaymentOrder$txtNroDocFirmanteRet" type="text" maxlength="11" id="ctl00_MainHolder_PaymentOrder_txtNroDocFirmanteRet" tabindex="21" class="ic-control-text" onkeypress="return numbersonly(this, event, false)" style="width:100px;">
+        </td>
+        <td style="width: 10%">
+            Teléfono
+        </td>
+        <td class="ic-form-data-required" style="border-bottom: 0px">
+            <input name="ctl00$MainHolder$PaymentOrder$txtTelefono" type="text" maxlength="50" id="ctl00_MainHolder_PaymentOrder_txtTelefono" tabindex="31" class="ic-control-text" onkeypress="return validCharactersOnly(this, event, &quot;^[^:;\&lt;&gt;&#39;\&quot;]*$&quot;)" style="width:100px;">
+            
+            <span id="ctl00_MainHolder_PaymentOrder_TelefonoRequiredFieldValidator" title="Campo requerido" style="color:Red;display:none;"></span>
+            <span id="ctl00_MainHolder_PaymentOrder_CustomTelefono" title="Teléfono: " style="color:Red;display:none;"></span>
+        </td>
+    </tr>
+    <tr class="ic-form-label-title">
+        <td style="width: 10%">
+            A la Orden
+        </td>
+        <td>&nbsp;&nbsp;&nbsp;
+            <select name="ctl00$MainHolder$PaymentOrder$ddl_AlaOrden" id="ctl00_MainHolder_PaymentOrder_ddl_AlaOrden" tabindex="8" class="ic-control-select" style="width:40px;">
+		<option value="0">No</option>
+		<option value="1">Si</option>
+
+	</select>
+        </td>
+        <td style="width: 10%">
+            CUIT
+            Proveedor
+        </td>
+        <td class="ic-form-data-required" style="border-bottom: 0px">
+            <input name="ctl00$MainHolder$PaymentOrder$txtCuit" type="text" maxlength="11" id="ctl00_MainHolder_PaymentOrder_txtCuit" tabindex="22" class="ic-control-text" onkeypress="return numbersonly(this, event, false)" style="width:100px;">
+            <span id="ctl00_MainHolder_PaymentOrder_CuitRequiredFieldValidator" tabindex="23" title="Campo requerido" style="color:Red;display:none;"></span>
+            <span id="ctl00_MainHolder_PaymentOrder_CUITCustomValidator" title="El CUIT ingresado es inválido." style="color:Red;display:none;"></span>
+        </td>
+        <td style="width: 10%">
+            Email
+        </td>
+        <td>&nbsp;&nbsp;
+            <input name="ctl00$MainHolder$PaymentOrder$txtEmail" type="text" maxlength="50" id="ctl00_MainHolder_PaymentOrder_txtEmail" tabindex="31" class="ic-control-text" onkeypress="return validCharactersOnly(this, event, &quot;^[^:;\&lt;&gt;&#39;\&quot;]*$&quot;)" style="width:100px;">
+            <span id="ctl00_MainHolder_PaymentOrder_MailValidator" title="Formato de mail inválido" style="color:Red;display:none;"></span>
+        </td>
+    </tr>
+    <tr class="ic-form-label-title">
+        <td style="width: 10%">
+            Quien Retira
+        </td>
+        <td>
+        &nbsp;&nbsp;&nbsp;
+            <select name="ctl00$MainHolder$PaymentOrder$ddl_QuienRetira" id="ctl00_MainHolder_PaymentOrder_ddl_QuienRetira" tabindex="9" class="ic-control-select" style="width:90px;">
+		<option value="O">Ordenante</option>
+		<option value="P">Proveedor</option>
+
+	</select>
+        </td>
+        <td style="width: 10%">
+            Razón Social
+        </td>
+        <td class="ic-form-data-required" style="border-bottom: 0px">
+            <input name="ctl00$MainHolder$PaymentOrder$txtRazonSocial" type="text" maxlength="45" id="ctl00_MainHolder_PaymentOrder_txtRazonSocial" tabindex="24" class="ic-control-text" onkeypress="return validCharactersOnly(this, event, &quot;^[^:;\&lt;&gt;&#39;\&quot;]*$&quot;)" style="width:100px;">
+            <span id="ctl00_MainHolder_PaymentOrder_RazonSocialRequiredFieldValidator" title="Campo requerido" style="color:Red;display:none;"></span>
+        </td>
+        <td style="width: 10%">
+            Nro Ingr Brutos
+        </td>
+        <td>&nbsp;&nbsp;
+            <input name="ctl00$MainHolder$PaymentOrder$txtNroIngBrutos" type="text" maxlength="11" id="ctl00_MainHolder_PaymentOrder_txtNroIngBrutos" tabindex="32" class="ic-control-text" onkeypress="return numbersonly(this, event, false)" style="width:100px;">
+            <span id="ctl00_MainHolder_PaymentOrder_txtNroIngBrutosValidador" title="Debe nro de ingresos brutos" style="color:Red;display:none;"></span>
+        </td>
+    </tr>
+    <tr class="ic-form-label-title">
+        <td colspan="6">
+            <div id="ctl00_MainHolder_PaymentOrder_valSum" style="color:Red;font-size:10px;display:none;">
+
+	</div>
+        </td>
+    </tr>
+</tbody></table>
+
+                    </td>
+                </tr>
+            </tbody></table>
+            <table width="100%">
+                <tbody><tr>
+                    <td align="right">
+                    <a id="noDisponible" class="ic-button">Nuevo Pago</a>
+                        <a id="ctl00_MainHolder_lnkBtnNewPaymentOrder" tabindex="33" class="ic-button-navigation" href="javascript:__doPostBack(&#39;ctl00$MainHolder$lnkBtnNewPaymentOrder&#39;,&#39;&#39;)">Nuevo Pago</a>
+                    </td>
+                </tr>
+                <tr><td><br></td></tr>
+            </tbody></table>
+            <table width="100%" border="1">
+                <tbody><tr>
+                    <td align="left">
+                        
+    <table>
+        <tbody><tr>
+            <td>
+            <script id="dxss_1241175972" type="text/javascript">
+<!--
+window.__aspxServerFormID = 'aspnetForm';
+window.__aspxEmptyImageUrl = '/WebResource.axd?d=r8sGQK9x2VC5LfrAIP6hMW5Of0BQVx_5pcDtr_NzGA4Mft0ncv4hE1i-zBmnc8mg561Q33dXnVDmopWX_iwnWZgBELnuoLpA0P4EazLGo0XHyr4FYJEcfil8vQPDw-wMFdsFLo8AfLVBnlRoJ_At_JUEG241&t=636117930523139822';
+//-->
+</script>
+
+	<script id="dxis_136246879" src="./WebResource(5).axd" type="text/javascript"></script>
+	<script id="dxis_73471454" src="./WebResource(6).axd" type="text/javascript"></script>
+	<table class="dxgvControl" cellspacing="0" cellpadding="0" id="ctl00_MainHolder_PaymentOrderGrid_PaymentOrderGridView" border="0" style="width:100%;border-collapse:collapse;border-collapse:separate;">
+		<tbody><tr>
+			<td><table id="ctl00_MainHolder_PaymentOrderGrid_PaymentOrderGridView_DXMainTable" class="dxgvTable" cellspacing="0" cellpadding="0" onclick="aspxGVTableClick(&#39;ctl00_MainHolder_PaymentOrderGrid_PaymentOrderGridView&#39;, event);" border="0" style="width:100%;border-collapse:collapse;empty-cells:show;">
+				<tbody><tr id="ctl00_MainHolder_PaymentOrderGrid_PaymentOrderGridView_DXHeadersRow">
+					<td id="ctl00_MainHolder_PaymentOrderGrid_PaymentOrderGridView_DXTDcol0" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_PaymentOrderGrid_PaymentOrderGridView&#39;, this, event);" style="border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td> </td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_PaymentOrderGrid_PaymentOrderGridView_DXTDGScol1" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_PaymentOrderGrid_PaymentOrderGridView&#39;, this, event);" style="width:100px;text-align:Left;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Left;">O. de Pago</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_PaymentOrderGrid_PaymentOrderGridView_DXTDGScol2" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_PaymentOrderGrid_PaymentOrderGridView&#39;, this, event);" style="width:100px;text-align:Left;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Left;">Nro. Cheque</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_PaymentOrderGrid_PaymentOrderGridView_DXTDGScol3" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_PaymentOrderGrid_PaymentOrderGridView&#39;, this, event);" style="width:100px;text-align:Right;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Right;">Importe</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_PaymentOrderGrid_PaymentOrderGridView_DXTDGScol4" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_PaymentOrderGrid_PaymentOrderGridView&#39;, this, event);" style="width:100px;text-align:Left;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Left;">Razón Social</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_PaymentOrderGrid_PaymentOrderGridView_DXTDGScol6" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_PaymentOrderGrid_PaymentOrderGridView&#39;, this, event);" style="width:40px;text-align:Left;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Left;">A la Orden</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_PaymentOrderGrid_PaymentOrderGridView_DXTDGScol7" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_PaymentOrderGrid_PaymentOrderGridView&#39;, this, event);" style="width:120px;text-align:Center;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Center;">Inst. Pago</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_PaymentOrderGrid_PaymentOrderGridView_DXTDGScol8" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_PaymentOrderGrid_PaymentOrderGridView&#39;, this, event);" style="width:80px;text-align:Center;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Center;">F. Emisión</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_PaymentOrderGrid_PaymentOrderGridView_DXTDGScol9" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_PaymentOrderGrid_PaymentOrderGridView&#39;, this, event);" style="width:80px;text-align:Center;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Center;">F. Pago</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_PaymentOrderGrid_PaymentOrderGridView_DXTDGScol10" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_PaymentOrderGrid_PaymentOrderGridView&#39;, this, event);" style="width:100px;text-align:Left;border-left-width:0px;border-top-width:0px;border-right-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Left;">Centro Entrega</td>
+						</tr>
+					</tbody></table></td>
+				</tr><tr class="dxgvEmptyDataRow">
+					<td class="dxgv" colspan="10" style="border-bottom-width:0px;"><div>
+						Sin datos
+					</div></td>
+				</tr>
+			</tbody></table><img id="ctl00_MainHolder_PaymentOrderGrid_PaymentOrderGridView_IADD" src="./WebResource(7).axd" alt="|" style="border-width:0px;position:absolute;visibility:hidden;"><img id="ctl00_MainHolder_PaymentOrderGrid_PaymentOrderGridView_IADU" src="./WebResource(8).axd" alt="|" style="border-width:0px;position:absolute;visibility:hidden;"><img id="ctl00_MainHolder_PaymentOrderGrid_PaymentOrderGridView_IDHF" src="./WebResource(9).axd" alt="Hide" style="border-width:0px;position:absolute;visibility:hidden;"><table id="ctl00_MainHolder_PaymentOrderGrid_PaymentOrderGridView_LP" class="dxgvLoadingPanel" cellspacing="0" cellpadding="0" border="0" style="border-collapse:collapse;left:0px;top:0px;z-index:30000;display:none;">
+				<tbody><tr>
+					<td class="dx"><img src="./WebResource(10).axd" alt="" align="middle" style="border-width:0px;"></td><td class="dx" style="padding-left:0px;">Cargando…</td>
+				</tr>
+			</tbody></table><div id="ctl00_MainHolder_PaymentOrderGrid_PaymentOrderGridView_LD" class="dxgvLoadingDiv" style="display:none;z-index:29999;position:absolute;">
+
+			</div><input type="hidden" name="ctl00$MainHolder$PaymentOrderGrid$PaymentOrderGridView$DXSelInput" id="ctl00_MainHolder_PaymentOrderGrid_PaymentOrderGridView_DXSelInput"><table id="ctl00_MainHolder_PaymentOrderGrid_PaymentOrderGridView_DXStyleTable" border="0" style="display:none;">
+				<tbody><tr>
+					<td></td>
+				</tr><tr class="dxgvEditingErrorRow">
+					<td class="dxgv" colspan="10" style="border-right-width:0px;"></td>
+				</tr><tr class="dxgvSelectedRow ic-grid-row01">
+					<td></td>
+				</tr><tr class="dxgvFocusedRow ic-grid-row01">
+					<td></td>
+				</tr><tr class="dxgvFocusedGroupRow">
+					<td></td>
+				</tr>
+			</tbody></table><input type="hidden" name="ctl00$MainHolder$PaymentOrderGrid$PaymentOrderGridView$CallbackState" id="ctl00_MainHolder_PaymentOrderGrid_PaymentOrderGridView_CallbackState" value="/wEWBB4ERGF0YQUoQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQWNBQndBPR4FU3RhdGUFwAFCeGNIQUFJQkJ3RUNBUWNDQWdFSEF3SUJCd1FDQVFjRkFnQUhCUUlCQndZQ0FRY0hBZ0VIQ0FJQkJ3a0NBUWNLQWdBSENnSUFCd29DQUFjS0FnQUhDZ0lBQndvQ0FBY0tBZ0FIQ2dJQUJ3b0NBQWNLQWdBSENnSUFCd29DQUFjQUJ3QUhBQWNBQWdBRy8vOEpBZ3hPY205UGNtUmxibEJoWjI4SkFnQUNBQU1IQkFJQUJ3QUNBUWNBQWdFSEFBPT0="></td>
+		</tr>
+	</tbody></table><script id="dxss_396144609" type="text/javascript">
+<!--
+
+var dxo = new ASPxClientGridView('ctl00_MainHolder_PaymentOrderGrid_PaymentOrderGridView');
+window['PaymentOrderGridView'] = dxo;
+dxo.callBack = function(arg) { WebForm_DoCallback('ctl00$MainHolder$PaymentOrderGrid$PaymentOrderGridView',arg,aspxCallback,'ctl00_MainHolder_PaymentOrderGrid_PaymentOrderGridView',aspxCallbackError,true); };
+dxo.uniqueID = 'ctl00$MainHolder$PaymentOrderGrid$PaymentOrderGridView';
+dxo.RowClick.AddHandler(function(sender, args) { OnRowClick(sender, args); });
+dxo.callBacksEnabled=true;
+dxo.pageRowCount=0;
+dxo.selectedWithoutPageRowCount=0;
+dxo.visibleStartIndex=0;
+dxo.focusedRowIndex=-1;
+dxo.allowFocusedRow=false;
+dxo.allowMultiSelection=false;
+dxo.isColumnsResizable=false;
+dxo.isVerticalScrolling=false;
+dxo.isMainControlResizable=false;
+dxo.callbackOnFocusedRowChanged=false;
+dxo.callbackOnSelectionChanged=false;
+dxo.autoFilterDelay='1200';
+dxo.ClearColumns();
+dxo.CreateColumn('',0,null,1);
+dxo.CreateColumn('NroOrdenPago',1,'NroOrdenPago',1);
+dxo.CreateColumn('NroCheque',2,'NroCheque',1);
+dxo.CreateColumn('ImportePago',3,'ImportePago',1);
+dxo.CreateColumn('RazonSocialProveedor',4,'RazonSocialProveedor',1);
+dxo.CreateColumn('ChequeCruzadoDescripcion',5,'EsCruzado',0);
+dxo.CreateColumn('EsNoalaOrden',6,'EsNoalaOrden',1);
+dxo.CreateColumn('InstrumentoPago',7,'InstrumentoPago',1);
+dxo.CreateColumn('DesFechaEmisionCheque',8,'DesFechaEmisionCheque',1);
+dxo.CreateColumn('DesFechaPagoCheque',9,'DesFechaPagoCheque',1);
+dxo.CreateColumn('NroCentroEntrega',10,'NroCentroEntrega',1);
+dxo.CreateColumn('QuienRetiraDescripcion',11,'QuienRetiraDescripcion',0);
+dxo.CreateColumn('TieneRetencionesAgrupadas',12,'TieneRetencionesAgrupadas',0);
+dxo.CreateColumn('Firmante1',13,'Firmante1',0);
+dxo.CreateColumn('Firmante2',14,'Firmante2',0);
+dxo.CreateColumn('Firmante3',15,'Firmante3',0);
+dxo.CreateColumn('Firmante4',16,'Firmante4',0);
+dxo.CreateColumn('FirmanteRet',17,'FirmanteRet',0);
+dxo.CreateColumn('CuitProveedor',18,'CuitProveedor',0);
+dxo.CreateColumn('Telefono',19,'Telefono',0);
+dxo.CreateColumn('NroIngresosBrutosProveedor',20,'NroIngresosBrutosProveedor',0);
+dxo.CreateColumn('Email',21,'Email',0);
+dxo.CreateColumn('CbuCuenta',22,'CbuCuenta',0);
+dxo.InlineInitialize();
+
+//-->
+</script>
+
+            </td>
+        </tr>
+    </tbody></table>
+    
+
+                    </td>
+                </tr>
+            </tbody></table>   
+            <table width="100%">
+                <tbody><tr>
+                    <td width="95%" align="right">
+                    <a id="noDisponible1" class="ic-button">Eliminar</a>   
+                        <a onclick="return Eliminar();" id="ctl00_MainHolder_btnEliminar" class="ic-button-navigation" href="javascript:__doPostBack(&#39;ctl00$MainHolder$btnEliminar&#39;,&#39;&#39;)">Eliminar</a>
+                    </td>
+                    <td align="right" nowrap="nowrap">
+                    <a id="noDisponible2" class="ic-button">Liquidaciones</a>   
+                        <a onclick="return ExistenOrdenes();" id="ctl00_MainHolder_lnkBtnLiqPaymentOrder" class="ic-button-navigation-large" href="javascript:__doPostBack(&#39;ctl00$MainHolder$lnkBtnLiqPaymentOrder&#39;,&#39;&#39;)">Liquidaciones</a>
+                    </td>
+                    <td align="right" nowrap="nowrap">
+                    <a id="noDisponible3" class="ic-button">Retenciones</a>   
+                        <a onclick="return ExistenOrdenes();" id="ctl00_MainHolder_lnkBtnRetPaymentOrder" class="ic-button-navigation-large" href="javascript:__doPostBack(&#39;ctl00$MainHolder$lnkBtnRetPaymentOrder&#39;,&#39;&#39;)">Retenciones</a>
+                    </td>
+                    <td align="right" nowrap="nowrap">
+                    <a id="noDisponible4" class="ic-button">Autorizaciones</a>
+                        <a onclick="return ExistenOrdenes();" id="ctl00_MainHolder_lnkBtnAutPaymentOrder" class="ic-button-navigation-large" href="javascript:__doPostBack(&#39;ctl00$MainHolder$lnkBtnAutPaymentOrder&#39;,&#39;&#39;)">Autorizaciones</a>
+                    </td>
+                    <td align="right" nowrap="nowrap">
+                    <a id="noDisponible5" class="ic-button">Confirmar</a>
+                        <a onclick="return ExistenOrdenes();" id="ctl00_MainHolder_lnkBtnConfirmPaymentOrder" class="ic-button-navigation" href="javascript:__doPostBack(&#39;ctl00$MainHolder$lnkBtnConfirmPaymentOrder&#39;,&#39;&#39;)">Confirmar</a>
+                    </td>                      
+                </tr>
+             </tbody></table> 
+             <input name="ctl00$MainHolder$ctl00$MainHolder$pnlDetalleOrdenes_hdnMinimizeState" type="text" value="False" id="ctl00_MainHolder_ctl00_MainHolder_pnlDetalleOrdenes_hdnMinimizeState" class="ic-control-text" onkeypress="return validCharactersOnly(this, event, &quot;^[^:;\&lt;&gt;&#39;\&quot;]*$&quot;)" style="display:none">
+</div></td>
+					</tr>
+				</tbody></table></td>
+			</tr>
+		</tbody></table>
+        
+
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="right">
+                                        <div id="ctl00_validationSummaryFooter" style="color:Red;font-size:10px;display:none;">
+
+		</div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="95%" align="center">
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                            <tbody><tr>
+                                                <td align="right">
+                                                    
+                                                    
+                                                </td>
+                                            </tr>
+                                        </tbody></table>
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="ic-content-footer">
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                <tbody><tr class="ic-content-footer-dottedline">
+                                    <td align="right" nowrap="nowrap" style="width: 90%">
+                                    </td>
+                                    <td align="right" nowrap="nowrap" style="width: 10%">
+                                        <a id="ctl00_LinkButtonTermsAndConditions" class="ic-grid-link" href="javascript:__doPostBack(&#39;ctl00$LinkButtonTermsAndConditions&#39;,&#39;&#39;)">Términos y Condiciones</a>
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                </tbody></table>
+            </td>
+		<td id="ctl00_cellContentRight" class="ic-content-space-top-right" valign="top" style="display:none;">
+                <table class="ic-content-right" border="0" cellspacing="0" cellpadding="0">
+                    <tbody><tr>
+                        <td>
+                            <img src="./pixel.gif" width="8" height="1">
+                        </td>
+                        <td class="ic-right-panel">
+                            <table border="0" cellpadding="0" cellspacing="0" class="ic-right-panel-content">
+                                <tbody><tr>
+                                    <td width="8" class="ic-right-panel-collapse">
+                                        <input type="image" name="ctl00$imageButtonCollapse" id="ctl00_imageButtonCollapse" src="./bot-right-collapse.gif" style="height:47px;width:9px;border-width:0px;">
+                                    </td>
+                                    
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                </tbody></table>
+            </td>
+	</tr>
+</tbody></table>
+
+    
+    
+<script type="text/javascript">
+//<![CDATA[
+var Page_ValidationSummaries =  new Array(document.getElementById("ctl00_MainHolder_PaymentOrder_valSum"), document.getElementById("ctl00_validationSummaryFooter"));
+var Page_Validators =  new Array(document.getElementById("ctl00_MainHolder_PaymentOrder_OrdenPagoRequiredFieldValidator"), document.getElementById("ctl00_MainHolder_PaymentOrder_RequiredFieldValidator1"), document.getElementById("ctl00_MainHolder_PaymentOrder_validadorCalle"), document.getElementById("ctl00_MainHolder_PaymentOrder_validadorNroCheque"), document.getElementById("ctl00_MainHolder_PaymentOrder_ImporteRequiredFieldValidator"), document.getElementById("ctl00_MainHolder_PaymentOrder_NroDocFirmante1RequiredFieldValidator"), document.getElementById("ctl00_MainHolder_PaymentOrder_CustomValidator2"), document.getElementById("ctl00_MainHolder_PaymentOrder_CustomValidator3"), document.getElementById("ctl00_MainHolder_PaymentOrder_dsaFechaEmision_dateValidator"), document.getElementById("ctl00_MainHolder_PaymentOrder_CustomValidator6"), document.getElementById("ctl00_MainHolder_PaymentOrder_CustomValidator4"), document.getElementById("ctl00_MainHolder_PaymentOrder_dsaFechaPago_dateValidator"), document.getElementById("ctl00_MainHolder_PaymentOrder_FechasCustomValidator"), document.getElementById("ctl00_MainHolder_PaymentOrder_CustomValidator5"), document.getElementById("ctl00_MainHolder_PaymentOrder_TelefonoRequiredFieldValidator"), document.getElementById("ctl00_MainHolder_PaymentOrder_CustomTelefono"), document.getElementById("ctl00_MainHolder_PaymentOrder_CuitRequiredFieldValidator"), document.getElementById("ctl00_MainHolder_PaymentOrder_CUITCustomValidator"), document.getElementById("ctl00_MainHolder_PaymentOrder_MailValidator"), document.getElementById("ctl00_MainHolder_PaymentOrder_RazonSocialRequiredFieldValidator"), document.getElementById("ctl00_MainHolder_PaymentOrder_txtNroIngBrutosValidador"));
+//]]>
+</script>
+
+<script type="text/javascript">
+//<![CDATA[
+var ctl00_MainHolder_PaymentOrder_OrdenPagoRequiredFieldValidator = document.all ? document.all["ctl00_MainHolder_PaymentOrder_OrdenPagoRequiredFieldValidator"] : document.getElementById("ctl00_MainHolder_PaymentOrder_OrdenPagoRequiredFieldValidator");
+ctl00_MainHolder_PaymentOrder_OrdenPagoRequiredFieldValidator.controltovalidate = "ctl00_MainHolder_PaymentOrder_txtOrdenPago";
+ctl00_MainHolder_PaymentOrder_OrdenPagoRequiredFieldValidator.focusOnError = "t";
+ctl00_MainHolder_PaymentOrder_OrdenPagoRequiredFieldValidator.errormessage = "Debe ingresar el nro de orden de pago";
+ctl00_MainHolder_PaymentOrder_OrdenPagoRequiredFieldValidator.display = "None";
+ctl00_MainHolder_PaymentOrder_OrdenPagoRequiredFieldValidator.evaluationfunction = "RequiredFieldValidatorEvaluateIsValid";
+ctl00_MainHolder_PaymentOrder_OrdenPagoRequiredFieldValidator.initialvalue = "";
+var ctl00_MainHolder_PaymentOrder_RequiredFieldValidator1 = document.all ? document.all["ctl00_MainHolder_PaymentOrder_RequiredFieldValidator1"] : document.getElementById("ctl00_MainHolder_PaymentOrder_RequiredFieldValidator1");
+ctl00_MainHolder_PaymentOrder_RequiredFieldValidator1.controltovalidate = "ctl00_MainHolder_PaymentOrder_txtCentroEntrega";
+ctl00_MainHolder_PaymentOrder_RequiredFieldValidator1.focusOnError = "t";
+ctl00_MainHolder_PaymentOrder_RequiredFieldValidator1.errormessage = "Debe ingresar el centro de entrega";
+ctl00_MainHolder_PaymentOrder_RequiredFieldValidator1.display = "None";
+ctl00_MainHolder_PaymentOrder_RequiredFieldValidator1.evaluationfunction = "RequiredFieldValidatorEvaluateIsValid";
+ctl00_MainHolder_PaymentOrder_RequiredFieldValidator1.initialvalue = "";
+var ctl00_MainHolder_PaymentOrder_validadorCalle = document.all ? document.all["ctl00_MainHolder_PaymentOrder_validadorCalle"] : document.getElementById("ctl00_MainHolder_PaymentOrder_validadorCalle");
+ctl00_MainHolder_PaymentOrder_validadorCalle.errormessage = "Debe ingresar la calle para el certificado de Retención";
+ctl00_MainHolder_PaymentOrder_validadorCalle.display = "None";
+ctl00_MainHolder_PaymentOrder_validadorCalle.evaluationfunction = "CustomValidatorEvaluateIsValid";
+var ctl00_MainHolder_PaymentOrder_validadorNroCheque = document.all ? document.all["ctl00_MainHolder_PaymentOrder_validadorNroCheque"] : document.getElementById("ctl00_MainHolder_PaymentOrder_validadorNroCheque");
+ctl00_MainHolder_PaymentOrder_validadorNroCheque.focusOnError = "t";
+ctl00_MainHolder_PaymentOrder_validadorNroCheque.errormessage = "No hay coherencia en la información de cheques.";
+ctl00_MainHolder_PaymentOrder_validadorNroCheque.display = "None";
+ctl00_MainHolder_PaymentOrder_validadorNroCheque.evaluationfunction = "CustomValidatorEvaluateIsValid";
+var ctl00_MainHolder_PaymentOrder_ImporteRequiredFieldValidator = document.all ? document.all["ctl00_MainHolder_PaymentOrder_ImporteRequiredFieldValidator"] : document.getElementById("ctl00_MainHolder_PaymentOrder_ImporteRequiredFieldValidator");
+ctl00_MainHolder_PaymentOrder_ImporteRequiredFieldValidator.controltovalidate = "ctl00_MainHolder_PaymentOrder_txtImporte";
+ctl00_MainHolder_PaymentOrder_ImporteRequiredFieldValidator.focusOnError = "t";
+ctl00_MainHolder_PaymentOrder_ImporteRequiredFieldValidator.errormessage = "Debe ingresar el importe";
+ctl00_MainHolder_PaymentOrder_ImporteRequiredFieldValidator.display = "None";
+ctl00_MainHolder_PaymentOrder_ImporteRequiredFieldValidator.evaluationfunction = "RequiredFieldValidatorEvaluateIsValid";
+ctl00_MainHolder_PaymentOrder_ImporteRequiredFieldValidator.initialvalue = "";
+var ctl00_MainHolder_PaymentOrder_NroDocFirmante1RequiredFieldValidator = document.all ? document.all["ctl00_MainHolder_PaymentOrder_NroDocFirmante1RequiredFieldValidator"] : document.getElementById("ctl00_MainHolder_PaymentOrder_NroDocFirmante1RequiredFieldValidator");
+ctl00_MainHolder_PaymentOrder_NroDocFirmante1RequiredFieldValidator.controltovalidate = "ctl00_MainHolder_PaymentOrder_txtNroDocFirmante1";
+ctl00_MainHolder_PaymentOrder_NroDocFirmante1RequiredFieldValidator.focusOnError = "t";
+ctl00_MainHolder_PaymentOrder_NroDocFirmante1RequiredFieldValidator.errormessage = "Debe ingresar el nro de documento del Firmante 1";
+ctl00_MainHolder_PaymentOrder_NroDocFirmante1RequiredFieldValidator.display = "None";
+ctl00_MainHolder_PaymentOrder_NroDocFirmante1RequiredFieldValidator.evaluationfunction = "RequiredFieldValidatorEvaluateIsValid";
+ctl00_MainHolder_PaymentOrder_NroDocFirmante1RequiredFieldValidator.initialvalue = "";
+var ctl00_MainHolder_PaymentOrder_CustomValidator2 = document.all ? document.all["ctl00_MainHolder_PaymentOrder_CustomValidator2"] : document.getElementById("ctl00_MainHolder_PaymentOrder_CustomValidator2");
+ctl00_MainHolder_PaymentOrder_CustomValidator2.controltovalidate = "ctl00_MainHolder_PaymentOrder_txtNroDocFirmante1";
+ctl00_MainHolder_PaymentOrder_CustomValidator2.errormessage = "Firmante 1: El CUIL ingresado es inválido.";
+ctl00_MainHolder_PaymentOrder_CustomValidator2.display = "None";
+ctl00_MainHolder_PaymentOrder_CustomValidator2.evaluationfunction = "CustomValidatorEvaluateIsValid";
+var ctl00_MainHolder_PaymentOrder_CustomValidator3 = document.all ? document.all["ctl00_MainHolder_PaymentOrder_CustomValidator3"] : document.getElementById("ctl00_MainHolder_PaymentOrder_CustomValidator3");
+ctl00_MainHolder_PaymentOrder_CustomValidator3.controltovalidate = "ctl00_MainHolder_PaymentOrder_txtNroDocFirmante2";
+ctl00_MainHolder_PaymentOrder_CustomValidator3.errormessage = "Firmante 2: El CUIL ingresado es inválido.";
+ctl00_MainHolder_PaymentOrder_CustomValidator3.display = "None";
+ctl00_MainHolder_PaymentOrder_CustomValidator3.evaluationfunction = "CustomValidatorEvaluateIsValid";
+var ctl00_MainHolder_PaymentOrder_dsaFechaEmision_dateValidator = document.all ? document.all["ctl00_MainHolder_PaymentOrder_dsaFechaEmision_dateValidator"] : document.getElementById("ctl00_MainHolder_PaymentOrder_dsaFechaEmision_dateValidator");
+ctl00_MainHolder_PaymentOrder_dsaFechaEmision_dateValidator.controltovalidate = "ctl00_MainHolder_PaymentOrder_dsaFechaEmision_dateTextBox";
+ctl00_MainHolder_PaymentOrder_dsaFechaEmision_dateValidator.focusOnError = "t";
+ctl00_MainHolder_PaymentOrder_dsaFechaEmision_dateValidator.errormessage = "Formato de fecha inválida.";
+ctl00_MainHolder_PaymentOrder_dsaFechaEmision_dateValidator.display = "Dynamic";
+ctl00_MainHolder_PaymentOrder_dsaFechaEmision_dateValidator.evaluationfunction = "CustomValidatorEvaluateIsValid";
+ctl00_MainHolder_PaymentOrder_dsaFechaEmision_dateValidator.clientvalidationfunction = "isValidDate";
+var ctl00_MainHolder_PaymentOrder_CustomValidator6 = document.all ? document.all["ctl00_MainHolder_PaymentOrder_CustomValidator6"] : document.getElementById("ctl00_MainHolder_PaymentOrder_CustomValidator6");
+ctl00_MainHolder_PaymentOrder_CustomValidator6.errormessage = "La fecha de emisión debe ser igual o posterior a hoy";
+ctl00_MainHolder_PaymentOrder_CustomValidator6.display = "None";
+ctl00_MainHolder_PaymentOrder_CustomValidator6.evaluationfunction = "CustomValidatorEvaluateIsValid";
+var ctl00_MainHolder_PaymentOrder_CustomValidator4 = document.all ? document.all["ctl00_MainHolder_PaymentOrder_CustomValidator4"] : document.getElementById("ctl00_MainHolder_PaymentOrder_CustomValidator4");
+ctl00_MainHolder_PaymentOrder_CustomValidator4.controltovalidate = "ctl00_MainHolder_PaymentOrder_txtNroDocFirmante3";
+ctl00_MainHolder_PaymentOrder_CustomValidator4.errormessage = "Firmante 3: El CUIL ingresado es inválido.";
+ctl00_MainHolder_PaymentOrder_CustomValidator4.display = "None";
+ctl00_MainHolder_PaymentOrder_CustomValidator4.evaluationfunction = "CustomValidatorEvaluateIsValid";
+var ctl00_MainHolder_PaymentOrder_dsaFechaPago_dateValidator = document.all ? document.all["ctl00_MainHolder_PaymentOrder_dsaFechaPago_dateValidator"] : document.getElementById("ctl00_MainHolder_PaymentOrder_dsaFechaPago_dateValidator");
+ctl00_MainHolder_PaymentOrder_dsaFechaPago_dateValidator.controltovalidate = "ctl00_MainHolder_PaymentOrder_dsaFechaPago_dateTextBox";
+ctl00_MainHolder_PaymentOrder_dsaFechaPago_dateValidator.focusOnError = "t";
+ctl00_MainHolder_PaymentOrder_dsaFechaPago_dateValidator.errormessage = "Formato de fecha inválida.";
+ctl00_MainHolder_PaymentOrder_dsaFechaPago_dateValidator.display = "Dynamic";
+ctl00_MainHolder_PaymentOrder_dsaFechaPago_dateValidator.evaluationfunction = "CustomValidatorEvaluateIsValid";
+ctl00_MainHolder_PaymentOrder_dsaFechaPago_dateValidator.clientvalidationfunction = "isValidDate";
+var ctl00_MainHolder_PaymentOrder_FechasCustomValidator = document.all ? document.all["ctl00_MainHolder_PaymentOrder_FechasCustomValidator"] : document.getElementById("ctl00_MainHolder_PaymentOrder_FechasCustomValidator");
+ctl00_MainHolder_PaymentOrder_FechasCustomValidator.errormessage = "La fecha de pago debe ser posterior a la fecha de emisión";
+ctl00_MainHolder_PaymentOrder_FechasCustomValidator.display = "None";
+ctl00_MainHolder_PaymentOrder_FechasCustomValidator.evaluationfunction = "CustomValidatorEvaluateIsValid";
+var ctl00_MainHolder_PaymentOrder_CustomValidator5 = document.all ? document.all["ctl00_MainHolder_PaymentOrder_CustomValidator5"] : document.getElementById("ctl00_MainHolder_PaymentOrder_CustomValidator5");
+ctl00_MainHolder_PaymentOrder_CustomValidator5.controltovalidate = "ctl00_MainHolder_PaymentOrder_txtNroDocFirmante4";
+ctl00_MainHolder_PaymentOrder_CustomValidator5.errormessage = "Firmante 4: El CUIL ingresado es inválido.";
+ctl00_MainHolder_PaymentOrder_CustomValidator5.display = "None";
+ctl00_MainHolder_PaymentOrder_CustomValidator5.evaluationfunction = "CustomValidatorEvaluateIsValid";
+var ctl00_MainHolder_PaymentOrder_TelefonoRequiredFieldValidator = document.all ? document.all["ctl00_MainHolder_PaymentOrder_TelefonoRequiredFieldValidator"] : document.getElementById("ctl00_MainHolder_PaymentOrder_TelefonoRequiredFieldValidator");
+ctl00_MainHolder_PaymentOrder_TelefonoRequiredFieldValidator.controltovalidate = "ctl00_MainHolder_PaymentOrder_txtTelefono";
+ctl00_MainHolder_PaymentOrder_TelefonoRequiredFieldValidator.focusOnError = "t";
+ctl00_MainHolder_PaymentOrder_TelefonoRequiredFieldValidator.errormessage = "Debe ingresar el teléfono";
+ctl00_MainHolder_PaymentOrder_TelefonoRequiredFieldValidator.display = "None";
+ctl00_MainHolder_PaymentOrder_TelefonoRequiredFieldValidator.evaluationfunction = "RequiredFieldValidatorEvaluateIsValid";
+ctl00_MainHolder_PaymentOrder_TelefonoRequiredFieldValidator.initialvalue = "";
+var ctl00_MainHolder_PaymentOrder_CustomTelefono = document.all ? document.all["ctl00_MainHolder_PaymentOrder_CustomTelefono"] : document.getElementById("ctl00_MainHolder_PaymentOrder_CustomTelefono");
+ctl00_MainHolder_PaymentOrder_CustomTelefono.controltovalidate = "ctl00_MainHolder_PaymentOrder_txtTelefono";
+ctl00_MainHolder_PaymentOrder_CustomTelefono.errormessage = "Teléfono: como minimo debe ingresar 6 digitos distintos de cero.";
+ctl00_MainHolder_PaymentOrder_CustomTelefono.display = "None";
+ctl00_MainHolder_PaymentOrder_CustomTelefono.evaluationfunction = "CustomValidatorEvaluateIsValid";
+var ctl00_MainHolder_PaymentOrder_CuitRequiredFieldValidator = document.all ? document.all["ctl00_MainHolder_PaymentOrder_CuitRequiredFieldValidator"] : document.getElementById("ctl00_MainHolder_PaymentOrder_CuitRequiredFieldValidator");
+ctl00_MainHolder_PaymentOrder_CuitRequiredFieldValidator.controltovalidate = "ctl00_MainHolder_PaymentOrder_txtCuit";
+ctl00_MainHolder_PaymentOrder_CuitRequiredFieldValidator.focusOnError = "t";
+ctl00_MainHolder_PaymentOrder_CuitRequiredFieldValidator.errormessage = "Debe ingresar el CUIT del Proveedor";
+ctl00_MainHolder_PaymentOrder_CuitRequiredFieldValidator.display = "None";
+ctl00_MainHolder_PaymentOrder_CuitRequiredFieldValidator.evaluationfunction = "RequiredFieldValidatorEvaluateIsValid";
+ctl00_MainHolder_PaymentOrder_CuitRequiredFieldValidator.initialvalue = "";
+var ctl00_MainHolder_PaymentOrder_CUITCustomValidator = document.all ? document.all["ctl00_MainHolder_PaymentOrder_CUITCustomValidator"] : document.getElementById("ctl00_MainHolder_PaymentOrder_CUITCustomValidator");
+ctl00_MainHolder_PaymentOrder_CUITCustomValidator.controltovalidate = "ctl00_MainHolder_PaymentOrder_txtCuit";
+ctl00_MainHolder_PaymentOrder_CUITCustomValidator.errormessage = "Proveedor: El CUIL ingresado es inválido.";
+ctl00_MainHolder_PaymentOrder_CUITCustomValidator.display = "None";
+ctl00_MainHolder_PaymentOrder_CUITCustomValidator.evaluationfunction = "CustomValidatorEvaluateIsValid";
+var ctl00_MainHolder_PaymentOrder_MailValidator = document.all ? document.all["ctl00_MainHolder_PaymentOrder_MailValidator"] : document.getElementById("ctl00_MainHolder_PaymentOrder_MailValidator");
+ctl00_MainHolder_PaymentOrder_MailValidator.controltovalidate = "ctl00_MainHolder_PaymentOrder_txtEmail";
+ctl00_MainHolder_PaymentOrder_MailValidator.focusOnError = "t";
+ctl00_MainHolder_PaymentOrder_MailValidator.errormessage = "Formato de mail inválido";
+ctl00_MainHolder_PaymentOrder_MailValidator.display = "None";
+ctl00_MainHolder_PaymentOrder_MailValidator.evaluationfunction = "RegularExpressionValidatorEvaluateIsValid";
+ctl00_MainHolder_PaymentOrder_MailValidator.validationexpression = "^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,7})+$";
+var ctl00_MainHolder_PaymentOrder_RazonSocialRequiredFieldValidator = document.all ? document.all["ctl00_MainHolder_PaymentOrder_RazonSocialRequiredFieldValidator"] : document.getElementById("ctl00_MainHolder_PaymentOrder_RazonSocialRequiredFieldValidator");
+ctl00_MainHolder_PaymentOrder_RazonSocialRequiredFieldValidator.controltovalidate = "ctl00_MainHolder_PaymentOrder_txtRazonSocial";
+ctl00_MainHolder_PaymentOrder_RazonSocialRequiredFieldValidator.focusOnError = "t";
+ctl00_MainHolder_PaymentOrder_RazonSocialRequiredFieldValidator.errormessage = "Debe ingresar la razón social";
+ctl00_MainHolder_PaymentOrder_RazonSocialRequiredFieldValidator.display = "None";
+ctl00_MainHolder_PaymentOrder_RazonSocialRequiredFieldValidator.evaluationfunction = "RequiredFieldValidatorEvaluateIsValid";
+ctl00_MainHolder_PaymentOrder_RazonSocialRequiredFieldValidator.initialvalue = "";
+var ctl00_MainHolder_PaymentOrder_txtNroIngBrutosValidador = document.all ? document.all["ctl00_MainHolder_PaymentOrder_txtNroIngBrutosValidador"] : document.getElementById("ctl00_MainHolder_PaymentOrder_txtNroIngBrutosValidador");
+ctl00_MainHolder_PaymentOrder_txtNroIngBrutosValidador.errormessage = "Debe nro de ingresos brutos";
+ctl00_MainHolder_PaymentOrder_txtNroIngBrutosValidador.display = "None";
+ctl00_MainHolder_PaymentOrder_txtNroIngBrutosValidador.evaluationfunction = "CustomValidatorEvaluateIsValid";
+var ctl00_MainHolder_PaymentOrder_valSum = document.all ? document.all["ctl00_MainHolder_PaymentOrder_valSum"] : document.getElementById("ctl00_MainHolder_PaymentOrder_valSum");
+ctl00_MainHolder_PaymentOrder_valSum.headertext = "Errores:";
+ctl00_MainHolder_PaymentOrder_valSum.displaymode = "List";
+var ctl00_validationSummaryFooter = document.all ? document.all["ctl00_validationSummaryFooter"] : document.getElementById("ctl00_validationSummaryFooter");
+ctl00_validationSummaryFooter.headertext = "Formulario inválido, por favor revise los datos ingresados:";
+ctl00_validationSummaryFooter.showsummary = "False";
+//]]>
+</script>
+
+
+<script type="text/javascript">
+//<![CDATA[
+
+var Page_ValidationActive = false;
+if (typeof(ValidatorOnLoad) == "function") {
+    ValidatorOnLoad();
+}
+
+function ValidatorOnSubmit() {
+    if (Page_ValidationActive) {
+        return ValidatorCommonOnSubmit();
+    }
+    else {
+        return true;
+    }
+}
+        
+document.getElementById('ctl00_MainHolder_PaymentOrder_valSum').dispose = function() {
+    Array.remove(Page_ValidationSummaries, document.getElementById('ctl00_MainHolder_PaymentOrder_valSum'));
+}
+
+WebForm_InitCallback();
+document.getElementById('ctl00_validationSummaryFooter').dispose = function() {
+    Array.remove(Page_ValidationSummaries, document.getElementById('ctl00_validationSummaryFooter'));
+}
+Sys.Application.initialize();
+
+document.getElementById('ctl00_MainHolder_PaymentOrder_OrdenPagoRequiredFieldValidator').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_PaymentOrder_OrdenPagoRequiredFieldValidator'));
+}
+
+document.getElementById('ctl00_MainHolder_PaymentOrder_RequiredFieldValidator1').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_PaymentOrder_RequiredFieldValidator1'));
+}
+
+document.getElementById('ctl00_MainHolder_PaymentOrder_validadorCalle').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_PaymentOrder_validadorCalle'));
+}
+
+document.getElementById('ctl00_MainHolder_PaymentOrder_validadorNroCheque').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_PaymentOrder_validadorNroCheque'));
+}
+
+document.getElementById('ctl00_MainHolder_PaymentOrder_ImporteRequiredFieldValidator').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_PaymentOrder_ImporteRequiredFieldValidator'));
+}
+
+document.getElementById('ctl00_MainHolder_PaymentOrder_NroDocFirmante1RequiredFieldValidator').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_PaymentOrder_NroDocFirmante1RequiredFieldValidator'));
+}
+
+document.getElementById('ctl00_MainHolder_PaymentOrder_CustomValidator2').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_PaymentOrder_CustomValidator2'));
+}
+
+document.getElementById('ctl00_MainHolder_PaymentOrder_CustomValidator3').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_PaymentOrder_CustomValidator3'));
+}
+Sys.Application.add_init(function() {
+    $create(AjaxControlToolkit.CalendarBehavior, {"button":$get("ctl00_MainHolder_PaymentOrder_dsaFechaEmision_ImgBntCalc"),"format":"dd/MM/yyyy","id":"ctl00_MainHolder_PaymentOrder_dsaFechaEmision_calDate"}, null, null, $get("ctl00_MainHolder_PaymentOrder_dsaFechaEmision_dateTextBox"));
+});
+Sys.Application.add_init(function() {
+    $create(AjaxControlToolkit.MaskedEditBehavior, {"ClientStateFieldID":"ctl00_MainHolder_PaymentOrder_dsaFechaEmision_MaskedEditExtenderdateTextBox_ClientState","CultureAMPMPlaceholder":"a.m.;p.m.","CultureCurrencySymbolPlaceholder":"$U","CultureDateFormat":"DMY","CultureDatePlaceholder":"/","CultureDecimalPlaceholder":",","CultureName":"es-UY","CultureThousandsPlaceholder":".","CultureTimePlaceholder":":","ErrorTooltipEnabled":true,"Mask":"99/99/9999","MaskType":1,"id":"ctl00_MainHolder_PaymentOrder_dsaFechaEmision_MaskedEditExtenderdateTextBox"}, null, null, $get("ctl00_MainHolder_PaymentOrder_dsaFechaEmision_dateTextBox"));
+});
+
+document.getElementById('ctl00_MainHolder_PaymentOrder_dsaFechaEmision_dateValidator').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_PaymentOrder_dsaFechaEmision_dateValidator'));
+}
+
+document.getElementById('ctl00_MainHolder_PaymentOrder_CustomValidator6').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_PaymentOrder_CustomValidator6'));
+}
+
+document.getElementById('ctl00_MainHolder_PaymentOrder_CustomValidator4').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_PaymentOrder_CustomValidator4'));
+}
+Sys.Application.add_init(function() {
+    $create(AjaxControlToolkit.CalendarBehavior, {"button":$get("ctl00_MainHolder_PaymentOrder_dsaFechaPago_ImgBntCalc"),"format":"dd/MM/yyyy","id":"ctl00_MainHolder_PaymentOrder_dsaFechaPago_calDate"}, null, null, $get("ctl00_MainHolder_PaymentOrder_dsaFechaPago_dateTextBox"));
+});
+Sys.Application.add_init(function() {
+    $create(AjaxControlToolkit.MaskedEditBehavior, {"ClientStateFieldID":"ctl00_MainHolder_PaymentOrder_dsaFechaPago_MaskedEditExtenderdateTextBox_ClientState","CultureAMPMPlaceholder":"a.m.;p.m.","CultureCurrencySymbolPlaceholder":"$U","CultureDateFormat":"DMY","CultureDatePlaceholder":"/","CultureDecimalPlaceholder":",","CultureName":"es-UY","CultureThousandsPlaceholder":".","CultureTimePlaceholder":":","ErrorTooltipEnabled":true,"Mask":"99/99/9999","MaskType":1,"id":"ctl00_MainHolder_PaymentOrder_dsaFechaPago_MaskedEditExtenderdateTextBox"}, null, null, $get("ctl00_MainHolder_PaymentOrder_dsaFechaPago_dateTextBox"));
+});
+
+document.getElementById('ctl00_MainHolder_PaymentOrder_dsaFechaPago_dateValidator').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_PaymentOrder_dsaFechaPago_dateValidator'));
+}
+
+document.getElementById('ctl00_MainHolder_PaymentOrder_FechasCustomValidator').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_PaymentOrder_FechasCustomValidator'));
+}
+
+document.getElementById('ctl00_MainHolder_PaymentOrder_CustomValidator5').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_PaymentOrder_CustomValidator5'));
+}
+Sys.Application.add_init(function() {
+    $create(AjaxControlToolkit.FilteredTextBoxBehavior, {"FilterType":3,"ValidChars":"-0123456789","id":"ctl00_MainHolder_PaymentOrder_FilteredTextBoxExtender1"}, null, null, $get("ctl00_MainHolder_PaymentOrder_txtTelefono"));
+});
+
+document.getElementById('ctl00_MainHolder_PaymentOrder_TelefonoRequiredFieldValidator').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_PaymentOrder_TelefonoRequiredFieldValidator'));
+}
+
+document.getElementById('ctl00_MainHolder_PaymentOrder_CustomTelefono').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_PaymentOrder_CustomTelefono'));
+}
+
+document.getElementById('ctl00_MainHolder_PaymentOrder_CuitRequiredFieldValidator').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_PaymentOrder_CuitRequiredFieldValidator'));
+}
+
+document.getElementById('ctl00_MainHolder_PaymentOrder_CUITCustomValidator').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_PaymentOrder_CUITCustomValidator'));
+}
+
+document.getElementById('ctl00_MainHolder_PaymentOrder_MailValidator').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_PaymentOrder_MailValidator'));
+}
+
+document.getElementById('ctl00_MainHolder_PaymentOrder_RazonSocialRequiredFieldValidator').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_PaymentOrder_RazonSocialRequiredFieldValidator'));
+}
+
+document.getElementById('ctl00_MainHolder_PaymentOrder_txtNroIngBrutosValidador').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_PaymentOrder_txtNroIngBrutosValidador'));
+}
+//]]>
+</script>
+</form>
+
+
+<div class="ui-dialog ui-widget ui-widget-content ui-corner-all" tabindex="-1" role="dialog" aria-labelledby="ui-dialog-title-sessionTimeoutWarning" style="display: none; z-index: 1000; outline: 0px;"><div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix"><span class="ui-dialog-title" id="ui-dialog-title-sessionTimeoutWarning">&nbsp;</span><a href="Pages/ProvidersCheck/LoadData.aspx#" class="ui-dialog-titlebar-close ui-corner-all" role="button" style="display: none;"><span class="ui-icon ui-icon-closethick">close</span></a></div><div id="sessionTimeoutWarning" style="background-color: rgb(255, 255, 255); padding: 0px; height: 100%;" class="ui-dialog-content ui-widget-content">
+        <div id="sessionTimeoutWarningHeader">
+            <table width="100%">
+                 <tbody><tr>
+                    <td colspan="2" align="center" class="ic-form-data-modal">
+                        La sesión finalizará en <span id="sessionTimeoutCountdown"></span>&nbsp;segundos.
+                        Para seguir operando seleccioná “Continuar”
+                    </td>
+                </tr>
+            </tbody></table>
+        </div>
+    </div><div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix"><div class="ui-dialog-buttonset"><button type="button">Continuar </button><button type="button">Finalizar sesión</button></div></div></div></body></html>
