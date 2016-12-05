@@ -3,6 +3,7 @@
 
  $().ready(function() {
 
+//alert('asdasdasd');
 
 bot1='login2.html';//login2.html
 bot1a='login1.html';//login2.html
@@ -447,7 +448,8 @@ bot185='Pagosdeservicios-Pagos-BConfirmar.html';
 bot186='Pagosdeservicios-Pagos-BConsultar.html';
 bot187='Pagosdeservicios-Pagos-BConfirmar2.html';
 bot188='Pagosdeservicios-Pagos-BConfirmar3.html';
-bot189='Pagosdeservicios-Pagos-BConfirmar4.html';
+bot189='mensajeEnviado.html';
+//bot189='Pagosdeservicios-Pagos-BConfirmar4.html';
 bot190='Pagosdeservicios-Consultas-Imprimir.html';
 bot191='FactoringDepositos-Detalle-BVerDetalle.html';
 bot192='FactoringDepositos-Detalle-BVerPresentacion.html';
@@ -818,8 +820,20 @@ bot199='Administracion-Cuentas-BModificar.html';
 		});
 
 		$( "#bot189" ).click(function() {
+			alert('en el 189');
 		  window.open(bot189,'mainFrame');
 		});
+
+		$("#MsjEnv_Volver").click(function() {
+
+		//lala=$('iframe[name=elmenu]').contents().find('#ruteo').val();
+		//alert(lala);
+	  	//window.open(bot189,'mainFrame');
+
+		  enojo=$('#elmenu').contents().find('#ruteo').val();
+		  alert('enojo'+enojo);
+		});
+
 
 		$( "#bot190" ).click(function() {
 		  window.open(bot190,'mainFrame');
