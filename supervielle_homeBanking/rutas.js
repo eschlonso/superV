@@ -3,6 +3,20 @@
 
  $().ready(function() {
 
+
+
+ 	function update_session(link){
+	//alert('funciona');
+	//parent.document.getElementById('mainFrame').src='movimientos1.html';
+
+	$.session.set("ruteo",link);
+//window.parent.$("#DIVtobehidden").hide();
+	//$('#DIVtobehidden', mainFrame).hide();
+}
+
+
+
+
 //alert('asdasdasd');
 
 bot1='login2.html';//login2.html
@@ -117,6 +131,7 @@ bot80='cheques.html';
 		//alert("bot3");
 		//location.target = "mainFrame";
 		  //location.href = bot3;
+		  update_session(bot3);
 		  window.open(bot3,'mainFrame');
 		});
 
@@ -125,6 +140,7 @@ bot80='cheques.html';
 		//alert("bot1");
 		//location.target = "mainFrame";
 		  //location.href = bot3;
+		  update_session(bot4);
 		  window.open(bot4,'mainFrame');
 		});
 
@@ -275,6 +291,7 @@ bot80='cheques.html';
 
 		$( "#bot20" ).click(function() {
 		//alert("bot2");
+		  update_session(bot20);
 		  window.open(bot20,'mainFrame');
 		});
 
@@ -820,9 +837,34 @@ bot199='Administracion-Cuentas-BModificar.html';
 		});
 
 		$( "#bot189" ).click(function() {
-			alert('en el 189');
+			//alert('en el 189');
 		  window.open(bot189,'mainFrame');
 		});
+
+		$("#elbotonsito22").click(function() {
+			alert('el  botonsito');
+cartel=$("#elmenu").contents().find("#lname").val();
+alert('cartel, '+cartel);
+
+cartel2=parent.document.getElementById('elmenu').getElementById('ruteo').value;
+alert('cartel2, '+cartel2);
+		
+		parent.document.getElementById('elmenu').src='movimientos1.html';
+		});
+
+		$("#elbotonsito33").click(function() {
+			alert('el  botonsito33aa');
+			//parent.document.getElementById('elmenu').src='movimientos1.html';
+			
+
+			//$('#ruteo', parent.document).css("background-color","#BADA55");
+			//parent.document.$("#elmenu #ruteo").css("background-color","#BADA55");
+//parent.document.getElementById('elmenu').src='movimientos1.html';
+ //$("#elmenu #bot777", parent.document).click();
+ $("#elmenu #ruteo", parent.document).css("background-color","#BADA55");
+
+});
+		
 
 		$("#MsjEnv_Volver").click(function() {
 
@@ -830,8 +872,20 @@ bot199='Administracion-Cuentas-BModificar.html';
 		//alert(lala);
 	  	//window.open(bot189,'mainFrame');
 
+	  	//alert($.session.get('ruteo'));
+	  	window.open($.session.get('ruteo'),'_self');
+
+/*
+ruteo=$("#elmenu").contents().find("#ruteo").val();
+alert('cartel11, '+ruteo);
+*/
+
+//window.open(cartel,'mainFrame');
+
+/*
 		  enojo=$('#elmenu').contents().find('#ruteo').val();
 		  alert('enojo'+enojo);
+		  */
 		});
 
 

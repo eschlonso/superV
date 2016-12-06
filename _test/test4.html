@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>contents demo</title>
+  <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+</head>
+<body>
+ 
+<iframe src="iframe.html" width="80%" height="600" id="frameDemo"></iframe>
+
+<a id="bot189">EJECUTAR</a>
+ 
+<script>
+
+$( "#bot189" ).click(function() {
+	
+	//window.open(bot189,'mainFrame');
+
+	//$("#frameDemo").contents().find("a").css("background-color","#BADA55");
+$("#frameDemo").contents().find("#link1").css("background-color","#BADA55");
+
+
+		$("#frameDemo").contents().find("#link2").css("background-color","#BADA55");
+
+$("#frameDemo").contents().find("#lname").css("background-color","#BADA55");
+
+
+
+
+cartel=$("#frameDemo").contents().find("#lname").val();
+alert('cartel, '+cartel);
+
+});
+
+
+
+</script>
+ 
+</body>
+</html>
