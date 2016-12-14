@@ -477,6 +477,7 @@ bot196='Administracion-Usuario-BModificar.html';
 bot197='Administracion-Usuario-BClaves.html';
 bot198='Administracion-Usuario-BGenerarCET.html';
 bot199='Administracion-Cuentas-BModificar.html';
+bot200='Terminosycondiciones.html'
 
 		$( "#bot101a" ).click(function() {
 		  window.open(bot101a,'_self');
@@ -927,6 +928,10 @@ alert('cartel11, '+ruteo);
 
 		$( "#bot199" ).click(function() {
 		  window.open(bot199,'mainFrame');
+		});
+
+		$( "#bot200" ).click(function() {
+		  window.open(bot200,'mainFrame');
 		});
 
 
