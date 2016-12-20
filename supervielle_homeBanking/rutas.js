@@ -12,12 +12,18 @@
 	$.session.set("ruteo",link);
 //window.parent.$("#DIVtobehidden").hide();
 	//$('#DIVtobehidden', mainFrame).hide();
-}
+	}
 
 
 
 
 //alert('asdasdasd');
+
+
+
+
+
+
 
 bot1='login2.html';//login2.html
 bot1a='login1.html';//login2.html
@@ -291,7 +297,7 @@ bot80='cheques.html';
 
 		$( "#bot20" ).click(function() {
 		//alert("bot2");
-		  update_session(bot20);
+		  
 		  window.open(bot20,'mainFrame');
 		});
 
@@ -870,7 +876,7 @@ alert('cartel2, '+cartel2);
 		$("#MsjEnv_Volver").click(function() {
 
 		//lala=$('iframe[name=elmenu]').contents().find('#ruteo').val();
-		//alert(lala);
+		//alert('hola');
 	  	//window.open(bot189,'mainFrame');
 
 	  	//alert($.session.get('ruteo'));
@@ -935,17 +941,15 @@ alert('cartel11, '+ruteo);
 		});
 
 
+		$( "#termCond" ).click(function() {
+		  window.open(bot200,'mainFrame');
+		});
 
 
 
 
 
-
-
-
-
-
-
+update_session(bot3);
 
 
 
