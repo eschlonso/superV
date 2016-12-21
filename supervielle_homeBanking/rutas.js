@@ -134,7 +134,7 @@ bot80='cheques.html';
 		});
 
 		$( "#bot3" ).click(function() {
-		//alert("bot3");
+alert("bot3");
 		//location.target = "mainFrame";
 		  //location.href = bot3;
 		  update_session(bot3);
@@ -143,7 +143,7 @@ bot80='cheques.html';
 
 
 		$( "#bot4" ).click(function() {
-		//alert("bot1");
+		alert("aqui");
 		//location.target = "mainFrame";
 		  //location.href = bot3;
 		  update_session(bot4);
@@ -153,9 +153,10 @@ bot80='cheques.html';
 
 
 		$( "#bot5" ).click(function() {
-		//alert("bot1");
+		alert("bot5");
 		//location.target = "mainFrame";
 		  //location.href = bot3;
+		  update_session(bot4);
 		  window.open(bot5,'mainFrame');
 		});
 
@@ -879,7 +880,7 @@ alert('cartel2, '+cartel2);
 		//alert('hola');
 	  	//window.open(bot189,'mainFrame');
 
-	  	//alert($.session.get('ruteo'));
+	  	alert($.session.get('ruteo'));
 	  	window.open($.session.get('ruteo'),'_self');
 
 /*
@@ -949,7 +950,7 @@ alert('cartel11, '+ruteo);
 
 
 
-update_session(bot3);
+//update_session(bot3);
 
 
 
