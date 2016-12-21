@@ -1,0 +1,120 @@
+@import url('Controls/ComboEditor/ec_ComboEditor.css');
+
+body
+{
+    background-color: #FFFFFF;
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size:8pt;
+    color: #000000;
+    font-weight: normal;
+    letter-spacing: normal;
+    text-transform: none;
+    word-spacing: normal;
+    padding: 0px 0px 0px 0px;
+    margin:0px 0px 0px 0px;
+}
+
+input {font-family: Verdana, Arial, Helvetica, sans-serif;}
+
+td.HL {vertical-align: middle; text-align: center; width: 20%;}
+td.HC {vertical-align: middle; text-align: center; width: 60%;}
+table.HB {background-image: url(../appimg/Header.back.png); height:77px;}
+
+.Titulos {font-weight: bold ; font-size: 9pt; color: #9f0101; }
+
+.Paneles 
+{
+    border-bottom: 1px solid rgb(205,205,205); 
+    border-right: 1px solid rgb(205,205,205); 
+    border-left: 1px solid rgb(205,205,205); 
+    width:100%;
+}
+
+.Paneles td
+{
+    border: none!important;
+    background-image: none;
+    }
+   
+.Paneles td div
+{
+    padding-left:0px;
+    padding-right:0px;
+    }
+
+.Panel_TL {width: 18px; height: 22px; background-repeat:  no-repeat; background-image:url("img-grid-title-left.gif")!important; }
+.Panel_TC {background-repeat: repeat-x; background-image:url("img-grid-title.gif")!important; font-family:Verdana, Arial; font-size:7pt; font-weight:bold; padding-left:5px}
+.Panel_TR {width: 18px; height: 22px; background-position:right; background-repeat:  no-repeat; background-image:url("img-grid-title-right.gif")!important;}
+
+
+.label {color:#b20000; font-size:10px;}
+.Titulos_sub {color: rgb(140, 197, 90); font-size: 11pt;}
+.texto-comun {color: #808080; font-size:8pt; }
+
+.texto-small {color: #808080; font-size: 7pt;}
+.texto-Color {color: rgb(140, 197, 90); font-size: 8pt;}
+.texto-Color-small {color: rgb(140, 197, 90); font-size: 7pt;}
+
+.link {color: gray; font-size:8pt; }
+.link:link {text-decoration:underline;}
+.link:visited {text-decoration:underline;}
+.link:hover {text-decoration:underline;}
+.link:active {text-decoration:underline;}
+
+
+
+/*MASTERPAGE BORDE EXTERIOR*/
+TD.SI   {} 
+TD.S    {} 
+TD.SD   {} 
+
+TD.IZ   {} 
+TD.D    {} 
+
+TD.IZSH {} 
+TD.SH   {} 
+TD.DSH  {} 
+
+TD.II   {} 
+TD.I    {} 
+TD.ID   {} 
+/* FIN MASTERPAGE BORDE EXTERIOR*/
+
+/*nueva clase*/
+.Panel_Footer {background-repeat: repeat-x; background-image:url("img-panel-top-buttons.gif")!important; text-align:center; padding-top: 4px}
+select {font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size:8pt;}
+
+ 
+
+/* div donde esta la grilla contenida */
+.divGrid {}
+
+
+/* PUBLICACIONES */
+.pbl_datl{ vertical-align:top}
+.pbl_tbl{padding: 0px; margin: 0px; border:1px solid #e76666;background-color:rgb(169, 0, 0);
+                    width: 100%; table-layout:auto; vertical-align:top}
+.pbl_tbl_tit {margin: 0px; border: 0px none; padding: 0px; font-size:7pt; height:20px; color:White; font-weight:bold;}
+.pbl_tbl_tbod{background-color: white;font-size:7pt;height:60px;width:350px !important;}
+.pbl_tbl_rbod {background-color:white; color:Black; min-height:40px}
+.pbl_tbl_fbod {color:gray}
+.pbl_tbl_ibod {width:32px}
+
+
+ 
+/* fin PUBLICACIONES */
+
+/*Notificaciones Posicion consolidada*/
+.tooltip {color: #000; outline: none;text-decoration: none;position: absolute; bottom: 10; left:auto ;right:10; z-index:1000;width:350px; height:50px;}
+.tooltip a{ font-size:10px; padding-left:30px; vertical-align:middle;line-height:45px;}
+.custom { padding: 0.5em 0.8em 0.8em 2em; }
+.classic {background: #FFFFAA; border: 1px solid #FFAD33; padding: 0.8em 1em;}
+.critical { background: #FFCCAA url(../appimg/tt_error.png) no-repeat; border: 1px solid #FF3334;       }
+.info{ background: #9FDAEE url(../appimg/tt_info.png) no-repeat 5 15; border: 1px solid #2BB0D7;            }
+.warning { background: #FFFFAA url(../appimg/tt_warning.png) no-repeat; border: 1px solid #FFAD33; }
+
+
+#ctl00_ContentPlaceHolder_RecuperoUsuario {font-size: 8pt;}
+#ctl00_ContentPlaceHolder_RecuperoClave {font-size: 8pt;}
+

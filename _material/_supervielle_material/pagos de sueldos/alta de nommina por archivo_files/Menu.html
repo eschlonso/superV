@@ -1,0 +1,827 @@
+
+<!-- saved from url=(0034)http://10.1.75.104:9080/Menu.aspx# -->
+<html xmlns="http://www.w3.org/1999/xhtml"><head id="Head1"><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<script type="text/javascript">
+    var selectedMenuItem = null;
+    
+
+function OpenItem(subMenuItem) {
+    window.top.frames.mainFrame.location = subMenuItem;
+
+
+}
+
+function ActivateMenuItem(item) {    
+    if (selectedMenuItem != null) {
+        if (selectedMenuItem.childNodes[0].className == "ic-menu-item-ico-active") {
+            selectedMenuItem.childNodes[0].className = "ic-menu-item-ico";
+        }
+        else {
+            selectedMenuItem.childNodes[0].className = "ic-menu-item-ico-end";
+        }
+
+        if (selectedMenuItem.childNodes.length == 2) {
+            if (selectedMenuItem.childNodes[1].className == "ic-menu-item-active") {
+                selectedMenuItem.childNodes[1].className = "ic-menu-item";
+            }
+            else {
+                selectedMenuItem.childNodes[1].className = "ic-menu-item-end";
+            }
+        }
+    }
+
+    selectedMenuItem = item;
+
+    if (item.childNodes[0].className == "ic-menu-item-ico") {
+        item.childNodes[0].className = "ic-menu-item-ico-active";
+    }
+    else {
+        item.childNodes[0].className = "ic-menu-item-ico-end-active";
+    }
+
+    if (item.childNodes.length == 2) {
+        if (item.childNodes[1].className == "ic-menu-item") {
+            item.childNodes[1].className = "ic-menu-item-active";
+        }
+        else {
+            item.childNodes[1].className = "ic-menu-item-end-active";
+        }
+    }
+}
+
+function ShowSubMenuItem(subMenuTableID, parentID) {    
+    if (document.getElementById(subMenuTableID).className == "ic-menu-item_level_2_with_Child_collapse") {
+        document.getElementById(subMenuTableID).className = "ic-menu-item_level_2_with_Child";
+        document.getElementById(parentID).className = "ic-menu-item_level_3_Extended";    
+    }
+    else {
+        document.getElementById(subMenuTableID).className = "ic-menu-item_level_2_with_Child_collapse";
+        document.getElementById(parentID).className = "ic-menu-item_level_3";
+    }
+}
+
+function ChangeMenuSize(expand) {    
+    if (expand) {
+        parent.document.getElementById('frameMenuHome').cols = "220,*";
+    }
+    else {
+        parent.document.getElementById('frameMenuHome').cols = "70,*";
+    }
+}
+</script>
+<link href="./Menu.css" type="text/css" rel="stylesheet"><title>
+
+</title></head>
+<body>
+    <form name="form1" method="post" action="http://10.1.75.104:9080/Menu.aspx" id="form1">
+<div>
+<input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="">
+<input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="">
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUKMTA2NjkxMDYwN2QYAgUeX19Db250cm9sc1JlcXVpcmVQb3N0QmFja0tleV9fFgIFDlF1b3RhdGlvblBhbmVsBRBsYW5ndWFnZVNlbGVjdG9yBQltdWx0aVZpZXcPD2RmZDeOn1MRXEhs707uJG9YcyQ5cpn5">
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+var theForm = document.forms['form1'];
+if (!theForm) {
+    theForm = document.form1;
+}
+function __doPostBack(eventTarget, eventArgument) {
+    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+        theForm.__EVENTTARGET.value = eventTarget;
+        theForm.__EVENTARGUMENT.value = eventArgument;
+        theForm.submit();
+    }
+}
+//]]>
+</script>
+
+
+
+<script type="text/javascript">
+//<![CDATA[
+function ShowSubMenu(subMenuTable) {
+    if (subMenuTable.className == 'ic-menu-item_level_2') {
+        subMenuTable.className = 'ic-menu-item_level_2_collapse';
+    }
+    else {
+        document.getElementById('ctl17').className = 'ic-menu-item_level_2_collapse';
+ctl17
+        document.getElementById('ctl33').className = 'ic-menu-item_level_2_collapse';
+ctl33
+        document.getElementById('ctl61').className = 'ic-menu-item_level_2_collapse';
+ctl61
+        document.getElementById('ctl99').className = 'ic-menu-item_level_2_collapse';
+ctl99
+        document.getElementById('ctl127').className = 'ic-menu-item_level_2_collapse';
+ctl127
+        document.getElementById('ctl139').className = 'ic-menu-item_level_2_collapse';
+ctl139
+        document.getElementById('ctl166').className = 'ic-menu-item_level_2_collapse';
+ctl166
+        document.getElementById('ctl178').className = 'ic-menu-item_level_2_collapse';
+ctl178
+        document.getElementById('ctl190').className = 'ic-menu-item_level_2_collapse';
+ctl190
+        document.getElementById('ctl250').className = 'ic-menu-item_level_2_collapse';
+ctl250
+        document.getElementById('ctl306').className = 'ic-menu-item_level_2_collapse';
+ctl306
+        document.getElementById('ctl352').className = 'ic-menu-item_level_2_collapse';
+ctl352
+        document.getElementById('ctl397').className = 'ic-menu-item_level_2_collapse';
+ctl397
+        document.getElementById('ctl464').className = 'ic-menu-item_level_2_collapse';
+ctl464
+        document.getElementById('ctl476').className = 'ic-menu-item_level_2_collapse';
+ctl476
+        document.getElementById('ctl513').className = 'ic-menu-item_level_2_collapse';
+ctl513
+        subMenuTable.className = 'ic-menu-item_level_2';
+    }
+}
+//]]>
+</script>
+
+						<style>							
+							P.PanelControlTitleStyle
+							{
+ 								font-family:verdana;
+ 								font-size: 12px;
+								font-weight : bold;
+								text-align: center;  								
+							}
+						</style>						
+						<script language="javascript">
+						function MinMaxPanelControl(cntrlId)
+						{
+						    var imgPath='/App_Themes/Menu/Images/';	
+					
+							//Get state from hidden control.													
+							if ( document.getElementById(cntrlId).style.display == 'none' )
+							{
+								document.getElementById(cntrlId).style.display = '';						
+								document.getElementById(cntrlId+'_imgPlusMinus').src = imgPath + 'bot-grid-minus.gif';
+							}
+							else 
+							{
+								document.getElementById(cntrlId).style.display = 'none';								
+								document.getElementById(cntrlId+'_imgPlusMinus').src = imgPath + 'bot-grid-plus.gif';
+							}
+						}
+						</script>
+			
+<div>
+
+	<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEWAwK+9LXtCwKCz8mXCwK40MygD4E+NR5CUFDoRdCGOXSjsCOVckKn">
+</div>
+        
+                <table border="0" cellpadding="0" cellspacing="0" style="width:100%; height:100%" class="ic-content-left">
+                    <tbody><tr>
+                       <td class="ic-content-space-top-left" valign="top">
+                        <table border="0" cellpadding="0" cellspacing="0">
+                            <tbody><tr>
+                                <td valign="top">
+                                    <table border="0" cellspacing="0" cellpadding="0">
+                                    <tbody><tr>
+                                        <td class="ic-left-panel">
+                                            <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                                <tbody><tr>
+                                                    <td width="10" class="ic-menu-left">
+                                                        <img src="./img-menu-left.gif" style="height:1px;width:10px;border-width:0px;">
+                                                    </td>
+                                                    <td valign="top" width="183">
+                                                        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="ic-menu-content">
+                                                            <tbody><tr>
+                                                                <td class="ic-menu-title">Menú</td>
+                                                                <td class="ic-menu-title-language">
+                                                                <!--
+                                                                    <input type="image" name="languageSelector" id="languageSelector" src="App_Themes/Menu/Images/img-flag-eng.gif" style="border-width:0px;height: 9px" />
+                                                                    <a id="languageButton" class="ic-menu-text-language" href="javascript:__doPostBack('languageButton','')">EN</a>
+                                                                    -->
+                                                                </td>
+                                                                </tr>
+                                                                <tr>
+                                                                <td colspan="2">
+                                                                <div class="ic-menu-overflow">
+                                                                    <table id="tableMenuExpanded" width="100%" border="0" cellspacing="0" cellpadding="0" class="ic-menu-content">
+	<tbody><tr>
+		<td align="center" class="ic-menu-item-ico"><img src="./icon_home.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="ActivateMenuItem(this.parentNode.parentNode); OpenItem(&#39;/Home.aspx&#39;);">Posición Consolidada</a></td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="./icon_transferencias.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="ActivateMenuItem(this.parentNode.parentNode);ShowSubMenu(ctl17);OpenItem(&#39;/Pages/Common/Transaction_Aproved.aspx&#39;);">Aprobaciones</a></td>
+	</tr>
+	<tr>
+		<td colspan="2"><table id="ctl17" class="ic-menu-item_level_2_collapse" width="100%" border="0" cellpadding="0" cellspacing="0">
+			<tbody><tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Common/Transaction_Aproved.aspx&#39;);">Aprobaciones</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Common/TransactionHistory.aspx&#39;);">Historial</a></td>
+			</tr>
+		</tbody></table>
+		</td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="./icon_cuentas.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="ActivateMenuItem(this.parentNode.parentNode);ShowSubMenu(ctl33);OpenItem(&#39;/Pages/Accounts/AccountStatus.aspx&#39;);">Cuentas</a></td>
+	</tr>
+	<tr>
+		<td colspan="2"><table id="ctl33" class="ic-menu-item_level_2_collapse" width="100%" border="0" cellpadding="0" cellspacing="0">
+			<tbody><tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Accounts/AccountStatus.aspx&#39;);">Movimientos</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Accounts/Agreement.aspx&#39;);">Acuerdos</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Accounts/CheckBook.aspx&#39;);">Solicitud Chequeras</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Accounts/Resumen.aspx&#39;);">Resumen digital</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Accounts/AdhesionDigitalSummary.aspx&#39;);">Adhesión al resumen digital</a></td>
+			</tr>
+		</tbody></table>
+		</td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="./icon_transferencias.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="ActivateMenuItem(this.parentNode.parentNode);ShowSubMenu(ctl61);OpenItem(&#39;/Pages/Transfers/MyCreditAccounts.aspx&#39;);">Transferencias</a></td>
+	</tr>
+	<tr>
+		<td colspan="2"><table id="ctl61" class="ic-menu-item_level_2_collapse" width="100%" border="0" cellpadding="0" cellspacing="0">
+			<tbody><tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Transfers/MyCreditAccounts.aspx&#39;);">Mis cuentas de crédito</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><table id="ctl69" class="ic-menu-item_level_3">
+					<tbody><tr>
+						<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="ShowSubMenuItem(&#39;ctl73&#39;, &#39;ctl69&#39;);">Transferencias Inmediatas</a></td>
+					</tr>
+				</tbody></table>
+				<table id="ctl73" class="ic-menu-item_level_2_with_Child_collapse">
+					<tbody><tr>
+						<td class="ic-menu-item_level_2_with_Child"><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Transfers/IntraBankTransfer.aspx&#39;);">Entre ctas Supervielle</a></td>
+					</tr>
+					<tr>
+						<td class="ic-menu-item_level_2_with_Child"><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Transfers/ExtraBankTransferNew.aspx&#39;);">A ctas de otros bancos</a></td>
+					</tr>
+				</tbody></table>
+				</td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Transfers/ExtraBankTransfer.aspx&#39;);">Transferencias 24/48 horas</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Transfers/TransfersAuthorizations.aspx&#39;);">Aprobaciones</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Transfers/TransfersTransactionsHistory.aspx&#39;);">Historial</a></td>
+			</tr>
+		</tbody></table>
+		</td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="./icon_cuentas.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="ActivateMenuItem(this.parentNode.parentNode);ShowSubMenu(ctl99);OpenItem(&#39;/Pages/ServicePayments/ServicePayments.aspx&#39;);">Pago de Servicios</a></td>
+	</tr>
+	<tr>
+		<td colspan="2"><table id="ctl99" class="ic-menu-item_level_2_collapse" width="100%" border="0" cellpadding="0" cellspacing="0">
+			<tbody><tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/ServicePayments/ServicePayments.aspx&#39;);">Pagos</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/ServicePayments/ServicePaymentsAuthorization.aspx&#39;);">Aprobaciones</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/ServicePayments/ServicePaymentsAdhesion.aspx&#39;);">Adhesión de Servicios</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/ServicePayments/ServicePaymentsHistory.aspx&#39;);">Consultas</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/ServicePayments/ServicePaymentsNotifications.aspx&#39;);">Notificaciones</a></td>
+			</tr>
+		</tbody></table>
+		</td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="./icon_cheques.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="ActivateMenuItem(this.parentNode.parentNode);ShowSubMenu(ctl127);OpenItem(&#39;/Pages/Checks/Check.aspx&#39;);">Cheques</a></td>
+	</tr>
+	<tr>
+		<td colspan="2"><table id="ctl127" class="ic-menu-item_level_2_collapse" width="100%" border="0" cellpadding="0" cellspacing="0">
+			<tbody><tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Checks/Check.aspx&#39;);">Detalles</a></td>
+			</tr>
+		</tbody></table>
+		</td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="./icon_plazoFijo.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="ActivateMenuItem(this.parentNode.parentNode);ShowSubMenu(ctl139);OpenItem(&#39;/Pages/AccessDenied.aspx?title=Plazos Fijos&amp;Node=Posición ConsolidadazzzzzPlazos Fijos&#39;);">Plazos Fijos</a></td>
+	</tr>
+	<tr>
+		<td colspan="2"><table id="ctl139" class="ic-menu-item_level_2_collapse" width="100%" border="0" cellpadding="0" cellspacing="0">
+			<tbody><tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/AccessDenied.aspx?title=Detalles&amp;Node=Posición ConsolidadazzzzzPlazos FijoszzzzzDetalles&#39;);">Detalles</a></td>
+			</tr>
+		</tbody></table>
+		</td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="./icon_tarjetasCredito.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="ActivateMenuItem(this.parentNode.parentNode); OpenItem(&#39;/Pages/AccessDenied.aspx?title=Liquidaciones de Comercio&amp;Node=Posición ConsolidadazzzzzLiquidaciones de Comercio&#39;);">Liquidaciones de Comercio</a></td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="./icon_tarjetasCredito.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a href="http://10.1.75.104:9080/Menu.aspx#" title="Tarjetas de Crédito Corporativas" onclick="OpenItem(&#39;/Pages/AccessDeniedOrganizations.aspx?title=Tarjetas de Crédito Corporativas&amp;Node=Posición ConsolidadazzzzzTarjetas de Crédito Corporativas&#39;);">Tarjetas de Crédito Corporativas</a></td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="./icon_transferencias.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a href="http://10.1.75.104:9080/Menu.aspx#" title="Club de Puntos" onclick="OpenItem(&#39;/Pages/AccessDeniedOrganizations.aspx?title=Club de Puntos&amp;Node=Posición ConsolidadazzzzzClub de Puntos&#39;);">Club de Puntos</a></td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="./icon_prestamos.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="ActivateMenuItem(this.parentNode.parentNode);ShowSubMenu(ctl166);OpenItem(&#39;/Pages/Loans/LoanDetails.aspx&#39;);">Préstamos</a></td>
+	</tr>
+	<tr>
+		<td colspan="2"><table id="ctl166" class="ic-menu-item_level_2_collapse" width="100%" border="0" cellpadding="0" cellspacing="0">
+			<tbody><tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Loans/LoanDetails.aspx&#39;);">Detalles</a></td>
+			</tr>
+		</tbody></table>
+		</td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="./icon_leasing.png" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="ActivateMenuItem(this.parentNode.parentNode);ShowSubMenu(ctl178);OpenItem(&#39;/Pages/Leasing/Leasing.aspx&#39;);">Leasing</a></td>
+	</tr>
+	<tr>
+		<td colspan="2"><table id="ctl178" class="ic-menu-item_level_2_collapse" width="100%" border="0" cellpadding="0" cellspacing="0">
+			<tbody><tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Leasing/Leasing.aspx&#39;);">Detalles</a></td>
+			</tr>
+		</tbody></table>
+		</td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="./icon_factoring.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="ActivateMenuItem(this.parentNode.parentNode);ShowSubMenu(ctl190);OpenItem(&#39;/Pages/Factoring/Resumen.aspx&#39;);">Factoring/Depósitos</a></td>
+	</tr>
+	<tr>
+		<td colspan="2"><table id="ctl190" class="ic-menu-item_level_2_collapse" width="100%" border="0" cellpadding="0" cellspacing="0">
+			<tbody><tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Factoring/Resumen.aspx&#39;);">Resumen</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Factoring/Detalle.aspx&#39;);">Detalle</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Factoring/Custodia.aspx&#39;);">Custodia</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Factoring/CargaCheques.aspx&#39;);">Carga de Cheques</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/AccessDenied.aspx?title=Ingreso de Operaciones&amp;Node=Posición ConsolidadazzzzzFactoring/DepósitoszzzzzIngreso de Operaciones&#39;);">Ingreso de Operaciones</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><table id="ctl214" class="ic-menu-item_level_3">
+					<tbody><tr>
+						<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="ShowSubMenuItem(&#39;ctl218&#39;, &#39;ctl214&#39;);">Consultas</a></td>
+					</tr>
+				</tbody></table>
+				<table id="ctl218" class="ic-menu-item_level_2_with_Child_collapse">
+					<tbody><tr>
+						<td class="ic-menu-item_level_2_with_Child"><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Factoring/ConsultaDeOperaciones.aspx&#39;);">Operaciones</a></td>
+					</tr>
+					<tr>
+						<td class="ic-menu-item_level_2_with_Child"><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Factoring/ConsultaDeDocumentos.aspx&#39;);">Documentos</a></td>
+					</tr>
+					<tr>
+						<td class="ic-menu-item_level_2_with_Child"><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Factoring/ConsultaDeDocNoTomados.aspx&#39;);">Doc. No Tomados</a></td>
+					</tr>
+					<tr>
+						<td class="ic-menu-item_level_2_with_Child"><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Factoring/FactoringDeferredDelivery.aspx&#39;);">Bandeja de Pendientes</a></td>
+					</tr>
+				</tbody></table>
+				</td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/AccessDenied.aspx?title=Aprobaciones&amp;Node=Posición ConsolidadazzzzzFactoring/DepósitoszzzzzAprobaciones&#39;);">Aprobaciones</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Factoring/FactoringHistorial.aspx&#39;);">Historial</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Factoring/Contratos.aspx&#39;);">Contratos</a></td>
+			</tr>
+		</tbody></table>
+		</td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="./icon_factoring.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="ActivateMenuItem(this.parentNode.parentNode);ShowSubMenu(ctl250);OpenItem(&#39;/Pages/AccessDenied.aspx?title=Fondo Común de Inversión&amp;Node=Posición ConsolidadazzzzzFondo Común de Inversión&#39;);">Fondo Común de Inversión</a></td>
+	</tr>
+	<tr>
+		<td colspan="2"><table id="ctl250" class="ic-menu-item_level_2_collapse" width="100%" border="0" cellpadding="0" cellspacing="0">
+			<tbody><tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/AccessDenied.aspx?title=Tenencia&amp;Node=Posición ConsolidadazzzzzFondo Común de InversiónzzzzzTenencia&#39;);">Tenencia</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/AccessDenied.aspx?title=Resumen de Cuenta&amp;Node=Posición ConsolidadazzzzzFondo Común de InversiónzzzzzResumen de Cuenta&#39;);">Resumen de Cuenta</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/AccessDenied.aspx?title=Liquidaciones&amp;Node=Posición ConsolidadazzzzzFondo Común de InversiónzzzzzLiquidaciones&#39;);">Liquidaciones</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/AccessDenied.aspx?title=Valorización Histórica&amp;Node=Posición ConsolidadazzzzzFondo Común de InversiónzzzzzValorización Histórica&#39;);">Valorización Histórica</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/AccessDenied.aspx?title=Mis Solicitudes&amp;Node=Posición ConsolidadazzzzzFondo Común de InversiónzzzzzMis Solicitudes&#39;);">Mis Solicitudes</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/AccessDenied.aspx?title=Consulta de Publicaciones&amp;Node=Posición ConsolidadazzzzzFondo Común de InversiónzzzzzConsulta de Publicaciones&#39;);">Consulta de Publicaciones</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/AccessDenied.aspx?title=Certificaciones&amp;Node=Posición ConsolidadazzzzzFondo Común de InversiónzzzzzCertificaciones&#39;);">Certificaciones</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/AccessDenied.aspx?title=Suscripción&amp;Node=Posición ConsolidadazzzzzFondo Común de InversiónzzzzzSuscripción&#39;);">Suscripción</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/AccessDenied.aspx?title=Rescate&amp;Node=Posición ConsolidadazzzzzFondo Común de InversiónzzzzzRescate&#39;);">Rescate</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/AccessDenied.aspx?title=Selección de Cuentas&amp;Node=Posición ConsolidadazzzzzFondo Común de InversiónzzzzzSelección de Cuentas&#39;);">Selección de Cuentas</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/AccessDenied.aspx?title=Historial&amp;Node=Posición ConsolidadazzzzzFondo Común de InversiónzzzzzHistorial&#39;);">Historial</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/AccessDenied.aspx?title=Aprobaciones&amp;Node=Posición ConsolidadazzzzzFondo Común de InversiónzzzzzAprobaciones&#39;);">Aprobaciones</a></td>
+			</tr>
+		</tbody></table>
+		</td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="./icon_pagoProveedores.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="ActivateMenuItem(this.parentNode.parentNode);ShowSubMenu(ctl306);OpenItem(&#39;/Pages/ProvidersCheck/ResumenOperaciones.aspx&#39;);">Pago a Proveedores</a></td>
+	</tr>
+	<tr>
+		<td colspan="2"><table id="ctl306" class="ic-menu-item_level_2_collapse" width="100%" border="0" cellpadding="0" cellspacing="0">
+			<tbody><tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/ProvidersCheck/ResumenOperaciones.aspx&#39;);">Resumen de Operaciones</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><table id="ctl314" class="ic-menu-item_level_3_Extended">
+					<tbody><tr>
+						<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="ShowSubMenuItem(&#39;ctl318&#39;, &#39;ctl314&#39;);">Consulta de Lotes</a></td>
+					</tr>
+				</tbody></table>
+				<table id="ctl318" class="ic-menu-item_level_2_with_Child">
+					<tbody><tr>
+						<td class="ic-menu-item_level_2_with_Child"><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/ProvidersCheck/ConsultaLoteCheque.aspx&#39;);">Cheques</a></td>
+					</tr>
+					<tr>
+						<td class="ic-menu-item_level_2_with_Child"><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/ProvidersCheck/ConsultaLoteTransferencia.aspx&#39;);">Transferencias</a></td>
+					</tr>
+				</tbody></table>
+				</td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/ProvidersCheck/ConsultaCheques.aspx&#39;);">Consulta de Cheques</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/ProvidersCheck/LoadFile.aspx&#39;);">Ingreso por Archivo</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/ProvidersCheck/LoadData.aspx&#39;);">Ingreso Manual</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/ProvidersCheck/ProvidersCheckAuthorizations.aspx&#39;);">Aprobaciones</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/ProvidersCheck/ProvidersCheckTransactionsHistory.aspx&#39;);">Historial</a></td>
+			</tr>
+		</tbody></table>
+		</td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="./icon_pagoSueldos.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="ActivateMenuItem(this.parentNode.parentNode);ShowSubMenu(ctl352);OpenItem(&#39;/Pages/Salary/PayrollInquiry.aspx&#39;);">Pago de Sueldos</a></td>
+	</tr>
+	<tr>
+		<td colspan="2"><table id="ctl352" class="ic-menu-item_level_2" width="100%" border="0" cellpadding="0" cellspacing="0">
+			<tbody><tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Salary/PayrollInquiry.aspx&#39;);">Consulta de Nómina</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><table id="ctl360" class="ic-menu-item_level_3_Extended">
+					<tbody><tr>
+						<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="ShowSubMenuItem(&#39;ctl364&#39;, &#39;ctl360&#39;);">Alta de Nómina</a></td>
+					</tr>
+				</tbody></table>
+				<table id="ctl364" class="ic-menu-item_level_2_with_Child">
+					<tbody><tr>
+						<td class="ic-menu-item_level_2_with_Child"><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Salary/NewBeneficiaryByFile.aspx&#39;);">Por Archivo</a></td>
+					</tr>
+				</tbody></table>
+				</td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><table id="ctl371" class="ic-menu-item_level_3">
+					<tbody><tr>
+						<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="ShowSubMenuItem(&#39;ctl375&#39;, &#39;ctl371&#39;);">Acreditación</a></td>
+					</tr>
+				</tbody></table>
+				<table id="ctl375" class="ic-menu-item_level_2_with_Child_collapse">
+					<tbody><tr>
+						<td class="ic-menu-item_level_2_with_Child"><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Salary/LoadFileNew.aspx&#39;);">Por Archivo</a></td>
+					</tr>
+					<tr>
+						<td class="ic-menu-item_level_2_with_Child"><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Salary/Nomina.aspx&#39;);">Manual</a></td>
+					</tr>
+				</tbody></table>
+				</td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Salary/SalariesTransactionAuthorization.aspx&#39;);">Aprobaciones</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Salary/SalariesTransactionsHistory.aspx&#39;);">Historial</a></td>
+			</tr>
+		</tbody></table>
+		</td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="./icon_comercioExterior.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="ActivateMenuItem(this.parentNode.parentNode);ShowSubMenu(ctl397);OpenItem(&#39;/Pages/EComex/ConsultaOperaciones.aspx&#39;);">Comercio Exterior</a></td>
+	</tr>
+	<tr>
+		<td colspan="2"><table id="ctl397" class="ic-menu-item_level_2_collapse" width="100%" border="0" cellpadding="0" cellspacing="0">
+			<tbody><tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/EComex/ConsultaOperaciones.aspx&#39;);">Consulta de Operaciones</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/EComex/PermisosEmbarques.aspx&#39;);">Permisos de Embarque</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/EComex/ConsultaFinanciaciones.aspx&#39;);">Financiaciones</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><table id="ctl413" class="ic-menu-item_level_3">
+					<tbody><tr>
+						<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="ShowSubMenuItem(&#39;ctl417&#39;, &#39;ctl413&#39;);">Sepa Impo</a></td>
+					</tr>
+				</tbody></table>
+				<table id="ctl417" class="ic-menu-item_level_2_with_Child_collapse">
+					<tbody><tr>
+						<td class="ic-menu-item_level_2_with_Child"><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/EComex/PagosAnticipados.aspx&#39;);">Pagos Anticipados</a></td>
+					</tr>
+					<tr>
+						<td class="ic-menu-item_level_2_with_Child"><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/EComex/SEPAIMPO.aspx&#39;);">Despachos</a></td>
+					</tr>
+				</tbody></table>
+				</td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/EComex/AlertaOpe_aVencer.aspx&#39;);">Alerta de Vencimientos</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/EComex/AlertaOperaciones.aspx&#39;);">Alerta de Órdenes de Pago</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/EComex/Regimenes.aspx&#39;);">Alerta de Regímenes</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/EComex/FormulariosCirculares.aspx&#39;);">Formularios y Circulares</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/EComex/OperationsEntry.aspx&#39;);">Ingreso de Operaciones</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/EComex/Aprobations.aspx&#39;);">Aprobaciones</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/EComex/Historical.aspx&#39;);">Historial</a></td>
+			</tr>
+		</tbody></table>
+		</td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="./icon_financialinformation.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="ActivateMenuItem(this.parentNode.parentNode); OpenItem(&#39;/Pages/Services/FinancialInformation.aspx&#39;);">Cotización de monedas</a></td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="./icon_cajasSeguridad.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="ActivateMenuItem(this.parentNode.parentNode);ShowSubMenu(ctl464);OpenItem(&#39;/Pages/SafeDepositBoxes/SafeDepositBox.aspx&#39;);">Cajas de Seguridad</a></td>
+	</tr>
+	<tr>
+		<td colspan="2"><table id="ctl464" class="ic-menu-item_level_2_collapse" width="100%" border="0" cellpadding="0" cellspacing="0">
+			<tbody><tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/SafeDepositBoxes/SafeDepositBox.aspx&#39;);">Detalles</a></td>
+			</tr>
+		</tbody></table>
+		</td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="./icon_administracion.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="ActivateMenuItem(this.parentNode.parentNode);ShowSubMenu(ctl476);OpenItem(&#39;/Pages/Administration/ViewUsers.aspx&#39;);">Administración</a></td>
+	</tr>
+	<tr>
+		<td colspan="2"><table id="ctl476" class="ic-menu-item_level_2_collapse" width="100%" border="0" cellpadding="0" cellspacing="0">
+			<tbody><tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Administration/ViewUsers.aspx&#39;);">Usuarios</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Administration/ViewAccounts.aspx&#39;);">Cuentas</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Administration/GenerateMac.aspx&#39;);">Generar clave CET</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Administration/Permission.aspx&#39;);">Permisos</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Administration/Signatures.aspx&#39;);">Esquemas de firmas</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Administration/FormsDownload.aspx&#39;);">Formularios</a></td>
+			</tr>
+		</tbody></table>
+		</td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="./icon_personalize.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="ActivateMenuItem(this.parentNode.parentNode); OpenItem(&#39;/Pages/Administration/UpdatePhoneNumber.aspx&#39;);">Administrar CDA</a></td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="./icon_personalize.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="ActivateMenuItem(this.parentNode.parentNode);ShowSubMenu(ctl513);OpenItem(&#39;/Pages/Common/Personalize.aspx&#39;);">Configuraciones</a></td>
+	</tr>
+	<tr>
+		<td colspan="2"><table id="ctl513" class="ic-menu-item_level_2_collapse" width="100%" border="0" cellpadding="0" cellspacing="0">
+			<tbody><tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Common/Personalize.aspx&#39;);">Mis favoritos</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Administration/ViewEconomicGroups.aspx&#39;);">Mis empresas</a></td>
+			</tr>
+		</tbody></table>
+		</td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="./icon_help.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="ActivateMenuItem(this.parentNode.parentNode); OpenItem(&#39;/Help.aspx&#39;);">Ayuda</a></td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico-end"><img src="./icon_logout.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item-end"><a href="http://10.1.75.104:9080/Menu.aspx#" onclick="ActivateMenuItem(this.parentNode.parentNode); OpenItem(&#39;javascript:Logout();&#39;);">Salir del sistema</a></td>
+	</tr>
+</tbody></table>
+
+                                                                </div>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody></table>
+                                                    </td>
+                                                    <td width="10" class="ic-menu-right">&nbsp;</td>
+                                               </tr>
+                                               <tr>
+                                                 <td colspan="3" height="12">
+                                                    <table width="100%" border="0" cellpadding="0" cellspacing="0" class="ic-menu-bottom">
+                                                               <tbody><tr>
+                                                                 <td></td>
+                                                                 <td width="10"><img src="./img-menu-bottom-right.gif" width="15" height="12"></td>
+                                                               </tr>
+                                                    </tbody></table>
+                                                 </td>
+                                               </tr>
+                                             </tbody></table>
+                                            </td>
+                                            <td style="width:9px" class="ic-left-collapase" rowspan="2">
+                                                
+                                            </td>
+                            </tr>
+                            <tr>
+                                <td class="ic-left-panel" valign="top" style="padding-left:7px; padding-right:6px">
+                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                    <tbody><tr>
+                                        <td class="ic-left-panel-separator">&nbsp;
+                                        </td>
+                                    </tr>
+                                    </tbody></table>
+                                </td>
+                            </tr>
+                        </tbody></table>
+                        </td>
+                    </tr> 
+                </tbody></table>
+            
+        <div style="width:95%; padding-left:7px">
+            
+             <table class="ic-grid-border" cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+	<tbody><tr>
+		<td><table id="QuotationPanel_thePanel" class="ic-grid" cellspacing="0" cellpadding="0" align="Center" border="0" style="width:100%;border-collapse:collapse;">
+			<tbody><tr class="ic-grid-title-row">
+				<td><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+					<tbody><tr>
+						<td class="ic-grid-title-cell-left">&nbsp;</td><td class="ic-grid-title-cell" align="left" style="white-space:nowrap;">Información de contacto</td>
+					</tr>
+				</tbody></table></td>
+			</tr><tr>
+				<td align="center" style="padding:1px;"><div id="QuotationPanel" style="color:Black;border-color:DodgerBlue;font-family:verdana;font-size:10pt;width:100%;display:;">
+	
+            
+            <img src="./ContactoHB.jpg">
+        
+</div></td>
+			</tr>
+		</tbody></table></td>
+	</tr>
+</tbody></table>
+        </div>
+       
+    
+
+</td></tr></tbody></table></form></body></html>

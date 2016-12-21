@@ -1,0 +1,1173 @@
+
+<!-- saved from url=(0081)http://10.1.75.104:9080/Help.aspx?PageUrl=%2fPages%2fCommon%2fChangePassword.aspx -->
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><script src="./jquery-1.7.2.min.js.descarga" type="text/javascript"></script>
+<script src="./jquery-1.7.1.js.descarga" type="text/javascript"></script>
+<script src="./jquery-ui-1.8.19.custom.min.js.descarga" type="text/javascript"></script>
+<script src="./jquery.formatCurrency-1.4.0.js.descarga" type="text/javascript"></script>
+<script src="./idle-timer.js.descarga" type="text/javascript"></script>
+<script src="./idle-timer.min.js.descarga" type="text/javascript"></script>
+<script language="javascript" type="text/javascript">
+
+function Logout() {
+        if (confirm("¿ Desea salir del sistema ?") == true) {
+                    
+            window.location =  '/'+ "Logout.aspx";
+        }
+       
+    }
+    
+var focusedFormControl;    
+var dateFormat = 'dd/mm/aaaa';
+var applicationRoot = '/';      
+function OnRowClick(sender, args) {
+    if (sender.GetSelectedRowCount() == 0) {
+        sender.UnselectRowOnPage(args.visibleIndex);
+        SetPageLinkData("");
+    }
+    else {
+        _aspxClearSelection();
+        sender._selectAllRowsOnPage(false);
+        sender.SelectRow(args.visibleIndex, true);
+        SetPageLinkData(sender.GetRowKey(args.visibleIndex));
+    }
+}
+
+if (history.forward(1))
+{
+
+    location.replace(history.forward(1))
+} 
+
+function PrintPage() {
+
+    window.print();
+}
+
+function GoMyOption(select)
+{
+    var url = select.options[select.selectedIndex].value;
+    if( url != "")
+        window.location = url;
+}
+
+function GoFavourites(select)
+{
+
+    var url = select.options[select.selectedIndex].value;
+    if( url != "")
+        window.location = url;
+}
+
+function GoPrint()
+{
+
+window.print();
+}
+
+function addEvent(elm, evType, fn, useCapture)
+{
+
+  if (elm.addEventListener){
+    elm.addEventListener(evType, fn, useCapture);
+    return true;
+  } else if (elm.attachEvent){
+    var r = elm.attachEvent("on"+evType, fn);
+    return r;
+  } else {
+    alert("Handler could not be removed");
+  }
+} 
+
+function SetPageLinkData(data)
+{
+    pageLinkData = document.getElementById('PageLinkData');
+    pageLinkData.value = data;
+}
+
+function SetPageLinkUrl(url)
+{
+    pageLinkUrl = document.getElementById('PageLinkUrl');
+    pageLinkUrl.value = url;
+}
+
+function doPageLink(id)
+{
+    __doPostBack(id, 'PageLinkEvent');
+}
+
+function imprimirEstadoCuenta()
+{
+											
+    var ficha = document.getElementById('printDiv');		
+    var ventimp = window.open('', 'popimpr','height=450, width=550, scrollbars=1');																						
+    var fichaHTML = new String(ficha.innerHTML);
+    fichaHTML = fichaHTML.replace('Seleccione un período y oprima "Consultar".'," ");
+    //var i = document.getElementById('ctl00_MainHolder_panelDetalle_imgPlusMinus');
+    var html  = "<html>\n<head>\n<link rel=\"stylesheet\" type=\"text/css\" href=\"..\\..\\App_Themes\\Default\\Default.css \" />" 
+                + "</head><table width=\"100%\"><tr bgcolor=\"#FF0000\"><td><img src=\"..\\..\\App_Themes\\Default\\Images\\logoSantander.gif\" /></td></tr></table>" 
+                + fichaHTML 
+                + "</html>";
+    ventimp.document.write( html );
+    ventimp.document.close();
+    ventimp.print( );
+    ventimp.close();
+					
+}
+
+ function removeInvalidCharacters(control) {
+ 
+            !(/^[A-zÑñ0-9 ]*$/i).test(control.value) ? control.value = control.value.replace(/[^A-zÑñ0-9 ]/ig, '') : null
+        }
+        
+  function removeInvalidNumbers(control) {
+            !(/^[0-9,]*$/i).test(control.value) ? control.value = control.value.replace(/[^0-9,]/ig, '') : null
+        }
+function showLoading()
+{
+//debugger;
+    // aquí le pasamos la clase o id de nuestro div a centrar (en este caso "caja")
+    $('.ic-loading').css({
+       position:'absolute',
+       left: ($('#mainContainer').width()/2 - $('.ic-loading').outerWidth())/2,
+       //top: ($('#mainContainer').height()/2 - $('.ic-loading').outerHeight())/2
+       top: ($('#mainContainer').height()/2 - $('ic-loading').height()/2)
+    });
+    
+    $('#mainContainer').css('display','none');
+    $('#ic-loading').css('display','block');
+}
+//ModalDialog SessionTimeout
+var idleTime = (parseInt('1170') * 1000); // number of miliseconds until the user is considered idle
+var initialSessionTimeoutMessage = "La sesión finalizará en <span id='sessionTimeoutCountdown'></span> segundos. Para seguir operando seleccioná “Continuar”<br /><br />";
+var sessionTimeoutCountdownId = 'sessionTimeoutCountdown';
+var redirectAfter = (parseInt('30')) ; // number of seconds to wait before redirecting the user
+var redirectTo = '/' + "Logout.aspx"; // URL to relocate the user to once they have timed out
+var keepAliveURL = ''; // URL to call to keep the session alive
+var expiredMessage = ''; // message to show user when the countdown reaches 0
+var running = false; // var to check if the countdown is running 
+var timer; // reference to the setInterval timer so it can be stopped 
+var timerSB;  
+var timeout;  
+    $(document).ready(function() {     
+// create the warning window and set autoOpen to false  
+      var sessionTimeoutWarningDialog = $("#sessionTimeoutWarning"); 
+    $(sessionTimeoutWarningDialog).dialog({         
+        title: '',       
+        autoOpen: false,    // set this to false so we can manually open it         
+        closeOnEscape: false,         
+        draggable: false,         
+        width: 460,         
+        minHeight: 150,         
+        modal: true,           
+        beforeclose: function() { // bind to beforeclose so if the user clicks on the "X" or escape to close the dialog, it will work too             // stop the timer             
+            clearInterval(timer);               // stop countdown
+            running = false;               // ajax call to keep the server-side session alive    
+                  
+            $.ajax({               
+                url: keepAliveURL,               
+                async: false            
+            });         
+        },         
+        buttons: {      
+             'Continuar ': function() {                 
+                // close dialog 
+                window.location.reload();//BM24925: Se agrega esto para que el expired de una cookie se actualice y no se cierre la sesión luego de hacer click en continuar al terminar el timeout del webconfig. El valor del expired se pone en la tabla configuration en la clave SessionMaxMinutes.
+                //var valor = getCookie('ICBWebLogin'); //Esta función la dejo por las dudas, pero no la pude hacer andar poque el document.cookie no me trae las cookies del explorador.                
+                $(this).dialog('close');
+                clearInterval(timerSB);    
+                window.status = "";      
+                StatusBarCountDown();     
+            },
+            'Finalizar sesión': function() {                 
+                // close dialog                 
+                $(sessionTimeoutWarningDialog).html(expiredMessage);
+                $(sessionTimeoutWarningDialog).dialog('disable');                     
+                window.parent.location = redirectTo;           
+            }         
+        },         
+        resizable: false,         
+        open: function() {
+            $('body').css('overflow','auto');         
+        },         
+        close: function() {             
+            // reset overflow             
+            $('body').css('overflow','auto');         
+        }  
+           
+    }); // end of dialog  
+    jQuery("a.ui-dialog-titlebar-close").hide(); 
+          
+    // start the idle timer
+    $.idleTimer(idleTime);
+ 
+});
+
+// BM24925: Función para recuperar el valor de una cookie.
+// name - nombre de la cookie deseada
+// devuelve un string conteniendo el valor de la cookie especificada o null si la cookie no existe
+
+function getCookie(name){
+var micookie = (document.cookie.indexOf('ICBWebLogin=') === -1 ? '' : ("; " + document.cookie).split('; ICBWebLogin=')[1].split(';')[0]);
+
+  var cname = name + "=";               
+  var dc = document.cookie;             
+  if (dc.length > 0) {              
+    begin = dc.indexOf(cname);       
+    if (begin != -1) {           
+      begin += cname.length;       
+      end = dc.indexOf(";", begin);
+      if (end == -1) end = dc.length;
+        return unescape(dc.substring(begin, end));
+    } 
+  }
+  return null;
+}
+
+//Status Bar Countdown Script
+function StatusBarCountDown() 
+{
+    var redirectAfter = (parseInt('30'));
+    var timeout = '1200000';   
+    var redirectTo = '/' + "Logout.aspx"; // URL to relocate the user to once they have timed out   
+    timerSB = setInterval(function(){
+    timeout -= 1000;
+    if(timeout == redirectAfter * 1000)
+    {
+        window.focus();
+    }
+   if(timeout < redirectAfter * 1000)
+   {
+        $("#sessionTimeoutCountdown").html(timeout/1000);
+        $("#sessionTimeoutWarning").dialog('open'); 
+   }
+   if (timeout < 100)
+   {
+        $("#sessionTimeoutWarning").html(expiredMessage);
+        $("#sessionTimeoutWarning").dialog('disable');                     
+        window.parent.location = redirectTo;
+        clearInterval(timerSB);    
+        window.status = "";     
+   }
+        
+   window.status = "Su sesión expirará " + time(timeout) + " minutos";        
+    }, 1000);   
+         
+   function two(x)
+   {
+    return ((x > 9) ? "" : "0") + x
+   }   
+  
+   function time(ms)
+   {   
+       var t = '';   
+       var sec = Math.floor(ms / 1000);   
+       ms = ms % 1000   
+
+       var min = Math.floor(sec / 60);   
+       sec = sec % 60;   
+       t = two(sec);   
+
+       var hr = Math.floor(min / 60);   
+       min = min % 60;   
+       t = two(min) + ":" + t;   
+    return t;
+   }
+}
+
+StatusBarCountDown();
+
+
+
+</script>
+
+<link href="./Default.css" type="text/css" rel="stylesheet"><link href="./jquery-ui-1.8.19.custom.css" type="text/css" rel="stylesheet"><title>
+
+</title><style type="text/css">
+	.ctl00_MainHolder_treeView_0 { text-decoration:none; }
+	.ctl00_MainHolder_treeView_1 { color:#B20000;font-family:Tahoma;font-size:8pt; }
+	.ctl00_MainHolder_treeView_2 { padding:0px 5px 0px 5px; }
+	.ctl00_MainHolder_treeView_3 { font-weight:normal; }
+	.ctl00_MainHolder_treeView_4 {  }
+	.ctl00_MainHolder_treeView_5 { font-weight:bold; }
+	.ctl00_MainHolder_treeView_6 {  }
+	.ctl00_MainHolder_treeView_7 { color:#B20000;text-decoration:underline; }
+	.ctl00_MainHolder_treeView_8 { color:#B20000;text-decoration:underline; }
+
+</style></head>
+<body>
+    <form name="aspnetForm" method="post" action="http://10.1.75.104:9080/Help.aspx?PageUrl=%2fPages%2fCommon%2fChangePassword.aspx" id="aspnetForm">
+<div>
+<input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="">
+<input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="">
+<input type="hidden" name="ctl00_MainHolder_treeView_ExpandState" id="ctl00_MainHolder_treeView_ExpandState" value="enncnnncnnnnncncnnnnnnnnnncncnencncnnncnccnnnnnncnnnnnnnncnnn">
+<input type="hidden" name="ctl00_MainHolder_treeView_SelectedNode" id="ctl00_MainHolder_treeView_SelectedNode" value="ctl00_MainHolder_treeViewt3">
+<input type="hidden" name="ctl00_MainHolder_treeView_PopulateLog" id="ctl00_MainHolder_treeView_PopulateLog" value="">
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUKMjA0OTgxMTMzNg9kFgJmD2QWAgIBD2QWAgIBD2QWAmYPZBYEAgEPZBYEAgIPDxYCHgRUZXh0ZGRkAgcPZBYEAgMPZBYCAgMPPCsACQIADxYIHg1OZXZlckV4cGFuZGVkZB4LXyFEYXRhQm91bmRnHgxTZWxlY3RlZE5vZGUFG2N0bDAwX01haW5Ib2xkZXJfdHJlZVZpZXd0Mx4JTGFzdEluZGV4Aj1kCBQrAAIFAzA6MBQrAAIWDB8ABRVQb3NpY2nDs24gQ29uc29saWRhZGEeBVZhbHVlBQovSG9tZS5hc3B4HghEYXRhUGF0aAUKL2hvbWUuYXNweB4JRGF0YUJvdW5kZx4IRXhwYW5kZWRnHghTZWxlY3RlZGgUKwASBUowOjAsMDoxLDA6MiwwOjMsMDo0LDA6NSwwOjYsMDo3LDA6OCwwOjksMDoxMCwwOjExLDA6MTIsMDoxMywwOjE0LDA6MTUsMDoxNhQrAAIWDB8ABQxDb250w6FjdGVub3MfBQUcL1BhZ2VzL1NlcnZpY2VzL0NvbnRhY3QuYXNweB8GBRwvcGFnZXMvc2VydmljZXMvY29udGFjdC5hc3B4HwdnHwhoHwloZBQrAAIWDB8ABRdUw6lybWlub3MgeSBjb25kaWNpb25lcx8FBSkvUGFnZXMvQ29tbW9uL0hvbWVUZXJtc0FuZENvbmRpdGlvbnMuYXNweB8GBSkvcGFnZXMvY29tbW9uL2hvbWV0ZXJtc2FuZGNvbmRpdGlvbnMuYXNweB8HZx8IaB8JaGQUKwACFgwfAAUPQ2FtYmlvIGRlIENsYXZlHwUFIS9QYWdlcy9Db21tb24vQ2hhbmdlUGFzc3dvcmQuYXNweB8GBSEvcGFnZXMvY29tbW9uL2NoYW5nZXBhc3N3b3JkLmFzcHgfB2cfCGgfCWcUKwACBQMwOjAUKwACFgofAAUTUmVnaXN0cmFyIFByZWd1bnRhcx8FBSQvUGFnZXMvQ29tbW9uL1JlZ2lzdGVyUXVlc3Rpb25zLmFzcHgfBgUkL3BhZ2VzL2NvbW1vbi9yZWdpc3RlcnF1ZXN0aW9ucy5hc3B4HwdnHwhoZBQrAAIWCh8ABQxJbmZvcm1hY2nDs24fBQUYL1BhZ2VzL1RpbWVPdXRFcnJvci5hc3B4HwYFGC9wYWdlcy90aW1lb3V0ZXJyb3IuYXNweB8HZx8IaGQUKwACFgofAAUMSW5mb3JtYWNpw7NuHwUFGC9QYWdlcy9BY2Nlc3NEZW5pZWQuYXNweB8GBRgvcGFnZXMvYWNjZXNzZGVuaWVkLmFzcHgfB2cfCGhkFCsAAhYIHwAFB0N1ZW50YXMfBgUkOWJhYWEyZjMtY2NiMS00ZTAxLTljOTgtYThlN2ZjNzA2NTQyHwdnHwhoFCsABgUTMDowLDA6MSwwOjIsMDozLDA6NBQrAAIWCh8ABQtNb3ZpbWllbnRvcx8FBSIvUGFnZXMvQWNjb3VudHMvQWNjb3VudFN0YXR1cy5hc3B4HwYFIi9wYWdlcy9hY2NvdW50cy9hY2NvdW50c3RhdHVzLmFzcHgfB2cfCGhkFCsAAhYKHwAFCEFjdWVyZG9zHwUFHi9QYWdlcy9BY2NvdW50cy9BZ3JlZW1lbnQuYXNweB8GBR4vcGFnZXMvYWNjb3VudHMvYWdyZWVtZW50LmFzcHgfB2cfCGhkFCsAAhYKHwAFE1NvbGljaXR1ZCBDaGVxdWVyYXMfBQUeL1BhZ2VzL0FjY291bnRzL0NoZWNrQm9vay5hc3B4HwYFHi9wYWdlcy9hY2NvdW50cy9jaGVja2Jvb2suYXNweB8HZx8IaGQUKwACFgofAAUPUmVzdW1lbiBkaWdpdGFsHwUFHC9QYWdlcy9BY2NvdW50cy9SZXN1bWVuLmFzcHgfBgUcL3BhZ2VzL2FjY291bnRzL3Jlc3VtZW4uYXNweB8HZx8IaGQUKwACFgofAAUcQWRoZXNpw7NuIGFsIHJlc3VtZW4gZGlnaXRhbB8FBSsvUGFnZXMvQWNjb3VudHMvQWRoZXNpb25EaWdpdGFsU3VtbWFyeS5hc3B4HwYFKy9wYWdlcy9hY2NvdW50cy9hZGhlc2lvbmRpZ2l0YWxzdW1tYXJ5LmFzcHgfB2cfCGhkFCsAAhYIHwAFDlRyYW5zZmVyZW5jaWFzHwYFJDUzZGE1NjFjLWIyZGEtNDBmZS1iYmUzLTY4NjFmNzI0NDA0YR8HZx8IaBQrAAsFJzA6MCwwOjEsMDoyLDA6MywwOjQsMDo1LDA6NiwwOjcsMDo4LDA6ORQrAAIWCh8ABRdNaXMgY3VlbnRhcyBkZSBjcsOpZGl0bx8FBSYvUGFnZXMvVHJhbnNmZXJzL015Q3JlZGl0QWNjb3VudHMuYXNweB8GBSYvcGFnZXMvdHJhbnNmZXJzL215Y3JlZGl0YWNjb3VudHMuYXNweB8HZx8IaGQUKwACFggfAAUZVHJhbnNmZXJlbmNpYXMgSW5tZWRpYXRhcx8GBSQ0YzE4NWFiNS0zMTEwLTQ4MWItODljMi1mMzI1YTViYWZiMmYfB2cfCGgUKwADBQcwOjAsMDoxFCsAAhYKHwAFFkVudHJlIGN0YXMgU3VwZXJ2aWVsbGUfBQUnL1BhZ2VzL1RyYW5zZmVycy9JbnRyYUJhbmtUcmFuc2Zlci5hc3B4HwYFJy9wYWdlcy90cmFuc2ZlcnMvaW50cmFiYW5rdHJhbnNmZXIuYXNweB8HZx8IaGQUKwACFgofAAUWQSBjdGFzIGRlIG90cm9zIGJhbmNvcx8FBSovUGFnZXMvVHJhbnNmZXJzL0V4dHJhQmFua1RyYW5zZmVyTmV3LmFzcHgfBgUqL3BhZ2VzL3RyYW5zZmVycy9leHRyYWJhbmt0cmFuc2Zlcm5ldy5hc3B4HwdnHwhoZBQrAAIWCh8ABRpUcmFuc2ZlcmVuY2lhcyAyNC80OCBob3Jhcx8FBScvUGFnZXMvVHJhbnNmZXJzL0V4dHJhQmFua1RyYW5zZmVyLmFzcHgfBgUnL3BhZ2VzL3RyYW5zZmVycy9leHRyYWJhbmt0cmFuc2Zlci5hc3B4HwdnHwhoZBQrAAIWCh8ABQxBcHJvYmFjaW9uZXMfBQUtL1BhZ2VzL1RyYW5zZmVycy9UcmFuc2ZlcnNBdXRob3JpemF0aW9ucy5hc3B4HwYFLS9wYWdlcy90cmFuc2ZlcnMvdHJhbnNmZXJzYXV0aG9yaXphdGlvbnMuYXNweB8HZx8IaGQUKwACFgofAAUJSGlzdG9yaWFsHwUFMi9QYWdlcy9UcmFuc2ZlcnMvVHJhbnNmZXJzVHJhbnNhY3Rpb25zSGlzdG9yeS5hc3B4HwYFMi9wYWdlcy90cmFuc2ZlcnMvdHJhbnNmZXJzdHJhbnNhY3Rpb25zaGlzdG9yeS5hc3B4HwdnHwhoZBQrAAIWCh8ABQ5UcmFuc2ZlcmVuY2lhcx8FBSMvUGFnZXMvVHJhbnNmZXJzL1RyYW5zZmVyc0luZm8uYXNweB8GBSMvcGFnZXMvdHJhbnNmZXJzL3RyYW5zZmVyc2luZm8uYXNweB8HZx8IaGQUKwACFgofAAUcQ2VydGlmaWNhZG8gZGUgdHJhbnNmZXJlbmNpYR8FBSkvUGFnZXMvVHJhbnNmZXJzL1RyYW5zZmVyQ2VydGlmaWNhdGUuYXNweB8GBSkvcGFnZXMvdHJhbnNmZXJzL3RyYW5zZmVyY2VydGlmaWNhdGUuYXNweB8HZx8IaGQUKwACFgofAAUOVHJhbnNmZXJlbmNpYXMfBQUxL1BhZ2VzL1RyYW5zZmVycy9JbnRyYUJha25UcmFuc2Zlck1BQ1JlcXVlc3QuYXNweB8GBTEvcGFnZXMvdHJhbnNmZXJzL2ludHJhYmFrbnRyYW5zZmVybWFjcmVxdWVzdC5hc3B4HwdnHwhoZBQrAAIWCh8ABQ5UcmFuc2ZlcmVuY2lhcx8FBTEvUGFnZXMvVHJhbnNmZXJzL0V4dHJhQmFua1RyYW5zZmVyTUFDUmVxdWVzdC5hc3B4HwYFMS9wYWdlcy90cmFuc2ZlcnMvZXh0cmFiYW5rdHJhbnNmZXJtYWNyZXF1ZXN0LmFzcHgfB2cfCGhkFCsAAhYKHwAFIEFncmVnYXIgQ3VlbnRhIEJhbmNvIFN1cGVydmllbGxlHwUFIC9QYWdlcy9UcmFuc2ZlcnMvTmV3QWNjb3VudC5hc3B4HwYFIC9wYWdlcy90cmFuc2ZlcnMvbmV3YWNjb3VudC5hc3B4HwdnHwhoZBQrAAIWCB8ABQdDaGVxdWVzHwYFJGY1ZmRjNTY2LTk4NjMtNDQ1MC05ZTU5LTE2YTYzOTE3ZTQ4ZR8HZx8IaBQrAAIFAzA6MBQrAAIWCh8ABQhEZXRhbGxlcx8FBRgvUGFnZXMvQ2hlY2tzL0NoZWNrLmFzcHgfBgUYL3BhZ2VzL2NoZWNrcy9jaGVjay5hc3B4HwdnHwhoZBQrAAIWCB8ABQxQbGF6b3MgRmlqb3MfBgUkYWE1NWNjMzEtNDY5Ny00MzlhLTg0ZmItYmEzZWI3MjFkZjIyHwdnHwhoFCsAAgUDMDowFCsAAhYKHwAFCERldGFsbGVzHwUFLS9QYWdlcy9GaXhlZERlcG9zaXRzL0ZpeGVkRGVwb3NpdERldGFpbHMuYXNweB8GBS0vcGFnZXMvZml4ZWRkZXBvc2l0cy9maXhlZGRlcG9zaXRkZXRhaWxzLmFzcHgfB2cfCGhkFCsAAhYKHwAFClByw6lzdGFtb3MfBgUkYzUzNDQ4ZTgtNDIwNC00ODFjLTg4ZDAtZWMzMzQ1ZmE0YjJiHwdnHwhnHwloFCsAAgUDMDowFCsAAhYMHwAFCERldGFsbGVzHwUFHS9QYWdlcy9Mb2Fucy9Mb2FuRGV0YWlscy5hc3B4HwYFHS9wYWdlcy9sb2Fucy9sb2FuZGV0YWlscy5hc3B4HwdnHwhoHwloZBQrAAIWCB8ABQdMZWFzaW5nHwYFJGE0NTVmNTM1LTU5ZjYtNDg4NC1iODA0LTk3ZDU3ODJiMmJiZB8HZx8IaBQrAAIFAzA6MBQrAAIWCh8ABQhEZXRhbGxlcx8FBRsvUGFnZXMvTGVhc2luZy9MZWFzaW5nLmFzcHgfBgUbL3BhZ2VzL2xlYXNpbmcvbGVhc2luZy5hc3B4HwdnHwhoZBQrAAIWCB8ABQ1SZWNhdWRhY2lvbmVzHwYFJDJhZjNjNjBkLWM4MTgtNDg3Ny04NzQyLTUyMjE3YjExOWFmOB8HZx8IaBQrAAMFBzA6MCwwOjEUKwACFgofAAUIUG9yIENhamEfBQUiL1BhZ2VzL0Nhc2hQYXltZW50cy9CeUNhc2hpZXIuYXNweB8GBSIvcGFnZXMvY2FzaHBheW1lbnRzL2J5Y2FzaGllci5hc3B4HwdnHwhoZBQrAAIWCh8ABRZEQSDigJMgUmVtaXRpciBhcmNoaXZvHwUFJi9QYWdlcy9DYXNoUGF5bWVudHMvREFGb3J3YXJkRmlsZS5hc3B4HwYFJi9wYWdlcy9jYXNocGF5bWVudHMvZGFmb3J3YXJkZmlsZS5hc3B4HwdnHwhoZBQrAAIWCh8ABRZDb3RpemFjacOzbiBkZSBtb25lZGFzHwUFKS9QYWdlcy9TZXJ2aWNlcy9GaW5hbmNpYWxJbmZvcm1hdGlvbi5hc3B4HwYFKS9wYWdlcy9zZXJ2aWNlcy9maW5hbmNpYWxpbmZvcm1hdGlvbi5hc3B4HwdnHwhoZBQrAAIWCB8ABRJDYWphcyBkZSBTZWd1cmlkYWQfBgUkYmQ5MzUxOWYtOTYxOC00YWFkLTg1MmMtNzRlNzYwOTY0MjExHwdnHwhoFCsAAgUDMDowFCsAAhYKHwAFCERldGFsbGVzHwUFKy9QYWdlcy9TYWZlRGVwb3NpdEJveGVzL1NhZmVEZXBvc2l0Qm94LmFzcHgfBgUrL3BhZ2VzL3NhZmVkZXBvc2l0Ym94ZXMvc2FmZWRlcG9zaXRib3guYXNweB8HZx8IaGQUKwACFggfAAUPQWRtaW5pc3RyYWNpw7NuHwYFJGFkNWNjNzgxLWQ2NDgtNDFkNC1iZmFkLTRmZGEyNzdmY2ZiNR8HZx8IaBQrAAcFFzA6MCwwOjEsMDoyLDA6MywwOjQsMDo1FCsAAhYKHwAFCFVzdWFyaW9zHwUFJC9QYWdlcy9BZG1pbmlzdHJhdGlvbi9WaWV3VXNlcnMuYXNweB8GBSQvcGFnZXMvYWRtaW5pc3RyYXRpb24vdmlld3VzZXJzLmFzcHgfB2cfCGgUKwAHBRcwOjAsMDoxLDA6MiwwOjMsMDo0LDA6NRQrAAIWCh8ABQ9BZ3JlZ2FyIFVzdWFyaW8fBQUiL1BhZ2VzL0FkbWluaXN0cmF0aW9uL0FkZFVzZXIuYXNweB8GBSIvcGFnZXMvYWRtaW5pc3RyYXRpb24vYWRkdXNlci5hc3B4HwdnHwhoZBQrAAIWCh8ABRFNb2RpZmljYXIgVXN1YXJpbx8FBSUvUGFnZXMvQWRtaW5pc3RyYXRpb24vTW9kaWZ5VXNlci5hc3B4HwYFJS9wYWdlcy9hZG1pbmlzdHJhdGlvbi9tb2RpZnl1c2VyLmFzcHgfB2cfCGhkFCsAAhYKHwAFDkJvcnJhciBVc3VhcmlvHwUFJS9QYWdlcy9BZG1pbmlzdHJhdGlvbi9EZWxldGVVc2VyLmFzcHgfBgUlL3BhZ2VzL2FkbWluaXN0cmF0aW9uL2RlbGV0ZXVzZXIuYXNweB8HZx8IaGQUKwACFgofAAUeQ29uZmlndXJhciBQZXJtaXNvcyBkZSBVc3VhcmlvHwUFMy9QYWdlcy9BZG1pbmlzdHJhdGlvbi9Db25maWd1cmVVc2VyUGVybWlzc2lvbnMuYXNweB8GBTMvcGFnZXMvYWRtaW5pc3RyYXRpb24vY29uZmlndXJldXNlcnBlcm1pc3Npb25zLmFzcHgfB2cfCGhkFCsAAhYKHwAFF0dlbmVyYXIgQ0VUIGRlIE9wZXJhZG9yHwUFLi9QYWdlcy9BZG1pbmlzdHJhdGlvbi9HZW5lcmF0ZU1hY09wZXJhdG9yLmFzcHgfBgUuL3BhZ2VzL2FkbWluaXN0cmF0aW9uL2dlbmVyYXRlbWFjb3BlcmF0b3IuYXNweB8HZx8IaGQUKwACFgofAAUPQ2FtYmlvIGRlIENsYXZlHwUFLS9QYWdlcy9BZG1pbmlzdHJhdGlvbi9Db25maWd1cmVQYXNzd29yZHMuYXNweB8GBS0vcGFnZXMvYWRtaW5pc3RyYXRpb24vY29uZmlndXJlcGFzc3dvcmRzLmFzcHgfB2cfCGhkFCsAAhYKHwAFB0N1ZW50YXMfBQUnL1BhZ2VzL0FkbWluaXN0cmF0aW9uL1ZpZXdBY2NvdW50cy5hc3B4HwYFJy9wYWdlcy9hZG1pbmlzdHJhdGlvbi92aWV3YWNjb3VudHMuYXNweB8HZx8IaBQrAAQFCzA6MCwwOjEsMDoyFCsAAhYKHwAFIEFncmVnYXIgQ3VlbnRhIEJhbmNvIFN1cGVydmllbGxlHwUFJS9QYWdlcy9BZG1pbmlzdHJhdGlvbi9BZGRBY2NvdW50LmFzcHgfBgUlL3BhZ2VzL2FkbWluaXN0cmF0aW9uL2FkZGFjY291bnQuYXNweB8HZx8IaGQUKwACFgofAAUQTW9kaWZpY2FyIEN1ZW50YR8FBSgvUGFnZXMvQWRtaW5pc3RyYXRpb24vVXBkYXRlQWNjb3VudC5hc3B4HwYFKC9wYWdlcy9hZG1pbmlzdHJhdGlvbi91cGRhdGVhY2NvdW50LmFzcHgfB2cfCGhkFCsAAhYKHwAFDUJvcnJhciBDdWVudGEfBQUoL1BhZ2VzL0FkbWluaXN0cmF0aW9uL0RlbGV0ZUFjY291bnQuYXNweB8GBSgvcGFnZXMvYWRtaW5pc3RyYXRpb24vZGVsZXRlYWNjb3VudC5hc3B4HwdnHwhoZBQrAAIWCh8ABRFHZW5lcmFyIGNsYXZlIENFVB8FBSYvUGFnZXMvQWRtaW5pc3RyYXRpb24vR2VuZXJhdGVNYWMuYXNweB8GBSYvcGFnZXMvYWRtaW5pc3RyYXRpb24vZ2VuZXJhdGVtYWMuYXNweB8HZx8IaGQUKwACFgofAAUIUGVybWlzb3MfBQUlL1BhZ2VzL0FkbWluaXN0cmF0aW9uL1Blcm1pc3Npb24uYXNweB8GBSUvcGFnZXMvYWRtaW5pc3RyYXRpb24vcGVybWlzc2lvbi5hc3B4HwdnHwhoZBQrAAIWCh8ABRJFc3F1ZW1hcyBkZSBmaXJtYXMfBQUlL1BhZ2VzL0FkbWluaXN0cmF0aW9uL1NpZ25hdHVyZXMuYXNweB8GBSUvcGFnZXMvYWRtaW5pc3RyYXRpb24vc2lnbmF0dXJlcy5hc3B4HwdnHwhoZBQrAAIWCh8ABQtGb3JtdWxhcmlvcx8FBSgvUGFnZXMvQWRtaW5pc3RyYXRpb24vRm9ybXNEb3dubG9hZC5hc3B4HwYFKC9wYWdlcy9hZG1pbmlzdHJhdGlvbi9mb3Jtc2Rvd25sb2FkLmFzcHgfB2cfCGhkFCsAAhYKHwAFD0FkbWluaXN0cmFyIENEQR8FBSwvUGFnZXMvQWRtaW5pc3RyYXRpb24vVXBkYXRlUGhvbmVOdW1iZXIuYXNweB8GBSwvcGFnZXMvYWRtaW5pc3RyYXRpb24vdXBkYXRlcGhvbmVudW1iZXIuYXNweB8HZx8IaGQUKwACFggfAAUPQ29uZmlndXJhY2lvbmVzHwYFJGFjNWNkNDU1LTVlMDItNGZkMy05MjI3LTViMjdhN2M1YmU0MB8HZx8IaBQrAAQFCzA6MCwwOjEsMDoyFCsAAhYKHwAFDU1pcyBmYXZvcml0b3MfBQUeL1BhZ2VzL0NvbW1vbi9QZXJzb25hbGl6ZS5hc3B4HwYFHi9wYWdlcy9jb21tb24vcGVyc29uYWxpemUuYXNweB8HZx8IaGQUKwACFgofAAUMTWlzIGVtcHJlc2FzHwUFLS9QYWdlcy9BZG1pbmlzdHJhdGlvbi9WaWV3RWNvbm9taWNHcm91cHMuYXNweB8GBS0vcGFnZXMvYWRtaW5pc3RyYXRpb24vdmlld2Vjb25vbWljZ3JvdXBzLmFzcHgfB2cfCGhkFCsAAhYKHwAFDE1pcyBlbXByZXNhcx8FBTIvUGFnZXMvQWRtaW5pc3RyYXRpb24vU2V0RGVmYXVsdEVjb25vbWljR3JvdXAuYXNweB8GBTIvcGFnZXMvYWRtaW5pc3RyYXRpb24vc2V0ZGVmYXVsdGVjb25vbWljZ3JvdXAuYXNweB8HZx8IaGRkAgUPDxYCHgVUaXRsZQUXQ2FtYmlvIGRlIENsYXZlIC0gQXl1ZGFkFgICAQ8WAh8ABf8EDQogICAgICAgIDxmb250IGZhY2U9IlZlcmRhbmEiIHNpemU9IjIiIGNvbG9yPSIjREUwMDIwIj48Yj4gQ2FtYmlvIGRlIGNsYXZlIDwvYj48YnI+PGJyPjwvZm9udD4NCiAgICAgICAgPGZvbnQgZmFjZT0iVmVyZGFuYSIgc2l6ZT0iMSIgY29sb3I9IiM3NTc1NzUiPkVzdGEgcMOhZ2luYSBsZSBwZXJtaXRlIG1vZGlmaWNhciBzdSBjbGF2ZSBkZSBhY2Nlc28gc2llbXByZSB5IGN1YW5kbyByZWN1ZXJkZSBzdSBjb250cmFzZcOxYSBhY3R1YWwuPC9mb250Pjxicj4gICANCiAgICAgICAgPGJyPg0KICAgICAgICA8aW1nICBpZD0iTG9hbkltZyIgc3JjPSIuLi8uLi8uLi9BcHBfVGhlbWVzL0hlbHAvSW1hZ2VzL0NoYW5nZVBhc3N3b3JkLmpwZyIgLz4NCiAgICAgICAgPGJyPjxicj4NCiAgICAgICAgPGZvbnQgZmFjZT0iVmVyZGFuYSIgc2l6ZT0iMSIgY29sb3I9IiM3NTc1NzUiPjxiPkNhbWJpbyBkZSBjbGF2ZTogPC9iPjxicj4NCiAgICAgICAgICAgIFBhcmEgY2FtYmlhciBzdSBjbGF2ZSBkZWJlIGluZ3Jlc2FyIHN1IGNsYXZlIGFjdHVhbCwgbGEgbnVldmEgY2xhdmUsIGxhIGNvbmZpcm1hY2nDs24gZGUgZGljaGEgY2xhdmUsIHkgbHVlZ28gcHJlc2lvbmFyICJDb25maXJtYXIiLjwvZm9udD48YnI+PGJyPg0KDQogICAgZAICDxYCHgVzdHlsZQUNZGlzcGxheTpub25lOxYCAgUPFgIeB1Zpc2libGVoFgQCAQ8QFgYeDURhdGFUZXh0RmllbGQFBVRpdGxlHg5EYXRhVmFsdWVGaWVsZAUDVXJpHwJnEBUBABUBABQrAwFnFCsBAGQCAw8WAh8LBQ1kaXNwbGF5Om5vbmU7FgJmD2QWAgIBDxYCHwsFDWRpc3BsYXk6bm9uZTtkGAEFHl9fQ29udHJvbHNSZXF1aXJlUG9zdEJhY2tLZXlfXxYEBSFjdGwwMCRNYWluSG9sZGVyJHBhbmVsQ29udHJvbE1lbnUFImN0bDAwJE1haW5Ib2xkZXIkcGFuZWxDb250cm9sQXl1ZGEFGWN0bDAwJE1haW5Ib2xkZXIkdHJlZVZpZXcFGWN0bDAwJGltYWdlQnV0dG9uQ29sbGFwc2X31F8kgaq0lsP726lCMpzLBFw1Ig==">
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+var theForm = document.forms['aspnetForm'];
+if (!theForm) {
+    theForm = document.aspnetForm;
+}
+function __doPostBack(eventTarget, eventArgument) {
+    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+        theForm.__EVENTTARGET.value = eventTarget;
+        theForm.__EVENTARGUMENT.value = eventArgument;
+        theForm.submit();
+    }
+}
+//]]>
+</script>
+
+
+<script src="./WebResource.axd" type="text/javascript"></script>
+
+
+						<style>							
+							P.PanelControlTitleStyle
+							{
+ 								font-family:verdana;
+ 								font-size: 12px;
+								font-weight : bold;
+								text-align: center;  								
+							}
+						</style>						
+						<script language="javascript">
+						function MinMaxPanelControl(cntrlId)
+						{
+						    var imgPath='/App_Themes/Default/Images/';	
+					
+							//Get state from hidden control.													
+							if ( document.getElementById(cntrlId).style.display == 'none' )
+							{
+								document.getElementById(cntrlId).style.display = '';						
+								document.getElementById(cntrlId+'_imgPlusMinus').src = imgPath + 'bot-grid-minus.gif';
+							}
+							else 
+							{
+								document.getElementById(cntrlId).style.display = 'none';								
+								document.getElementById(cntrlId+'_imgPlusMinus').src = imgPath + 'bot-grid-plus.gif';
+							}
+						}
+						</script>
+			
+<script src="./ScriptResource.axd" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+
+    function TreeView_PopulateNodeDoCallBack(context,param) {
+        WebForm_DoCallback(context.data.treeViewID,param,TreeView_ProcessNodeData,context,TreeView_ProcessNodeData,false);
+    }
+var ctl00_MainHolder_treeView_Data = null;var __cultureInfo = '{"name":"es-UY","numberFormat":{"CurrencyDecimalDigits":2,"CurrencyDecimalSeparator":",","IsReadOnly":false,"CurrencyGroupSizes":[3],"NumberGroupSizes":[3],"PercentGroupSizes":[3],"CurrencyGroupSeparator":".","CurrencySymbol":"$U","NaNSymbol":"NeuN","CurrencyNegativePattern":14,"NumberNegativePattern":1,"PercentPositivePattern":0,"PercentNegativePattern":0,"NegativeInfinitySymbol":"-Infinito","NegativeSign":"-","NumberDecimalDigits":2,"NumberDecimalSeparator":",","NumberGroupSeparator":".","CurrencyPositivePattern":2,"PositiveInfinitySymbol":"Infinito","PositiveSign":"+","PercentDecimalDigits":2,"PercentDecimalSeparator":",","PercentGroupSeparator":".","PercentSymbol":"%","PerMilleSymbol":"‰","NativeDigits":["0","1","2","3","4","5","6","7","8","9"],"DigitSubstitution":1},"dateTimeFormat":{"AMDesignator":"a.m.","Calendar":{"MinSupportedDateTime":"\/Date(-62135586000000)\/","MaxSupportedDateTime":"\/Date(253402300799999)\/","AlgorithmType":1,"CalendarType":1,"Eras":[1],"TwoDigitYearMax":2029,"IsReadOnly":false},"DateSeparator":"/","FirstDayOfWeek":1,"CalendarWeekRule":0,"FullDateTimePattern":"dddd, dd\u0027 de \u0027MMMM\u0027 de \u0027yyyy hh:mm:ss tt","LongDatePattern":"dddd, dd\u0027 de \u0027MMMM\u0027 de \u0027yyyy","LongTimePattern":"hh:mm:ss tt","MonthDayPattern":"dd MMMM","PMDesignator":"p.m.","RFC1123Pattern":"ddd, dd MMM yyyy HH\u0027:\u0027mm\u0027:\u0027ss \u0027GMT\u0027","ShortDatePattern":"dd/MM/yyyy","ShortTimePattern":"hh:mm tt","SortableDateTimePattern":"yyyy\u0027-\u0027MM\u0027-\u0027dd\u0027T\u0027HH\u0027:\u0027mm\u0027:\u0027ss","TimeSeparator":":","UniversalSortableDateTimePattern":"yyyy\u0027-\u0027MM\u0027-\u0027dd HH\u0027:\u0027mm\u0027:\u0027ss\u0027Z\u0027","YearMonthPattern":"MMMM\u0027 de \u0027yyyy","AbbreviatedDayNames":["dom","lun","mar","mié","jue","vie","sáb"],"ShortestDayNames":["do","lu","ma","mi","ju","vi","sá"],"DayNames":["domingo","lunes","martes","miércoles","jueves","viernes","sábado"],"AbbreviatedMonthNames":["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic",""],"MonthNames":["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre",""],"IsReadOnly":false,"NativeCalendarName":"calendario gregoriano","AbbreviatedMonthGenitiveNames":["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic",""],"MonthGenitiveNames":["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre",""]}}';//]]>
+</script>
+
+<script src="./ScriptResource(1).axd" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+if (typeof(Sys) === 'undefined') throw new Error('ASP.NET Ajax client-side framework failed to load.');
+//]]>
+</script>
+
+<script src="./ScriptResource(2).axd" type="text/javascript"></script>
+<div>
+
+	<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEWQQK4sYbbBAK/2fm9DwLevMDRCwK/hYXpAwKXope5CALd5LClCwKsqpT1AwKMhvbyBwKj+5WXBQKc3vfqAQK68Im+BwKEv+OCBQKGyaPdAwLLtofYAwKo/4viDAK2us+QCwKt0+aJCwLqwb/4AwLnu/STAQK548HLDALWg6/2CALhxK3iDgLIr5K2DgL9qNyJBwKcpvnTDAKU9tqvCgK4k8nTAgK9l7ypBAKd3rciAr34paAOAq/dnYcEAo6XjMkJAubSvtQCArHK1e4HAuCJncIHAsnW/b4EAoj9gd0KAuaBo/gHAomYircIArKsvt0GAqf00MEOArGo9+oHApuF6JIJAtCNz6ADAqaOqLAIArqQx4cIArG+9oIFAtz1gMsJArja2+UOAse/p2YC3bqGtwECnN3HjQsCvPf9kQQCupy85Q8CgbSnxgIC76mH+gkC/8iy9gsCtNyHJQLHpoKrCALX5beXCAK1h6e3BAKDjf/CDQKZkpf1CQLRqszJDgKJt+C7ATD/s98rc+JpRUQRj5AkO0IUDQ4/">
+</div>
+    <script type="text/javascript">
+//<![CDATA[
+Sys.WebForms.PageRequestManager._initialize('ctl00$scriptManager', document.getElementById('aspnetForm'));
+Sys.WebForms.PageRequestManager.getInstance()._updateControls([], [], [], 90);
+//]]>
+</script>
+
+    <input type="hidden" id="PageLinkData" name="PageLinkData" value="">
+    <input type="hidden" id="PageLinkUrl" name="PageLinkUrl" value="">
+    <input type="hidden" id="PageUrl" value="/Help.aspx">
+    <table id="ctl00_tableContent" width="100%" border="0" cellpadding="0" cellspacing="0" class="ic-content">
+	<tbody><tr>
+		<td class="ic-content-left-aux">
+                <img src="./log-img-aux-left-bottom.gif" width="9" height="110">
+            </td>
+		<td style="width: 100%">
+                <table width="100%" border="0" cellpadding="0" cellspacing="0" class="ic-content-left">
+                    <tbody><tr>
+                        <td id="TdCPM" class="ic-content-space-top" valign="top">
+                            <table id="TablaCPM" width="100%" border="0" cellspacing="0" cellpadding="0">
+                                
+                                <tbody><tr>
+                                    <td>
+                                        <table id="ctl00_tableHeader" width="100%" border="0" cellspacing="0" cellpadding="0">
+			<tbody><tr>
+				<td class="ic-breadcrumb-container">
+                                                    
+                                                    &gt;
+                                                    <span id="ctl00_siteMapNavigator"><a href="http://10.1.75.104:9080/Help.aspx?PageUrl=%2fPages%2fCommon%2fChangePassword.aspx#ctl00_siteMapNavigator_SkipLink"><img alt="Skip Navigation Links" height="0" width="0" src="./WebResource(1).axd" style="border-width:0px;"></a><span><a href="http://10.1.75.104:9080/Home.aspx">Posición Consolidada</a></span><span> &gt; </span><span>Ayuda</span><a id="ctl00_siteMapNavigator_SkipLink"></a></span>
+                                                    </td>
+				<td class="ic-toolbar-container">
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tbody><tr>
+                                                            <td width="16">
+                                                                <img src="./ico-print.gif" id="ctl00_Img4" width="16" height="16">
+                                                            </td>
+                                                            <td class="ic-links-toolbar">
+                                                                <a href="http://10.1.75.104:9080/Help.aspx?PageUrl=%2fPages%2fCommon%2fChangePassword.aspx#" onclick="javascript: GoPrint();">
+                                                                    Imprimir página</a>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody></table>
+                                                </td>
+			</tr>
+		</tbody></table>
+		
+                                    </td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>
+                                        <span id="ctl00_labelTitle" class="ic-page-title"></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td id="ctl00_cellRequiered" align="right">&nbsp;</td>
+		
+                                </tr>
+                                <tr>
+                                    <td width="95%" align="center">
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                            <tbody><tr>
+                                                <td align="right">
+                                                    
+                                                    
+                                                </td>
+                                            </tr>
+                                        </tbody></table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="100%" align="center">
+                                        <div id="ic-loading" class="ic-loading-bg" style="display: none;">
+                                            <div class="ic-loading">
+                                                <div id="message">
+                                                    <img src="./cargandoBAR.gif" id="ctl00_imgLoading"><br>
+                                                    <span id="ctl00_WaitingMessage">Procesando...</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="mainContainer">
+                                            
+    <table width="100%">
+        <tbody><tr>
+            <td colspan="2" align="right">
+                <a id="ctl00_MainHolder_linkFAQ" href="javascript:__doPostBack(&#39;ctl00$MainHolder$linkFAQ&#39;,&#39;&#39;)">FAQ - Preguntas frecuentes</a>
+            </td>
+        </tr>
+        <tr>
+            <td valign="top">
+                <table class="ic-grid-border" cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+			<tbody><tr>
+				<td><table id="ctl00_MainHolder_panelControlMenu_thePanel" class="ic-grid" cellspacing="0" cellpadding="0" align="Center" border="0" style="width:100%;border-collapse:collapse;">
+					<tbody><tr class="ic-grid-title-row">
+						<td><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+							<tbody><tr>
+								<td class="ic-grid-title-cell-left">&nbsp;</td><td class="ic-grid-title-cell" align="left" style="white-space:nowrap;">Menú</td>
+							</tr>
+						</tbody></table></td>
+					</tr><tr>
+						<td align="center"><div id="ctl00_MainHolder_panelControlMenu" style="color:Black;border-color:DodgerBlue;font-family:verdana;font-size:10pt;width:100%;display:;">
+	
+                    <table width="100%">
+                        <tbody><tr>
+                            <td align="left">
+                                
+                                <a href="http://10.1.75.104:9080/Help.aspx?PageUrl=%2fPages%2fCommon%2fChangePassword.aspx#ctl00_MainHolder_treeView_SkipLink"><img alt="Skip Navigation Links." src="./WebResource(1).axd" width="0" height="0" style="border-width:0px;"></a><div id="ctl00_MainHolder_treeView">
+		<table cellpadding="0" cellspacing="0" style="border-width:0;">
+			<tbody><tr>
+				<td><a id="ctl00_MainHolder_treeViewn0" href="javascript:TreeView_ToggleNode(ctl00_MainHolder_treeView_Data,0,document.getElementById(&#39;ctl00_MainHolder_treeViewn0&#39;),&#39; &#39;,document.getElementById(&#39;ctl00_MainHolder_treeViewn0Nodes&#39;))"><img src="./WebResource(2).axd" alt="Collapse Posición Consolidada" style="border-width:0;"></a></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt0&#39;);" id="ctl00_MainHolder_treeViewt0i" tabindex="-1"><img src="./WebResource(3).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt0&#39;);" id="ctl00_MainHolder_treeViewt0">Posición Consolidada</a></td>
+			</tr><tr style="height:0px;">
+				<td></td>
+			</tr>
+		</tbody></table><div id="ctl00_MainHolder_treeViewn0Nodes" style="display:block;">
+			<table cellpadding="0" cellspacing="0" style="border-width:0;">
+				<tbody><tr style="height:0px;">
+					<td></td>
+				</tr><tr>
+					<td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(4).axd" alt=""></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\/Pages/Services/Contact.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt1&#39;);" id="ctl00_MainHolder_treeViewt1i" tabindex="-1"><img src="./WebResource(5).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\/Pages/Services/Contact.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt1&#39;);" id="ctl00_MainHolder_treeViewt1">Contáctenos</a></td>
+				</tr><tr style="height:0px;">
+					<td></td>
+				</tr>
+			</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+				<tbody><tr style="height:0px;">
+					<td></td>
+				</tr><tr>
+					<td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(4).axd" alt=""></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\/Pages/Common/HomeTermsAndConditions.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt2&#39;);" id="ctl00_MainHolder_treeViewt2i" tabindex="-1"><img src="./WebResource(5).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\/Pages/Common/HomeTermsAndConditions.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt2&#39;);" id="ctl00_MainHolder_treeViewt2">Términos y condiciones</a></td>
+				</tr><tr style="height:0px;">
+					<td></td>
+				</tr>
+			</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+				<tbody><tr style="height:0px;">
+					<td></td>
+				</tr><tr>
+					<td><div style="width:20px;height:1px"></div></td><td><a id="ctl00_MainHolder_treeViewn3" href="javascript:TreeView_ToggleNode(ctl00_MainHolder_treeView_Data,3,document.getElementById(&#39;ctl00_MainHolder_treeViewn3&#39;),&#39; &#39;,document.getElementById(&#39;ctl00_MainHolder_treeViewn3Nodes&#39;))"><img src="./WebResource(6).axd" alt="Expand Cambio de Clave" style="border-width:0;"></a></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\/Pages/Common/ChangePassword.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt3&#39;);" id="ctl00_MainHolder_treeViewt3i" tabindex="-1"><img src="./WebResource(7).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2 ctl00_MainHolder_treeView_4 ctl00_MainHolder_treeView_6" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1 ctl00_MainHolder_treeView_3 ctl00_MainHolder_treeView_5" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\/Pages/Common/ChangePassword.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt3&#39;);" id="ctl00_MainHolder_treeViewt3">Cambio de Clave</a></td>
+				</tr><tr style="height:0px;">
+					<td></td>
+				</tr>
+			</tbody></table><div id="ctl00_MainHolder_treeViewn3Nodes" style="display:none;">
+				<table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(4).axd" alt=""></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\/Pages/Common/ChangePassword.aspx\\/Pages/Common/RegisterQuestions.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt4&#39;);" id="ctl00_MainHolder_treeViewt4i" tabindex="-1"><img src="./WebResource(5).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\/Pages/Common/ChangePassword.aspx\\/Pages/Common/RegisterQuestions.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt4&#39;);" id="ctl00_MainHolder_treeViewt4">Registrar Preguntas</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table>
+			</div><table cellpadding="0" cellspacing="0" style="border-width:0;">
+				<tbody><tr style="height:0px;">
+					<td></td>
+				</tr><tr>
+					<td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(4).axd" alt=""></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\/Pages/TimeOutError.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt5&#39;);" id="ctl00_MainHolder_treeViewt5i" tabindex="-1"><img src="./WebResource(5).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\/Pages/TimeOutError.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt5&#39;);" id="ctl00_MainHolder_treeViewt5">Información</a></td>
+				</tr><tr style="height:0px;">
+					<td></td>
+				</tr>
+			</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+				<tbody><tr style="height:0px;">
+					<td></td>
+				</tr><tr>
+					<td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(4).axd" alt=""></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\/Pages/AccessDenied.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt6&#39;);" id="ctl00_MainHolder_treeViewt6i" tabindex="-1"><img src="./WebResource(5).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\/Pages/AccessDenied.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt6&#39;);" id="ctl00_MainHolder_treeViewt6">Información</a></td>
+				</tr><tr style="height:0px;">
+					<td></td>
+				</tr>
+			</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+				<tbody><tr style="height:0px;">
+					<td></td>
+				</tr><tr>
+					<td><div style="width:20px;height:1px"></div></td><td><a id="ctl00_MainHolder_treeViewn7" href="javascript:TreeView_ToggleNode(ctl00_MainHolder_treeView_Data,7,document.getElementById(&#39;ctl00_MainHolder_treeViewn7&#39;),&#39; &#39;,document.getElementById(&#39;ctl00_MainHolder_treeViewn7Nodes&#39;))"><img src="./WebResource(6).axd" alt="Expand Cuentas" style="border-width:0;"></a></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Cuentas&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt7&#39;);" id="ctl00_MainHolder_treeViewt7i" tabindex="-1"><img src="./WebResource(7).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2 ctl00_MainHolder_treeView_4" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1 ctl00_MainHolder_treeView_3" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Cuentas&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt7&#39;);" id="ctl00_MainHolder_treeViewt7">Cuentas</a></td>
+				</tr><tr style="height:0px;">
+					<td></td>
+				</tr>
+			</tbody></table><div id="ctl00_MainHolder_treeViewn7Nodes" style="display:none;">
+				<table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(4).axd" alt=""></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Cuentas\\/Pages/Accounts/AccountStatus.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt8&#39;);" id="ctl00_MainHolder_treeViewt8i" tabindex="-1"><img src="./WebResource(5).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Cuentas\\/Pages/Accounts/AccountStatus.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt8&#39;);" id="ctl00_MainHolder_treeViewt8">Movimientos</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(4).axd" alt=""></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Cuentas\\/Pages/Accounts/Agreement.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt9&#39;);" id="ctl00_MainHolder_treeViewt9i" tabindex="-1"><img src="./WebResource(5).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Cuentas\\/Pages/Accounts/Agreement.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt9&#39;);" id="ctl00_MainHolder_treeViewt9">Acuerdos</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(4).axd" alt=""></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Cuentas\\/Pages/Accounts/CheckBook.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt10&#39;);" id="ctl00_MainHolder_treeViewt10i" tabindex="-1"><img src="./WebResource(5).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Cuentas\\/Pages/Accounts/CheckBook.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt10&#39;);" id="ctl00_MainHolder_treeViewt10">Solicitud Chequeras</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(4).axd" alt=""></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Cuentas\\/Pages/Accounts/Resumen.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt11&#39;);" id="ctl00_MainHolder_treeViewt11i" tabindex="-1"><img src="./WebResource(5).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Cuentas\\/Pages/Accounts/Resumen.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt11&#39;);" id="ctl00_MainHolder_treeViewt11">Resumen digital</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(4).axd" alt=""></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Cuentas\\/Pages/Accounts/AdhesionDigitalSummary.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt12&#39;);" id="ctl00_MainHolder_treeViewt12i" tabindex="-1"><img src="./WebResource(5).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Cuentas\\/Pages/Accounts/AdhesionDigitalSummary.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt12&#39;);" id="ctl00_MainHolder_treeViewt12">Adhesión al resumen digital</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table>
+			</div><table cellpadding="0" cellspacing="0" style="border-width:0;">
+				<tbody><tr style="height:0px;">
+					<td></td>
+				</tr><tr>
+					<td><div style="width:20px;height:1px"></div></td><td><a id="ctl00_MainHolder_treeViewn13" href="javascript:TreeView_ToggleNode(ctl00_MainHolder_treeView_Data,13,document.getElementById(&#39;ctl00_MainHolder_treeViewn13&#39;),&#39; &#39;,document.getElementById(&#39;ctl00_MainHolder_treeViewn13Nodes&#39;))"><img src="./WebResource(6).axd" alt="Expand Transferencias" style="border-width:0;"></a></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Transferencias&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt13&#39;);" id="ctl00_MainHolder_treeViewt13i" tabindex="-1"><img src="./WebResource(7).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2 ctl00_MainHolder_treeView_4" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1 ctl00_MainHolder_treeView_3" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Transferencias&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt13&#39;);" id="ctl00_MainHolder_treeViewt13">Transferencias</a></td>
+				</tr><tr style="height:0px;">
+					<td></td>
+				</tr>
+			</tbody></table><div id="ctl00_MainHolder_treeViewn13Nodes" style="display:none;">
+				<table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(4).axd" alt=""></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Transferencias\\/Pages/Transfers/MyCreditAccounts.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt14&#39;);" id="ctl00_MainHolder_treeViewt14i" tabindex="-1"><img src="./WebResource(5).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Transferencias\\/Pages/Transfers/MyCreditAccounts.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt14&#39;);" id="ctl00_MainHolder_treeViewt14">Mis cuentas de crédito</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><a id="ctl00_MainHolder_treeViewn15" href="javascript:TreeView_ToggleNode(ctl00_MainHolder_treeView_Data,15,document.getElementById(&#39;ctl00_MainHolder_treeViewn15&#39;),&#39; &#39;,document.getElementById(&#39;ctl00_MainHolder_treeViewn15Nodes&#39;))"><img src="./WebResource(6).axd" alt="Expand Transferencias Inmediatas" style="border-width:0;"></a></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Transferencias\\Transferencias Inmediatas&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt15&#39;);" id="ctl00_MainHolder_treeViewt15i" tabindex="-1"><img src="./WebResource(7).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2 ctl00_MainHolder_treeView_4" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1 ctl00_MainHolder_treeView_3" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Transferencias\\Transferencias Inmediatas&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt15&#39;);" id="ctl00_MainHolder_treeViewt15">Transferencias Inmediatas</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><div id="ctl00_MainHolder_treeViewn15Nodes" style="display:none;">
+					<table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(4).axd" alt=""></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Transferencias\\Transferencias Inmediatas\\/Pages/Transfers/IntraBankTransfer.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt16&#39;);" id="ctl00_MainHolder_treeViewt16i" tabindex="-1"><img src="./WebResource(5).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Transferencias\\Transferencias Inmediatas\\/Pages/Transfers/IntraBankTransfer.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt16&#39;);" id="ctl00_MainHolder_treeViewt16">Entre ctas Supervielle</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(4).axd" alt=""></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Transferencias\\Transferencias Inmediatas\\/Pages/Transfers/ExtraBankTransferNew.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt17&#39;);" id="ctl00_MainHolder_treeViewt17i" tabindex="-1"><img src="./WebResource(5).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Transferencias\\Transferencias Inmediatas\\/Pages/Transfers/ExtraBankTransferNew.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt17&#39;);" id="ctl00_MainHolder_treeViewt17">A ctas de otros bancos</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table>
+				</div><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(4).axd" alt=""></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Transferencias\\/Pages/Transfers/ExtraBankTransfer.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt18&#39;);" id="ctl00_MainHolder_treeViewt18i" tabindex="-1"><img src="./WebResource(5).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Transferencias\\/Pages/Transfers/ExtraBankTransfer.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt18&#39;);" id="ctl00_MainHolder_treeViewt18">Transferencias 24/48 horas</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(4).axd" alt=""></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Transferencias\\/Pages/Transfers/TransfersAuthorizations.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt19&#39;);" id="ctl00_MainHolder_treeViewt19i" tabindex="-1"><img src="./WebResource(5).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Transferencias\\/Pages/Transfers/TransfersAuthorizations.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt19&#39;);" id="ctl00_MainHolder_treeViewt19">Aprobaciones</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(4).axd" alt=""></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Transferencias\\/Pages/Transfers/TransfersTransactionsHistory.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt20&#39;);" id="ctl00_MainHolder_treeViewt20i" tabindex="-1"><img src="./WebResource(5).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Transferencias\\/Pages/Transfers/TransfersTransactionsHistory.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt20&#39;);" id="ctl00_MainHolder_treeViewt20">Historial</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(4).axd" alt=""></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Transferencias\\/Pages/Transfers/TransfersInfo.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt21&#39;);" id="ctl00_MainHolder_treeViewt21i" tabindex="-1"><img src="./WebResource(5).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Transferencias\\/Pages/Transfers/TransfersInfo.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt21&#39;);" id="ctl00_MainHolder_treeViewt21">Transferencias</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(4).axd" alt=""></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Transferencias\\/Pages/Transfers/TransferCertificate.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt22&#39;);" id="ctl00_MainHolder_treeViewt22i" tabindex="-1"><img src="./WebResource(5).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Transferencias\\/Pages/Transfers/TransferCertificate.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt22&#39;);" id="ctl00_MainHolder_treeViewt22">Certificado de transferencia</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(4).axd" alt=""></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Transferencias\\/Pages/Transfers/IntraBaknTransferMACRequest.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt23&#39;);" id="ctl00_MainHolder_treeViewt23i" tabindex="-1"><img src="./WebResource(5).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Transferencias\\/Pages/Transfers/IntraBaknTransferMACRequest.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt23&#39;);" id="ctl00_MainHolder_treeViewt23">Transferencias</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(4).axd" alt=""></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Transferencias\\/Pages/Transfers/ExtraBankTransferMACRequest.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt24&#39;);" id="ctl00_MainHolder_treeViewt24i" tabindex="-1"><img src="./WebResource(5).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Transferencias\\/Pages/Transfers/ExtraBankTransferMACRequest.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt24&#39;);" id="ctl00_MainHolder_treeViewt24">Transferencias</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(4).axd" alt=""></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Transferencias\\/Pages/Transfers/NewAccount.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt25&#39;);" id="ctl00_MainHolder_treeViewt25i" tabindex="-1"><img src="./WebResource(5).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Transferencias\\/Pages/Transfers/NewAccount.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt25&#39;);" id="ctl00_MainHolder_treeViewt25">Agregar Cuenta Banco Supervielle</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table>
+			</div><table cellpadding="0" cellspacing="0" style="border-width:0;">
+				<tbody><tr style="height:0px;">
+					<td></td>
+				</tr><tr>
+					<td><div style="width:20px;height:1px"></div></td><td><a id="ctl00_MainHolder_treeViewn26" href="javascript:TreeView_ToggleNode(ctl00_MainHolder_treeView_Data,26,document.getElementById(&#39;ctl00_MainHolder_treeViewn26&#39;),&#39; &#39;,document.getElementById(&#39;ctl00_MainHolder_treeViewn26Nodes&#39;))"><img src="./WebResource(6).axd" alt="Expand Cheques" style="border-width:0;"></a></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Cheques&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt26&#39;);" id="ctl00_MainHolder_treeViewt26i" tabindex="-1"><img src="./WebResource(7).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2 ctl00_MainHolder_treeView_4" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1 ctl00_MainHolder_treeView_3" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Cheques&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt26&#39;);" id="ctl00_MainHolder_treeViewt26">Cheques</a></td>
+				</tr><tr style="height:0px;">
+					<td></td>
+				</tr>
+			</tbody></table><div id="ctl00_MainHolder_treeViewn26Nodes" style="display:none;">
+				<table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(4).axd" alt=""></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Cheques\\/Pages/Checks/Check.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt27&#39;);" id="ctl00_MainHolder_treeViewt27i" tabindex="-1"><img src="./WebResource(5).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Cheques\\/Pages/Checks/Check.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt27&#39;);" id="ctl00_MainHolder_treeViewt27">Detalles</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table>
+			</div><table cellpadding="0" cellspacing="0" style="border-width:0;">
+				<tbody><tr style="height:0px;">
+					<td></td>
+				</tr><tr>
+					<td><div style="width:20px;height:1px"></div></td><td><a id="ctl00_MainHolder_treeViewn28" href="javascript:TreeView_ToggleNode(ctl00_MainHolder_treeView_Data,28,document.getElementById(&#39;ctl00_MainHolder_treeViewn28&#39;),&#39; &#39;,document.getElementById(&#39;ctl00_MainHolder_treeViewn28Nodes&#39;))"><img src="./WebResource(6).axd" alt="Expand Plazos Fijos" style="border-width:0;"></a></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Plazos Fijos&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt28&#39;);" id="ctl00_MainHolder_treeViewt28i" tabindex="-1"><img src="./WebResource(7).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2 ctl00_MainHolder_treeView_4" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1 ctl00_MainHolder_treeView_3" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Plazos Fijos&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt28&#39;);" id="ctl00_MainHolder_treeViewt28">Plazos Fijos</a></td>
+				</tr><tr style="height:0px;">
+					<td></td>
+				</tr>
+			</tbody></table><div id="ctl00_MainHolder_treeViewn28Nodes" style="display:none;">
+				<table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(4).axd" alt=""></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Plazos Fijos\\/Pages/FixedDeposits/FixedDepositDetails.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt29&#39;);" id="ctl00_MainHolder_treeViewt29i" tabindex="-1"><img src="./WebResource(5).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Plazos Fijos\\/Pages/FixedDeposits/FixedDepositDetails.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt29&#39;);" id="ctl00_MainHolder_treeViewt29">Detalles</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table>
+			</div><table cellpadding="0" cellspacing="0" style="border-width:0;">
+				<tbody><tr style="height:0px;">
+					<td></td>
+				</tr><tr>
+					<td><div style="width:20px;height:1px"></div></td><td><a id="ctl00_MainHolder_treeViewn30" href="javascript:TreeView_ToggleNode(ctl00_MainHolder_treeView_Data,30,document.getElementById(&#39;ctl00_MainHolder_treeViewn30&#39;),&#39; &#39;,document.getElementById(&#39;ctl00_MainHolder_treeViewn30Nodes&#39;))"><img src="./WebResource(2).axd" alt="Collapse Préstamos" style="border-width:0;"></a></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Préstamos&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt30&#39;);" id="ctl00_MainHolder_treeViewt30i" tabindex="-1"><img src="./WebResource(7).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2 ctl00_MainHolder_treeView_4" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1 ctl00_MainHolder_treeView_3" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Préstamos&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt30&#39;);" id="ctl00_MainHolder_treeViewt30">Préstamos</a></td>
+				</tr><tr style="height:0px;">
+					<td></td>
+				</tr>
+			</tbody></table><div id="ctl00_MainHolder_treeViewn30Nodes" style="display:block;">
+				<table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(4).axd" alt=""></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Préstamos\\/Pages/Loans/LoanDetails.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt31&#39;);" id="ctl00_MainHolder_treeViewt31i" tabindex="-1"><img src="./WebResource(5).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Préstamos\\/Pages/Loans/LoanDetails.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt31&#39;);" id="ctl00_MainHolder_treeViewt31">Detalles</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table>
+			</div><table cellpadding="0" cellspacing="0" style="border-width:0;">
+				<tbody><tr style="height:0px;">
+					<td></td>
+				</tr><tr>
+					<td><div style="width:20px;height:1px"></div></td><td><a id="ctl00_MainHolder_treeViewn32" href="javascript:TreeView_ToggleNode(ctl00_MainHolder_treeView_Data,32,document.getElementById(&#39;ctl00_MainHolder_treeViewn32&#39;),&#39; &#39;,document.getElementById(&#39;ctl00_MainHolder_treeViewn32Nodes&#39;))"><img src="./WebResource(6).axd" alt="Expand Leasing" style="border-width:0;"></a></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Leasing&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt32&#39;);" id="ctl00_MainHolder_treeViewt32i" tabindex="-1"><img src="./WebResource(7).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2 ctl00_MainHolder_treeView_4" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1 ctl00_MainHolder_treeView_3" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Leasing&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt32&#39;);" id="ctl00_MainHolder_treeViewt32">Leasing</a></td>
+				</tr><tr style="height:0px;">
+					<td></td>
+				</tr>
+			</tbody></table><div id="ctl00_MainHolder_treeViewn32Nodes" style="display:none;">
+				<table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(4).axd" alt=""></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Leasing\\/Pages/Leasing/Leasing.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt33&#39;);" id="ctl00_MainHolder_treeViewt33i" tabindex="-1"><img src="./WebResource(5).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Leasing\\/Pages/Leasing/Leasing.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt33&#39;);" id="ctl00_MainHolder_treeViewt33">Detalles</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table>
+			</div><table cellpadding="0" cellspacing="0" style="border-width:0;">
+				<tbody><tr style="height:0px;">
+					<td></td>
+				</tr><tr>
+					<td><div style="width:20px;height:1px"></div></td><td><a id="ctl00_MainHolder_treeViewn34" href="javascript:TreeView_ToggleNode(ctl00_MainHolder_treeView_Data,34,document.getElementById(&#39;ctl00_MainHolder_treeViewn34&#39;),&#39; &#39;,document.getElementById(&#39;ctl00_MainHolder_treeViewn34Nodes&#39;))"><img src="./WebResource(6).axd" alt="Expand Recaudaciones" style="border-width:0;"></a></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Recaudaciones&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt34&#39;);" id="ctl00_MainHolder_treeViewt34i" tabindex="-1"><img src="./WebResource(7).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2 ctl00_MainHolder_treeView_4" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1 ctl00_MainHolder_treeView_3" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Recaudaciones&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt34&#39;);" id="ctl00_MainHolder_treeViewt34">Recaudaciones</a></td>
+				</tr><tr style="height:0px;">
+					<td></td>
+				</tr>
+			</tbody></table><div id="ctl00_MainHolder_treeViewn34Nodes" style="display:none;">
+				<table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(4).axd" alt=""></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Recaudaciones\\/Pages/CashPayments/ByCashier.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt35&#39;);" id="ctl00_MainHolder_treeViewt35i" tabindex="-1"><img src="./WebResource(5).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Recaudaciones\\/Pages/CashPayments/ByCashier.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt35&#39;);" id="ctl00_MainHolder_treeViewt35">Por Caja</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(4).axd" alt=""></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Recaudaciones\\/Pages/CashPayments/DAForwardFile.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt36&#39;);" id="ctl00_MainHolder_treeViewt36i" tabindex="-1"><img src="./WebResource(5).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Recaudaciones\\/Pages/CashPayments/DAForwardFile.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt36&#39;);" id="ctl00_MainHolder_treeViewt36">DA – Remitir archivo</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table>
+			</div><table cellpadding="0" cellspacing="0" style="border-width:0;">
+				<tbody><tr style="height:0px;">
+					<td></td>
+				</tr><tr>
+					<td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(4).axd" alt=""></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\/Pages/Services/FinancialInformation.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt37&#39;);" id="ctl00_MainHolder_treeViewt37i" tabindex="-1"><img src="./WebResource(5).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\/Pages/Services/FinancialInformation.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt37&#39;);" id="ctl00_MainHolder_treeViewt37">Cotización de monedas</a></td>
+				</tr><tr style="height:0px;">
+					<td></td>
+				</tr>
+			</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+				<tbody><tr style="height:0px;">
+					<td></td>
+				</tr><tr>
+					<td><div style="width:20px;height:1px"></div></td><td><a id="ctl00_MainHolder_treeViewn38" href="javascript:TreeView_ToggleNode(ctl00_MainHolder_treeView_Data,38,document.getElementById(&#39;ctl00_MainHolder_treeViewn38&#39;),&#39; &#39;,document.getElementById(&#39;ctl00_MainHolder_treeViewn38Nodes&#39;))"><img src="./WebResource(6).axd" alt="Expand Cajas de Seguridad" style="border-width:0;"></a></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Cajas de Seguridad&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt38&#39;);" id="ctl00_MainHolder_treeViewt38i" tabindex="-1"><img src="./WebResource(7).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2 ctl00_MainHolder_treeView_4" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1 ctl00_MainHolder_treeView_3" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Cajas de Seguridad&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt38&#39;);" id="ctl00_MainHolder_treeViewt38">Cajas de Seguridad</a></td>
+				</tr><tr style="height:0px;">
+					<td></td>
+				</tr>
+			</tbody></table><div id="ctl00_MainHolder_treeViewn38Nodes" style="display:none;">
+				<table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(4).axd" alt=""></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Cajas de Seguridad\\/Pages/SafeDepositBoxes/SafeDepositBox.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt39&#39;);" id="ctl00_MainHolder_treeViewt39i" tabindex="-1"><img src="./WebResource(5).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Cajas de Seguridad\\/Pages/SafeDepositBoxes/SafeDepositBox.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt39&#39;);" id="ctl00_MainHolder_treeViewt39">Detalles</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table>
+			</div><table cellpadding="0" cellspacing="0" style="border-width:0;">
+				<tbody><tr style="height:0px;">
+					<td></td>
+				</tr><tr>
+					<td><div style="width:20px;height:1px"></div></td><td><a id="ctl00_MainHolder_treeViewn40" href="javascript:TreeView_ToggleNode(ctl00_MainHolder_treeView_Data,40,document.getElementById(&#39;ctl00_MainHolder_treeViewn40&#39;),&#39; &#39;,document.getElementById(&#39;ctl00_MainHolder_treeViewn40Nodes&#39;))"><img src="./WebResource(6).axd" alt="Expand Administración" style="border-width:0;"></a></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Administración&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt40&#39;);" id="ctl00_MainHolder_treeViewt40i" tabindex="-1"><img src="./WebResource(7).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2 ctl00_MainHolder_treeView_4" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1 ctl00_MainHolder_treeView_3" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Administración&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt40&#39;);" id="ctl00_MainHolder_treeViewt40">Administración</a></td>
+				</tr><tr style="height:0px;">
+					<td></td>
+				</tr>
+			</tbody></table><div id="ctl00_MainHolder_treeViewn40Nodes" style="display:none;">
+				<table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><a id="ctl00_MainHolder_treeViewn41" href="javascript:TreeView_ToggleNode(ctl00_MainHolder_treeView_Data,41,document.getElementById(&#39;ctl00_MainHolder_treeViewn41&#39;),&#39; &#39;,document.getElementById(&#39;ctl00_MainHolder_treeViewn41Nodes&#39;))"><img src="./WebResource(6).axd" alt="Expand Usuarios" style="border-width:0;"></a></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Administración\\/Pages/Administration/ViewUsers.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt41&#39;);" id="ctl00_MainHolder_treeViewt41i" tabindex="-1"><img src="./WebResource(7).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2 ctl00_MainHolder_treeView_4" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1 ctl00_MainHolder_treeView_3" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Administración\\/Pages/Administration/ViewUsers.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt41&#39;);" id="ctl00_MainHolder_treeViewt41">Usuarios</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><div id="ctl00_MainHolder_treeViewn41Nodes" style="display:none;">
+					<table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(4).axd" alt=""></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Administración\\/Pages/Administration/ViewUsers.aspx\\/Pages/Administration/AddUser.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt42&#39;);" id="ctl00_MainHolder_treeViewt42i" tabindex="-1"><img src="./WebResource(5).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Administración\\/Pages/Administration/ViewUsers.aspx\\/Pages/Administration/AddUser.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt42&#39;);" id="ctl00_MainHolder_treeViewt42">Agregar Usuario</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(4).axd" alt=""></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Administración\\/Pages/Administration/ViewUsers.aspx\\/Pages/Administration/ModifyUser.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt43&#39;);" id="ctl00_MainHolder_treeViewt43i" tabindex="-1"><img src="./WebResource(5).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Administración\\/Pages/Administration/ViewUsers.aspx\\/Pages/Administration/ModifyUser.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt43&#39;);" id="ctl00_MainHolder_treeViewt43">Modificar Usuario</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(4).axd" alt=""></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Administración\\/Pages/Administration/ViewUsers.aspx\\/Pages/Administration/DeleteUser.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt44&#39;);" id="ctl00_MainHolder_treeViewt44i" tabindex="-1"><img src="./WebResource(5).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Administración\\/Pages/Administration/ViewUsers.aspx\\/Pages/Administration/DeleteUser.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt44&#39;);" id="ctl00_MainHolder_treeViewt44">Borrar Usuario</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(4).axd" alt=""></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Administración\\/Pages/Administration/ViewUsers.aspx\\/Pages/Administration/ConfigureUserPermissions.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt45&#39;);" id="ctl00_MainHolder_treeViewt45i" tabindex="-1"><img src="./WebResource(5).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Administración\\/Pages/Administration/ViewUsers.aspx\\/Pages/Administration/ConfigureUserPermissions.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt45&#39;);" id="ctl00_MainHolder_treeViewt45">Configurar Permisos de Usuario</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(4).axd" alt=""></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Administración\\/Pages/Administration/ViewUsers.aspx\\/Pages/Administration/GenerateMacOperator.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt46&#39;);" id="ctl00_MainHolder_treeViewt46i" tabindex="-1"><img src="./WebResource(5).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Administración\\/Pages/Administration/ViewUsers.aspx\\/Pages/Administration/GenerateMacOperator.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt46&#39;);" id="ctl00_MainHolder_treeViewt46">Generar CET de Operador</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(4).axd" alt=""></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Administración\\/Pages/Administration/ViewUsers.aspx\\/Pages/Administration/ConfigurePasswords.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt47&#39;);" id="ctl00_MainHolder_treeViewt47i" tabindex="-1"><img src="./WebResource(5).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Administración\\/Pages/Administration/ViewUsers.aspx\\/Pages/Administration/ConfigurePasswords.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt47&#39;);" id="ctl00_MainHolder_treeViewt47">Cambio de Clave</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table>
+				</div><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><a id="ctl00_MainHolder_treeViewn48" href="javascript:TreeView_ToggleNode(ctl00_MainHolder_treeView_Data,48,document.getElementById(&#39;ctl00_MainHolder_treeViewn48&#39;),&#39; &#39;,document.getElementById(&#39;ctl00_MainHolder_treeViewn48Nodes&#39;))"><img src="./WebResource(6).axd" alt="Expand Cuentas" style="border-width:0;"></a></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Administración\\/Pages/Administration/ViewAccounts.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt48&#39;);" id="ctl00_MainHolder_treeViewt48i" tabindex="-1"><img src="./WebResource(7).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2 ctl00_MainHolder_treeView_4" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1 ctl00_MainHolder_treeView_3" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Administración\\/Pages/Administration/ViewAccounts.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt48&#39;);" id="ctl00_MainHolder_treeViewt48">Cuentas</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><div id="ctl00_MainHolder_treeViewn48Nodes" style="display:none;">
+					<table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(4).axd" alt=""></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Administración\\/Pages/Administration/ViewAccounts.aspx\\/Pages/Administration/AddAccount.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt49&#39;);" id="ctl00_MainHolder_treeViewt49i" tabindex="-1"><img src="./WebResource(5).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Administración\\/Pages/Administration/ViewAccounts.aspx\\/Pages/Administration/AddAccount.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt49&#39;);" id="ctl00_MainHolder_treeViewt49">Agregar Cuenta Banco Supervielle</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(4).axd" alt=""></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Administración\\/Pages/Administration/ViewAccounts.aspx\\/Pages/Administration/UpdateAccount.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt50&#39;);" id="ctl00_MainHolder_treeViewt50i" tabindex="-1"><img src="./WebResource(5).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Administración\\/Pages/Administration/ViewAccounts.aspx\\/Pages/Administration/UpdateAccount.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt50&#39;);" id="ctl00_MainHolder_treeViewt50">Modificar Cuenta</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(4).axd" alt=""></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Administración\\/Pages/Administration/ViewAccounts.aspx\\/Pages/Administration/DeleteAccount.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt51&#39;);" id="ctl00_MainHolder_treeViewt51i" tabindex="-1"><img src="./WebResource(5).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Administración\\/Pages/Administration/ViewAccounts.aspx\\/Pages/Administration/DeleteAccount.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt51&#39;);" id="ctl00_MainHolder_treeViewt51">Borrar Cuenta</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table>
+				</div><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(4).axd" alt=""></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Administración\\/Pages/Administration/GenerateMac.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt52&#39;);" id="ctl00_MainHolder_treeViewt52i" tabindex="-1"><img src="./WebResource(5).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Administración\\/Pages/Administration/GenerateMac.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt52&#39;);" id="ctl00_MainHolder_treeViewt52">Generar clave CET</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(4).axd" alt=""></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Administración\\/Pages/Administration/Permission.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt53&#39;);" id="ctl00_MainHolder_treeViewt53i" tabindex="-1"><img src="./WebResource(5).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Administración\\/Pages/Administration/Permission.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt53&#39;);" id="ctl00_MainHolder_treeViewt53">Permisos</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(4).axd" alt=""></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Administración\\/Pages/Administration/Signatures.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt54&#39;);" id="ctl00_MainHolder_treeViewt54i" tabindex="-1"><img src="./WebResource(5).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Administración\\/Pages/Administration/Signatures.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt54&#39;);" id="ctl00_MainHolder_treeViewt54">Esquemas de firmas</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(4).axd" alt=""></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Administración\\/Pages/Administration/FormsDownload.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt55&#39;);" id="ctl00_MainHolder_treeViewt55i" tabindex="-1"><img src="./WebResource(5).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Administración\\/Pages/Administration/FormsDownload.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt55&#39;);" id="ctl00_MainHolder_treeViewt55">Formularios</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table>
+			</div><table cellpadding="0" cellspacing="0" style="border-width:0;">
+				<tbody><tr style="height:0px;">
+					<td></td>
+				</tr><tr>
+					<td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(4).axd" alt=""></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\/Pages/Administration/UpdatePhoneNumber.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt56&#39;);" id="ctl00_MainHolder_treeViewt56i" tabindex="-1"><img src="./WebResource(5).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\/Pages/Administration/UpdatePhoneNumber.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt56&#39;);" id="ctl00_MainHolder_treeViewt56">Administrar CDA</a></td>
+				</tr><tr style="height:0px;">
+					<td></td>
+				</tr>
+			</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+				<tbody><tr style="height:0px;">
+					<td></td>
+				</tr><tr>
+					<td><div style="width:20px;height:1px"></div></td><td><a id="ctl00_MainHolder_treeViewn57" href="javascript:TreeView_ToggleNode(ctl00_MainHolder_treeView_Data,57,document.getElementById(&#39;ctl00_MainHolder_treeViewn57&#39;),&#39; &#39;,document.getElementById(&#39;ctl00_MainHolder_treeViewn57Nodes&#39;))"><img src="./WebResource(6).axd" alt="Expand Configuraciones" style="border-width:0;"></a></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Configuraciones&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt57&#39;);" id="ctl00_MainHolder_treeViewt57i" tabindex="-1"><img src="./WebResource(7).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2 ctl00_MainHolder_treeView_4" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1 ctl00_MainHolder_treeView_3" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Configuraciones&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt57&#39;);" id="ctl00_MainHolder_treeViewt57">Configuraciones</a></td>
+				</tr><tr style="height:0px;">
+					<td></td>
+				</tr>
+			</tbody></table><div id="ctl00_MainHolder_treeViewn57Nodes" style="display:none;">
+				<table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(4).axd" alt=""></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Configuraciones\\/Pages/Common/Personalize.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt58&#39;);" id="ctl00_MainHolder_treeViewt58i" tabindex="-1"><img src="./WebResource(5).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Configuraciones\\/Pages/Common/Personalize.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt58&#39;);" id="ctl00_MainHolder_treeViewt58">Mis favoritos</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(4).axd" alt=""></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Configuraciones\\/Pages/Administration/ViewEconomicGroups.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt59&#39;);" id="ctl00_MainHolder_treeViewt59i" tabindex="-1"><img src="./WebResource(5).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Configuraciones\\/Pages/Administration/ViewEconomicGroups.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt59&#39;);" id="ctl00_MainHolder_treeViewt59">Mis empresas</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(4).axd" alt=""></td><td><a href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Configuraciones\\/Pages/Administration/SetDefaultEconomicGroup.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt60&#39;);" id="ctl00_MainHolder_treeViewt60i" tabindex="-1"><img src="./WebResource(5).axd" alt="" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeView_2" onmouseover="TreeView_HoverNode(ctl00_MainHolder_treeView_Data, this)" onmouseout="TreeView_UnhoverNode(this)" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeView_0 ctl00_MainHolder_treeView_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeView&#39;,&#39;s/Home.aspx\\Configuraciones\\/Pages/Administration/SetDefaultEconomicGroup.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeView_Data, this,&#39;ctl00_MainHolder_treeViewt60&#39;);" id="ctl00_MainHolder_treeViewt60">Mis empresas</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table>
+			</div>
+		</div>
+	</div><a id="ctl00_MainHolder_treeView_SkipLink"></a>
+                            </td>
+                        </tr>
+                    </tbody></table>
+                
+</div></td>
+					</tr>
+				</tbody></table></td>
+			</tr>
+		</tbody></table>
+            </td>
+            <td width="100%" valign="top" align="right">
+                <table class="ic-grid-border" cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+			<tbody><tr>
+				<td><table id="ctl00_MainHolder_panelControlAyuda_thePanel" class="ic-grid" cellspacing="0" cellpadding="0" align="Center" border="0" style="width:100%;border-collapse:collapse;">
+					<tbody><tr class="ic-grid-title-row">
+						<td><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+							<tbody><tr>
+								<td class="ic-grid-title-cell-left">&nbsp;</td><td class="ic-grid-title-cell" align="left" style="white-space:nowrap;">Cambio de Clave - Ayuda</td>
+							</tr>
+						</tbody></table></td>
+					</tr><tr>
+						<td align="center"><div id="ctl00_MainHolder_panelControlAyuda" style="color:Black;border-color:DodgerBlue;font-family:verdana;font-size:10pt;width:100%;display:;">
+	
+                    <table width="100%">
+                        <tbody><tr>
+                            <td align="left">
+                                
+        <font face="Verdana" size="2" color="#DE0020"><b> Cambio de clave </b><br><br></font>
+        <font face="Verdana" size="1" color="#757575">Esta página le permite modificar su clave de acceso siempre y cuando recuerde su contraseña actual.</font><br>   
+        <br>
+        <img id="LoanImg" src="http://10.1.75.104:9080/App_Themes/Help/Images/ChangePassword.jpg">
+        <br><br>
+        <font face="Verdana" size="1" color="#757575"><b>Cambio de clave: </b><br>
+            Para cambiar su clave debe ingresar su clave actual, la nueva clave, la confirmación de dicha clave, y luego presionar "Confirmar".</font><br><br>
+
+    
+                            </td>
+                        </tr>
+                    </tbody></table>
+                
+</div></td>
+					</tr>
+				</tbody></table></td>
+			</tr>
+		</tbody></table>
+            </td>
+        </tr>
+    </tbody></table>
+
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="right">
+                                        <div id="ctl00_validationSummaryFooter" style="color:Red;font-size:10px;display:none;">
+
+		</div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="95%" align="center">
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                            <tbody><tr>
+                                                <td align="right">
+                                                    
+                                                    
+                                                </td>
+                                            </tr>
+                                        </tbody></table>
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="ic-content-footer">
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                <tbody><tr class="ic-content-footer-dottedline">
+                                    <td align="right" nowrap="nowrap" style="width: 90%">
+                                    </td>
+                                    <td align="right" nowrap="nowrap" style="width: 10%">
+                                        <a id="ctl00_LinkButtonTermsAndConditions" class="ic-grid-link" href="javascript:__doPostBack(&#39;ctl00$LinkButtonTermsAndConditions&#39;,&#39;&#39;)">Términos y Condiciones</a>
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                </tbody></table>
+            </td>
+		<td id="ctl00_cellContentRight" class="ic-content-space-top-right" valign="top" style="display:none;">
+                <table class="ic-content-right" border="0" cellspacing="0" cellpadding="0">
+                    <tbody><tr>
+                        <td>
+                            <img src="./pixel.gif" width="8" height="1">
+                        </td>
+                        <td class="ic-right-panel">
+                            <table border="0" cellpadding="0" cellspacing="0" class="ic-right-panel-content">
+                                <tbody><tr>
+                                    <td width="8" class="ic-right-panel-collapse">
+                                        <input type="image" name="ctl00$imageButtonCollapse" id="ctl00_imageButtonCollapse" src="./bot-right-collapse.gif" style="height:47px;width:9px;border-width:0px;">
+                                    </td>
+                                    
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                </tbody></table>
+            </td>
+	</tr>
+</tbody></table>
+
+    
+    
+<script type="text/javascript">
+//<![CDATA[
+var ctl00_MainHolder_treeView_ImageArray =  new Array('/WebResource.axd?d=HWnTKWF6ihvhmdyPF_FWoM-i_TyLhUtDnWD4YgrG-DCp04m_a4lGq30GR22ZrmpElRzZsgqe0MeImT7E8YB_vKeboyjKkiIxQnjRsArRM_2Vd10w0&t=635198911643507698', '/WebResource.axd?d=xO0P2rGOpI94QaocU2yhw-XbEGbPTgIB_qdaFmJ15ofVhlO1YYkG6TfWL2V2Kus0UtjByqGqb4-Mvr3fik8Lp9Jjdo2Z3CdwVO7sh_W53wNW1pFV0&t=635198911643507698', '/WebResource.axd?d=ScWHBSzNKuPdeTf75CYhjzEAhzjWiQ7YC_Z95lTr0g7TzC5l1MjJPFibAd-OyfE6kCK6v1YF1OUKIJr0Y9UwYi2NjtAczdvsk8xRncFwjqEklEbY0&t=635198911643507698', '/WebResource.axd?d=t7wribqQUMfLGoU0RcT_QAdYdrgagCMrz4hEYd1SITskvWpnGLolc9mNGppYGlkO3UMh43zVKw82gaDcx64913B9G0EyOWQeOsZsYtHjoneyySND0&t=635198911643507698', '/WebResource.axd?d=VqnS-XSjOJaGAOn9jVKSwXZaUoVOxWTJXvw7Sy_xC1B7cNY0yVigGKqnv1_0suBa-xAMeptJCbbDXhctGLxFdI2Vor6xATXvnw1P88a1unVhKg8x0&t=635198911643507698', '/WebResource.axd?d=mINiUr9oZnTpvCCOOXi50k4I6v_dmhH6SBabG9ZWI2vYzSMFnZkVESHkPEBNBd1J6zFhr_ziFXD9bJp75bFj85-TnxgZ_kkdCVsyWhP8_I2hly6n0&t=635198911643507698');
+var Page_ValidationSummaries =  new Array(document.getElementById("ctl00_validationSummaryFooter"));
+//]]>
+</script>
+
+<script type="text/javascript">
+//<![CDATA[
+var ctl00_validationSummaryFooter = document.all ? document.all["ctl00_validationSummaryFooter"] : document.getElementById("ctl00_validationSummaryFooter");
+ctl00_validationSummaryFooter.headertext = "Formulario inválido, por favor revise los datos ingresados:";
+ctl00_validationSummaryFooter.showsummary = "False";
+//]]>
+</script>
+
+
+<script type="text/javascript">
+//<![CDATA[
+
+WebForm_InitCallback();var ctl00_MainHolder_treeView_Data = new Object();
+ctl00_MainHolder_treeView_Data.images = ctl00_MainHolder_treeView_ImageArray;
+ctl00_MainHolder_treeView_Data.collapseToolTip = "Collapse {0}";
+ctl00_MainHolder_treeView_Data.expandToolTip = "Expand {0}";
+ctl00_MainHolder_treeView_Data.expandState = theForm.elements['ctl00_MainHolder_treeView_ExpandState'];
+ctl00_MainHolder_treeView_Data.selectedNodeID = theForm.elements['ctl00_MainHolder_treeView_SelectedNode'];
+ctl00_MainHolder_treeView_Data.hoverClass = 'ctl00_MainHolder_treeView_8';
+ctl00_MainHolder_treeView_Data.hoverHyperLinkClass = 'ctl00_MainHolder_treeView_7';
+for (var i=0;i<6;i++) {
+var preLoad = new Image();
+if (ctl00_MainHolder_treeView_ImageArray[i].length > 0)
+preLoad.src = ctl00_MainHolder_treeView_ImageArray[i];
+}
+ctl00_MainHolder_treeView_Data.lastIndex = 61;
+ctl00_MainHolder_treeView_Data.populateLog = theForm.elements['ctl00_MainHolder_treeView_PopulateLog'];
+ctl00_MainHolder_treeView_Data.treeViewID = 'ctl00$MainHolder$treeView';
+ctl00_MainHolder_treeView_Data.name = 'ctl00_MainHolder_treeView_Data';
+
+document.getElementById('ctl00_validationSummaryFooter').dispose = function() {
+    Array.remove(Page_ValidationSummaries, document.getElementById('ctl00_validationSummaryFooter'));
+}
+Sys.Application.initialize();
+//]]>
+</script>
+</form>
+
+
+<div class="ui-dialog ui-widget ui-widget-content ui-corner-all" tabindex="-1" role="dialog" aria-labelledby="ui-dialog-title-sessionTimeoutWarning" style="display: none; z-index: 1000; outline: 0px;"><div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix"><span class="ui-dialog-title" id="ui-dialog-title-sessionTimeoutWarning">&nbsp;</span><a href="http://10.1.75.104:9080/Help.aspx?PageUrl=%2fPages%2fCommon%2fChangePassword.aspx#" class="ui-dialog-titlebar-close ui-corner-all" role="button" style="display: none;"><span class="ui-icon ui-icon-closethick">close</span></a></div><div id="sessionTimeoutWarning" style="background-color: rgb(255, 255, 255); padding: 0px; height: 100%;" class="ui-dialog-content ui-widget-content">
+        <div id="sessionTimeoutWarningHeader">
+            <table width="100%">
+                 <tbody><tr>
+                    <td colspan="2" align="center" class="ic-form-data-modal">
+                        La sesión finalizará en <span id="sessionTimeoutCountdown"></span>&nbsp;segundos.
+                        Para seguir operando seleccioná “Continuar”
+                    </td>
+                </tr>
+            </tbody></table>
+        </div>
+    </div><div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix"><div class="ui-dialog-buttonset"><button type="button">Continuar </button><button type="button">Finalizar sesión</button></div></div></div></body></html>

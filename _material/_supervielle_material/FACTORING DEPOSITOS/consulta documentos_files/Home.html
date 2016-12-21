@@ -1,0 +1,1211 @@
+
+<!-- saved from url=(0065)http://10.1.75.104:9080/Pages/Factoring/ConsultaDeDocumentos.aspx -->
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><script src="./jquery-1.7.2.min.js.descarga" type="text/javascript"></script>
+<script src="./jquery-1.7.1.js.descarga" type="text/javascript"></script>
+<script src="./jquery-ui-1.8.19.custom.min.js.descarga" type="text/javascript"></script>
+<script src="./jquery.formatCurrency-1.4.0.js.descarga" type="text/javascript"></script>
+<script src="./idle-timer.js.descarga" type="text/javascript"></script>
+<script src="./idle-timer.min.js.descarga" type="text/javascript"></script>
+<script language="javascript" type="text/javascript">
+
+function Logout() {
+        if (confirm("¿ Desea salir del sistema ?") == true) {
+                    
+            window.location =  '/'+ "Logout.aspx";
+        }
+       
+    }
+    
+var focusedFormControl;    
+var dateFormat = 'dd/mm/aaaa';
+var applicationRoot = '/';      
+function OnRowClick(sender, args) {
+    if (sender.GetSelectedRowCount() == 0) {
+        sender.UnselectRowOnPage(args.visibleIndex);
+        SetPageLinkData("");
+    }
+    else {
+        _aspxClearSelection();
+        sender._selectAllRowsOnPage(false);
+        sender.SelectRow(args.visibleIndex, true);
+        SetPageLinkData(sender.GetRowKey(args.visibleIndex));
+    }
+}
+
+if (history.forward(1))
+{
+
+    location.replace(history.forward(1))
+} 
+
+function PrintPage() {
+
+    window.print();
+}
+
+function GoMyOption(select)
+{
+    var url = select.options[select.selectedIndex].value;
+    if( url != "")
+        window.location = url;
+}
+
+function GoFavourites(select)
+{
+
+    var url = select.options[select.selectedIndex].value;
+    if( url != "")
+        window.location = url;
+}
+
+function GoPrint()
+{
+
+window.print();
+}
+
+function addEvent(elm, evType, fn, useCapture)
+{
+
+  if (elm.addEventListener){
+    elm.addEventListener(evType, fn, useCapture);
+    return true;
+  } else if (elm.attachEvent){
+    var r = elm.attachEvent("on"+evType, fn);
+    return r;
+  } else {
+    alert("Handler could not be removed");
+  }
+} 
+
+function SetPageLinkData(data)
+{
+    pageLinkData = document.getElementById('PageLinkData');
+    pageLinkData.value = data;
+}
+
+function SetPageLinkUrl(url)
+{
+    pageLinkUrl = document.getElementById('PageLinkUrl');
+    pageLinkUrl.value = url;
+}
+
+function doPageLink(id)
+{
+    __doPostBack(id, 'PageLinkEvent');
+}
+
+function imprimirEstadoCuenta()
+{
+											
+    var ficha = document.getElementById('printDiv');		
+    var ventimp = window.open('', 'popimpr','height=450, width=550, scrollbars=1');																						
+    var fichaHTML = new String(ficha.innerHTML);
+    fichaHTML = fichaHTML.replace('Seleccione un período y oprima "Consultar".'," ");
+    //var i = document.getElementById('ctl00_MainHolder_panelDetalle_imgPlusMinus');
+    var html  = "<html>\n<head>\n<link rel=\"stylesheet\" type=\"text/css\" href=\"..\\..\\App_Themes\\Default\\Default.css \" />" 
+                + "</head><table width=\"100%\"><tr bgcolor=\"#FF0000\"><td><img src=\"..\\..\\App_Themes\\Default\\Images\\logoSantander.gif\" /></td></tr></table>" 
+                + fichaHTML 
+                + "</html>";
+    ventimp.document.write( html );
+    ventimp.document.close();
+    ventimp.print( );
+    ventimp.close();
+					
+}
+
+ function removeInvalidCharacters(control) {
+ 
+            !(/^[A-zÑñ0-9 ]*$/i).test(control.value) ? control.value = control.value.replace(/[^A-zÑñ0-9 ]/ig, '') : null
+        }
+        
+  function removeInvalidNumbers(control) {
+            !(/^[0-9,]*$/i).test(control.value) ? control.value = control.value.replace(/[^0-9,]/ig, '') : null
+        }
+function showLoading()
+{
+//debugger;
+    // aquí le pasamos la clase o id de nuestro div a centrar (en este caso "caja")
+    $('.ic-loading').css({
+       position:'absolute',
+       left: ($('#mainContainer').width()/2 - $('.ic-loading').outerWidth())/2,
+       //top: ($('#mainContainer').height()/2 - $('.ic-loading').outerHeight())/2
+       top: ($('#mainContainer').height()/2 - $('ic-loading').height()/2)
+    });
+    
+    $('#mainContainer').css('display','none');
+    $('#ic-loading').css('display','block');
+}
+//ModalDialog SessionTimeout
+var idleTime = (parseInt('1170') * 1000); // number of miliseconds until the user is considered idle
+var initialSessionTimeoutMessage = "La sesión finalizará en <span id='sessionTimeoutCountdown'></span> segundos. Para seguir operando seleccioná “Continuar”<br /><br />";
+var sessionTimeoutCountdownId = 'sessionTimeoutCountdown';
+var redirectAfter = (parseInt('30')) ; // number of seconds to wait before redirecting the user
+var redirectTo = '/' + "Logout.aspx"; // URL to relocate the user to once they have timed out
+var keepAliveURL = ''; // URL to call to keep the session alive
+var expiredMessage = ''; // message to show user when the countdown reaches 0
+var running = false; // var to check if the countdown is running 
+var timer; // reference to the setInterval timer so it can be stopped 
+var timerSB;  
+var timeout;  
+    $(document).ready(function() {     
+// create the warning window and set autoOpen to false  
+      var sessionTimeoutWarningDialog = $("#sessionTimeoutWarning"); 
+    $(sessionTimeoutWarningDialog).dialog({         
+        title: '',       
+        autoOpen: false,    // set this to false so we can manually open it         
+        closeOnEscape: false,         
+        draggable: false,         
+        width: 460,         
+        minHeight: 150,         
+        modal: true,           
+        beforeclose: function() { // bind to beforeclose so if the user clicks on the "X" or escape to close the dialog, it will work too             // stop the timer             
+            clearInterval(timer);               // stop countdown
+            running = false;               // ajax call to keep the server-side session alive    
+                  
+            $.ajax({               
+                url: keepAliveURL,               
+                async: false            
+            });         
+        },         
+        buttons: {      
+             'Continuar ': function() {                 
+                // close dialog 
+                window.location.reload();//BM24925: Se agrega esto para que el expired de una cookie se actualice y no se cierre la sesión luego de hacer click en continuar al terminar el timeout del webconfig. El valor del expired se pone en la tabla configuration en la clave SessionMaxMinutes.
+                //var valor = getCookie('ICBWebLogin'); //Esta función la dejo por las dudas, pero no la pude hacer andar poque el document.cookie no me trae las cookies del explorador.                
+                $(this).dialog('close');
+                clearInterval(timerSB);    
+                window.status = "";      
+                StatusBarCountDown();     
+            },
+            'Finalizar sesión': function() {                 
+                // close dialog                 
+                $(sessionTimeoutWarningDialog).html(expiredMessage);
+                $(sessionTimeoutWarningDialog).dialog('disable');                     
+                window.parent.location = redirectTo;           
+            }         
+        },         
+        resizable: false,         
+        open: function() {
+            $('body').css('overflow','auto');         
+        },         
+        close: function() {             
+            // reset overflow             
+            $('body').css('overflow','auto');         
+        }  
+           
+    }); // end of dialog  
+    jQuery("a.ui-dialog-titlebar-close").hide(); 
+          
+    // start the idle timer
+    $.idleTimer(idleTime);
+ 
+});
+
+// BM24925: Función para recuperar el valor de una cookie.
+// name - nombre de la cookie deseada
+// devuelve un string conteniendo el valor de la cookie especificada o null si la cookie no existe
+
+function getCookie(name){
+var micookie = (document.cookie.indexOf('ICBWebLogin=') === -1 ? '' : ("; " + document.cookie).split('; ICBWebLogin=')[1].split(';')[0]);
+
+  var cname = name + "=";               
+  var dc = document.cookie;             
+  if (dc.length > 0) {              
+    begin = dc.indexOf(cname);       
+    if (begin != -1) {           
+      begin += cname.length;       
+      end = dc.indexOf(";", begin);
+      if (end == -1) end = dc.length;
+        return unescape(dc.substring(begin, end));
+    } 
+  }
+  return null;
+}
+
+//Status Bar Countdown Script
+function StatusBarCountDown() 
+{
+    var redirectAfter = (parseInt('30'));
+    var timeout = '1200000';   
+    var redirectTo = '/' + "Logout.aspx"; // URL to relocate the user to once they have timed out   
+    timerSB = setInterval(function(){
+    timeout -= 1000;
+    if(timeout == redirectAfter * 1000)
+    {
+        window.focus();
+    }
+   if(timeout < redirectAfter * 1000)
+   {
+        $("#sessionTimeoutCountdown").html(timeout/1000);
+        $("#sessionTimeoutWarning").dialog('open'); 
+   }
+   if (timeout < 100)
+   {
+        $("#sessionTimeoutWarning").html(expiredMessage);
+        $("#sessionTimeoutWarning").dialog('disable');                     
+        window.parent.location = redirectTo;
+        clearInterval(timerSB);    
+        window.status = "";     
+   }
+        
+   window.status = "Su sesión expirará " + time(timeout) + " minutos";        
+    }, 1000);   
+         
+   function two(x)
+   {
+    return ((x > 9) ? "" : "0") + x
+   }   
+  
+   function time(ms)
+   {   
+       var t = '';   
+       var sec = Math.floor(ms / 1000);   
+       ms = ms % 1000   
+
+       var min = Math.floor(sec / 60);   
+       sec = sec % 60;   
+       t = two(sec);   
+
+       var hr = Math.floor(min / 60);   
+       min = min % 60;   
+       t = two(min) + ":" + t;   
+    return t;
+   }
+}
+
+StatusBarCountDown();
+
+
+
+</script>
+
+<link rel="stylesheet" type="text/css" href="./WebResource.axd">
+<link rel="stylesheet" type="text/css" href="./WebResource(1).axd">
+<link rel="stylesheet" type="text/css" href="./WebResource(2).axd">
+<link href="./Default.css" type="text/css" rel="stylesheet"><link href="./jquery-ui-1.8.19.custom.css" type="text/css" rel="stylesheet"><link href="./WebResource(3).axd" type="text/css" rel="stylesheet"><title>
+	Consulta de Documentos
+</title></head>
+<body>
+    <form name="aspnetForm" method="post" action="http://10.1.75.104:9080/Pages/Factoring/ConsultaDeDocumentos.aspx" onsubmit="javascript:return WebForm_OnSubmit();" id="aspnetForm">
+<div>
+<input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="">
+<input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="">
+<input type="hidden" name="__LASTFOCUS" id="__LASTFOCUS" value="">
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUJOTU3MzM4MzAzD2QWAmYPZBYCAgEPZBYCAgEPZBYCZg9kFgQCAQ9kFgQCAg8PFgIeBFRleHQFFkNvbnN1bHRhIGRlIERvY3VtZW50b3NkZAIHD2QWAgIBD2QWBGYPZBYEZg9kFgJmD2QWAgIBD2QWAmYPZBYCZg9kFgwCBw8PFgQeC0NoYXJzRmlsdGVyBQ5eW146O1w8PidcIl0qJB4SQ2hhcnNGaWx0ZXJFbmFibGVkZxYCHgpvbmtleXByZXNzBSZyZXR1cm4gbnVtYmVyc29ubHkodGhpcywgZXZlbnQsIGZhbHNlKWQCCw8PFgQeE1NlbGVjdGVkUmFkaW9CdXR0b24FFHJhZGlvQnV0dG9uTWVzQWN0dWFsHg1TZWxlY3RlZE1vbnRoZmQWAmYPZBYCZg9kFgICAQ9kFgJmD2QWAgIBD2QWCAILDxAPZBYCHgdvbmNsaWNrBQ92YWxpZGF0ZSh0aGlzKTsPFgxmAgECAgIDAgQCBQIGAgcCCAIJAgoCCxYMEAUFZW5lcm8FBWVuZXJvZxAFB2ZlYnJlcm8FB2ZlYnJlcm9nEAUFbWFyem8FBW1hcnpvZxAFBWFicmlsBQVhYnJpbGcQBQRtYXlvBQRtYXlvZxAFBWp1bmlvBQVqdW5pb2cQBQVqdWxpbwUFanVsaW9nEAUGYWdvc3RvBQZhZ29zdG9nEAUKc2VwdGllbWJyZQUKc2VwdGllbWJyZWcQBQdvY3R1YnJlBQdvY3R1YnJlZxAFCW5vdmllbWJyZQUJbm92aWVtYnJlZxAFCWRpY2llbWJyZQUJZGljaWVtYnJlZ2RkAg8PDxYIHwEFDl5bXjo7XDw+J1wiXSokHwJnHglNYXhMZW5ndGhmHwAFCjAxLzAxLzIwMTUWBB8GBQ92YWxpZGF0ZSh0aGlzKTsfAwUjcmV0dXJuIGRhdGVOdW1iZXJzT25seSh0aGlzLCBldmVudClkAhUPFhoeFkN1bHR1cmVUaW1lUGxhY2Vob2xkZXIFAToeG0N1bHR1cmVUaG91c2FuZHNQbGFjZWhvbGRlcgUBLh4RQ3VsdHVyZURhdGVGb3JtYXQFA0RNWR4WQ3VsdHVyZURhdGVQbGFjZWhvbGRlcgUBLx4MRGlzcGxheU1vbmV5CymGAUFqYXhDb250cm9sVG9vbGtpdC5NYXNrZWRFZGl0U2hvd1N5bWJvbCwgQWpheENvbnRyb2xUb29sa2l0LCBWZXJzaW9uPTMuMC4yMDIyOS4yMDg0MywgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj0yOGYwMWIwZTg0YjZkNTNlAB4OQWNjZXB0TmVnYXRpdmULKwQAHhNPdmVycmlkZVBhZ2VDdWx0dXJlaB4ZQ3VsdHVyZURlY2ltYWxQbGFjZWhvbGRlcgUBLB4WQ3VsdHVyZUFNUE1QbGFjZWhvbGRlcgUJYS5tLjtwLm0uHiBDdWx0dXJlQ3VycmVuY3lTeW1ib2xQbGFjZWhvbGRlcgUCJFUeC0N1bHR1cmVOYW1lBQVlcy1VWR4OSW5wdXREaXJlY3Rpb24LKYoBQWpheENvbnRyb2xUb29sa2l0Lk1hc2tlZEVkaXRJbnB1dERpcmVjdGlvbiwgQWpheENvbnRyb2xUb29sa2l0LCBWZXJzaW9uPTMuMC4yMDIyOS4yMDg0MywgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj0yOGYwMWIwZTg0YjZkNTNlAB4KQWNjZXB0QW1QbWhkAhsPZBYEAgMPDxYIHwEFDl5bXjo7XDw+J1wiXSokHwJnHwdmHwAFCjI3LzExLzIwMTYWBB8GBQ92YWxpZGF0ZSh0aGlzKTsfAwUjcmV0dXJuIGRhdGVOdW1iZXJzT25seSh0aGlzLCBldmVudClkAgkPFhofCAUBOh8JBQEuHwoFA0RNWR8LBQEvHwwLKwQAHw0LKwQAHw5oHw8FASwfEAUJYS5tLjtwLm0uHxEFAiRVHxIFBWVzLVVZHxMLKwUAHxRoZAIRDw8WBh8BBQ5eW146O1w8PidcIl0qJB8CZx8HAgsWAh8DBSZyZXR1cm4gbnVtYmVyc29ubHkodGhpcywgZXZlbnQsIGZhbHNlKWQCFQ8PFgYfAQUOXlteOjtcPD4nXCJdKiQfAmcfBwILFgIfAwUmcmV0dXJuIG51bWJlcnNvbmx5KHRoaXMsIGV2ZW50LCBmYWxzZSlkAhsPEA8WBh4ORGF0YVZhbHVlRmllbGQFClZhbHVlRmllbGQeDURhdGFUZXh0RmllbGQFCVRleHRGaWVsZB4LXyFEYXRhQm91bmRnZBAVEwVUb2RvcwlQZW5kaWVudGUIUmV0aXJhZG8KRGVwb3NpdGFkbwpFbkN1c3RvZGlhCkRlc2NvbnRhZG8JRWxpbWluYWRvDEVuIEZhY3RvcmluZwVDYXJnYQlSZWNoYXphZG8KQWNyZWRpdGFkbwhBIHZlbmNlcgdWZW5jaWRvCU5vIFRvbWFkbwtBIEZhY3RvcmluZx1QZW5kaWVudGUgQXByb2JhY2nDs24gRW1wcmVzYSVQZW5kaWVudGUgZGUgUmVjZXBjacOzbiBkZSBEb2N1bWVudG9zG1BlbmRpZW50ZSBBcHJvYmFjacOzbiBCYW5jbwpBY3JlZGl0YWRvFRMCLTEBMQIxMAIxMQIxMgIxMwIxNAIxNQIxNgIxNwIxOAEyATMBNAE1ATYBNwE4ATkUKwMTZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2RkAh8PEA8WBh8VBQpWYWx1ZUZpZWxkHxYFCVRleHRGaWVsZB8XZ2QQFQgFVG9kb3MSQ3Jpc3RpYW4gUm9kcmlndWV6FUdhc3RvbiBOaWNvbGFzIFdhbHRlcg1NQVJJQU5PIE9SVElaCk1hcmlvIENvdG8QUGF0cmljaWEgUGFsYXp6bwpQZWRybyBDb3RvDVJBVUwgTUFSVElORVoVCAItMQQ2MjY4BDYyMjgENjAzNgQ2Mjc1BDYyMjcENjI3NAQ2MDM1FCsDCGdnZ2dnZ2dnZGQCAg9kFgICAQ9kFgICAQ88KwAWAgAPFggeD0RhdGFTb3VyY2VCb3VuZGceEUNsaWVudFN0YXRlTG9hZGVkZx4NQ2FsbGJhY2tTdGF0ZWQeDl8hVXNlVmlld1N0YXRlZ2QGD2QQFg1mAgECAgIDAgQCBQIGAgcCCAIJAgoCCwIMFg08KwAMAQAWAh4PQ29sVmlzaWJsZUluZGV4ZjwrAAsBABYGHglTb3J0SW5kZXgC/////w8eCkdyb3VwSW5kZXgC/////w8eCVNvcnRPcmRlcgspeERldkV4cHJlc3MuRGF0YS5Db2x1bW5Tb3J0T3JkZXIsIERldkV4cHJlc3MuRGF0YS52OC4zLCBWZXJzaW9uPTguMy41LjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49Yjg4ZDE3NTRkNzAwZTQ5YQA8KwALAQAWCB8cAgEfHQL/////Dx8eAv////8PHx8LKwYAPCsACwEAFggfHAICHx0C/////w8fHgL/////Dx8fCysGADwrAAsBABYIHxwCAx8dAv////8PHx4C/////w8fHwsrBgA8KwALAQAWCB8cAgQfHQL/////Dx8eAv////8PHx8LKwYAPCsACwEAFggfHAIFHx0C/////w8fHgL/////Dx8fCysGADwrAAsBABYIHxwCBh8dAv////8PHx4C/////w8fHwsrBgA8KwALAQAWCB8cAgcfHQL/////Dx8eAv////8PHx8LKwYAPCsACwEAFggfHAIIHx0C/////w8fHgL/////Dx8fCysGADwrAAsBABYIHxwCCR8dAv////8PHx4C/////w8fHwsrBgA8KwALAQAWCB8cAgofHQL/////Dx8eAv////8PHx8LKwYAPCsACwEAFggfHAILHx0C/////w8fHgL/////Dx8fCysGAA8WDQIBAgICAgICAgICAwIDAgICAgICAgQCAgICFgQFlgFEZXZFeHByZXNzLldlYi5BU1B4R3JpZFZpZXcuR3JpZFZpZXdDb21tYW5kQ29sdW1uLCBEZXZFeHByZXNzLldlYi5BU1B4R3JpZFZpZXcudjguMywgVmVyc2lvbj04LjMuNS4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWI4OGQxNzU0ZDcwMGU0OWEFoAFJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLkNsYXNzZXMuR3JpZFZpZXdEYXRhVGV4dENvbHVtblRleHQsIEluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24sIFZlcnNpb249My4wLjEuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj03MTg2MjgwMTdmZmI5NjZlBaABSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbi5DbGFzc2VzLkdyaWRWaWV3RGF0YVRleHRDb2x1bW5EYXRlLCBJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLCBWZXJzaW9uPTMuMC4xLjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49NzE4NjI4MDE3ZmZiOTY2ZQWiAUluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24uQ2xhc3Nlcy5HcmlkVmlld0RhdGFUZXh0Q29sdW1uQW1vdW50LCBJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLCBWZXJzaW9uPTMuMC4xLjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49NzE4NjI4MDE3ZmZiOTY2ZWQCAQ9kFgICAw9kFgICAQ88KwALAGQCAg8WAh4Fc3R5bGUFDWRpc3BsYXk6bm9uZTsWAgIFDxYCHgdWaXNpYmxlaBYEAgEPEBYGHxYFBVRpdGxlHxUFA1VyaR8XZxAVAQAVAQAUKwMBZxQrAQBkAgMPFgIfIAUNZGlzcGxheTpub25lOxYCZg9kFgICAQ8WAh8gBQ1kaXNwbGF5Om5vbmU7ZBgCBR5fX0NvbnRyb2xzUmVxdWlyZVBvc3RCYWNrS2V5X18WEAUuY3RsMDAkTWFpbkhvbGRlciRDb25zdWx0YURlRG9jRmlsdHJvJERhdGFQYW5lbAU+Y3RsMDAkTWFpbkhvbGRlciRDb25zdWx0YXNEZURvY0dyaWxsYSRUcmFuc2FjdGlvbnNIaXN0b3J5UGFuZWwFRWN0bDAwJE1haW5Ib2xkZXIkQ29uc3VsdGFEb2N1bWVudG9zSGVhZGVyJHBhbmVsT3BlcmF0aW9uUmVxdWVzdEhlYWRlcgVKY3RsMDAkTWFpbkhvbGRlciRDb25zdWx0YURlRG9jRmlsdHJvJFNlbGVjY2lvblBlZGlvZG8kcmFkaW9CdXR0b25UaGlzTW9udGgFSmN0bDAwJE1haW5Ib2xkZXIkQ29uc3VsdGFEZURvY0ZpbHRybyRTZWxlY2Npb25QZWRpb2RvJHJhZGlvQnV0dG9uVGhpc01vbnRoBURjdGwwMCRNYWluSG9sZGVyJENvbnN1bHRhRGVEb2NGaWx0cm8kU2VsZWNjaW9uUGVkaW9kbyRyYWRpb0J1dHRvbkRheQVEY3RsMDAkTWFpbkhvbGRlciRDb25zdWx0YURlRG9jRmlsdHJvJFNlbGVjY2lvblBlZGlvZG8kcmFkaW9CdXR0b25EYXkFTmN0bDAwJE1haW5Ib2xkZXIkQ29uc3VsdGFEZURvY0ZpbHRybyRTZWxlY2Npb25QZWRpb2RvJHJhZGlvQnV0dG9uUHJldmlvdXNNb250aAVOY3RsMDAkTWFpbkhvbGRlciRDb25zdWx0YURlRG9jRmlsdHJvJFNlbGVjY2lvblBlZGlvZG8kcmFkaW9CdXR0b25QcmV2aW91c01vbnRoBU9jdGwwMCRNYWluSG9sZGVyJENvbnN1bHRhRGVEb2NGaWx0cm8kU2VsZWNjaW9uUGVkaW9kbyRyYWRpb0J1dHRvblNwZWNpZmljUGVyaW9kBUZjdGwwMCRNYWluSG9sZGVyJENvbnN1bHRhRGVEb2NGaWx0cm8kU2VsZWNjaW9uUGVkaW9kbyRyYWRpb0J1dHRvbk1vbnRoBUZjdGwwMCRNYWluSG9sZGVyJENvbnN1bHRhRGVEb2NGaWx0cm8kU2VsZWNjaW9uUGVkaW9kbyRyYWRpb0J1dHRvbk1vbnRoBUBjdGwwMCRNYWluSG9sZGVyJENvbnN1bHRhRGVEb2NGaWx0cm8kU2VsZWNjaW9uUGVkaW9kbyRJbWdCbnRDYWxjBUJjdGwwMCRNYWluSG9sZGVyJENvbnN1bHRhRGVEb2NGaWx0cm8kU2VsZWNjaW9uUGVkaW9kbyRJbWdCbnRDYWxjVG8FNGN0bDAwJE1haW5Ib2xkZXIkQ29uc3VsdGFzRGVEb2NHcmlsbGEkQ2hlY2tzRGF0YUdyaWQFGWN0bDAwJGltYWdlQnV0dG9uQ29sbGFwc2UFF2N0bDAwJE1haW5Ib2xkZXIkdmlzdGFzDw9kZmRs7S6Caj9nQmgzyWXgD9Pftlk+HQ==">
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+var theForm = document.forms['aspnetForm'];
+if (!theForm) {
+    theForm = document.aspnetForm;
+}
+function __doPostBack(eventTarget, eventArgument) {
+    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+        theForm.__EVENTTARGET.value = eventTarget;
+        theForm.__EVENTARGUMENT.value = eventArgument;
+        theForm.submit();
+    }
+}
+//]]>
+</script>
+
+
+<script src="./WebResource(4).axd" type="text/javascript"></script>
+
+<script src="./DataEntry.js.descarga"></script><script src="./date.js.descarga"></script><script src="./DataEntry.js.descarga"></script>
+						<style>							
+							P.PanelControlTitleStyle
+							{
+ 								font-family:verdana;
+ 								font-size: 12px;
+								font-weight : bold;
+								text-align: center;  								
+							}
+						</style>						
+						<script language="javascript">
+						function MinMaxPanelControl(cntrlId)
+						{
+						    var imgPath='/App_Themes/Default/Images/';	
+					
+							//Get state from hidden control.													
+							if ( document.getElementById(cntrlId).style.display == 'none' )
+							{
+								document.getElementById(cntrlId).style.display = '';						
+								document.getElementById(cntrlId+'_imgPlusMinus').src = imgPath + 'bot-grid-minus.gif';
+							}
+							else 
+							{
+								document.getElementById(cntrlId).style.display = 'none';								
+								document.getElementById(cntrlId+'_imgPlusMinus').src = imgPath + 'bot-grid-plus.gif';
+							}
+						}
+						</script>
+			
+<script src="./ScriptResource.axd" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+var __cultureInfo = '{"name":"es-UY","numberFormat":{"CurrencyDecimalDigits":2,"CurrencyDecimalSeparator":",","IsReadOnly":false,"CurrencyGroupSizes":[3],"NumberGroupSizes":[3],"PercentGroupSizes":[3],"CurrencyGroupSeparator":".","CurrencySymbol":"$U","NaNSymbol":"NeuN","CurrencyNegativePattern":14,"NumberNegativePattern":1,"PercentPositivePattern":0,"PercentNegativePattern":0,"NegativeInfinitySymbol":"-Infinito","NegativeSign":"-","NumberDecimalDigits":2,"NumberDecimalSeparator":",","NumberGroupSeparator":".","CurrencyPositivePattern":2,"PositiveInfinitySymbol":"Infinito","PositiveSign":"+","PercentDecimalDigits":2,"PercentDecimalSeparator":",","PercentGroupSeparator":".","PercentSymbol":"%","PerMilleSymbol":"‰","NativeDigits":["0","1","2","3","4","5","6","7","8","9"],"DigitSubstitution":1},"dateTimeFormat":{"AMDesignator":"a.m.","Calendar":{"MinSupportedDateTime":"\/Date(-62135586000000)\/","MaxSupportedDateTime":"\/Date(253402300799999)\/","AlgorithmType":1,"CalendarType":1,"Eras":[1],"TwoDigitYearMax":2029,"IsReadOnly":false},"DateSeparator":"/","FirstDayOfWeek":1,"CalendarWeekRule":0,"FullDateTimePattern":"dddd, dd\u0027 de \u0027MMMM\u0027 de \u0027yyyy hh:mm:ss tt","LongDatePattern":"dddd, dd\u0027 de \u0027MMMM\u0027 de \u0027yyyy","LongTimePattern":"hh:mm:ss tt","MonthDayPattern":"dd MMMM","PMDesignator":"p.m.","RFC1123Pattern":"ddd, dd MMM yyyy HH\u0027:\u0027mm\u0027:\u0027ss \u0027GMT\u0027","ShortDatePattern":"dd/MM/yyyy","ShortTimePattern":"hh:mm tt","SortableDateTimePattern":"yyyy\u0027-\u0027MM\u0027-\u0027dd\u0027T\u0027HH\u0027:\u0027mm\u0027:\u0027ss","TimeSeparator":":","UniversalSortableDateTimePattern":"yyyy\u0027-\u0027MM\u0027-\u0027dd HH\u0027:\u0027mm\u0027:\u0027ss\u0027Z\u0027","YearMonthPattern":"MMMM\u0027 de \u0027yyyy","AbbreviatedDayNames":["dom","lun","mar","mié","jue","vie","sáb"],"ShortestDayNames":["do","lu","ma","mi","ju","vi","sá"],"DayNames":["domingo","lunes","martes","miércoles","jueves","viernes","sábado"],"AbbreviatedMonthNames":["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic",""],"MonthNames":["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre",""],"IsReadOnly":false,"NativeCalendarName":"calendario gregoriano","AbbreviatedMonthGenitiveNames":["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic",""],"MonthGenitiveNames":["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre",""]}}';//]]>
+</script>
+
+<script src="./ScriptResource(1).axd" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+if (typeof(Sys) === 'undefined') throw new Error('ASP.NET Ajax client-side framework failed to load.');
+//]]>
+</script>
+
+<script src="./ScriptResource(2).axd" type="text/javascript"></script>
+<script src="./ScriptResource(3).axd" type="text/javascript"></script>
+<script src="./ScriptResource(4).axd" type="text/javascript"></script>
+<script src="./ScriptResource(5).axd" type="text/javascript"></script>
+<script src="./ScriptResource(6).axd" type="text/javascript"></script>
+<script src="./ScriptResource(7).axd" type="text/javascript"></script>
+<script src="./ScriptResource(8).axd" type="text/javascript"></script>
+<script src="./ScriptResource(9).axd" type="text/javascript"></script>
+<script src="./ScriptResource(10).axd" type="text/javascript"></script>
+<script src="./ScriptResource(11).axd" type="text/javascript"></script>
+<script src="./ScriptResource(12).axd" type="text/javascript"></script>
+<script src="./ScriptResource(13).axd" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+function WebForm_OnSubmit() {
+if (typeof(ValidatorOnSubmit) == "function" && ValidatorOnSubmit() == false) return false;
+return true;
+}
+//]]>
+</script>
+
+<div>
+
+	<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEWRQK0gIGbCwLPptjoDALAppTrDALCppTrDALDppTrDALBppTrDALHppTrDALN98iiBwK6hY/IDALU3/KEAQLk77bECgLz2+H7AwLHgY3VCwK3oamiAwKgm8irDALu9c/vBgKP95/IBQL20/TvCALPx+G7DwK1kb3WCwLmqLKHDQK0spzbDgLO0pzTBwLNqv3dAQKyzZbIBwK2vePMBAKvnueaBAL33JaXDAKnraL+CgKlyKLPDAL/z7+4DgLVpsufBAL5gfTOCwL55uztAQL15qDuAQL15uDtAQL15uztAQL15ujtAQL15tTtAQL15tDtAQL15tztAQL15tjtAQL15sTtAQL15oDuAQL05qDuAQL35qDuAQL25qDuAQLx5qDuAQLw5qDuAQLz5qDuAQLi5qDuAQLt5qDuAQKavsSDCALf9LqOBgLD0YPlDgLsuIzKDgL435C6DwLD0dfdAwL43+RBAuy44JEGAr/0w+wHAr6xtpkHAo7Z/ucHAqOcwqUJAo6YtrUKApn0/fMOAoL+r88LAtGqzMkOAom34LsBiGam0hyeqVyJVYpWG3ZjRTcjU6I=">
+</div>
+    <script type="text/javascript">
+//<![CDATA[
+Sys.WebForms.PageRequestManager._initialize('ctl00$scriptManager', document.getElementById('aspnetForm'));
+Sys.WebForms.PageRequestManager.getInstance()._updateControls(['tctl00$MainHolder$ConsultaDeDocFiltro$SeleccionPediodo$UpdatePanel1'], [], [], 90);
+//]]>
+</script>
+
+    <input type="hidden" id="PageLinkData" name="PageLinkData" value="13486">
+    <input type="hidden" id="PageLinkUrl" name="PageLinkUrl" value="">
+    <input type="hidden" id="PageUrl" value="/Pages/Factoring/ConsultaDeDocumentos.aspx">
+    <table id="ctl00_tableContent" width="100%" border="0" cellpadding="0" cellspacing="0" class="ic-content">
+	<tbody><tr>
+		<td class="ic-content-left-aux">
+                <img src="./log-img-aux-left-bottom.gif" width="9" height="110">
+            </td>
+		<td style="width: 100%">
+                <table width="100%" border="0" cellpadding="0" cellspacing="0" class="ic-content-left">
+                    <tbody><tr>
+                        <td id="TdCPM" class="ic-content-space-top" valign="top">
+                            <table id="TablaCPM" width="100%" border="0" cellspacing="0" cellpadding="0">
+                                
+                                <tbody><tr>
+                                    <td>
+                                        <table id="ctl00_tableHeader" width="100%" border="0" cellspacing="0" cellpadding="0">
+			<tbody><tr>
+				<td class="ic-breadcrumb-container">
+                                                    
+                                                    &gt;
+                                                    <span id="ctl00_siteMapNavigator"><a href="http://10.1.75.104:9080/Pages/Factoring/ConsultaDeDocumentos.aspx#ctl00_siteMapNavigator_SkipLink"><img alt="Skip Navigation Links" height="0" width="0" src="./WebResource(5).axd" style="border-width:0px;"></a><span><a href="http://10.1.75.104:9080/Home.aspx">Posición Consolidada</a></span><span> &gt; </span><span><a>Factoring/Depósitos</a></span><span> &gt; </span><span><a>Consultas</a></span><span> &gt; </span><span>Documentos</span><a id="ctl00_siteMapNavigator_SkipLink"></a></span>
+                                                    </td>
+				<td class="ic-toolbar-container">
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tbody><tr>
+                                                            <td width="16">
+                                                                <img src="./ico-print.gif" id="ctl00_Img4" width="16" height="16">
+                                                            </td>
+                                                            <td class="ic-links-toolbar">
+                                                                <a href="http://10.1.75.104:9080/Pages/Factoring/ConsultaDeDocumentos.aspx#" onclick="javascript: GoPrint();">
+                                                                    Imprimir página</a>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody></table>
+                                                </td>
+			</tr>
+		</tbody></table>
+		
+                                    </td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>
+                                        <span id="ctl00_labelTitle" class="ic-page-title">Consulta de Documentos</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td id="ctl00_cellRequiered" align="right">
+                                        <img src="./ic_img-data-required.gif" id="ctl00_Img5" border="0">
+                                        <span>
+                                            Campo requerido</span>
+                                    </td>
+		
+                                </tr>
+                                <tr>
+                                    <td width="95%" align="center">
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                            <tbody><tr>
+                                                <td align="right">
+                                                    
+                                                    
+                                                </td>
+                                            </tr>
+                                        </tbody></table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="100%" align="center">
+                                        <div id="ic-loading" class="ic-loading-bg" style="display: none;">
+                                            <div class="ic-loading">
+                                                <div id="message">
+                                                    <img src="./cargandoBAR.gif" id="ctl00_imgLoading"><br>
+                                                    <span id="ctl00_WaitingMessage">Procesando...</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="mainContainer">
+                                            
+
+    <script language="javascript" type="text/javascript">
+        function ValidateOneSelection() {
+            var hasSelection = false;
+
+            if (ConsultasDeDocGrilla._getSelectedRowCount() == 1) {
+                hasSelection = true;
+            }
+            else {
+                alert('Debe seleccionar un registro');
+            }
+
+            return hasSelection;
+        }
+
+        function ValidateAllSelection() {
+            var hasSelection = false;
+
+            if (ConsultasDeDocGrilla._getSelectedRowCount() > 0) {
+                hasSelection = true;
+            }
+            else {
+                alert('Debe seleccionar por lo menos un registro');
+            }
+
+            return hasSelection;
+        }
+        function NotImplemented() {
+            alert('Funcion no implementada');
+        }
+    </script>
+
+        <table class="ic-grid-border" cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+			<tbody><tr>
+				<td><table id="ctl00_MainHolder_ConsultaDeDocFiltro_DataPanel_thePanel" class="ic-grid" cellspacing="0" cellpadding="0" align="Center" border="0" style="width:100%;border-collapse:collapse;">
+					<tbody><tr class="ic-grid-title-row">
+						<td><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+							<tbody><tr>
+								<td class="ic-grid-title-cell-left">&nbsp;</td><td class="ic-grid-title-cell" align="left" style="white-space:nowrap;">Datos a Consultar</td><td class="ic-gridB-title-cell-right"><img id="ctl00_MainHolder_ConsultaDeDocFiltro_DataPanel_imgPlusMinus" onclick="javascript:MinMaxPanelControl(&#39;ctl00_MainHolder_ConsultaDeDocFiltro_DataPanel&#39;)" src="./bot-grid-minus.gif" alt="Minimizar/Maximizar el panel" align="absmiddle" style="border-width:0px;cursor:hand;"></td>
+							</tr>
+						</tbody></table></td>
+					</tr><tr>
+						<td align="center"><div id="ctl00_MainHolder_ConsultaDeDocFiltro_DataPanel" style="color:Black;border-color:DodgerBlue;font-family:verdana;font-size:10pt;width:100%;margin-bottom:0px;display:;">
+	   
+        <table id="ctl00_MainHolder_ConsultaDeDocFiltro_mainTable" width="100%" cellpadding="0" cellspacing="0">
+		<tbody><tr>
+			<td style="width: 70%; padding: 2px">
+                    <table style="width: 100%" cellspacing="0">
+                        <tbody><tr>
+                            <td class="ic-form-label">
+                                <span id="ctl00_MainHolder_ConsultaDeDocFiltro_lbTipoDeOperacion">Tipo de Operación:</span>                                
+                            </td>
+                            <td class="ic-form-data">
+                                <select name="ctl00$MainHolder$ConsultaDeDocFiltro$ddlTipoOperaciones" id="ctl00_MainHolder_ConsultaDeDocFiltro_ddlTipoOperaciones" class="ic-control-select" style="width:120px;">
+				<option selected="selected" value="-1">Todos</option>
+				<option value="4">Depósito</option>
+				<option value="2">Factoring</option>
+				<option value="1">Custodia</option>
+				<option value="3">Custodia a Factoring</option>
+				<option value="5">Factoring Mobile</option>
+
+			</select>                                 
+                            </td>                                                                           
+                        </tr>
+                        <tr>
+                            <td class="ic-form-label"> 
+                                <span id="ctl00_MainHolder_ConsultaDeDocFiltro_lblNroSolicitud">Nro. Solicitud:</span>
+                            </td>                        
+                            <td class="ic-form-data">                            
+                                <input name="ctl00$MainHolder$ConsultaDeDocFiltro$tbNroSolicitud" type="text" maxlength="9" id="ctl00_MainHolder_ConsultaDeDocFiltro_tbNroSolicitud" class="ic-control-text" onkeypress="return numbersonly(this, event, false)"> 
+                            </td>                            
+                        </tr>                        
+                        <tr>
+                            <td class="ic-form-label" style="padding-top:8px">
+                                 <span id="ctl00_MainHolder_ConsultaDeDocFiltro_LblFiltroFecha">Fecha Ingreso:</span>
+                            </td>
+                            <td class="ic-form-data">
+                                
+
+<script language="javascript" type="text/javascript">
+
+
+    function todayCustomValidation(sender, args) {
+        // leer la fecha --> Date(a)
+        // Leer la fehca de hoy --> Date(b)
+        //compara si a <= b
+        var a = compareDates(args.Value, 'dd/MM/yyyy', '2016-11-08', 'yyyy-MM-dd');
+        args.IsValid = (a == 0);
+    }
+
+    function validate(rdb) {
+        if (rdb.id == 'ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_dateTextBoxDateFrom' || rdb.id == 'ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_dateTextBoxDateTo') {
+            document.getElementById('ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_radioButtonSpecificPeriod').checked = true;
+        }
+        else {
+            document.getElementById('ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_radioButtonMonth').checked = true;
+        }
+
+    }
+
+
+
+</script>
+<div id="ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_UpdatePanel1">
+				
+    <table id="ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_mainTable" width="100%" cellpadding="0" cellspacing="0">
+					<tbody><tr>
+						<td class="ic-form-label" style="width: 10%">
+            Período:
+        </td>
+						<td class="ic-form-data-required" style="width: 90%; padding: 2px">
+            <table style="width: 100%" cellspacing="0">
+                <tbody><tr>
+                    <td class="ic-form-data-right-bottom-border" style="width: 30%" valign="top">
+                        <span style="background-color:White;font-family:Verdana, Arial, Helvetica, sans-serif;font-size:10px;"><input id="ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_radioButtonThisMonth" type="radio" name="ctl00$MainHolder$ConsultaDeDocFiltro$SeleccionPediodo$Periodo" value="radioButtonThisMonth" onclick="javascript:setTimeout(&#39;__doPostBack(\&#39;ctl00$MainHolder$ConsultaDeDocFiltro$SeleccionPediodo$radioButtonThisMonth\&#39;,\&#39;\&#39;)&#39;, 0)"><label for="ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_radioButtonThisMonth">Mes actual</label></span>                        
+                    </td>
+                    <td class="ic-form-data-bottom-border" style="width: 70%" valign="top">
+                        <span style="background-color:White;font-family:Verdana, Arial, Helvetica, sans-serif;font-size:10px;"><input id="ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_radioButtonDay" type="radio" name="ctl00$MainHolder$ConsultaDeDocFiltro$SeleccionPediodo$Periodo" value="radioButtonDay" onclick="javascript:setTimeout(&#39;__doPostBack(\&#39;ctl00$MainHolder$ConsultaDeDocFiltro$SeleccionPediodo$radioButtonDay\&#39;,\&#39;\&#39;)&#39;, 0)"><label for="ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_radioButtonDay">Día actual</label></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="ic-form-data-right-bottom-border" style="width: 30%" valign="top">
+                        <span style="background-color:White;font-family:Verdana, Arial, Helvetica, sans-serif;font-size:10px;"><input id="ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_radioButtonPreviousMonth" type="radio" name="ctl00$MainHolder$ConsultaDeDocFiltro$SeleccionPediodo$Periodo" value="radioButtonPreviousMonth" onclick="javascript:setTimeout(&#39;__doPostBack(\&#39;ctl00$MainHolder$ConsultaDeDocFiltro$SeleccionPediodo$radioButtonPreviousMonth\&#39;,\&#39;\&#39;)&#39;, 0)"><label for="ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_radioButtonPreviousMonth">Mes anterior</label></span>
+                    </td>
+                    <td class="ic-form-data-no-border" style="width: 70%" valign="top">
+                        <span style="background-color:White;font-family:Verdana, Arial, Helvetica, sans-serif;font-size:10px;"><input id="ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_radioButtonSpecificPeriod" type="radio" name="ctl00$MainHolder$ConsultaDeDocFiltro$SeleccionPediodo$Periodo" value="radioButtonSpecificPeriod" checked="checked"><label for="ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_radioButtonSpecificPeriod">Período específico: </label></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="ic-form-data-right-border" style="width: 30%" valign="top">
+                        <span style="background-color:White;font-family:Verdana, Arial, Helvetica, sans-serif;font-size:10px;"><input id="ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_radioButtonMonth" type="radio" name="ctl00$MainHolder$ConsultaDeDocFiltro$SeleccionPediodo$Periodo" value="radioButtonMonth" onclick="javascript:setTimeout(&#39;__doPostBack(\&#39;ctl00$MainHolder$ConsultaDeDocFiltro$SeleccionPediodo$radioButtonMonth\&#39;,\&#39;\&#39;)&#39;, 0)"><label for="ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_radioButtonMonth">Mes</label></span>
+                        &nbsp;
+                        <select name="ctl00$MainHolder$ConsultaDeDocFiltro$SeleccionPediodo$dropDownListMonths" id="ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_dropDownListMonths" class="ic-control-select" onclick="validate(this);">
+							<option selected="selected" value="enero">enero</option>
+							<option value="febrero">febrero</option>
+							<option value="marzo">marzo</option>
+							<option value="abril">abril</option>
+							<option value="mayo">mayo</option>
+							<option value="junio">junio</option>
+							<option value="julio">julio</option>
+							<option value="agosto">agosto</option>
+							<option value="septiembre">septiembre</option>
+							<option value="octubre">octubre</option>
+							<option value="noviembre">noviembre</option>
+							<option value="diciembre">diciembre</option>
+
+						</select>
+                    </td>
+                    <td style="width: 70%">
+                        <div id="ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_panelToDate">
+							
+                                    </div><table style="width: 100%" cellpadding="0" cellspacing="0">
+                            <tbody><tr>
+                                <td style="width: 10%">
+                                    &nbsp;
+                                </td>
+                                <td class="ic-form-data-no-border">
+                                    desde
+                                </td>
+                                <td class="ic-form-data-no-border" style="margin: 0px; padding: 0px">
+                                    <input name="ctl00$MainHolder$ConsultaDeDocFiltro$SeleccionPediodo$dateTextBoxDateFrom" type="text" value="01/01/2015" size="8" id="ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_dateTextBoxDateFrom" class="ic-control-text" onclick="validate(this);" onkeypress="return dateNumbersOnly(this, event)">
+                                    <input type="image" name="ctl00$MainHolder$ConsultaDeDocFiltro$SeleccionPediodo$ImgBntCalc" id="ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_ImgBntCalc" src="./ic-calendar-schedule.png" align="absbottom" style="border-width:0px;">
+                                    
+                                    <input type="hidden" name="ctl00$MainHolder$ConsultaDeDocFiltro$SeleccionPediodo$MaskedEditExtenderdateTextBox_ClientState" id="ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_MaskedEditExtenderdateTextBox_ClientState">
+                                    <span id="ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_requiredFieldValidatorDateFrom" style="color:Red;display:none;">Campo requerido</span>
+                                    <span id="ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_dateValidatorDateFrom" style="color:Red;display:none;">Formato válido dd/mm/yyyy</span>
+                                </td>
+                                <td class="ic-form-data-no-border">
+                                        hasta
+                                    </td>
+                                    <td class="ic-form-data-no-border" style="margin: 0px; padding: 0px">
+                                        <input name="ctl00$MainHolder$ConsultaDeDocFiltro$SeleccionPediodo$dateTextBoxDateTo" type="text" value="27/11/2016" size="8" id="ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_dateTextBoxDateTo" class="ic-control-text" onclick="validate(this);" onkeypress="return dateNumbersOnly(this, event)">
+                                        <input type="image" name="ctl00$MainHolder$ConsultaDeDocFiltro$SeleccionPediodo$ImgBntCalcTo" id="ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_ImgBntCalcTo" src="./ic-calendar-schedule.png" align="absbottom" style="border-width:0px;">
+                                        
+                                        <input type="hidden" name="ctl00$MainHolder$ConsultaDeDocFiltro$SeleccionPediodo$MaskedEditExtenderdateTextBoxto_ClientState" id="ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_MaskedEditExtenderdateTextBoxto_ClientState">
+                                    
+                                        <span id="ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_requiredFieldValidatorDateTo" style="color:Red;display:none;">Campo requerido</span>
+                                        <span id="ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_dateValidatorDateTo" style="color:Red;display:none;">Formato válido dd/mm/yyyy</span>
+                                        
+                                        <span id="ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_CompareValidator1" style="color:Red;display:none;">'Hasta' debe ser mayor que 'Desde'.</span>                                                                      
+                                    </td>
+                                
+						
+                                <td style="width: 25%;font :&#39;Verdana&#39;; font-size:10px">
+                                   (dd/mm/aaaa)
+                                </td>
+                            </tr>
+                        </tbody></table>
+                    </td>
+                </tr>
+            </tbody></table>
+        </td>
+					</tr>
+				</tbody></table>
+				
+
+
+			</div>
+                                    
+                            </td>
+                        </tr>
+                        <tr>                
+                            <td class="ic-form-label">
+                               Nro. de Cheque
+                            </td>
+                            <td class="ic-form-data">
+                                <span id="ctl00_MainHolder_ConsultaDeDocFiltro_lbNroChequeFrom" style="color:#666666;font-weight:bold;">Desde</span>
+                                <input name="ctl00$MainHolder$ConsultaDeDocFiltro$itbNroChequeDesde" type="text" maxlength="11" id="ctl00_MainHolder_ConsultaDeDocFiltro_itbNroChequeDesde" class="ic-control-text" onkeypress="return numbersonly(this, event, false)">
+                                <span id="ctl00_MainHolder_ConsultaDeDocFiltro_lbNroChequeTo" style="color:#666666;font-weight:bold;">Hasta</span>                            
+                                <input name="ctl00$MainHolder$ConsultaDeDocFiltro$itbNroChequeHasta" type="text" maxlength="11" id="ctl00_MainHolder_ConsultaDeDocFiltro_itbNroChequeHasta" class="ic-control-text" onkeypress="return numbersonly(this, event, false)">
+                                
+                                <span id="ctl00_MainHolder_ConsultaDeDocFiltro_NroChequeComparaValidator" style="color:Red;display:none;">Desde debe ser menor que Hasta</span>                            
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="ic-form-label-no-border">
+                                Estado                                
+                            </td>
+                            <td class="ic-form-data-no-border">
+                                <table>
+                                    <tbody><tr>
+                                    <td class="ic-form-data-period-Label" style="padding-right: 8px">                                      
+                                        <select name="ctl00$MainHolder$ConsultaDeDocFiltro$ddlEstados" id="ctl00_MainHolder_ConsultaDeDocFiltro_ddlEstados" class="ic-control-select" style="width:240px;">
+				<option selected="selected" value="-1">Todos</option>
+				<option value="1">Pendiente</option>
+				<option value="10">Retirado</option>
+				<option value="11">Depositado</option>
+				<option value="12">EnCustodia</option>
+				<option value="13">Descontado</option>
+				<option value="14">Eliminado</option>
+				<option value="15">En Factoring</option>
+				<option value="16">Carga</option>
+				<option value="17">Rechazado</option>
+				<option value="18">Acreditado</option>
+				<option value="2">A vencer</option>
+				<option value="3">Vencido</option>
+				<option value="4">No Tomado</option>
+				<option value="5">A Factoring</option>
+				<option value="6">Pendiente Aprobación Empresa</option>
+				<option value="7">Pendiente de Recepción de Documentos</option>
+				<option value="8">Pendiente Aprobación Banco</option>
+				<option value="9">Acreditado</option>
+
+			</select>  
+                                    </td>
+                                    <td class="ic-form-data-period-Label">
+                                        Usuario
+                                        <select name="ctl00$MainHolder$ConsultaDeDocFiltro$ddlUsuario" id="ctl00_MainHolder_ConsultaDeDocFiltro_ddlUsuario" class="ic-control-select" style="width:120px;">
+				<option selected="selected" value="-1">Todos</option>
+				<option value="6268">Cristian Rodriguez</option>
+				<option value="6228">Gaston Nicolas Walter</option>
+				<option value="6036">MARIANO ORTIZ</option>
+				<option value="6275">Mario Coto</option>
+				<option value="6227">Patricia Palazzo</option>
+				<option value="6274">Pedro Coto</option>
+				<option value="6035">RAUL MARTINEZ</option>
+
+			</select>                                 
+                                     </td>
+                                     </tr>
+                                 </tbody></table>                                                                   
+                             </td>     
+                        </tr>                        
+                    </tbody></table>
+                </td>
+		</tr>
+	</tbody></table>
+	
+<input name="ctl00$MainHolder$ConsultaDeDocFiltro$ctl00$MainHolder$ConsultaDeDocFiltro$DataPanel_hdnMinimizeState" type="text" value="False" id="ctl00_MainHolder_ConsultaDeDocFiltro_ctl00_MainHolder_ConsultaDeDocFiltro_DataPanel_hdnMinimizeState" class="ic-control-text" onkeypress="return validCharactersOnly(this, event, &quot;&quot;)" style="display:none">
+</div></td>
+					</tr>
+				</tbody></table></td>
+			</tr>
+		</tbody></table>
+            <table width="100%">
+               <tbody><tr>
+                    <td class="ic-message">
+                        Seleccione los datos y oprima "Consultar"
+                    </td>
+                    <td align="right">
+                        <a id="ctl00_MainHolder_linkButtonRefresh" class="ic-button-navigation" href="javascript:WebForm_DoPostBackWithOptions(new WebForm_PostBackOptions(&quot;ctl00$MainHolder$linkButtonRefresh&quot;, &quot;&quot;, true, &quot;&quot;, &quot;&quot;, false, true))">Consultar</a>
+                    </td>
+                </tr>
+            </tbody></table>
+            
+<script language="javascript" type="text/javascript">
+     function ValidateOneSelection() {
+         var hasSelection = false;
+
+         if (ChecksDataGridASPxGridView._getSelectedRowCount() == 1) {
+             hasSelection = true;              
+         }
+         else {
+             alert('Debe seleccionar un registro');
+         }
+
+         return hasSelection;
+     }
+    </script>
+<table class="ic-grid-border" cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+			<tbody><tr>
+				<td><table id="ctl00_MainHolder_ConsultasDeDocGrilla_TransactionsHistoryPanel_thePanel" class="ic-grid" cellspacing="0" cellpadding="0" align="Center" border="0" style="width:100%;border-collapse:collapse;">
+					<tbody><tr class="ic-grid-title-row">
+						<td><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+							<tbody><tr>
+								<td class="ic-grid-title-cell-left">&nbsp;</td><td class="ic-grid-title-cell" align="left" style="white-space:nowrap;">Detalle de la Consulta</td><td class="ic-gridB-title-cell-right"><img id="ctl00_MainHolder_ConsultasDeDocGrilla_TransactionsHistoryPanel_imgPlusMinus" onclick="javascript:MinMaxPanelControl(&#39;ctl00_MainHolder_ConsultasDeDocGrilla_TransactionsHistoryPanel&#39;)" src="./bot-grid-minus.gif" alt="Minimizar/Maximizar el panel" align="absmiddle" style="border-width:0px;cursor:hand;"></td>
+							</tr>
+						</tbody></table></td>
+					</tr><tr>
+						<td align="center"><div id="ctl00_MainHolder_ConsultasDeDocGrilla_TransactionsHistoryPanel" style="color:Black;border-color:DodgerBlue;font-family:verdana;font-size:10pt;width:100%;display:;">
+	    
+    <input type="hidden"><script id="dxss_1241175972" type="text/javascript">
+<!--
+window.__aspxServerFormID = 'aspnetForm';
+window.__aspxEmptyImageUrl = '/WebResource.axd?d=r8sGQK9x2VC5LfrAIP6hMW5Of0BQVx_5pcDtr_NzGA4Mft0ncv4hE1i-zBmnc8mg561Q33dXnVDmopWX_iwnWZgBELnuoLpA0P4EazLGo0XHyr4FYJEcfil8vQPDw-wMFdsFLo8AfLVBnlRoJ_At_JUEG241&t=636117930523139822';
+//-->
+</script>
+
+	<script id="dxis_136246879" src="./WebResource(6).axd" type="text/javascript"></script>
+	<script id="dxis_73471454" src="./WebResource(7).axd" type="text/javascript"></script>
+	<table class="dxgvControl" cellspacing="0" cellpadding="0" id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid" border="0" style="width:100%;border-collapse:collapse;border-collapse:separate;">
+		<tbody><tr>
+			<td><table id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_DXMainTable" class="dxgvTable" cellspacing="0" cellpadding="0" onclick="aspxGVTableClick(&#39;ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid&#39;, event);" border="0" style="width:100%;border-collapse:collapse;empty-cells:show;">
+				<tbody><tr id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_DXHeadersRow">
+					<td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_DXTDcol0" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid&#39;, this, event);" style="width:5%;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td> </td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_DXTDGScol2" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid&#39;, this, event);" style="text-align:Center;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Center;">Nro. Solicitud</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_DXTDGScol3" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid&#39;, this, event);" style="text-align:Center;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Center;">Nro. Op.</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_DXTDGScol4" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid&#39;, this, event);" style="text-align:Center;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Center;">Usuario</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_DXTDGScol5" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid&#39;, this, event);" style="text-align:Center;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Center;">F. Ingreso</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_DXTDGScol6" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid&#39;, this, event);" style="text-align:Center;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Center;">F. Vto.</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_DXTDGScol7" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid&#39;, this, event);" style="text-align:Center;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Center;">T. Operación</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_DXTDGScol8" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid&#39;, this, event);" style="text-align:Center;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Center;">Nro. Cheque</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_DXTDGScol9" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid&#39;, this, event);" style="text-align:Center;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Center;">A la Orden</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_DXTDGScol10" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid&#39;, this, event);" style="text-align:Center;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Center;">Importe</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_DXTDGScol11" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid&#39;, this, event);" style="text-align:Center;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Center;">Firmante</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_DXTDGScol12" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid&#39;, this, event);" style="text-align:Center;border-left-width:0px;border-top-width:0px;border-right-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Center;">Estado</td>
+						</tr>
+					</tbody></table></td>
+				</tr><tr id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_DXDataRow0" class="dxgvDataRow ic-grid-row01">
+					<td class="dxgvCommandColumn dxgv" align="center" style="border-style:None;"><input id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_DXSelBtn0" class="dxgvCommandColumnItem" type="checkbox" onclick="aspxGVSelectRow(&#39;ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid&#39;,0,this);"></td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell0_2" class="dxgv" style="text-align:Center;">677</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell0_3" class="dxgv" style="text-align:Center;">110476</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell0_4" class="dxgv" style="text-align:Left;">RAUL MARTINEZ</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell0_5" class="dxgv" style="text-align:Center;">10/06/2015</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell0_6" class="dxgv" style="text-align:Center;">10/06/2015</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell0_7" class="dxgv" style="text-align:Left;">Factoring</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell0_8" class="dxgv" style="text-align:Left;">81338966</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell0_9" class="dxgv" style="text-align:Center;">Si</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell0_10" class="dxgv" style="text-align:Right;white-space:nowrap;">254.750,00</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell0_11" class="dxgv" style="text-align:Left;"> COTO CENTRO INTEGRAL</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell0_12" class="dxgv" style="text-align:Left;border-right-width:0px;">A vencer</td>
+				</tr><tr id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_DXDataRow1" class="dxgvDataRow ic-grid-row01 dxgvDataRowAlt ic-grid-row02">
+					<td class="dxgvCommandColumn dxgv" align="center" style="border-style:None;"><input id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_DXSelBtn1" class="dxgvCommandColumnItem" type="checkbox" onclick="aspxGVSelectRow(&#39;ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid&#39;,1,this);"></td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell1_2" class="dxgv" style="text-align:Center;">678</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell1_3" class="dxgv" style="text-align:Center;">379</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell1_4" class="dxgv" style="text-align:Left;">RAUL MARTINEZ</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell1_5" class="dxgv" style="text-align:Center;">10/06/2015</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell1_6" class="dxgv" style="text-align:Center;">10/06/2015</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell1_7" class="dxgv" style="text-align:Left;">Custodia</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell1_8" class="dxgv" style="text-align:Left;">81338967</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell1_9" class="dxgv" style="text-align:Center;">Si</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell1_10" class="dxgv" style="text-align:Right;white-space:nowrap;">70.000,00</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell1_11" class="dxgv" style="text-align:Left;"> COTO CENTRO INTEGRAL</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell1_12" class="dxgv" style="text-align:Left;border-right-width:0px;">EnCustodia</td>
+				</tr><tr id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_DXDataRow2" class="dxgvSelectedRow ic-grid-row01">
+					<td class="dxgvCommandColumn dxgv" align="center" style="border-style:None;"><input id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_DXSelBtn2" class="dxgvCommandColumnItem" type="checkbox" onclick="aspxGVSelectRow(&#39;ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid&#39;,2,this);"></td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell2_2" class="dxgv" style="text-align:Center;">679</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell2_3" class="dxgv" style="text-align:Center;">632347</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell2_4" class="dxgv" style="text-align:Left;">RAUL MARTINEZ</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell2_5" class="dxgv" style="text-align:Center;">10/06/2015</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell2_6" class="dxgv" style="text-align:Center;">10/06/2015</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell2_7" class="dxgv" style="text-align:Left;">Depósito</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell2_8" class="dxgv" style="text-align:Left;">81338968</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell2_9" class="dxgv" style="text-align:Center;">Si</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell2_10" class="dxgv" style="text-align:Right;white-space:nowrap;">11.831,00</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell2_11" class="dxgv" style="text-align:Left;"> COTO CENTRO INTEGRAL</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell2_12" class="dxgv" style="text-align:Left;border-right-width:0px;">Eliminado</td>
+				</tr><tr id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_DXDataRow3" class="dxgvDataRow ic-grid-row01 dxgvDataRowAlt ic-grid-row02">
+					<td class="dxgvCommandColumn dxgv" align="center" style="border-style:None;"><input id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_DXSelBtn3" class="dxgvCommandColumnItem" type="checkbox" onclick="aspxGVSelectRow(&#39;ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid&#39;,3,this);"></td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell3_2" class="dxgv" style="text-align:Center;">688</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell3_3" class="dxgv" style="text-align:Center;">387</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell3_4" class="dxgv" style="text-align:Left;">Gaston Nicolas Walter</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell3_5" class="dxgv" style="text-align:Center;">30/06/2015</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell3_6" class="dxgv" style="text-align:Center;">21/06/2016</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell3_7" class="dxgv" style="text-align:Left;">Custodia</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell3_8" class="dxgv" style="text-align:Left;">23167599</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell3_9" class="dxgv" style="text-align:Center;">Si</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell3_10" class="dxgv" style="text-align:Right;white-space:nowrap;">1.087,00</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell3_11" class="dxgv" style="text-align:Left;">Antonio Alberto Bacchietta</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell3_12" class="dxgv" style="text-align:Left;border-right-width:0px;">EnCustodia</td>
+				</tr><tr id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_DXDataRow4" class="dxgvDataRow ic-grid-row01">
+					<td class="dxgvCommandColumn dxgv" align="center" style="border-style:None;"><input id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_DXSelBtn4" class="dxgvCommandColumnItem" type="checkbox" onclick="aspxGVSelectRow(&#39;ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid&#39;,4,this);"></td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell4_2" class="dxgv" style="text-align:Center;">688</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell4_3" class="dxgv" style="text-align:Center;">387</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell4_4" class="dxgv" style="text-align:Left;">Gaston Nicolas Walter</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell4_5" class="dxgv" style="text-align:Center;">30/06/2015</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell4_6" class="dxgv" style="text-align:Center;">21/06/2016</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell4_7" class="dxgv" style="text-align:Left;">Custodia</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell4_8" class="dxgv" style="text-align:Left;">33851253</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell4_9" class="dxgv" style="text-align:Center;">Si</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell4_10" class="dxgv" style="text-align:Right;white-space:nowrap;">2.138,00</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell4_11" class="dxgv" style="text-align:Left;">Esther Raquel Eljay de Suli</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell4_12" class="dxgv" style="text-align:Left;border-right-width:0px;">EnCustodia</td>
+				</tr><tr id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_DXDataRow5" class="dxgvDataRow ic-grid-row01 dxgvDataRowAlt ic-grid-row02">
+					<td class="dxgvCommandColumn dxgv" align="center" style="border-style:None;"><input id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_DXSelBtn5" class="dxgvCommandColumnItem" type="checkbox" onclick="aspxGVSelectRow(&#39;ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid&#39;,5,this);"></td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell5_2" class="dxgv" style="text-align:Center;">688</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell5_3" class="dxgv" style="text-align:Center;">387</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell5_4" class="dxgv" style="text-align:Left;">Gaston Nicolas Walter</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell5_5" class="dxgv" style="text-align:Center;">30/06/2015</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell5_6" class="dxgv" style="text-align:Center;">21/06/2016</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell5_7" class="dxgv" style="text-align:Left;">Custodia</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell5_8" class="dxgv" style="text-align:Left;">254013</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell5_9" class="dxgv" style="text-align:Center;">Si</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell5_10" class="dxgv" style="text-align:Right;white-space:nowrap;">482,77</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell5_11" class="dxgv" style="text-align:Left;">Hugo Oscar Tomaszewski</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell5_12" class="dxgv" style="text-align:Left;border-right-width:0px;">EnCustodia</td>
+				</tr><tr id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_DXDataRow6" class="dxgvDataRow ic-grid-row01">
+					<td class="dxgvCommandColumn dxgv" align="center" style="border-style:None;"><input id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_DXSelBtn6" class="dxgvCommandColumnItem" type="checkbox" onclick="aspxGVSelectRow(&#39;ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid&#39;,6,this);"></td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell6_2" class="dxgv" style="text-align:Center;">688</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell6_3" class="dxgv" style="text-align:Center;">387</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell6_4" class="dxgv" style="text-align:Left;">Gaston Nicolas Walter</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell6_5" class="dxgv" style="text-align:Center;">30/06/2015</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell6_6" class="dxgv" style="text-align:Center;">21/06/2016</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell6_7" class="dxgv" style="text-align:Left;">Custodia</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell6_8" class="dxgv" style="text-align:Left;">9100751</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell6_9" class="dxgv" style="text-align:Center;">Si</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell6_10" class="dxgv" style="text-align:Right;white-space:nowrap;">3.060,00</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell6_11" class="dxgv" style="text-align:Left;">Diego Alberto Lopez</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell6_12" class="dxgv" style="text-align:Left;border-right-width:0px;">EnCustodia</td>
+				</tr><tr id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_DXDataRow7" class="dxgvDataRow ic-grid-row01 dxgvDataRowAlt ic-grid-row02">
+					<td class="dxgvCommandColumn dxgv" align="center" style="border-style:None;"><input id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_DXSelBtn7" class="dxgvCommandColumnItem" type="checkbox" onclick="aspxGVSelectRow(&#39;ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid&#39;,7,this);"></td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell7_2" class="dxgv" style="text-align:Center;">688</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell7_3" class="dxgv" style="text-align:Center;">387</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell7_4" class="dxgv" style="text-align:Left;">Gaston Nicolas Walter</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell7_5" class="dxgv" style="text-align:Center;">30/06/2015</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell7_6" class="dxgv" style="text-align:Center;">21/06/2016</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell7_7" class="dxgv" style="text-align:Left;">Custodia</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell7_8" class="dxgv" style="text-align:Left;">61943962</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell7_9" class="dxgv" style="text-align:Center;">Si</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell7_10" class="dxgv" style="text-align:Right;white-space:nowrap;">2.165,00</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell7_11" class="dxgv" style="text-align:Left;"> Bess Center SRL</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell7_12" class="dxgv" style="text-align:Left;border-right-width:0px;">EnCustodia</td>
+				</tr><tr id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_DXDataRow8" class="dxgvDataRow ic-grid-row01">
+					<td class="dxgvCommandColumn dxgv" align="center" style="border-style:None;"><input id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_DXSelBtn8" class="dxgvCommandColumnItem" type="checkbox" onclick="aspxGVSelectRow(&#39;ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid&#39;,8,this);"></td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell8_2" class="dxgv" style="text-align:Center;">688</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell8_3" class="dxgv" style="text-align:Center;">387</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell8_4" class="dxgv" style="text-align:Left;">Gaston Nicolas Walter</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell8_5" class="dxgv" style="text-align:Center;">30/06/2015</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell8_6" class="dxgv" style="text-align:Center;">21/06/2016</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell8_7" class="dxgv" style="text-align:Left;">Custodia</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell8_8" class="dxgv" style="text-align:Left;">2391</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell8_9" class="dxgv" style="text-align:Center;">Si</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell8_10" class="dxgv" style="text-align:Right;white-space:nowrap;">2.196,29</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell8_11" class="dxgv" style="text-align:Left;"> Alipack SA</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell8_12" class="dxgv" style="text-align:Left;border-right-width:0px;">EnCustodia</td>
+				</tr><tr id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_DXDataRow9" class="dxgvDataRow ic-grid-row01 dxgvDataRowAlt ic-grid-row02">
+					<td class="dxgvCommandColumn dxgv" align="center" style="border-style:None;"><input id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_DXSelBtn9" class="dxgvCommandColumnItem" type="checkbox" onclick="aspxGVSelectRow(&#39;ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid&#39;,9,this);"></td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell9_2" class="dxgv" style="text-align:Center;">688</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell9_3" class="dxgv" style="text-align:Center;">387</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell9_4" class="dxgv" style="text-align:Left;">Gaston Nicolas Walter</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell9_5" class="dxgv" style="text-align:Center;">30/06/2015</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell9_6" class="dxgv" style="text-align:Center;">21/06/2016</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell9_7" class="dxgv" style="text-align:Left;">Custodia</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell9_8" class="dxgv" style="text-align:Left;">813023</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell9_9" class="dxgv" style="text-align:Center;">Si</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell9_10" class="dxgv" style="text-align:Right;white-space:nowrap;">500,00</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell9_11" class="dxgv" style="text-align:Left;">Patricia Haydee Ilarri</td><td id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_tccell9_12" class="dxgv" style="text-align:Left;border-right-width:0px;">EnCustodia</td>
+				</tr>
+			</tbody></table><img id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_IADD" src="./WebResource(8).axd" alt="|" style="border-width:0px;position:absolute;visibility:hidden;"><img id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_IADU" src="./WebResource(9).axd" alt="|" style="border-width:0px;position:absolute;visibility:hidden;"><img id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_IDHF" src="./WebResource(10).axd" alt="Hide" style="border-width:0px;position:absolute;visibility:hidden;"><div class="dxgvPagerBottomPanel">
+				<input type="hidden"><table class="dxpControl" cellspacing="0" cellpadding="0" id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_DXPagerBottom" border="0" style="border-collapse:collapse;border-collapse:separate;">
+					<tbody><tr>
+						<td><table cellspacing="0" cellpadding="0" border="0" style="border-collapse:collapse;border-collapse:separate;">
+							<tbody><tr>
+								<td class="dxpSummary" style="white-space:nowrap;">Página 1 de 23 (223 items)</td><td style="width:4px;"><div style="height:1px;width:4px;overflow:hidden;">
+
+								</div></td><td class="dxpButton dxpDisabledButton dxpDisabled"><img src="./WebResource(11).axd" alt="Prev" style="height:17px;width:16px;border-width:0px;"></td><td style="width:4px;"><div style="height:1px;width:4px;overflow:hidden;">
+
+								</div></td><td class="dxpPageNumber dxpCurrentPageNumber">[1]</td><td style="width:4px;"><div style="height:1px;width:4px;overflow:hidden;">
+
+								</div></td><td class="dxpPageNumber" onclick="aspxGVPagerOnClick(&#39;ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid&#39;,&#39;PN1&#39;);" style="cursor:pointer;">2</td><td style="width:4px;"><div style="height:1px;width:4px;overflow:hidden;">
+
+								</div></td><td class="dxpPageNumber" onclick="aspxGVPagerOnClick(&#39;ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid&#39;,&#39;PN2&#39;);" style="cursor:pointer;">3</td><td style="width:4px;"><div style="height:1px;width:4px;overflow:hidden;">
+
+								</div></td><td class="dxpPageNumber" onclick="aspxGVPagerOnClick(&#39;ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid&#39;,&#39;PN3&#39;);" style="cursor:pointer;">4</td><td style="width:4px;"><div style="height:1px;width:4px;overflow:hidden;">
+
+								</div></td><td class="dxpPageNumber" onclick="aspxGVPagerOnClick(&#39;ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid&#39;,&#39;PN4&#39;);" style="cursor:pointer;">5</td><td style="width:4px;"><div style="height:1px;width:4px;overflow:hidden;">
+
+								</div></td><td class="dxpPageNumber" onclick="aspxGVPagerOnClick(&#39;ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid&#39;,&#39;PN5&#39;);" style="cursor:pointer;">6</td><td style="width:4px;"><div style="height:1px;width:4px;overflow:hidden;">
+
+								</div></td><td class="dxpPageNumber" onclick="aspxGVPagerOnClick(&#39;ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid&#39;,&#39;PN6&#39;);" style="cursor:pointer;">7</td><td style="width:4px;"><div style="height:1px;width:4px;overflow:hidden;">
+
+								</div></td><td class="dxpSummary">…</td><td style="width:4px;"><div style="height:1px;width:4px;overflow:hidden;">
+
+								</div></td><td class="dxpPageNumber" onclick="aspxGVPagerOnClick(&#39;ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid&#39;,&#39;PN20&#39;);" style="cursor:pointer;">21</td><td style="width:4px;"><div style="height:1px;width:4px;overflow:hidden;">
+
+								</div></td><td class="dxpPageNumber" onclick="aspxGVPagerOnClick(&#39;ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid&#39;,&#39;PN21&#39;);" style="cursor:pointer;">22</td><td style="width:4px;"><div style="height:1px;width:4px;overflow:hidden;">
+
+								</div></td><td class="dxpPageNumber" onclick="aspxGVPagerOnClick(&#39;ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid&#39;,&#39;PN22&#39;);" style="cursor:pointer;">23</td><td style="width:4px;"><div style="height:1px;width:4px;overflow:hidden;">
+
+								</div></td><td class="dxpButton" onclick="aspxGVPagerOnClick(&#39;ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid&#39;,&#39;PBN&#39;);" style="cursor:pointer;"><img src="./WebResource(12).axd" alt="Siguiente" style="height:17px;width:16px;border-width:0px;"></td>
+							</tr>
+						</tbody></table></td>
+					</tr>
+				</tbody></table>
+			</div><table id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_LP" class="dxgvLoadingPanel" cellspacing="0" cellpadding="0" border="0" style="border-collapse:collapse;left:0px;top:0px;z-index:30000;display:none;">
+				<tbody><tr>
+					<td class="dx"><img src="./WebResource(13).axd" alt="" align="middle" style="border-width:0px;"></td><td class="dx" style="padding-left:0px;">Cargando…</td>
+				</tr>
+			</tbody></table><div id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_LD" class="dxgvLoadingDiv" style="display:none;z-index:29999;position:absolute;">
+
+			</div><input type="hidden" name="ctl00$MainHolder$ConsultasDeDocGrilla$ChecksDataGrid$DXSelInput" id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_DXSelInput" value="UFT"><table id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_DXStyleTable" border="0" style="display:none;">
+				<tbody><tr>
+					<td></td>
+				</tr><tr class="dxgvEditingErrorRow">
+					<td class="dxgv" colspan="12" style="border-right-width:0px;"></td>
+				</tr><tr class="dxgvSelectedRow ic-grid-row01">
+					<td></td>
+				</tr><tr class="dxgvFocusedRow ic-grid-row01">
+					<td></td>
+				</tr><tr class="dxgvFocusedGroupRow">
+					<td></td>
+				</tr><tr class="dxgvDataRow ic-grid-row01">
+					<td></td>
+				</tr><tr class="dxgvDataRow ic-grid-row01 dxgvDataRowAlt ic-grid-row02">
+					<td></td>
+				</tr><tr class="dxgvDataRow ic-grid-row01">
+					<td></td>
+				</tr><tr class="dxgvDataRow ic-grid-row01 dxgvDataRowAlt ic-grid-row02">
+					<td></td>
+				</tr><tr class="dxgvDataRow ic-grid-row01">
+					<td></td>
+				</tr><tr class="dxgvDataRow ic-grid-row01 dxgvDataRowAlt ic-grid-row02">
+					<td></td>
+				</tr><tr class="dxgvDataRow ic-grid-row01">
+					<td></td>
+				</tr><tr class="dxgvDataRow ic-grid-row01 dxgvDataRowAlt ic-grid-row02">
+					<td></td>
+				</tr><tr class="dxgvDataRow ic-grid-row01">
+					<td></td>
+				</tr><tr class="dxgvDataRow ic-grid-row01 dxgvDataRowAlt ic-grid-row02">
+					<td></td>
+				</tr>
+			</tbody></table><input type="hidden" name="ctl00$MainHolder$ConsultasDeDocGrilla$ChecksDataGrid$CallbackState" id="ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid_CallbackState" value="/wEWBB4ERGF0YQXYIkFBQUFBTjhBQUFBQUFBQUFDZ0FBQUFBTUFBQUFFa1poWTNSdmNtbHVaME5vWlhGMVpYTkpaQkpHWVdOMGIzSnBibWREYUdWeGRXVnpTV1FEQUFBV1JtRmpkRzl5YVc1blUyOXNhV05wZEhWa1pYTkpaQlpHWVdOMGIzSnBibWRUYjJ4cFkybDBkV1JsYzBsa0F3QUFEa1psWTJoaFUyOXNhV05wZEhWa0RrWmxZMmhoVTI5c2FXTnBkSFZrQ0FBQUNVOXdaWEpoWTJsdmJnbFBjR1Z5WVdOcGIyNERBQUFVVDNCbGNtRmphVzl1UkdWelkzSnBjR05wYjI0VVQzQmxjbUZqYVc5dVJHVnpZM0pwY0dOcGIyNEhBQUVNVG5WdFpYSnZRMmhsY1hWbERFNTFiV1Z5YjBOb1pYRjFaUVFBQUJSR1pXTm9ZVlpsYm1OcGJXbGxiblJ2VkdWNGRCUkdaV05vWVZabGJtTnBiV2xsYm5SdlZHVjRkQWNBQVFkRFlYQnBkR0ZzQjBOaGNHbDBZV3dBdlFGVGVYTjBaVzB1VG5Wc2JHRmliR1ZnTVZ0YlUzbHpkR1Z0TGtSbFkybHRZV3dzSUcxelkyOXliR2xpTENCV1pYSnphVzl1UFRJdU1DNHdMakFzSUVOMWJIUjFjbVU5Ym1WMWRISmhiQ3dnVUhWaWJHbGpTMlY1Vkc5clpXNDlZamMzWVRWak5UWXhPVE0wWlRBNE9WMWRMQ0J0YzJOdmNteHBZaXdnVm1WeWMybHZiajB5TGpBdU1DNHdMQ0JEZFd4MGRYSmxQVzVsZFhSeVlXd3NJRkIxWW14cFkwdGxlVlJ2YTJWdVBXSTNOMkUxWXpVMk1Ua3pOR1V3T0RrQUFBaEdhWEp0WVc1MFpRaEdhWEp0WVc1MFpRY0FBQVpGYzNSaFpHOEdSWE4wWVdSdkJ3QUFCMVZ6ZFdGeWFXOEhWWE4xWVhKcGJ3Y0FBQXhCVEdGUGNtUmxibFJsZUhRTVFVeGhUM0prWlc1VVpYaDBCd0FCVkFBQUFCQkdZV04wYjNKcGJtZE1iM1JsYzBsa0VVWmxZMmhoVUhKbGMyVnVkR0ZqYVc5dUJFTnRZemNGUW1GdVkyOEpRbUZ1WTI5VVpYaDBDRk4xWTNWeWMyRnNEVlJwY0c5UGNHVnlZV05wYjI0R1EzVmxiblJoQjBScFoybDBiMVlRUm1WamFHRldaVzVqYVcxcFpXNTBieFpHWldOb1lWWmxibU5wYldsbGJuUnZRazlVWlhoMEMwTmhjR2wwWVd4UGJteDVCazF2Ym1Wa1lReERiMlJwWjI5TmIyNWxaR0VIVEdsaWNtRmtid2RTWldOMWNuTnZDRUZNWVU5eVpHVnVGVWx1WjNKbGMyOUVZWFJ2YzFKbFlXeHBlbUZrYnhkV1pYSnBaa052YldWeVkybGhiRkpsWVd4cGVtRmtZUlZXWlhKcFpsUmxZMjVwWTJGU1pXRnNhWHBoWkdFWlUzVndaWEoyYVhOcGIyNVdaWEpwWmxKbFlXeHBlbUZrWVJoR1lXTjBiM0pwYm1kRGFHVnhkV1ZGYzNSaFpHOXpTV1FNVFc5MGFYWnZRMjlrYVdkdkQwMXZkR2wyYjFKbFkyaGhlbTlKWkJGTmIzUnBkbTlFWlhOamNtbHdZMmx2YmhWTmIzUnBkbTlTWldOb1lYcHZSVzUxYlZSbGVIUVZSbUZqZEc5eWFXNW5RMmhsY1hWbFNXMWhaMlZ1Q1VsdVptOXliV0ZrYncxVGFXMWliMnh2VFc5dVpXUmhDRTV5YjA5eVpHVnVHMGx1WjNKbGMyRmtiMFJsYzNCMVpYTkVaVk52YkdsamFYUjFaQmhGYzNSaFpHOVNaV05sY0dOcGIyNUViMk4xYldWdWRHOExRMmhsWTJ0VGFXZHVaWElKUWs5RFlYQnBkR0ZzRUVKUFJYaHdhWEpoZEdsdmJrUmhkR1VLUjNKcFpGTjBZWFIxY3dkV2FYTnBZbXhsQzBOaGNHbDBZV3hVWlhoMERVSnZRMkZ3YVhSaGJGUmxlSFFPUm1seWJXRnVkR1ZPYjIxaWNtVVFSbWx5YldGdWRHVkJjR1ZzYkdsa2J3eEdhWEp0WVc1MFpVTjFhWFFQUm1seWJXRnVkR1ZCWjJWdVkybGhEa1pwY20xaGJuUmxRM1ZsYm5SaENrWnBjbTFoYm5SbFExQUlVbTkzVkdGclpXNEpVbTkzVkdGclpXNHlERkp2ZDFSaGEyVnVWWE5sY2g5RGIyMWxjbU5wWVd4V1pYSnBabWxqWVhScGIyNVNaV3BsWTNSVmMyVnlHRlJsWTI1cFkyRnNWbVZ5YVdaNVVtVnFaV04wVlhObGNoTkpibkIxZEVSaGRHRlNaV3BsWTNSVmMyVnlERVpwY20xaGJuUmxSVzVDVkFWUGNtUmxiZ1ZRYkdGNmJ3NURiM0p5WldOMGFXOXVSR0YwWlE5WGFYUm9SR2xtWm1WeVpXNWpaWE1UVjJsMGFFUnBabVpsY21WdVkyVnpWR1Y0ZEJOWGFYUm9SR0YwWlVScFptWmxjbVZ1WTJWekZWZHBkR2hCYlc5MWJuUkVhV1ptWlhKbGJtTmxjd2hKYlhCdmNuUmxNUWhKYlhCdmNuUmxNZ1pHWldOb1lURUdSbVZqYUdFeUNVTnZjbkpsWTNSbFpCZEdaV05vWVZabGJtTnBiV2xsYm5SdlJXNTBjbVZuWVJaRVpXWmxjbkpsWkVSbGJHbGlaWEo1VTNSaGRIVnpDMFJsYzJOeWFYQjBhVzl1R0VSbFptVnljbVZrUkdWc2FXSmxjbmxUZEdGMGRYTkpaQTFDY21sdVoxQm9lWE5wWTJGc0dVWmxZMmhoVm1WdVkybHRhV1Z1ZEc5RmJuUnlaV2RoWkc4SVVHOXpkRU52WkdVS1RHOWhaRUZ0YjNWdWRBaE1iMkZrUkdGMFpRWk1iMkZrUTFBU1NXNW1iM0p0WldSVWIwSmhibFJ2ZEdGc0ZFVnljbTl5VW1semEwUmxjMk55YVhCMGFXOXVEVkpwYzJ0QmRtRnBiR0ZpYkdVU1VtbHphMVJ2ZEdGc1QzQmxjbUYwYVc5dUVsSnBjMnRTWlhGMVpYTjBVM1JoZEdWSlpDTkdZV04wYjNKcGJtZERiMjUwY205c1RHbHRhWFJIWlc1bGNtRnNVM1JoZEdWSlpDWkdZV04wYjNKcGJtZERiMjUwY205c1JHOWpkVzFsYm5SSFpXNWxjbUZzVTNSaGRHVkpaQTFTWldObGNIUnBiMjVFWVhSbENVTm9aV05yU0dGemFBOUVaV3hwZG1WeWVWQmxibVJwYm1jSEFBY0FCd0FIQUFiLy93TUdyRFFEQnFVQ0NBSUU4QUUzOFk1eDBnZ0RCWXl2QVFBSEFnbEdZV04wYjNKcGJtY0VCVllpMlFRSEFoZ3hNQzh3Tmk4eU1ERTFJREV5T2pBd09qQXdJR0V1YlM0RkJSN2pBd0FIQWhVZ1EwOVVUeUJEUlU1VVVrOGdTVTVVUlVkU1FVd0hBZ2hCSUhabGJtTmxjZ2NDRFZKQlZVd2dUVUZTVkVsT1JWb0hBZ0pUYVFjQUJ3QUcvLzhEQnEwMEF3YW1BZ2dDQkZCUVk4U1ZjZElJQXdaN0FRY0NDRU4xYzNSdlpHbGhCQVZYSXRrRUJ3SVlNVEF2TURZdk1qQXhOU0F4TWpvd01Eb3dNQ0JoTG0wdUJRVndFUUVBQndJVklFTlBWRThnUTBWT1ZGSlBJRWxPVkVWSFVrRk1Cd0lLUlc1RGRYTjBiMlJwWVFjQ0RWSkJWVXdnVFVGU1ZFbE9SVm9IQWdKVGFRY0FCd0FHLy84REJxNDBBd2FuQWdnQ0JIQkJ1bjZXY2RJSUF3VWJwZ2tBQndJSlJHVnd3N056YVhSdkJBVllJdGtFQndJWU1UQXZNRFl2TWpBeE5TQXhNam93TURvd01DQmhMbTB1QlFZM0xnY0NGU0JEVDFSUElFTkZUbFJTVHlCSlRsUkZSMUpCVEFjQ0NVVnNhVzFwYm1Ga2J3Y0NEVkpCVlV3Z1RVRlNWRWxPUlZvSEFnSlRhUWNBQndBRy8vOERCcjAwQXdhd0FnZ0NCRURva1M1Q2dkSUlBd2FEQVFjQ0NFTjFjM1J2WkdsaEJBVnZnbUVCQndJWU1qRXZNRFl2TWpBeE5pQXhNam93TURvd01DQmhMbTB1QlFZL0JBY0NHa0Z1ZEc5dWFXOGdRV3hpWlhKMGJ5QkNZV05qYUdsbGRIUmhCd0lLUlc1RGRYTjBiMlJwWVFjQ0ZVZGhjM1J2YmlCT2FXTnZiR0Z6SUZkaGJIUmxjZ2NDQWxOcEJ3QUhBQWIvL3dNR3ZqUURCckFDQ0FJRVFPaVJMa0tCMGdnREJvTUJCd0lJUTNWemRHOWthV0VFQlhXSEJBSUhBaGd5TVM4d05pOHlNREUySURFeU9qQXdPakF3SUdFdWJTNEZCbG9JQndJYlJYTjBhR1Z5SUZKaGNYVmxiQ0JGYkdwaGVTQmtaU0JUZFd4cEJ3SUtSVzVEZFhOMGIyUnBZUWNDRlVkaGMzUnZiaUJPYVdOdmJHRnpJRmRoYkhSbGNnY0NBbE5wQndBSEFBYi8vd01HdnpRREJyQUNDQUlFUU9pUkxrS0IwZ2dEQm9NQkJ3SUlRM1Z6ZEc5a2FXRUVCVDNnQXdBSEFoZ3lNUzh3Tmk4eU1ERTJJREV5T2pBd09qQXdJR0V1YlM0RkE1VzhBQUFBQUFBQUFBQUFBQUFBQWdBSEFoWklkV2R2SUU5elkyRnlJRlJ2YldGemVtVjNjMnRwQndJS1JXNURkWE4wYjJScFlRY0NGVWRoYzNSdmJpQk9hV052YkdGeklGZGhiSFJsY2djQ0FsTnBCd0FIQUFiLy93TUd3RFFEQnJBQ0NBSUVRT2lSTGtLQjBnZ0RCb01CQndJSVEzVnpkRzlrYVdFRUJjL2RpZ0FIQWhneU1TOHdOaTh5TURFMklERXlPakF3T2pBd0lHRXViUzRGQnZRTEJ3SVRSR2xsWjI4Z1FXeGlaWEowYnlCTWIzQmxlZ2NDQ2tWdVEzVnpkRzlrYVdFSEFoVkhZWE4wYjI0Z1RtbGpiMnhoY3lCWFlXeDBaWElIQWdKVGFRY0FCd0FHLy84REJzRTBBd2F3QWdnQ0JFRG9rUzVDZ2RJSUF3YURBUWNDQ0VOMWMzUnZaR2xoQkFXYU1MRURCd0lZTWpFdk1EWXZNakF4TmlBeE1qb3dNRG93TUNCaExtMHVCUVoxQ0FjQ0VDQkNaWE56SUVObGJuUmxjaUJUVWt3SEFncEZia04xYzNSdlpHbGhCd0lWUjJGemRHOXVJRTVwWTI5c1lYTWdWMkZzZEdWeUJ3SUNVMmtIQUFjQUJ2Ly9Bd2JDTkFNR3NBSUlBZ1JBNkpFdVFvSFNDQU1HZ3dFSEFnaERkWE4wYjJScFlRUUdWd2tIQWhneU1TOHdOaTh5TURFMklERXlPakF3T2pBd0lHRXViUzRGQSsxWkF3QUFBQUFBQUFBQUFBQUFBZ0FIQWdzZ1FXeHBjR0ZqYXlCVFFRY0NDa1Z1UTNWemRHOWthV0VIQWhWSFlYTjBiMjRnVG1samIyeGhjeUJYWVd4MFpYSUhBZ0pUYVFjQUJ3QUcvLzhEQnNNMEF3YXdBZ2dDQkVEb2tTNUNnZElJQXdhREFRY0NDRU4xYzNSdlpHbGhCQVhmWnd3QUJ3SVlNakV2TURZdk1qQXhOaUF4TWpvd01Eb3dNQ0JoTG0wdUJRYjBBUWNDRmxCaGRISnBZMmxoSUVoaGVXUmxaU0JKYkdGeWNta0hBZ3BGYmtOMWMzUnZaR2xoQndJVlIyRnpkRzl1SUU1cFkyOXNZWE1nVjJGc2RHVnlCd0lDVTJrPR4FU3RhdGUFkAFCdzBIQUFJQkJ3QUNBQWNCQWdFSEFnSUJCd01DQVFjRUFnRUhCUUlCQndZQ0FRY0hBZ0VIQ0FJQkJ3a0NBUWNLQWdFSEN3SUJCd0FIQUFjQUJ3QUNBQWIvL3drQ0VrWmhZM1J2Y21sdVowTm9aWEYxWlhOSlpBa0NBQUlBQXdjRUFnQUhBQUlCQndBQ0FRY0E="></td>
+		</tr>
+	</tbody></table><script id="dxss_993426425" type="text/javascript">
+<!--
+
+var dxo = new ASPxClientGridView('ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid');
+window['ChecksDataGridASPxGridView'] = dxo;
+dxo.callBack = function(arg) { WebForm_DoCallback('ctl00$MainHolder$ConsultasDeDocGrilla$ChecksDataGrid',arg,aspxCallback,'ctl00_MainHolder_ConsultasDeDocGrilla_ChecksDataGrid',aspxCallbackError,true); };
+dxo.uniqueID = 'ctl00$MainHolder$ConsultasDeDocGrilla$ChecksDataGrid';
+dxo.RowClick.AddHandler(function(sender, args) { OnRowClick(sender, args); });
+dxo.callBacksEnabled=true;
+dxo.pageRowCount=10;
+dxo.selectedWithoutPageRowCount=0;
+dxo.visibleStartIndex=0;
+dxo.focusedRowIndex=-1;
+dxo.allowFocusedRow=false;
+dxo.allowMultiSelection=false;
+dxo.isColumnsResizable=false;
+dxo.isVerticalScrolling=false;
+dxo.isMainControlResizable=false;
+dxo.callbackOnFocusedRowChanged=false;
+dxo.callbackOnSelectionChanged=false;
+dxo.autoFilterDelay='1200';
+dxo.ClearColumns();
+dxo.CreateColumn('',0,null,1);
+dxo.CreateColumn('',1,'FactoringChequesId',0);
+dxo.CreateColumn('',2,'FactoringSolicitudesId',1);
+dxo.CreateColumn('',3,'Operacion',1);
+dxo.CreateColumn('',4,'Usuario',1);
+dxo.CreateColumn('',5,'FechaSolicitud',1);
+dxo.CreateColumn('',6,'FechaVencimientoText',1);
+dxo.CreateColumn('',7,'OperacionDescripcion',1);
+dxo.CreateColumn('',8,'NumeroCheque',1);
+dxo.CreateColumn('',9,'ALaOrdenText',1);
+dxo.CreateColumn('',10,'Capital',1);
+dxo.CreateColumn('',11,'Firmante',1);
+dxo.CreateColumn('',12,'Estado',1);
+dxo.keys=['13484','13485','13486','13501','13502','13503','13504','13505','13506','13507'];
+dxo.InlineInitialize();
+
+//-->
+</script>
+    
+         
+<input name="ctl00$MainHolder$ConsultasDeDocGrilla$ctl00$MainHolder$ConsultasDeDocGrilla$TransactionsHistoryPanel_hdnMinimizeState" type="text" value="False" id="ctl00_MainHolder_ConsultasDeDocGrilla_ctl00_MainHolder_ConsultasDeDocGrilla_TransactionsHistoryPanel_hdnMinimizeState" class="ic-control-text" onkeypress="return validCharactersOnly(this, event, &quot;&quot;)" style="display:none">
+</div></td>
+					</tr>
+				</tbody></table></td>
+			</tr>
+		</tbody></table>
+            <table width="100%">                
+                <tbody><tr>
+                    <td nowrap="nowrap" style="width: 100%">
+                        <span id="ctl00_MainHolder_lblMensaje" class="ic-message"></span>
+                    </td>
+                    <td align="right" nowrap="nowrap">
+                         <a onclick="return ValidateOneSelection();" id="ctl00_MainHolder_btnVerImagen" class="ic-button-navigation-large" href="javascript:WebForm_DoPostBackWithOptions(new WebForm_PostBackOptions(&quot;ctl00$MainHolder$btnVerImagen&quot;, &quot;&quot;, true, &quot;&quot;, &quot;&quot;, false, true))">Ver Imagen</a>
+                    </td>
+                    <td align="right" nowrap="nowrap">
+                        <a id="ctl00_MainHolder_btnGenerarTxt" class="ic-button-navigation" href="javascript:WebForm_DoPostBackWithOptions(new WebForm_PostBackOptions(&quot;ctl00$MainHolder$btnGenerarTxt&quot;, &quot;&quot;, true, &quot;&quot;, &quot;&quot;, false, true))">Generar TXT</a>
+                    </td>
+                    <td align="right" nowrap="nowrap">
+                        <a id="ctl00_MainHolder_ExportarExcel" class="ic-button-navigation-large" href="javascript:WebForm_DoPostBackWithOptions(new WebForm_PostBackOptions(&quot;ctl00$MainHolder$ExportarExcel&quot;, &quot;&quot;, true, &quot;&quot;, &quot;&quot;, false, true))">Exportar Excel</a>
+                    </td>
+                </tr>
+            </tbody></table>  
+        
+
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="right">
+                                        <div id="ctl00_validationSummaryFooter" style="color:Red;font-size:10px;display:none;">
+
+		</div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="95%" align="center">
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                            <tbody><tr>
+                                                <td align="right">
+                                                    
+                                                    
+                                                </td>
+                                            </tr>
+                                        </tbody></table>
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="ic-content-footer">
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                <tbody><tr class="ic-content-footer-dottedline">
+                                    <td align="right" nowrap="nowrap" style="width: 90%">
+                                    </td>
+                                    <td align="right" nowrap="nowrap" style="width: 10%">
+                                        <a id="ctl00_LinkButtonTermsAndConditions" class="ic-grid-link" href="javascript:__doPostBack(&#39;ctl00$LinkButtonTermsAndConditions&#39;,&#39;&#39;)">Términos y Condiciones</a>
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                </tbody></table>
+            </td>
+		<td id="ctl00_cellContentRight" class="ic-content-space-top-right" valign="top" style="display:none;">
+                <table class="ic-content-right" border="0" cellspacing="0" cellpadding="0">
+                    <tbody><tr>
+                        <td>
+                            <img src="./pixel.gif" width="8" height="1">
+                        </td>
+                        <td class="ic-right-panel">
+                            <table border="0" cellpadding="0" cellspacing="0" class="ic-right-panel-content">
+                                <tbody><tr>
+                                    <td width="8" class="ic-right-panel-collapse">
+                                        <input type="image" name="ctl00$imageButtonCollapse" id="ctl00_imageButtonCollapse" src="./bot-right-collapse.gif" style="height:47px;width:9px;border-width:0px;">
+                                    </td>
+                                    
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                </tbody></table>
+            </td>
+	</tr>
+</tbody></table>
+
+    
+    
+<script type="text/javascript">
+//<![CDATA[
+var Page_ValidationSummaries =  new Array(document.getElementById("ctl00_validationSummaryFooter"));
+var Page_Validators =  new Array(document.getElementById("ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_requiredFieldValidatorDateFrom"), document.getElementById("ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_dateValidatorDateFrom"), document.getElementById("ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_requiredFieldValidatorDateTo"), document.getElementById("ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_dateValidatorDateTo"), document.getElementById("ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_CompareValidator1"), document.getElementById("ctl00_MainHolder_ConsultaDeDocFiltro_NroChequeComparaValidator"));
+//]]>
+</script>
+
+<script type="text/javascript">
+//<![CDATA[
+var ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_requiredFieldValidatorDateFrom = document.all ? document.all["ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_requiredFieldValidatorDateFrom"] : document.getElementById("ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_requiredFieldValidatorDateFrom");
+ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_requiredFieldValidatorDateFrom.controltovalidate = "ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_dateTextBoxDateFrom";
+ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_requiredFieldValidatorDateFrom.focusOnError = "t";
+ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_requiredFieldValidatorDateFrom.errormessage = "Campo requerido";
+ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_requiredFieldValidatorDateFrom.display = "Dynamic";
+ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_requiredFieldValidatorDateFrom.evaluationfunction = "RequiredFieldValidatorEvaluateIsValid";
+ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_requiredFieldValidatorDateFrom.initialvalue = "";
+var ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_dateValidatorDateFrom = document.all ? document.all["ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_dateValidatorDateFrom"] : document.getElementById("ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_dateValidatorDateFrom");
+ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_dateValidatorDateFrom.controltovalidate = "ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_dateTextBoxDateFrom";
+ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_dateValidatorDateFrom.focusOnError = "t";
+ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_dateValidatorDateFrom.errormessage = "Formato de fecha inválida.";
+ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_dateValidatorDateFrom.display = "Dynamic";
+ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_dateValidatorDateFrom.evaluationfunction = "CustomValidatorEvaluateIsValid";
+ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_dateValidatorDateFrom.clientvalidationfunction = "isValidDate";
+var ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_requiredFieldValidatorDateTo = document.all ? document.all["ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_requiredFieldValidatorDateTo"] : document.getElementById("ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_requiredFieldValidatorDateTo");
+ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_requiredFieldValidatorDateTo.controltovalidate = "ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_dateTextBoxDateTo";
+ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_requiredFieldValidatorDateTo.focusOnError = "t";
+ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_requiredFieldValidatorDateTo.errormessage = "Campo requerido";
+ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_requiredFieldValidatorDateTo.display = "Dynamic";
+ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_requiredFieldValidatorDateTo.evaluationfunction = "RequiredFieldValidatorEvaluateIsValid";
+ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_requiredFieldValidatorDateTo.initialvalue = "";
+var ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_dateValidatorDateTo = document.all ? document.all["ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_dateValidatorDateTo"] : document.getElementById("ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_dateValidatorDateTo");
+ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_dateValidatorDateTo.controltovalidate = "ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_dateTextBoxDateTo";
+ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_dateValidatorDateTo.focusOnError = "t";
+ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_dateValidatorDateTo.errormessage = "Formato de fecha inválida.";
+ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_dateValidatorDateTo.display = "Dynamic";
+ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_dateValidatorDateTo.evaluationfunction = "CustomValidatorEvaluateIsValid";
+ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_dateValidatorDateTo.clientvalidationfunction = "isValidDate";
+var ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_CompareValidator1 = document.all ? document.all["ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_CompareValidator1"] : document.getElementById("ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_CompareValidator1");
+ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_CompareValidator1.controltovalidate = "ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_dateTextBoxDateTo";
+ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_CompareValidator1.focusOnError = "t";
+ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_CompareValidator1.errormessage = "\'Hasta\' debe ser mayor que \'Desde\'.";
+ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_CompareValidator1.display = "Dynamic";
+ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_CompareValidator1.type = "Date";
+ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_CompareValidator1.dateorder = "dmy";
+ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_CompareValidator1.cutoffyear = "2029";
+ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_CompareValidator1.century = "2000";
+ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_CompareValidator1.evaluationfunction = "CompareValidatorEvaluateIsValid";
+ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_CompareValidator1.controltocompare = "ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_dateTextBoxDateFrom";
+ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_CompareValidator1.controlhookup = "ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_dateTextBoxDateFrom";
+ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_CompareValidator1.operator = "GreaterThanEqual";
+var ctl00_MainHolder_ConsultaDeDocFiltro_NroChequeComparaValidator = document.all ? document.all["ctl00_MainHolder_ConsultaDeDocFiltro_NroChequeComparaValidator"] : document.getElementById("ctl00_MainHolder_ConsultaDeDocFiltro_NroChequeComparaValidator");
+ctl00_MainHolder_ConsultaDeDocFiltro_NroChequeComparaValidator.controltovalidate = "ctl00_MainHolder_ConsultaDeDocFiltro_itbNroChequeHasta";
+ctl00_MainHolder_ConsultaDeDocFiltro_NroChequeComparaValidator.errormessage = "Desde debe ser menor que Hasta";
+ctl00_MainHolder_ConsultaDeDocFiltro_NroChequeComparaValidator.display = "Dynamic";
+ctl00_MainHolder_ConsultaDeDocFiltro_NroChequeComparaValidator.type = "Double";
+ctl00_MainHolder_ConsultaDeDocFiltro_NroChequeComparaValidator.decimalchar = ",";
+ctl00_MainHolder_ConsultaDeDocFiltro_NroChequeComparaValidator.evaluationfunction = "CompareValidatorEvaluateIsValid";
+ctl00_MainHolder_ConsultaDeDocFiltro_NroChequeComparaValidator.controltocompare = "ctl00_MainHolder_ConsultaDeDocFiltro_itbNroChequeDesde";
+ctl00_MainHolder_ConsultaDeDocFiltro_NroChequeComparaValidator.controlhookup = "ctl00_MainHolder_ConsultaDeDocFiltro_itbNroChequeDesde";
+ctl00_MainHolder_ConsultaDeDocFiltro_NroChequeComparaValidator.operator = "GreaterThanEqual";
+var ctl00_validationSummaryFooter = document.all ? document.all["ctl00_validationSummaryFooter"] : document.getElementById("ctl00_validationSummaryFooter");
+ctl00_validationSummaryFooter.headertext = "Formulario inválido, por favor revise los datos ingresados:";
+ctl00_validationSummaryFooter.showsummary = "False";
+//]]>
+</script>
+
+
+<script type="text/javascript">
+//<![CDATA[
+
+var Page_ValidationActive = false;
+if (typeof(ValidatorOnLoad) == "function") {
+    ValidatorOnLoad();
+}
+
+function ValidatorOnSubmit() {
+    if (Page_ValidationActive) {
+        return ValidatorCommonOnSubmit();
+    }
+    else {
+        return true;
+    }
+}
+        
+WebForm_InitCallback();
+document.getElementById('ctl00_validationSummaryFooter').dispose = function() {
+    Array.remove(Page_ValidationSummaries, document.getElementById('ctl00_validationSummaryFooter'));
+}
+Sys.Application.initialize();
+Sys.Application.add_init(function() {
+    $create(AjaxControlToolkit.CalendarBehavior, {"button":$get("ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_ImgBntCalc"),"format":"dd/MM/yyyy","id":"ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_calenDate"}, null, null, $get("ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_dateTextBoxDateFrom"));
+});
+Sys.Application.add_init(function() {
+    $create(AjaxControlToolkit.MaskedEditBehavior, {"ClientStateFieldID":"ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_MaskedEditExtenderdateTextBox_ClientState","CultureAMPMPlaceholder":"a.m.;p.m.","CultureCurrencySymbolPlaceholder":"$U","CultureDateFormat":"DMY","CultureDatePlaceholder":"/","CultureDecimalPlaceholder":",","CultureName":"es-UY","CultureThousandsPlaceholder":".","CultureTimePlaceholder":":","ErrorTooltipEnabled":true,"Mask":"99/99/9999","MaskType":1,"id":"ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_MaskedEditExtenderdateTextBox"}, null, null, $get("ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_dateTextBoxDateFrom"));
+});
+
+document.getElementById('ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_requiredFieldValidatorDateFrom').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_requiredFieldValidatorDateFrom'));
+}
+
+document.getElementById('ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_dateValidatorDateFrom').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_dateValidatorDateFrom'));
+}
+Sys.Application.add_init(function() {
+    $create(AjaxControlToolkit.CalendarBehavior, {"button":$get("ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_ImgBntCalcTo"),"format":"dd/MM/yyyy","id":"ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_calDate"}, null, null, $get("ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_dateTextBoxDateTo"));
+});
+Sys.Application.add_init(function() {
+    $create(AjaxControlToolkit.MaskedEditBehavior, {"ClientStateFieldID":"ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_MaskedEditExtenderdateTextBoxto_ClientState","CultureAMPMPlaceholder":"a.m.;p.m.","CultureCurrencySymbolPlaceholder":"$U","CultureDateFormat":"DMY","CultureDatePlaceholder":"/","CultureDecimalPlaceholder":",","CultureName":"es-UY","CultureThousandsPlaceholder":".","CultureTimePlaceholder":":","ErrorTooltipEnabled":true,"Mask":"99/99/9999","MaskType":1,"id":"ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_MaskedEditExtenderdateTextBoxto"}, null, null, $get("ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_dateTextBoxDateTo"));
+});
+
+document.getElementById('ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_requiredFieldValidatorDateTo').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_requiredFieldValidatorDateTo'));
+}
+
+document.getElementById('ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_dateValidatorDateTo').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_dateValidatorDateTo'));
+}
+
+document.getElementById('ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_CompareValidator1').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_ConsultaDeDocFiltro_SeleccionPediodo_CompareValidator1'));
+}
+
+document.getElementById('ctl00_MainHolder_ConsultaDeDocFiltro_NroChequeComparaValidator').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_ConsultaDeDocFiltro_NroChequeComparaValidator'));
+}
+//]]>
+</script>
+</form>
+
+
+<div class="ui-dialog ui-widget ui-widget-content ui-corner-all" tabindex="-1" role="dialog" aria-labelledby="ui-dialog-title-sessionTimeoutWarning" style="display: none; z-index: 1000; outline: 0px;"><div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix"><span class="ui-dialog-title" id="ui-dialog-title-sessionTimeoutWarning">&nbsp;</span><a href="http://10.1.75.104:9080/Pages/Factoring/ConsultaDeDocumentos.aspx#" class="ui-dialog-titlebar-close ui-corner-all" role="button" style="display: none;"><span class="ui-icon ui-icon-closethick">close</span></a></div><div id="sessionTimeoutWarning" style="background-color: rgb(255, 255, 255); padding: 0px; height: 100%;" class="ui-dialog-content ui-widget-content">
+        <div id="sessionTimeoutWarningHeader">
+            <table width="100%">
+                 <tbody><tr>
+                    <td colspan="2" align="center" class="ic-form-data-modal">
+                        La sesión finalizará en <span id="sessionTimeoutCountdown"></span>&nbsp;segundos.
+                        Para seguir operando seleccioná “Continuar”
+                    </td>
+                </tr>
+            </tbody></table>
+        </div>
+    </div><div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix"><div class="ui-dialog-buttonset"><button type="button">Continuar </button><button type="button">Finalizar sesión</button></div></div></div></body></html>

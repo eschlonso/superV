@@ -1,0 +1,467 @@
+
+<!-- saved from url=(0070)http://10.1.75.104:9080/Pages/Factoring/FactoringDeferredDelivery.aspx -->
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><script src="./jquery-1.7.2.min.js.descarga" type="text/javascript"></script>
+<script src="./jquery-1.7.1.js.descarga" type="text/javascript"></script>
+<script src="./jquery-ui-1.8.19.custom.min.js.descarga" type="text/javascript"></script>
+<script src="./jquery.formatCurrency-1.4.0.js.descarga" type="text/javascript"></script>
+<script src="./idle-timer.js.descarga" type="text/javascript"></script>
+<script src="./idle-timer.min.js.descarga" type="text/javascript"></script>
+<script language="javascript" type="text/javascript">
+
+function Logout() {
+        if (confirm("¿ Desea salir del sistema ?") == true) {
+                    
+            window.location =  '/'+ "Logout.aspx";
+        }
+       
+    }
+    
+var focusedFormControl;    
+var dateFormat = 'dd/mm/aaaa';
+var applicationRoot = '/';      
+function OnRowClick(sender, args) {
+    if (sender.GetSelectedRowCount() == 0) {
+        sender.UnselectRowOnPage(args.visibleIndex);
+        SetPageLinkData("");
+    }
+    else {
+        _aspxClearSelection();
+        sender._selectAllRowsOnPage(false);
+        sender.SelectRow(args.visibleIndex, true);
+        SetPageLinkData(sender.GetRowKey(args.visibleIndex));
+    }
+}
+
+if (history.forward(1))
+{
+
+    location.replace(history.forward(1))
+} 
+
+function PrintPage() {
+
+    window.print();
+}
+
+function GoMyOption(select)
+{
+    var url = select.options[select.selectedIndex].value;
+    if( url != "")
+        window.location = url;
+}
+
+function GoFavourites(select)
+{
+
+    var url = select.options[select.selectedIndex].value;
+    if( url != "")
+        window.location = url;
+}
+
+function GoPrint()
+{
+
+window.print();
+}
+
+function addEvent(elm, evType, fn, useCapture)
+{
+
+  if (elm.addEventListener){
+    elm.addEventListener(evType, fn, useCapture);
+    return true;
+  } else if (elm.attachEvent){
+    var r = elm.attachEvent("on"+evType, fn);
+    return r;
+  } else {
+    alert("Handler could not be removed");
+  }
+} 
+
+function SetPageLinkData(data)
+{
+    pageLinkData = document.getElementById('PageLinkData');
+    pageLinkData.value = data;
+}
+
+function SetPageLinkUrl(url)
+{
+    pageLinkUrl = document.getElementById('PageLinkUrl');
+    pageLinkUrl.value = url;
+}
+
+function doPageLink(id)
+{
+    __doPostBack(id, 'PageLinkEvent');
+}
+
+function imprimirEstadoCuenta()
+{
+											
+    var ficha = document.getElementById('printDiv');		
+    var ventimp = window.open('', 'popimpr','height=450, width=550, scrollbars=1');																						
+    var fichaHTML = new String(ficha.innerHTML);
+    fichaHTML = fichaHTML.replace('Seleccione un período y oprima "Consultar".'," ");
+    //var i = document.getElementById('ctl00_MainHolder_panelDetalle_imgPlusMinus');
+    var html  = "<html>\n<head>\n<link rel=\"stylesheet\" type=\"text/css\" href=\"..\\..\\App_Themes\\Default\\Default.css \" />" 
+                + "</head><table width=\"100%\"><tr bgcolor=\"#FF0000\"><td><img src=\"..\\..\\App_Themes\\Default\\Images\\logoSantander.gif\" /></td></tr></table>" 
+                + fichaHTML 
+                + "</html>";
+    ventimp.document.write( html );
+    ventimp.document.close();
+    ventimp.print( );
+    ventimp.close();
+					
+}
+
+ function removeInvalidCharacters(control) {
+ 
+            !(/^[A-zÑñ0-9 ]*$/i).test(control.value) ? control.value = control.value.replace(/[^A-zÑñ0-9 ]/ig, '') : null
+        }
+        
+  function removeInvalidNumbers(control) {
+            !(/^[0-9,]*$/i).test(control.value) ? control.value = control.value.replace(/[^0-9,]/ig, '') : null
+        }
+function showLoading()
+{
+//debugger;
+    // aquí le pasamos la clase o id de nuestro div a centrar (en este caso "caja")
+    $('.ic-loading').css({
+       position:'absolute',
+       left: ($('#mainContainer').width()/2 - $('.ic-loading').outerWidth())/2,
+       //top: ($('#mainContainer').height()/2 - $('.ic-loading').outerHeight())/2
+       top: ($('#mainContainer').height()/2 - $('ic-loading').height()/2)
+    });
+    
+    $('#mainContainer').css('display','none');
+    $('#ic-loading').css('display','block');
+}
+//ModalDialog SessionTimeout
+var idleTime = (parseInt('1170') * 1000); // number of miliseconds until the user is considered idle
+var initialSessionTimeoutMessage = "La sesión finalizará en <span id='sessionTimeoutCountdown'></span> segundos. Para seguir operando seleccioná “Continuar”<br /><br />";
+var sessionTimeoutCountdownId = 'sessionTimeoutCountdown';
+var redirectAfter = (parseInt('30')) ; // number of seconds to wait before redirecting the user
+var redirectTo = '/' + "Logout.aspx"; // URL to relocate the user to once they have timed out
+var keepAliveURL = ''; // URL to call to keep the session alive
+var expiredMessage = ''; // message to show user when the countdown reaches 0
+var running = false; // var to check if the countdown is running 
+var timer; // reference to the setInterval timer so it can be stopped 
+var timerSB;  
+var timeout;  
+    $(document).ready(function() {     
+// create the warning window and set autoOpen to false  
+      var sessionTimeoutWarningDialog = $("#sessionTimeoutWarning"); 
+    $(sessionTimeoutWarningDialog).dialog({         
+        title: '',       
+        autoOpen: false,    // set this to false so we can manually open it         
+        closeOnEscape: false,         
+        draggable: false,         
+        width: 460,         
+        minHeight: 150,         
+        modal: true,           
+        beforeclose: function() { // bind to beforeclose so if the user clicks on the "X" or escape to close the dialog, it will work too             // stop the timer             
+            clearInterval(timer);               // stop countdown
+            running = false;               // ajax call to keep the server-side session alive    
+                  
+            $.ajax({               
+                url: keepAliveURL,               
+                async: false            
+            });         
+        },         
+        buttons: {      
+             'Continuar ': function() {                 
+                // close dialog 
+                window.location.reload();//BM24925: Se agrega esto para que el expired de una cookie se actualice y no se cierre la sesión luego de hacer click en continuar al terminar el timeout del webconfig. El valor del expired se pone en la tabla configuration en la clave SessionMaxMinutes.
+                //var valor = getCookie('ICBWebLogin'); //Esta función la dejo por las dudas, pero no la pude hacer andar poque el document.cookie no me trae las cookies del explorador.                
+                $(this).dialog('close');
+                clearInterval(timerSB);    
+                window.status = "";      
+                StatusBarCountDown();     
+            },
+            'Finalizar sesión': function() {                 
+                // close dialog                 
+                $(sessionTimeoutWarningDialog).html(expiredMessage);
+                $(sessionTimeoutWarningDialog).dialog('disable');                     
+                window.parent.location = redirectTo;           
+            }         
+        },         
+        resizable: false,         
+        open: function() {
+            $('body').css('overflow','auto');         
+        },         
+        close: function() {             
+            // reset overflow             
+            $('body').css('overflow','auto');         
+        }  
+           
+    }); // end of dialog  
+    jQuery("a.ui-dialog-titlebar-close").hide(); 
+          
+    // start the idle timer
+    $.idleTimer(idleTime);
+ 
+});
+
+// BM24925: Función para recuperar el valor de una cookie.
+// name - nombre de la cookie deseada
+// devuelve un string conteniendo el valor de la cookie especificada o null si la cookie no existe
+
+function getCookie(name){
+var micookie = (document.cookie.indexOf('ICBWebLogin=') === -1 ? '' : ("; " + document.cookie).split('; ICBWebLogin=')[1].split(';')[0]);
+
+  var cname = name + "=";               
+  var dc = document.cookie;             
+  if (dc.length > 0) {              
+    begin = dc.indexOf(cname);       
+    if (begin != -1) {           
+      begin += cname.length;       
+      end = dc.indexOf(";", begin);
+      if (end == -1) end = dc.length;
+        return unescape(dc.substring(begin, end));
+    } 
+  }
+  return null;
+}
+
+//Status Bar Countdown Script
+function StatusBarCountDown() 
+{
+    var redirectAfter = (parseInt('30'));
+    var timeout = '1200000';   
+    var redirectTo = '/' + "Logout.aspx"; // URL to relocate the user to once they have timed out   
+    timerSB = setInterval(function(){
+    timeout -= 1000;
+    if(timeout == redirectAfter * 1000)
+    {
+        window.focus();
+    }
+   if(timeout < redirectAfter * 1000)
+   {
+        $("#sessionTimeoutCountdown").html(timeout/1000);
+        $("#sessionTimeoutWarning").dialog('open'); 
+   }
+   if (timeout < 100)
+   {
+        $("#sessionTimeoutWarning").html(expiredMessage);
+        $("#sessionTimeoutWarning").dialog('disable');                     
+        window.parent.location = redirectTo;
+        clearInterval(timerSB);    
+        window.status = "";     
+   }
+        
+   window.status = "Su sesión expirará " + time(timeout) + " minutos";        
+    }, 1000);   
+         
+   function two(x)
+   {
+    return ((x > 9) ? "" : "0") + x
+   }   
+  
+   function time(ms)
+   {   
+       var t = '';   
+       var sec = Math.floor(ms / 1000);   
+       ms = ms % 1000   
+
+       var min = Math.floor(sec / 60);   
+       sec = sec % 60;   
+       t = two(sec);   
+
+       var hr = Math.floor(min / 60);   
+       min = min % 60;   
+       t = two(min) + ":" + t;   
+    return t;
+   }
+}
+
+StatusBarCountDown();
+
+
+
+</script>
+
+<link href="./Default.css" type="text/css" rel="stylesheet"><link href="./jquery-ui-1.8.19.custom.css" type="text/css" rel="stylesheet"><link href="./WebResource(2).axd" type="text/css" rel="stylesheet"><title>
+	Bandeja de Pendientes
+</title></head>
+<body>
+    <form name="aspnetForm" method="post" action="http://10.1.75.104:9080/Pages/Factoring/FactoringDeferredDelivery.aspx" onsubmit="javascript:return WebForm_OnSubmit();" id="aspnetForm">
+<div>
+<input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="">
+<input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="">
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUKLTQwMzU5MzE3MA9kFgJmD2QWAgIBD2QWAgIBD2QWAmYPZBYEAgEPZBYEAgIPDxYCHgRUZXh0BRVCYW5kZWphIGRlIFBlbmRpZW50ZXNkZAIHD2QWAgIBD2QWBGYPZBYEZg9kFgICAQ9kFghmD2QWAmYPZBYCZg9kFgICAQ9kFgJmD2QWBAIBD2QWAgIBDw8WBB4LQ2hhcnNGaWx0ZXIFDl5bXjo7XDw+J1wiXSokHhJDaGFyc0ZpbHRlckVuYWJsZWRnFgIeCm9ua2V5cHJlc3MFJnJldHVybiBudW1iZXJzb25seSh0aGlzLCBldmVudCwgZmFsc2UpZAIDD2QWAgIBDw8WBB8BBQ5eW146O1w8PidcIl0qJB8CZxYCHwMFJnJldHVybiBudW1iZXJzb25seSh0aGlzLCBldmVudCwgZmFsc2UpZAIBDw8WAh4NU2VsZWN0ZWRNb250aAUBMGQWAmYPZBYCZg9kFgICAQ9kFgJmD2QWCAIBD2QWAgIBDw8WBh8BBQ5eW146O1w8PidcIl0qJB8CZx4JTWF4TGVuZ3RoZhYEHgdvbmNsaWNrBQ92YWxpZGF0ZSh0aGlzKTsfAwUjcmV0dXJuIGRhdGVOdW1iZXJzT25seSh0aGlzLCBldmVudClkAgIPZBYCAgUPFhoeFkN1bHR1cmVUaW1lUGxhY2Vob2xkZXIFAToeG0N1bHR1cmVUaG91c2FuZHNQbGFjZWhvbGRlcgUBLh4RQ3VsdHVyZURhdGVGb3JtYXQFA0RNWR4WQ3VsdHVyZURhdGVQbGFjZWhvbGRlcgUBLx4MRGlzcGxheU1vbmV5CymGAUFqYXhDb250cm9sVG9vbGtpdC5NYXNrZWRFZGl0U2hvd1N5bWJvbCwgQWpheENvbnRyb2xUb29sa2l0LCBWZXJzaW9uPTMuMC4yMDIyOS4yMDg0MywgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj0yOGYwMWIwZTg0YjZkNTNlAB4OQWNjZXB0TmVnYXRpdmULKwQAHhNPdmVycmlkZVBhZ2VDdWx0dXJlaB4ZQ3VsdHVyZURlY2ltYWxQbGFjZWhvbGRlcgUBLB4WQ3VsdHVyZUFNUE1QbGFjZWhvbGRlcgUJYS5tLjtwLm0uHiBDdWx0dXJlQ3VycmVuY3lTeW1ib2xQbGFjZWhvbGRlcgUCJFUeC0N1bHR1cmVOYW1lBQVlcy1VWR4OSW5wdXREaXJlY3Rpb24LKYoBQWpheENvbnRyb2xUb29sa2l0Lk1hc2tlZEVkaXRJbnB1dERpcmVjdGlvbiwgQWpheENvbnRyb2xUb29sa2l0LCBWZXJzaW9uPTMuMC4yMDIyOS4yMDg0MywgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj0yOGYwMWIwZTg0YjZkNTNlAB4KQWNjZXB0QW1QbWhkAgQPZBYCAgEPDxYGHwEFDl5bXjo7XDw+J1wiXSokHwJnHwVmFgQfBgUPdmFsaWRhdGUodGhpcyk7HwMFI3JldHVybiBkYXRlTnVtYmVyc09ubHkodGhpcywgZXZlbnQpZAIFD2QWAgIFDxYaHwcFATofCAUBLh8JBQNETVkfCgUBLx8LCysEAB8MCysEAB8NaB8OBQEsHw8FCWEubS47cC5tLh8QBQIkVR8RBQVlcy1VWR8SCysFAB8TaGQCAw8PFgYfBQILHwEFDl5bXjo7XDw+J1wiXSokHwJnFgIfAwUmcmV0dXJuIG51bWJlcnNvbmx5KHRoaXMsIGV2ZW50LCBmYWxzZSlkAgQPDxYEHwEFDl5bXjo7XDw+J1wiXSokHwJnFgIfAwUmcmV0dXJuIG51bWJlcnNvbmx5KHRoaXMsIGV2ZW50LCBmYWxzZSlkAgIPZBYCZg9kFgICAQ9kFgJmD2QWAgIBDzwrABYEAA8WCB4PRGF0YVNvdXJjZUJvdW5kZx4OXyFVc2VWaWV3U3RhdGVnHhFDbGllbnRTdGF0ZUxvYWRlZGgeDUNhbGxiYWNrU3RhdGVlZAE8KwAMAQAWBB4LQm9yZGVyU3R5bGULKiVTeXN0ZW0uV2ViLlVJLldlYkNvbnRyb2xzLkJvcmRlclN0eWxlAR4EXyFTQgJABDwrAEMEBzwrAAwBABYOHgtCb3JkZXJXaWR0aBsAAAAAAAAAAAEAAAAeCkZvbnRfTmFtZXMVAQdWZXJkYW5hHglGb250X1NpemUoKiJTeXN0ZW0uV2ViLlVJLldlYkNvbnRyb2xzLkZvbnRVbml0AzdwdB4JRm9udF9Cb2xkZx4JRm9yZUNvbG9yCRAcvP8eCUJhY2tDb2xvcgn/////HxkCrBwMPCsADAEAFgQfHgkQHLz/HxkCBBM8KwAMAQAWCB8aGwAAAAAAAAAAAQAAAB8cKCsHAzdwdB8bFQEHVmVyZGFuYR8ZAqAMGjwrAAwBABYEHx4JEBy8/x8ZAgQGD2QQFg1mAgECAgIDAgQCBQIGAgcCCQIKAgsCDAINFg08KwAMAQAWAh4PQ29sVmlzaWJsZUluZGV4ZjwrAAsBABYCHyACATwrAAsBABYCHyACAjwrAAsBABYCHyACAzwrAAsBABYCHyACBDwrAAsBABYCHyACBTwrAAsBABYCHyACBjwrAAsBABYCHyACBzwrAAsBABYCHyACCDwrAAsBABYCHyACCTwrAAsBABYCHyACCjwrAAsBABYCHyACCzwrAAsBABYCHyACDA8WDQIBAgICAgIDAgICAgIEAgICAgICAgICAgICFgQFlgFEZXZFeHByZXNzLldlYi5BU1B4R3JpZFZpZXcuR3JpZFZpZXdDb21tYW5kQ29sdW1uLCBEZXZFeHByZXNzLldlYi5BU1B4R3JpZFZpZXcudjguMywgVmVyc2lvbj04LjMuNS4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWI4OGQxNzU0ZDcwMGU0OWEFoAFJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLkNsYXNzZXMuR3JpZFZpZXdEYXRhVGV4dENvbHVtblRleHQsIEluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24sIFZlcnNpb249My4wLjEuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj03MTg2MjgwMTdmZmI5NjZlBaQBSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbi5DbGFzc2VzLkdyaWRWaWV3RGF0YVRleHRDb2x1bW5EYXRlVGltZSwgSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbiwgVmVyc2lvbj0zLjAuMS4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPTcxODYyODAxN2ZmYjk2NmUFoAFJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLkNsYXNzZXMuR3JpZFZpZXdEYXRhVGV4dENvbHVtbkRhdGUsIEluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24sIFZlcnNpb249My4wLjEuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj03MTg2MjgwMTdmZmI5NjZlZAIBD2QWAgIDD2QWAgIBD2QWGAIDDw8WBB8BBQ5eW146O1w8PidcIl0qJB8CZxYCHwMFJnJldHVybiBudW1iZXJzb25seSh0aGlzLCBldmVudCwgZmFsc2UpZAIFDw8WBh8BBQ5eW146O1w8PidcIl0qJB8CZx8FAgsWAh8DBSZyZXR1cm4gbnVtYmVyc29ubHkodGhpcywgZXZlbnQsIGZhbHNlKWQCBw8PFgYfAQUOXlteOjtcPD4nXCJdKiQfAmcfBQILFgIfAwUmcmV0dXJuIG51bWJlcnNvbmx5KHRoaXMsIGV2ZW50LCBmYWxzZSlkAgkPDxYGHwEFDl5bXjo7XDw+J1wiXSokHwJnHwUCCxYCHwMFJnJldHVybiBudW1iZXJzb25seSh0aGlzLCBldmVudCwgZmFsc2UpZAILDw8WBB8BBQ5eW146O1w8PidcIl0qJB8CZxYCHwMFJnJldHVybiBudW1iZXJzb25seSh0aGlzLCBldmVudCwgZmFsc2UpZAIND2QWAgIBDw8WBh8BBQ5eW146O1w8PidcIl0qJB8CZx8FZhYCHwMFI3JldHVybiBkYXRlTnVtYmVyc09ubHkodGhpcywgZXZlbnQpZAIPDxBkZBYBZmQCEQ8PFgYfAQUOXlteOjtcPD4nXCJdKiQfAmcfBQIcFgIfAwUqcmV0dXJuIG51bWJlcnNvbmx5KHRoaXMsIGV2ZW50LCB0cnVlLCAnLCcpZAIVDxBkZBYBZmQCFw8QZGQWAWZkAhkPDxYEHwEFDl5bXjo7XDw+J1wiXSokHwJnFgIfAwU5cmV0dXJuIHZhbGlkQ2hhcmFjdGVyc09ubHkodGhpcywgZXZlbnQsICJeW146O1w8PidcIl0qJCIpZAIdDzwrABYCAA8WBh8WaB8XZR8VZ2QGD2QQFgxmAgICAwIEAgUCBgIHAggCCQIKAgsCDBYMPCsADAEAFgIfIGY8KwALAQAWAh8gAgE8KwALAQAWAh8gAgI8KwALAQAWAh8gAgM8KwALAQAWAh8gAgQ8KwALAQAWAh8gAgU8KwALAQAWAh8gAgY8KwALAQAWAh8gAgc8KwALAQAWAh8gAgg8KwALAQAWAh8gAgk8KwALAQAWAh8gAgo8KwALAQAWAh8gAgsPFgwCAQICAgICAgICAgICAwICAgQCAgICAgIWBAWWAURldkV4cHJlc3MuV2ViLkFTUHhHcmlkVmlldy5HcmlkVmlld0NvbW1hbmRDb2x1bW4sIERldkV4cHJlc3MuV2ViLkFTUHhHcmlkVmlldy52OC4zLCBWZXJzaW9uPTguMy41LjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49Yjg4ZDE3NTRkNzAwZTQ5YQWgAUluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24uQ2xhc3Nlcy5HcmlkVmlld0RhdGFUZXh0Q29sdW1uVGV4dCwgSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbiwgVmVyc2lvbj0zLjAuMS4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPTcxODYyODAxN2ZmYjk2NmUFoAFJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLkNsYXNzZXMuR3JpZFZpZXdEYXRhVGV4dENvbHVtbkRhdGUsIEluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24sIFZlcnNpb249My4wLjEuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj03MTg2MjgwMTdmZmI5NjZlBaIBSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbi5DbGFzc2VzLkdyaWRWaWV3RGF0YVRleHRDb2x1bW5BbW91bnQsIEluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24sIFZlcnNpb249My4wLjEuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj03MTg2MjgwMTdmZmI5NjZlZAICDxYCHgVzdHlsZQUNZGlzcGxheTpub25lOxYCAgUPFgIeB1Zpc2libGVoFgQCAQ8QFgYeDURhdGFUZXh0RmllbGQFBVRpdGxlHg5EYXRhVmFsdWVGaWVsZAUDVXJpHgtfIURhdGFCb3VuZGcQFQEAFQEAFCsDAWcUKwEAZAIDDxYCHyEFDWRpc3BsYXk6bm9uZTsWAmYPZBYCAgEPFgIfIQUNZGlzcGxheTpub25lO2QYAgUeX19Db250cm9sc1JlcXVpcmVQb3N0QmFja0tleV9fFgcFHGN0bDAwJE1haW5Ib2xkZXIkZmlsdGVyUGFuZWwFOGN0bDAwJE1haW5Ib2xkZXIkRmFjdG9yaW5nRGVyaXZhdGlvbkdyaWQkRGVyaXZhdGlvblBhbmVsBT9jdGwwMCRNYWluSG9sZGVyJENvbnN1bHRhRGVPcEhlYWRlciRwYW5lbE9wZXJhdGlvblJlcXVlc3RIZWFkZXIFQmN0bDAwJE1haW5Ib2xkZXIkRmFjdG9yaW5nRGVyaXZhdGlvbkdyaWQxJHBjSW5ncmVzb09wZXJhY2lvbmVzR3JpZAVKY3RsMDAkTWFpbkhvbGRlciRGYWN0b3JpbmdEZXJpdmF0aW9uRmlsdGVyJFNlbGVjY2lvblBlZGlvZG8kSW1nQm50Q2FsY0Zyb20FSGN0bDAwJE1haW5Ib2xkZXIkRmFjdG9yaW5nRGVyaXZhdGlvbkZpbHRlciRTZWxlY2Npb25QZWRpb2RvJEltZ0JudENhbGNUbwUZY3RsMDAkaW1hZ2VCdXR0b25Db2xsYXBzZQUjY3RsMDAkTWFpbkhvbGRlciRNVkRlZmVycmVkRGVsaWJlcnkPD2RmZJzkInYpXPKpF9Kw3i+CaqeDI9HY">
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+var theForm = document.forms['aspnetForm'];
+if (!theForm) {
+    theForm = document.aspnetForm;
+}
+function __doPostBack(eventTarget, eventArgument) {
+    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+        theForm.__EVENTTARGET.value = eventTarget;
+        theForm.__EVENTARGUMENT.value = eventArgument;
+        theForm.submit();
+    }
+}
+//]]>
+</script>
+
+
+<script src="./WebResource(3).axd" type="text/javascript"></script>
+
+<script src="./DataEntry.js.descarga"></script><script src="./date.js.descarga"></script><script src="./DataEntry.js.descarga"></script><script src="./DataEntry.js.descarga"></script><script src="./DataEntry.js.descarga"></script>
+						<style>							
+							P.PanelControlTitleStyle
+							{
+ 								font-family:verdana;
+ 								font-size: 12px;
+								font-weight : bold;
+								text-align: center;  								
+							}
+						</style>						
+						<script language="javascript">
+						function MinMaxPanelControl(cntrlId)
+						{
+						    var imgPath='/App_Themes/Default/Images/';	
+					
+							//Get state from hidden control.													
+							if ( document.getElementById(cntrlId).style.display == 'none' )
+							{
+								document.getElementById(cntrlId).style.display = '';						
+								document.getElementById(cntrlId+'_imgPlusMinus').src = imgPath + 'bot-grid-minus.gif';
+							}
+							else 
+							{
+								document.getElementById(cntrlId).style.display = 'none';								
+								document.getElementById(cntrlId+'_imgPlusMinus').src = imgPath + 'bot-grid-plus.gif';
+							}
+						}
+						</script>
+			
+<script src="./ScriptResource.axd" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+var __cultureInfo = '{"name":"es-UY","numberFormat":{"CurrencyDecimalDigits":2,"CurrencyDecimalSeparator":",","IsReadOnly":false,"CurrencyGroupSizes":[3],"NumberGroupSizes":[3],"PercentGroupSizes":[3],"CurrencyGroupSeparator":".","CurrencySymbol":"$U","NaNSymbol":"NeuN","CurrencyNegativePattern":14,"NumberNegativePattern":1,"PercentPositivePattern":0,"PercentNegativePattern":0,"NegativeInfinitySymbol":"-Infinito","NegativeSign":"-","NumberDecimalDigits":2,"NumberDecimalSeparator":",","NumberGroupSeparator":".","CurrencyPositivePattern":2,"PositiveInfinitySymbol":"Infinito","PositiveSign":"+","PercentDecimalDigits":2,"PercentDecimalSeparator":",","PercentGroupSeparator":".","PercentSymbol":"%","PerMilleSymbol":"‰","NativeDigits":["0","1","2","3","4","5","6","7","8","9"],"DigitSubstitution":1},"dateTimeFormat":{"AMDesignator":"a.m.","Calendar":{"MinSupportedDateTime":"\/Date(-62135586000000)\/","MaxSupportedDateTime":"\/Date(253402300799999)\/","AlgorithmType":1,"CalendarType":1,"Eras":[1],"TwoDigitYearMax":2029,"IsReadOnly":false},"DateSeparator":"/","FirstDayOfWeek":1,"CalendarWeekRule":0,"FullDateTimePattern":"dddd, dd\u0027 de \u0027MMMM\u0027 de \u0027yyyy hh:mm:ss tt","LongDatePattern":"dddd, dd\u0027 de \u0027MMMM\u0027 de \u0027yyyy","LongTimePattern":"hh:mm:ss tt","MonthDayPattern":"dd MMMM","PMDesignator":"p.m.","RFC1123Pattern":"ddd, dd MMM yyyy HH\u0027:\u0027mm\u0027:\u0027ss \u0027GMT\u0027","ShortDatePattern":"dd/MM/yyyy","ShortTimePattern":"hh:mm tt","SortableDateTimePattern":"yyyy\u0027-\u0027MM\u0027-\u0027dd\u0027T\u0027HH\u0027:\u0027mm\u0027:\u0027ss","TimeSeparator":":","UniversalSortableDateTimePattern":"yyyy\u0027-\u0027MM\u0027-\u0027dd HH\u0027:\u0027mm\u0027:\u0027ss\u0027Z\u0027","YearMonthPattern":"MMMM\u0027 de \u0027yyyy","AbbreviatedDayNames":["dom","lun","mar","mié","jue","vie","sáb"],"ShortestDayNames":["do","lu","ma","mi","ju","vi","sá"],"DayNames":["domingo","lunes","martes","miércoles","jueves","viernes","sábado"],"AbbreviatedMonthNames":["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic",""],"MonthNames":["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre",""],"IsReadOnly":false,"NativeCalendarName":"calendario gregoriano","AbbreviatedMonthGenitiveNames":["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic",""],"MonthGenitiveNames":["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre",""]}}';//]]>
+</script>
+
+<script src="./ScriptResource(1).axd" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+if (typeof(Sys) === 'undefined') throw new Error('ASP.NET Ajax client-side framework failed to load.');
+//]]>
+</script>
+
+<script src="./ScriptResource(2).axd" type="text/javascript"></script>
+<script src="./ScriptResource(3).axd" type="text/javascript"></script>
+<script src="./ScriptResource(4).axd" type="text/javascript"></script>
+<script src="./ScriptResource(5).axd" type="text/javascript"></script>
+<script src="./ScriptResource(6).axd" type="text/javascript"></script>
+<script src="./ScriptResource(7).axd" type="text/javascript"></script>
+<script src="./ScriptResource(8).axd" type="text/javascript"></script>
+<script src="./ScriptResource(9).axd" type="text/javascript"></script>
+<script src="./ScriptResource(10).axd" type="text/javascript"></script>
+<script src="./ScriptResource(11).axd" type="text/javascript"></script>
+<script src="./ScriptResource(12).axd" type="text/javascript"></script>
+<script src="./ScriptResource(13).axd" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+function WebForm_OnSubmit() {
+if (typeof(ValidatorOnSubmit) == "function" && ValidatorOnSubmit() == false) return false;
+return true;
+}
+//]]>
+</script>
+
+<div>
+
+	<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEWIALw2oyODwKIo+foDwLUgeSkAgKkzscCAsSem9QFAvnVgNIJAsHk+vMDAvL/17sPAunbidQKAoO/mbYPAoy/1bUPAo+/1bUPAo6/1bUPAo2/1bUPAou/1bUPAsmApo4IAt3DiZYKAuTK3Z8MAunKkZwMAuvKkZwMAqOfhaEDAqzwr88PAq3wr88PAq7wr88PAq/wr88PAqjwr88PAqnwr88PAqrwr88PAs6DxccIApXpyogFAtGqzMkOAom34LsB1nKYvbj4RErPoO2/zdDDWqUXebY=">
+</div>
+    <script type="text/javascript">
+//<![CDATA[
+Sys.WebForms.PageRequestManager._initialize('ctl00$scriptManager', document.getElementById('aspnetForm'));
+Sys.WebForms.PageRequestManager.getInstance()._updateControls(['tctl00$MainHolder$FactoringDerivationFilter$CantChequesSeleccion$UpdatePanel1','tctl00$MainHolder$FactoringDerivationFilter$SeleccionPediodo$UpdatePanel1','tctl00$MainHolder$upError'], [], [], 90);
+//]]>
+</script>
+
+    <input type="hidden" id="PageLinkData" name="PageLinkData" value="">
+    <input type="hidden" id="PageLinkUrl" name="PageLinkUrl" value="">
+    <input type="hidden" id="PageUrl" value="/Pages/Factoring/FactoringDeferredDelivery.aspx">
+    <table id="ctl00_tableContent" width="100%" border="0" cellpadding="0" cellspacing="0" class="ic-content">
+	<tbody><tr>
+		<td class="ic-content-left-aux">
+                <img src="./log-img-aux-left-bottom.gif" width="9" height="110">
+            </td>
+		<td style="width: 100%">
+                <table width="100%" border="0" cellpadding="0" cellspacing="0" class="ic-content-left">
+                    <tbody><tr>
+                        <td id="TdCPM" class="ic-content-space-top" valign="top">
+                            <table id="TablaCPM" width="100%" border="0" cellspacing="0" cellpadding="0">
+                                
+                                <tbody><tr>
+                                    <td>
+                                        <table id="ctl00_tableHeader" width="100%" border="0" cellspacing="0" cellpadding="0">
+			<tbody><tr>
+				<td class="ic-breadcrumb-container">
+                                                    
+                                                    &gt;
+                                                    <span id="ctl00_siteMapNavigator"><a href="http://10.1.75.104:9080/Pages/Factoring/FactoringDeferredDelivery.aspx#ctl00_siteMapNavigator_SkipLink"><img alt="Skip Navigation Links" height="0" width="0" src="./WebResource(4).axd" style="border-width:0px;"></a><span><a href="http://10.1.75.104:9080/Home.aspx">Posición Consolidada</a></span><span> &gt; </span><span><a>Factoring/Depósitos</a></span><span> &gt; </span><span><a>Consultas</a></span><span> &gt; </span><span>Bandeja de Pendientes</span><a id="ctl00_siteMapNavigator_SkipLink"></a></span>
+                                                    </td>
+				<td class="ic-toolbar-container">
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tbody><tr>
+                                                            <td width="16">
+                                                                <img src="./ico-print.gif" id="ctl00_Img4" width="16" height="16">
+                                                            </td>
+                                                            <td class="ic-links-toolbar">
+                                                                <a href="http://10.1.75.104:9080/Pages/Factoring/FactoringDeferredDelivery.aspx#" onclick="javascript: GoPrint();">
+                                                                    Imprimir página</a>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody></table>
+                                                </td>
+			</tr>
+		</tbody></table>
+		
+                                    </td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>
+                                        <span id="ctl00_labelTitle" class="ic-page-title">Bandeja de Pendientes</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td id="ctl00_cellRequiered" align="right">
+                                        <img src="./ic_img-data-required.gif" id="ctl00_Img5" border="0">
+                                        <span>
+                                            Campo requerido</span>
+                                    </td>
+		
+                                </tr>
+                                <tr>
+                                    <td width="95%" align="center">
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                            <tbody><tr>
+                                                <td align="right">
+                                                    
+                                                    
+                                                </td>
+                                            </tr>
+                                        </tbody></table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="100%" align="center">
+                                        <div id="ic-loading" class="ic-loading-bg" style="display: none;">
+                                            <div class="ic-loading">
+                                                <div id="message">
+                                                    <img src="./cargandoBAR.gif" id="ctl00_imgLoading"><br>
+                                                    <span id="ctl00_WaitingMessage">Procesando...</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="mainContainer">
+                                            
+    
+            </div></td></tr></tbody></table></td></tr></tbody></table></td></tr></tbody></table></form></body></html>

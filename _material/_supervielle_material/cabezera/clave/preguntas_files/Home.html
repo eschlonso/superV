@@ -1,0 +1,909 @@
+
+<!-- saved from url=(0059)http://10.1.75.104:9080/Pages/Common/RegisterQuestions.aspx -->
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><script src="./jquery-1.7.2.min.js.descarga" type="text/javascript"></script>
+<script src="./jquery-1.7.1.js.descarga" type="text/javascript"></script>
+<script src="./jquery-ui-1.8.19.custom.min.js.descarga" type="text/javascript"></script>
+<script src="./jquery.formatCurrency-1.4.0.js.descarga" type="text/javascript"></script>
+<script src="./idle-timer.js.descarga" type="text/javascript"></script>
+<script src="./idle-timer.min.js.descarga" type="text/javascript"></script>
+<script language="javascript" type="text/javascript">
+
+function Logout() {
+        if (confirm("¿ Desea salir del sistema ?") == true) {
+                    
+            window.location =  '/'+ "Logout.aspx";
+        }
+       
+    }
+    
+var focusedFormControl;    
+var dateFormat = 'dd/mm/aaaa';
+var applicationRoot = '/';      
+function OnRowClick(sender, args) {
+    if (sender.GetSelectedRowCount() == 0) {
+        sender.UnselectRowOnPage(args.visibleIndex);
+        SetPageLinkData("");
+    }
+    else {
+        _aspxClearSelection();
+        sender._selectAllRowsOnPage(false);
+        sender.SelectRow(args.visibleIndex, true);
+        SetPageLinkData(sender.GetRowKey(args.visibleIndex));
+    }
+}
+
+if (history.forward(1))
+{
+
+    location.replace(history.forward(1))
+} 
+
+function PrintPage() {
+
+    window.print();
+}
+
+function GoMyOption(select)
+{
+    var url = select.options[select.selectedIndex].value;
+    if( url != "")
+        window.location = url;
+}
+
+function GoFavourites(select)
+{
+
+    var url = select.options[select.selectedIndex].value;
+    if( url != "")
+        window.location = url;
+}
+
+function GoPrint()
+{
+
+window.print();
+}
+
+function addEvent(elm, evType, fn, useCapture)
+{
+
+  if (elm.addEventListener){
+    elm.addEventListener(evType, fn, useCapture);
+    return true;
+  } else if (elm.attachEvent){
+    var r = elm.attachEvent("on"+evType, fn);
+    return r;
+  } else {
+    alert("Handler could not be removed");
+  }
+} 
+
+function SetPageLinkData(data)
+{
+    pageLinkData = document.getElementById('PageLinkData');
+    pageLinkData.value = data;
+}
+
+function SetPageLinkUrl(url)
+{
+    pageLinkUrl = document.getElementById('PageLinkUrl');
+    pageLinkUrl.value = url;
+}
+
+function doPageLink(id)
+{
+    __doPostBack(id, 'PageLinkEvent');
+}
+
+function imprimirEstadoCuenta()
+{
+											
+    var ficha = document.getElementById('printDiv');		
+    var ventimp = window.open('', 'popimpr','height=450, width=550, scrollbars=1');																						
+    var fichaHTML = new String(ficha.innerHTML);
+    fichaHTML = fichaHTML.replace('Seleccione un período y oprima "Consultar".'," ");
+    //var i = document.getElementById('ctl00_MainHolder_panelDetalle_imgPlusMinus');
+    var html  = "<html>\n<head>\n<link rel=\"stylesheet\" type=\"text/css\" href=\"..\\..\\App_Themes\\Default\\Default.css \" />" 
+                + "</head><table width=\"100%\"><tr bgcolor=\"#FF0000\"><td><img src=\"..\\..\\App_Themes\\Default\\Images\\logoSantander.gif\" /></td></tr></table>" 
+                + fichaHTML 
+                + "</html>";
+    ventimp.document.write( html );
+    ventimp.document.close();
+    ventimp.print( );
+    ventimp.close();
+					
+}
+
+ function removeInvalidCharacters(control) {
+ 
+            !(/^[A-zÑñ0-9 ]*$/i).test(control.value) ? control.value = control.value.replace(/[^A-zÑñ0-9 ]/ig, '') : null
+        }
+        
+  function removeInvalidNumbers(control) {
+            !(/^[0-9,]*$/i).test(control.value) ? control.value = control.value.replace(/[^0-9,]/ig, '') : null
+        }
+function showLoading()
+{
+//debugger;
+    // aquí le pasamos la clase o id de nuestro div a centrar (en este caso "caja")
+    $('.ic-loading').css({
+       position:'absolute',
+       left: ($('#mainContainer').width()/2 - $('.ic-loading').outerWidth())/2,
+       //top: ($('#mainContainer').height()/2 - $('.ic-loading').outerHeight())/2
+       top: ($('#mainContainer').height()/2 - $('ic-loading').height()/2)
+    });
+    
+    $('#mainContainer').css('display','none');
+    $('#ic-loading').css('display','block');
+}
+//ModalDialog SessionTimeout
+var idleTime = (parseInt('1170') * 1000); // number of miliseconds until the user is considered idle
+var initialSessionTimeoutMessage = "La sesión finalizará en <span id='sessionTimeoutCountdown'></span> segundos. Para seguir operando seleccioná “Continuar”<br /><br />";
+var sessionTimeoutCountdownId = 'sessionTimeoutCountdown';
+var redirectAfter = (parseInt('30')) ; // number of seconds to wait before redirecting the user
+var redirectTo = '/' + "Logout.aspx"; // URL to relocate the user to once they have timed out
+var keepAliveURL = ''; // URL to call to keep the session alive
+var expiredMessage = ''; // message to show user when the countdown reaches 0
+var running = false; // var to check if the countdown is running 
+var timer; // reference to the setInterval timer so it can be stopped 
+var timerSB;  
+var timeout;  
+    $(document).ready(function() {     
+// create the warning window and set autoOpen to false  
+      var sessionTimeoutWarningDialog = $("#sessionTimeoutWarning"); 
+    $(sessionTimeoutWarningDialog).dialog({         
+        title: '',       
+        autoOpen: false,    // set this to false so we can manually open it         
+        closeOnEscape: false,         
+        draggable: false,         
+        width: 460,         
+        minHeight: 150,         
+        modal: true,           
+        beforeclose: function() { // bind to beforeclose so if the user clicks on the "X" or escape to close the dialog, it will work too             // stop the timer             
+            clearInterval(timer);               // stop countdown
+            running = false;               // ajax call to keep the server-side session alive    
+                  
+            $.ajax({               
+                url: keepAliveURL,               
+                async: false            
+            });         
+        },         
+        buttons: {      
+             'Continuar ': function() {                 
+                // close dialog 
+                window.location.reload();//BM24925: Se agrega esto para que el expired de una cookie se actualice y no se cierre la sesión luego de hacer click en continuar al terminar el timeout del webconfig. El valor del expired se pone en la tabla configuration en la clave SessionMaxMinutes.
+                //var valor = getCookie('ICBWebLogin'); //Esta función la dejo por las dudas, pero no la pude hacer andar poque el document.cookie no me trae las cookies del explorador.                
+                $(this).dialog('close');
+                clearInterval(timerSB);    
+                window.status = "";      
+                StatusBarCountDown();     
+            },
+            'Finalizar sesión': function() {                 
+                // close dialog                 
+                $(sessionTimeoutWarningDialog).html(expiredMessage);
+                $(sessionTimeoutWarningDialog).dialog('disable');                     
+                window.parent.location = redirectTo;           
+            }         
+        },         
+        resizable: false,         
+        open: function() {
+            $('body').css('overflow','auto');         
+        },         
+        close: function() {             
+            // reset overflow             
+            $('body').css('overflow','auto');         
+        }  
+           
+    }); // end of dialog  
+    jQuery("a.ui-dialog-titlebar-close").hide(); 
+          
+    // start the idle timer
+    $.idleTimer(idleTime);
+ 
+});
+
+// BM24925: Función para recuperar el valor de una cookie.
+// name - nombre de la cookie deseada
+// devuelve un string conteniendo el valor de la cookie especificada o null si la cookie no existe
+
+function getCookie(name){
+var micookie = (document.cookie.indexOf('ICBWebLogin=') === -1 ? '' : ("; " + document.cookie).split('; ICBWebLogin=')[1].split(';')[0]);
+
+  var cname = name + "=";               
+  var dc = document.cookie;             
+  if (dc.length > 0) {              
+    begin = dc.indexOf(cname);       
+    if (begin != -1) {           
+      begin += cname.length;       
+      end = dc.indexOf(";", begin);
+      if (end == -1) end = dc.length;
+        return unescape(dc.substring(begin, end));
+    } 
+  }
+  return null;
+}
+
+//Status Bar Countdown Script
+function StatusBarCountDown() 
+{
+    var redirectAfter = (parseInt('30'));
+    var timeout = '1200000';   
+    var redirectTo = '/' + "Logout.aspx"; // URL to relocate the user to once they have timed out   
+    timerSB = setInterval(function(){
+    timeout -= 1000;
+    if(timeout == redirectAfter * 1000)
+    {
+        window.focus();
+    }
+   if(timeout < redirectAfter * 1000)
+   {
+        $("#sessionTimeoutCountdown").html(timeout/1000);
+        $("#sessionTimeoutWarning").dialog('open'); 
+   }
+   if (timeout < 100)
+   {
+        $("#sessionTimeoutWarning").html(expiredMessage);
+        $("#sessionTimeoutWarning").dialog('disable');                     
+        window.parent.location = redirectTo;
+        clearInterval(timerSB);    
+        window.status = "";     
+   }
+        
+   window.status = "Su sesión expirará " + time(timeout) + " minutos";        
+    }, 1000);   
+         
+   function two(x)
+   {
+    return ((x > 9) ? "" : "0") + x
+   }   
+  
+   function time(ms)
+   {   
+       var t = '';   
+       var sec = Math.floor(ms / 1000);   
+       ms = ms % 1000   
+
+       var min = Math.floor(sec / 60);   
+       sec = sec % 60;   
+       t = two(sec);   
+
+       var hr = Math.floor(min / 60);   
+       min = min % 60;   
+       t = two(min) + ":" + t;   
+    return t;
+   }
+}
+
+StatusBarCountDown();
+
+
+
+</script>
+
+<link href="./Default.css" type="text/css" rel="stylesheet"><link href="./jquery-ui-1.8.19.custom.css" type="text/css" rel="stylesheet"><title>
+	Registrar preguntas
+</title></head>
+<body>
+    <form name="aspnetForm" method="post" action="http://10.1.75.104:9080/Pages/Common/RegisterQuestions.aspx" onsubmit="javascript:return WebForm_OnSubmit();" id="aspnetForm">
+<div>
+<input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="">
+<input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="">
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUJODE0Mjc1NjAwD2QWAmYPZBYCAgEPZBYCAgEPZBYCZg9kFgQCAQ9kFgQCAg8PFgIeBFRleHQFE1JlZ2lzdHJhciBwcmVndW50YXNkZAIHD2QWAgIBD2QWAmYPZBYEZg9kFgICAQ8PFgIeEVF1ZXN0aW9uc1RvU2VsZWN0AgNkFgYCAw9kFgJmD2QWAgIBDxYCHgtfIUl0ZW1Db3VudAIKFhQCAQ9kFgxmDw8WAh8ABUPCv0N1w6FsIGZ1ZSBsYSBtYXRlcmlhIChhc2lnbmF0dXJhKSBxdWUgbWFzIGxlIGd1c3RvIGVuIGVsIGNvbGVnaW8/ZGQCAQ8QD2QWAh4Hb25jbGljawVnamF2YXNjcmlwdDpTaG93SGlkZVJlc3BvbnNlKCdjdGwwMF9NYWluSG9sZGVyX3F1ZXN0aW9uc0NvbnRyb2xfcXVlc3Rpb25zUmVwZWF0ZXJfY3RsMDFfdGV4dEJveEFuc3dlcicpO2RkZAICDxUBAjEwZAIDDw8WBh8AZB4LQ2hhcnNGaWx0ZXIFDl5bXjo7XDw+J1wiXSokHhJDaGFyc0ZpbHRlckVuYWJsZWRnFgIeCm9uS2V5UHJlc3MFOXJldHVybiB2YWxpZENoYXJhY3RlcnNPbmx5KHRoaXMsIGV2ZW50LCAiXlteOjtcPD4nXCJdKiQiKWQCBQ8PFgYfAAUCMTAfBAUOXlteOjtcPD4nXCJdKiQfBWcWAh4Kb25rZXlwcmVzcwU5cmV0dXJuIHZhbGlkQ2hhcmFjdGVyc09ubHkodGhpcywgZXZlbnQsICJeW146O1w8PidcIl0qJCIpZAIGDxYCHwAFwwE8c2NyaXB0IGxhbmd1YWdlPSJqYXZhc2NyaXB0IiB0eXBlPSJ0ZXh0L2phdmFzY3JpcHQiPlNob3dSZXNwb25zZSgnUm93X2N0bDAwX01haW5Ib2xkZXJfcXVlc3Rpb25zQ29udHJvbF8xMCcsICdjdGwwMF9NYWluSG9sZGVyX3F1ZXN0aW9uc0NvbnRyb2xfcXVlc3Rpb25zUmVwZWF0ZXJfY3RsMDFfY2hlY2tCb3hBbnN3ZXInKTs8L3NjcmlwdD5kAgIPZBYMZg8PFgIfAAUvwr9DdcOhbCBlcyBlbCB0w610dWxvIGRlIHN1IHBlbMOtY3VsYSBmYXZvcml0YT9kZAIBDxAPZBYCHwMFZ2phdmFzY3JpcHQ6U2hvd0hpZGVSZXNwb25zZSgnY3RsMDBfTWFpbkhvbGRlcl9xdWVzdGlvbnNDb250cm9sX3F1ZXN0aW9uc1JlcGVhdGVyX2N0bDAyX3RleHRCb3hBbnN3ZXInKTtkZGQCAg8VAQExZAIDDw8WBh8AZB8EBQ5eW146O1w8PidcIl0qJB8FZxYCHwYFOXJldHVybiB2YWxpZENoYXJhY3RlcnNPbmx5KHRoaXMsIGV2ZW50LCAiXlteOjtcPD4nXCJdKiQiKWQCBQ8PFgYfAAUBMR8EBQ5eW146O1w8PidcIl0qJB8FZxYCHwcFOXJldHVybiB2YWxpZENoYXJhY3RlcnNPbmx5KHRoaXMsIGV2ZW50LCAiXlteOjtcPD4nXCJdKiQiKWQCBg8WAh8ABcIBPHNjcmlwdCBsYW5ndWFnZT0iamF2YXNjcmlwdCIgdHlwZT0idGV4dC9qYXZhc2NyaXB0Ij5TaG93UmVzcG9uc2UoJ1Jvd19jdGwwMF9NYWluSG9sZGVyX3F1ZXN0aW9uc0NvbnRyb2xfMScsICdjdGwwMF9NYWluSG9sZGVyX3F1ZXN0aW9uc0NvbnRyb2xfcXVlc3Rpb25zUmVwZWF0ZXJfY3RsMDJfY2hlY2tCb3hBbnN3ZXInKTs8L3NjcmlwdD5kAgMPZBYMZg8PFgIfAAUxwr9DdcOhbCBlcyBlbCBwcmltZXIgbm9tYnJlIGRlIHN1IGFidWVsbyBwYXRlcm5vP2RkAgEPEA9kFgIfAwVnamF2YXNjcmlwdDpTaG93SGlkZVJlc3BvbnNlKCdjdGwwMF9NYWluSG9sZGVyX3F1ZXN0aW9uc0NvbnRyb2xfcXVlc3Rpb25zUmVwZWF0ZXJfY3RsMDNfdGV4dEJveEFuc3dlcicpO2RkZAICDxUBAjIwZAIDDw8WBh8AZB8EBQ5eW146O1w8PidcIl0qJB8FZxYCHwYFOXJldHVybiB2YWxpZENoYXJhY3RlcnNPbmx5KHRoaXMsIGV2ZW50LCAiXlteOjtcPD4nXCJdKiQiKWQCBQ8PFgYfAAUCMjAfBAUOXlteOjtcPD4nXCJdKiQfBWcWAh8HBTlyZXR1cm4gdmFsaWRDaGFyYWN0ZXJzT25seSh0aGlzLCBldmVudCwgIl5bXjo7XDw+J1wiXSokIilkAgYPFgIfAAXDATxzY3JpcHQgbGFuZ3VhZ2U9ImphdmFzY3JpcHQiIHR5cGU9InRleHQvamF2YXNjcmlwdCI+U2hvd1Jlc3BvbnNlKCdSb3dfY3RsMDBfTWFpbkhvbGRlcl9xdWVzdGlvbnNDb250cm9sXzIwJywgJ2N0bDAwX01haW5Ib2xkZXJfcXVlc3Rpb25zQ29udHJvbF9xdWVzdGlvbnNSZXBlYXRlcl9jdGwwM19jaGVja0JveEFuc3dlcicpOzwvc2NyaXB0PmQCBA9kFgxmDw8WAh8ABSXCv0VuIHF1w6kgY2l1ZGFkIGZ1ZSBzdSBsdW5hIGRlIG1pZWw/ZGQCAQ8QD2QWAh8DBWdqYXZhc2NyaXB0OlNob3dIaWRlUmVzcG9uc2UoJ2N0bDAwX01haW5Ib2xkZXJfcXVlc3Rpb25zQ29udHJvbF9xdWVzdGlvbnNSZXBlYXRlcl9jdGwwNF90ZXh0Qm94QW5zd2VyJyk7ZGRkAgIPFQECMjhkAgMPDxYGHwBkHwQFDl5bXjo7XDw+J1wiXSokHwVnFgIfBgU5cmV0dXJuIHZhbGlkQ2hhcmFjdGVyc09ubHkodGhpcywgZXZlbnQsICJeW146O1w8PidcIl0qJCIpZAIFDw8WBh8ABQIyOB8EBQ5eW146O1w8PidcIl0qJB8FZxYCHwcFOXJldHVybiB2YWxpZENoYXJhY3RlcnNPbmx5KHRoaXMsIGV2ZW50LCAiXlteOjtcPD4nXCJdKiQiKWQCBg8WAh8ABcMBPHNjcmlwdCBsYW5ndWFnZT0iamF2YXNjcmlwdCIgdHlwZT0idGV4dC9qYXZhc2NyaXB0Ij5TaG93UmVzcG9uc2UoJ1Jvd19jdGwwMF9NYWluSG9sZGVyX3F1ZXN0aW9uc0NvbnRyb2xfMjgnLCAnY3RsMDBfTWFpbkhvbGRlcl9xdWVzdGlvbnNDb250cm9sX3F1ZXN0aW9uc1JlcGVhdGVyX2N0bDA0X2NoZWNrQm94QW5zd2VyJyk7PC9zY3JpcHQ+ZAIFD2QWDGYPDxYCHwAFOcK/RW4gcXXDqSBjaXVkYWQgZXN0YWJhIHViaWNhZG8gc3UgY29sZWdpbyBkZSBzZWN1bmRhcmlhP2RkAgEPEA9kFgIfAwVnamF2YXNjcmlwdDpTaG93SGlkZVJlc3BvbnNlKCdjdGwwMF9NYWluSG9sZGVyX3F1ZXN0aW9uc0NvbnRyb2xfcXVlc3Rpb25zUmVwZWF0ZXJfY3RsMDVfdGV4dEJveEFuc3dlcicpO2RkZAICDxUBAjE0ZAIDDw8WBh8AZB8EBQ5eW146O1w8PidcIl0qJB8FZxYCHwYFOXJldHVybiB2YWxpZENoYXJhY3RlcnNPbmx5KHRoaXMsIGV2ZW50LCAiXlteOjtcPD4nXCJdKiQiKWQCBQ8PFgYfAAUCMTQfBAUOXlteOjtcPD4nXCJdKiQfBWcWAh8HBTlyZXR1cm4gdmFsaWRDaGFyYWN0ZXJzT25seSh0aGlzLCBldmVudCwgIl5bXjo7XDw+J1wiXSokIilkAgYPFgIfAAXDATxzY3JpcHQgbGFuZ3VhZ2U9ImphdmFzY3JpcHQiIHR5cGU9InRleHQvamF2YXNjcmlwdCI+U2hvd1Jlc3BvbnNlKCdSb3dfY3RsMDBfTWFpbkhvbGRlcl9xdWVzdGlvbnNDb250cm9sXzE0JywgJ2N0bDAwX01haW5Ib2xkZXJfcXVlc3Rpb25zQ29udHJvbF9xdWVzdGlvbnNSZXBlYXRlcl9jdGwwNV9jaGVja0JveEFuc3dlcicpOzwvc2NyaXB0PmQCBg9kFgxmDw8WAh8ABSzCv1F1aWVuIGVzIHN1IHBlcnNvbmFqZSBoaXN0w7NyaWNvIGZhdm9yaXRvP2RkAgEPEA9kFgIfAwVnamF2YXNjcmlwdDpTaG93SGlkZVJlc3BvbnNlKCdjdGwwMF9NYWluSG9sZGVyX3F1ZXN0aW9uc0NvbnRyb2xfcXVlc3Rpb25zUmVwZWF0ZXJfY3RsMDZfdGV4dEJveEFuc3dlcicpO2RkZAICDxUBAjI2ZAIDDw8WBh8AZB8EBQ5eW146O1w8PidcIl0qJB8FZxYCHwYFOXJldHVybiB2YWxpZENoYXJhY3RlcnNPbmx5KHRoaXMsIGV2ZW50LCAiXlteOjtcPD4nXCJdKiQiKWQCBQ8PFgYfAAUCMjYfBAUOXlteOjtcPD4nXCJdKiQfBWcWAh8HBTlyZXR1cm4gdmFsaWRDaGFyYWN0ZXJzT25seSh0aGlzLCBldmVudCwgIl5bXjo7XDw+J1wiXSokIilkAgYPFgIfAAXDATxzY3JpcHQgbGFuZ3VhZ2U9ImphdmFzY3JpcHQiIHR5cGU9InRleHQvamF2YXNjcmlwdCI+U2hvd1Jlc3BvbnNlKCdSb3dfY3RsMDBfTWFpbkhvbGRlcl9xdWVzdGlvbnNDb250cm9sXzI2JywgJ2N0bDAwX01haW5Ib2xkZXJfcXVlc3Rpb25zQ29udHJvbF9xdWVzdGlvbnNSZXBlYXRlcl9jdGwwNl9jaGVja0JveEFuc3dlcicpOzwvc2NyaXB0PmQCBw9kFgxmDw8WAh8ABTbCv0VuIHF1w6kgY2l1ZGFkIHZpdmnDsyBsYSBtYXlvciBwYXJ0ZSBkZSBzdSBpbmZhbmNpYT9kZAIBDxAPZBYCHwMFZ2phdmFzY3JpcHQ6U2hvd0hpZGVSZXNwb25zZSgnY3RsMDBfTWFpbkhvbGRlcl9xdWVzdGlvbnNDb250cm9sX3F1ZXN0aW9uc1JlcGVhdGVyX2N0bDA3X3RleHRCb3hBbnN3ZXInKTtkZGQCAg8VAQE3ZAIDDw8WBh8AZB8EBQ5eW146O1w8PidcIl0qJB8FZxYCHwYFOXJldHVybiB2YWxpZENoYXJhY3RlcnNPbmx5KHRoaXMsIGV2ZW50LCAiXlteOjtcPD4nXCJdKiQiKWQCBQ8PFgYfAAUBNx8EBQ5eW146O1w8PidcIl0qJB8FZxYCHwcFOXJldHVybiB2YWxpZENoYXJhY3RlcnNPbmx5KHRoaXMsIGV2ZW50LCAiXlteOjtcPD4nXCJdKiQiKWQCBg8WAh8ABcIBPHNjcmlwdCBsYW5ndWFnZT0iamF2YXNjcmlwdCIgdHlwZT0idGV4dC9qYXZhc2NyaXB0Ij5TaG93UmVzcG9uc2UoJ1Jvd19jdGwwMF9NYWluSG9sZGVyX3F1ZXN0aW9uc0NvbnRyb2xfNycsICdjdGwwMF9NYWluSG9sZGVyX3F1ZXN0aW9uc0NvbnRyb2xfcXVlc3Rpb25zUmVwZWF0ZXJfY3RsMDdfY2hlY2tCb3hBbnN3ZXInKTs8L3NjcmlwdD5kAggPZBYMZg8PFgIfAAUzwr9DdcOhbCBmdWUgZWwgcHJpbWVyIHBhw61zIGV4dHJhbmplcm8gcXVlIHZpc2l0w7M/ZGQCAQ8QD2QWAh8DBWdqYXZhc2NyaXB0OlNob3dIaWRlUmVzcG9uc2UoJ2N0bDAwX01haW5Ib2xkZXJfcXVlc3Rpb25zQ29udHJvbF9xdWVzdGlvbnNSZXBlYXRlcl9jdGwwOF90ZXh0Qm94QW5zd2VyJyk7ZGRkAgIPFQECMjdkAgMPDxYGHwBkHwQFDl5bXjo7XDw+J1wiXSokHwVnFgIfBgU5cmV0dXJuIHZhbGlkQ2hhcmFjdGVyc09ubHkodGhpcywgZXZlbnQsICJeW146O1w8PidcIl0qJCIpZAIFDw8WBh8ABQIyNx8EBQ5eW146O1w8PidcIl0qJB8FZxYCHwcFOXJldHVybiB2YWxpZENoYXJhY3RlcnNPbmx5KHRoaXMsIGV2ZW50LCAiXlteOjtcPD4nXCJdKiQiKWQCBg8WAh8ABcMBPHNjcmlwdCBsYW5ndWFnZT0iamF2YXNjcmlwdCIgdHlwZT0idGV4dC9qYXZhc2NyaXB0Ij5TaG93UmVzcG9uc2UoJ1Jvd19jdGwwMF9NYWluSG9sZGVyX3F1ZXN0aW9uc0NvbnRyb2xfMjcnLCAnY3RsMDBfTWFpbkhvbGRlcl9xdWVzdGlvbnNDb250cm9sX3F1ZXN0aW9uc1JlcGVhdGVyX2N0bDA4X2NoZWNrQm94QW5zd2VyJyk7PC9zY3JpcHQ+ZAIJD2QWDGYPDxYCHwAFMcK/Q3XDoWwgZXMgZWwgcHJpbWVyIG5vbWJyZSBkZSBzdSBhYnVlbG8gbWF0ZXJubz9kZAIBDxAPZBYCHwMFZ2phdmFzY3JpcHQ6U2hvd0hpZGVSZXNwb25zZSgnY3RsMDBfTWFpbkhvbGRlcl9xdWVzdGlvbnNDb250cm9sX3F1ZXN0aW9uc1JlcGVhdGVyX2N0bDA5X3RleHRCb3hBbnN3ZXInKTtkZGQCAg8VAQIxOGQCAw8PFgYfAGQfBAUOXlteOjtcPD4nXCJdKiQfBWcWAh8GBTlyZXR1cm4gdmFsaWRDaGFyYWN0ZXJzT25seSh0aGlzLCBldmVudCwgIl5bXjo7XDw+J1wiXSokIilkAgUPDxYGHwAFAjE4HwQFDl5bXjo7XDw+J1wiXSokHwVnFgIfBwU5cmV0dXJuIHZhbGlkQ2hhcmFjdGVyc09ubHkodGhpcywgZXZlbnQsICJeW146O1w8PidcIl0qJCIpZAIGDxYCHwAFwwE8c2NyaXB0IGxhbmd1YWdlPSJqYXZhc2NyaXB0IiB0eXBlPSJ0ZXh0L2phdmFzY3JpcHQiPlNob3dSZXNwb25zZSgnUm93X2N0bDAwX01haW5Ib2xkZXJfcXVlc3Rpb25zQ29udHJvbF8xOCcsICdjdGwwMF9NYWluSG9sZGVyX3F1ZXN0aW9uc0NvbnRyb2xfcXVlc3Rpb25zUmVwZWF0ZXJfY3RsMDlfY2hlY2tCb3hBbnN3ZXInKTs8L3NjcmlwdD5kAgoPZBYMZg8PFgIfAAVSwr9DdcOhbCBlcyBlbCBub21icmUgZGUgbGEgaW5zdGl0dWNpw7NuIGRvbmRlIGN1cnNvIHN1IHVsdGltbyBncmFkbyBkZSBzZWN1bmRhcmlhP2RkAgEPEA9kFgIfAwVnamF2YXNjcmlwdDpTaG93SGlkZVJlc3BvbnNlKCdjdGwwMF9NYWluSG9sZGVyX3F1ZXN0aW9uc0NvbnRyb2xfcXVlc3Rpb25zUmVwZWF0ZXJfY3RsMTBfdGV4dEJveEFuc3dlcicpO2RkZAICDxUBATZkAgMPDxYGHwBkHwQFDl5bXjo7XDw+J1wiXSokHwVnFgIfBgU5cmV0dXJuIHZhbGlkQ2hhcmFjdGVyc09ubHkodGhpcywgZXZlbnQsICJeW146O1w8PidcIl0qJCIpZAIFDw8WBh8ABQE2HwQFDl5bXjo7XDw+J1wiXSokHwVnFgIfBwU5cmV0dXJuIHZhbGlkQ2hhcmFjdGVyc09ubHkodGhpcywgZXZlbnQsICJeW146O1w8PidcIl0qJCIpZAIGDxYCHwAFwgE8c2NyaXB0IGxhbmd1YWdlPSJqYXZhc2NyaXB0IiB0eXBlPSJ0ZXh0L2phdmFzY3JpcHQiPlNob3dSZXNwb25zZSgnUm93X2N0bDAwX01haW5Ib2xkZXJfcXVlc3Rpb25zQ29udHJvbF82JywgJ2N0bDAwX01haW5Ib2xkZXJfcXVlc3Rpb25zQ29udHJvbF9xdWVzdGlvbnNSZXBlYXRlcl9jdGwxMF9jaGVja0JveEFuc3dlcicpOzwvc2NyaXB0PmQCBQ9kFgJmDxBkZBYAZAIHDw8WBB8EBQ5eW146O1w8PidcIl0qJB8FZxYCHwcFOXJldHVybiB2YWxpZENoYXJhY3RlcnNPbmx5KHRoaXMsIGV2ZW50LCAiXlteOjtcPD4nXCJdKiQiKWQCAQ9kFgQCAw8PFgQfBAUOXlteOjtcPD4nXCJdKiQfBWcWAh8HBTlyZXR1cm4gdmFsaWRDaGFyYWN0ZXJzT25seSh0aGlzLCBldmVudCwgIl5bXjo7XDw+J1wiXSokIilkAgkPDxYEHwQFDl5bXjo7XDw+J1wiXSokHwVnFgIfBwU5cmV0dXJuIHZhbGlkQ2hhcmFjdGVyc09ubHkodGhpcywgZXZlbnQsICJeW146O1w8PidcIl0qJCIpZAICDxYCHgVzdHlsZQUNZGlzcGxheTpub25lOxYCAgUPFgIeB1Zpc2libGVoFgQCAQ8QFgYeDURhdGFUZXh0RmllbGQFBVRpdGxlHg5EYXRhVmFsdWVGaWVsZAUDVXJpHgtfIURhdGFCb3VuZGcQFQEAFQEAFCsDAWcUKwEAZAIDDxYCHwgFDWRpc3BsYXk6bm9uZTsWAmYPZBYCAgEPFgIfCAUNZGlzcGxheTpub25lO2QYAwUeX19Db250cm9sc1JlcXVpcmVQb3N0QmFja0tleV9fFg0FHmN0bDAwJE1haW5Ib2xkZXIkQ2hhbmdlQW5zd2VycwUeY3RsMDAkTWFpbkhvbGRlciRVc2VyTmFtZVBhbmVsBUhjdGwwMCRNYWluSG9sZGVyJHF1ZXN0aW9uc0NvbnRyb2wkcXVlc3Rpb25zUmVwZWF0ZXIkY3RsMDEkY2hlY2tCb3hBbnN3ZXIFSGN0bDAwJE1haW5Ib2xkZXIkcXVlc3Rpb25zQ29udHJvbCRxdWVzdGlvbnNSZXBlYXRlciRjdGwwMiRjaGVja0JveEFuc3dlcgVIY3RsMDAkTWFpbkhvbGRlciRxdWVzdGlvbnNDb250cm9sJHF1ZXN0aW9uc1JlcGVhdGVyJGN0bDAzJGNoZWNrQm94QW5zd2VyBUhjdGwwMCRNYWluSG9sZGVyJHF1ZXN0aW9uc0NvbnRyb2wkcXVlc3Rpb25zUmVwZWF0ZXIkY3RsMDQkY2hlY2tCb3hBbnN3ZXIFSGN0bDAwJE1haW5Ib2xkZXIkcXVlc3Rpb25zQ29udHJvbCRxdWVzdGlvbnNSZXBlYXRlciRjdGwwNSRjaGVja0JveEFuc3dlcgVIY3RsMDAkTWFpbkhvbGRlciRxdWVzdGlvbnNDb250cm9sJHF1ZXN0aW9uc1JlcGVhdGVyJGN0bDA2JGNoZWNrQm94QW5zd2VyBUhjdGwwMCRNYWluSG9sZGVyJHF1ZXN0aW9uc0NvbnRyb2wkcXVlc3Rpb25zUmVwZWF0ZXIkY3RsMDckY2hlY2tCb3hBbnN3ZXIFSGN0bDAwJE1haW5Ib2xkZXIkcXVlc3Rpb25zQ29udHJvbCRxdWVzdGlvbnNSZXBlYXRlciRjdGwwOCRjaGVja0JveEFuc3dlcgVIY3RsMDAkTWFpbkhvbGRlciRxdWVzdGlvbnNDb250cm9sJHF1ZXN0aW9uc1JlcGVhdGVyJGN0bDA5JGNoZWNrQm94QW5zd2VyBUhjdGwwMCRNYWluSG9sZGVyJHF1ZXN0aW9uc0NvbnRyb2wkcXVlc3Rpb25zUmVwZWF0ZXIkY3RsMTAkY2hlY2tCb3hBbnN3ZXIFGWN0bDAwJGltYWdlQnV0dG9uQ29sbGFwc2UFFmN0bDAwJE1haW5Ib2xkZXIkdmlld3MPD2RmZAU0Y3RsMDAkTWFpbkhvbGRlciRxdWVzdGlvbnNDb250cm9sJG11bHRpVmlld1F1ZXN0aW9ucw8PZGZk/8ezJ5ZHLEaNr/CwT2rnOElXh+I=">
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+var theForm = document.forms['aspnetForm'];
+if (!theForm) {
+    theForm = document.aspnetForm;
+}
+function __doPostBack(eventTarget, eventArgument) {
+    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+        theForm.__EVENTTARGET.value = eventTarget;
+        theForm.__EVENTARGUMENT.value = eventArgument;
+        theForm.submit();
+    }
+}
+//]]>
+</script>
+
+
+<script src="./WebResource.axd" type="text/javascript"></script>
+
+<script src="./KeyEvents.js.descarga"></script><script language="javascript" type="text/javascript">function ShowHideResponse(option) {     text = window.document.getElementById(option);     row = text.parentNode.parentNode;     if (row.style.display == "none") {         row.style.display = "";         text.focus();     }     else {         row.style.display = "none";     }}function ShowResponse(rowId, checkId) {     var check = document.getElementById(checkId);     if(check != null)     {         if(check.checked == true)         {             document.getElementById(rowId).style.display = "";         }     }}</script><script src="./DataEntry.js.descarga"></script>
+						<style>							
+							P.PanelControlTitleStyle
+							{
+ 								font-family:verdana;
+ 								font-size: 12px;
+								font-weight : bold;
+								text-align: center;  								
+							}
+						</style>						
+						<script language="javascript">
+						function MinMaxPanelControl(cntrlId)
+						{
+						    var imgPath='/App_Themes/Default/Images/';	
+					
+							//Get state from hidden control.													
+							if ( document.getElementById(cntrlId).style.display == 'none' )
+							{
+								document.getElementById(cntrlId).style.display = '';						
+								document.getElementById(cntrlId+'_imgPlusMinus').src = imgPath + 'bot-grid-minus.gif';
+							}
+							else 
+							{
+								document.getElementById(cntrlId).style.display = 'none';								
+								document.getElementById(cntrlId+'_imgPlusMinus').src = imgPath + 'bot-grid-plus.gif';
+							}
+						}
+						</script>
+			
+<script src="./ScriptResource.axd" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+var __cultureInfo = '{"name":"es-UY","numberFormat":{"CurrencyDecimalDigits":2,"CurrencyDecimalSeparator":",","IsReadOnly":false,"CurrencyGroupSizes":[3],"NumberGroupSizes":[3],"PercentGroupSizes":[3],"CurrencyGroupSeparator":".","CurrencySymbol":"$U","NaNSymbol":"NeuN","CurrencyNegativePattern":14,"NumberNegativePattern":1,"PercentPositivePattern":0,"PercentNegativePattern":0,"NegativeInfinitySymbol":"-Infinito","NegativeSign":"-","NumberDecimalDigits":2,"NumberDecimalSeparator":",","NumberGroupSeparator":".","CurrencyPositivePattern":2,"PositiveInfinitySymbol":"Infinito","PositiveSign":"+","PercentDecimalDigits":2,"PercentDecimalSeparator":",","PercentGroupSeparator":".","PercentSymbol":"%","PerMilleSymbol":"‰","NativeDigits":["0","1","2","3","4","5","6","7","8","9"],"DigitSubstitution":1},"dateTimeFormat":{"AMDesignator":"a.m.","Calendar":{"MinSupportedDateTime":"\/Date(-62135586000000)\/","MaxSupportedDateTime":"\/Date(253402300799999)\/","AlgorithmType":1,"CalendarType":1,"Eras":[1],"TwoDigitYearMax":2029,"IsReadOnly":false},"DateSeparator":"/","FirstDayOfWeek":1,"CalendarWeekRule":0,"FullDateTimePattern":"dddd, dd\u0027 de \u0027MMMM\u0027 de \u0027yyyy hh:mm:ss tt","LongDatePattern":"dddd, dd\u0027 de \u0027MMMM\u0027 de \u0027yyyy","LongTimePattern":"hh:mm:ss tt","MonthDayPattern":"dd MMMM","PMDesignator":"p.m.","RFC1123Pattern":"ddd, dd MMM yyyy HH\u0027:\u0027mm\u0027:\u0027ss \u0027GMT\u0027","ShortDatePattern":"dd/MM/yyyy","ShortTimePattern":"hh:mm tt","SortableDateTimePattern":"yyyy\u0027-\u0027MM\u0027-\u0027dd\u0027T\u0027HH\u0027:\u0027mm\u0027:\u0027ss","TimeSeparator":":","UniversalSortableDateTimePattern":"yyyy\u0027-\u0027MM\u0027-\u0027dd HH\u0027:\u0027mm\u0027:\u0027ss\u0027Z\u0027","YearMonthPattern":"MMMM\u0027 de \u0027yyyy","AbbreviatedDayNames":["dom","lun","mar","mié","jue","vie","sáb"],"ShortestDayNames":["do","lu","ma","mi","ju","vi","sá"],"DayNames":["domingo","lunes","martes","miércoles","jueves","viernes","sábado"],"AbbreviatedMonthNames":["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic",""],"MonthNames":["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre",""],"IsReadOnly":false,"NativeCalendarName":"calendario gregoriano","AbbreviatedMonthGenitiveNames":["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic",""],"MonthGenitiveNames":["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre",""]}}';//]]>
+</script>
+
+<script src="./ScriptResource(1).axd" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+if (typeof(Sys) === 'undefined') throw new Error('ASP.NET Ajax client-side framework failed to load.');
+//]]>
+</script>
+
+<script src="./ScriptResource(2).axd" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+function WebForm_OnSubmit() {
+if (typeof(ValidatorOnSubmit) == "function" && ValidatorOnSubmit() == false) return false;
+return true;
+}
+//]]>
+</script>
+
+<div>
+
+	<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEWKAKIreC/CQKxjpRkAvGbybYJAsu0iLsEApKIx2QCjofUtgkCiIq2vgQC8/yXZAKvjc22CQKt1YC6BALU9plkAtS2prgJAoKrjNUEAq3tm2QC9byguAkCv/jH1QQCjueOZAKSpMu2CQKMxtS7BALv259kAsOqnLgJApGZx9QEAqDMpGQC6NGeuAkC1qiDzwQC+YSfZAKJ2pi4CQKTuM/PBAKowvWVBgLA26O0CwKf4fCvCgKlyKLHAgLhw8t2Arrh4ZsKAqS8sYsEAoXKu/AHArvFwdoIArvFrf8PAtGqzMkOAom34LsBf8Yns/yPsnsvsrY36xaJevmvTtw=">
+</div>
+    <script type="text/javascript">
+//<![CDATA[
+Sys.WebForms.PageRequestManager._initialize('ctl00$scriptManager', document.getElementById('aspnetForm'));
+Sys.WebForms.PageRequestManager.getInstance()._updateControls([], [], [], 90);
+//]]>
+</script>
+
+    <input type="hidden" id="PageLinkData" name="PageLinkData" value="">
+    <input type="hidden" id="PageLinkUrl" name="PageLinkUrl" value="">
+    <input type="hidden" id="PageUrl" value="/Pages/Common/RegisterQuestions.aspx">
+    <table id="ctl00_tableContent" width="100%" border="0" cellpadding="0" cellspacing="0" class="ic-content">
+	<tbody><tr>
+		<td class="ic-content-left-aux">
+                <img src="./log-img-aux-left-bottom.gif" width="9" height="110">
+            </td>
+		<td style="width: 100%">
+                <table width="100%" border="0" cellpadding="0" cellspacing="0" class="ic-content-left">
+                    <tbody><tr>
+                        <td id="TdCPM" class="ic-content-space-top" valign="top">
+                            <table id="TablaCPM" width="100%" border="0" cellspacing="0" cellpadding="0">
+                                
+                                <tbody><tr>
+                                    <td>
+                                        <table id="ctl00_tableHeader" width="100%" border="0" cellspacing="0" cellpadding="0">
+			<tbody><tr>
+				<td class="ic-breadcrumb-container">
+                                                    
+                                                    &gt;
+                                                    <span id="ctl00_siteMapNavigator"><a href="http://10.1.75.104:9080/Pages/Common/RegisterQuestions.aspx#ctl00_siteMapNavigator_SkipLink"><img alt="Skip Navigation Links" height="0" width="0" src="./WebResource(1).axd" style="border-width:0px;"></a><span><a href="http://10.1.75.104:9080/Home.aspx">Posición Consolidada</a></span><span> &gt; </span><span><a href="http://10.1.75.104:9080/Pages/Common/ChangePassword.aspx">Cambio de Clave</a></span><span> &gt; </span><span>Registrar Preguntas</span><a id="ctl00_siteMapNavigator_SkipLink"></a></span>
+                                                    </td>
+				<td class="ic-toolbar-container">
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tbody><tr>
+                                                            <td width="16">
+                                                                <img src="./ico-print.gif" id="ctl00_Img4" width="16" height="16">
+                                                            </td>
+                                                            <td class="ic-links-toolbar">
+                                                                <a href="http://10.1.75.104:9080/Pages/Common/RegisterQuestions.aspx#" onclick="javascript: GoPrint();">
+                                                                    Imprimir página</a>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody></table>
+                                                </td>
+			</tr>
+		</tbody></table>
+		
+                                    </td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>
+                                        <span id="ctl00_labelTitle" class="ic-page-title">Registrar preguntas</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td id="ctl00_cellRequiered" align="right">
+                                        <img src="./ic_img-data-required.gif" id="ctl00_Img5" border="0">
+                                        <span>
+                                            Campo requerido</span>
+                                    </td>
+		
+                                </tr>
+                                <tr>
+                                    <td width="95%" align="center">
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                            <tbody><tr>
+                                                <td align="right">
+                                                    
+                                                    
+                                                </td>
+                                            </tr>
+                                        </tbody></table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="100%" align="center">
+                                        <div id="ic-loading" class="ic-loading-bg" style="display: none;">
+                                            <div class="ic-loading">
+                                                <div id="message">
+                                                    <img src="./cargandoBAR.gif" id="ctl00_imgLoading"><br>
+                                                    <span id="ctl00_WaitingMessage">Procesando...</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="mainContainer">
+                                            
+    
+            <table class="ic-grid-border" cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+			<tbody><tr>
+				<td><table id="ctl00_MainHolder_ChangeAnswers_thePanel" class="ic-grid" cellspacing="0" cellpadding="0" align="Center" border="0" style="width:100%;border-collapse:collapse;">
+					<tbody><tr class="ic-grid-title-row">
+						<td><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+							<tbody><tr>
+								<td class="ic-grid-title-cell-left">&nbsp;</td><td class="ic-grid-title-cell" align="left" style="white-space:nowrap;">Preguntas del sistema</td><td class="ic-gridB-title-cell-right"><img id="ctl00_MainHolder_ChangeAnswers_imgPlusMinus" onclick="javascript:MinMaxPanelControl(&#39;ctl00_MainHolder_ChangeAnswers&#39;)" src="./bot-grid-minus.gif" alt="Minimizar/Maximizar el panel" align="absmiddle" style="border-width:0px;cursor:hand;"></td>
+							</tr>
+						</tbody></table></td>
+					</tr><tr>
+						<td align="center"><div id="ctl00_MainHolder_ChangeAnswers" style="color:Black;border-color:DodgerBlue;font-family:verdana;font-size:10pt;width:100%;display:;">
+	
+                
+<table width="100%" border="0" cellpadding="0" cellspacing="0" class="ic_table-content">
+    <tbody><tr>
+        <td>
+            <span id="ctl00_MainHolder_questionsControl_customValidatorAnswerAllSelected" class="ic_label-error" style="color:Red;visibility:hidden;">CustomValidator</span>
+            
+                    
+                            <table class="ic_table-content" width="100%">
+                        
+                            <tbody><tr>
+                                <td class="ic-form-data-no-border">
+                                <span id="ctl00_MainHolder_questionsControl_questionsRepeater_ctl01_labelQuestionText">¿Cuál fue la materia (asignatura) que mas le gusto en el colegio?</span></td>
+                                <td class="ic-form-data-no-border" align="right">
+                                <input id="ctl00_MainHolder_questionsControl_questionsRepeater_ctl01_checkBoxAnswer" type="checkbox" name="ctl00$MainHolder$questionsControl$questionsRepeater$ctl01$checkBoxAnswer" onclick="javascript:ShowHideResponse(&#39;ctl00_MainHolder_questionsControl_questionsRepeater_ctl01_textBoxAnswer&#39;);"><label for="ctl00_MainHolder_questionsControl_questionsRepeater_ctl01_checkBoxAnswer">Contestar</label></td>
+                            </tr>
+                            <tr class="ic_text-answer" style="display: none" id="Row_ctl00_MainHolder_questionsControl_10">
+                                <td class="ic-form-data-required">
+                                <input name="ctl00$MainHolder$questionsControl$questionsRepeater$ctl01$textBoxAnswer" type="text" maxlength="80" id="ctl00_MainHolder_questionsControl_questionsRepeater_ctl01_textBoxAnswer" class="ic-control-text" onpaste="return false;" onkeypress="return validCharactersOnly(this, event, &quot;^[^:;\&lt;&gt;&#39;\&quot;]*$&quot;)" style="width:90%;"></td>
+                                <td class="ic_text-answer"></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="ic_separator"><img src="./pixel_transp.gif" border="0" width="1" height="1"></td>
+                            </tr>
+                            <tr style="display: none">
+                                <td colspan="2" class="ic-form-data-no-border">
+                                    <input name="ctl00$MainHolder$questionsControl$questionsRepeater$ctl01$textBoxQuestionId" type="text" value="10" id="ctl00_MainHolder_questionsControl_questionsRepeater_ctl01_textBoxQuestionId" class="ic-control-text" onkeypress="return validCharactersOnly(this, event, &quot;^[^:;\&lt;&gt;&#39;\&quot;]*$&quot;)">
+                                    <script language="javascript" type="text/javascript">ShowResponse('Row_ctl00_MainHolder_questionsControl_10', 'ctl00_MainHolder_questionsControl_questionsRepeater_ctl01_checkBoxAnswer');</script>
+                                </td>
+                            </tr>
+                        
+                            <tr>
+                                <td class="ic-form-data-no-border">
+                                <span id="ctl00_MainHolder_questionsControl_questionsRepeater_ctl02_labelQuestionText">¿Cuál es el título de su película favorita?</span></td>
+                                <td class="ic-form-data-no-border" align="right">
+                                <input id="ctl00_MainHolder_questionsControl_questionsRepeater_ctl02_checkBoxAnswer" type="checkbox" name="ctl00$MainHolder$questionsControl$questionsRepeater$ctl02$checkBoxAnswer" onclick="javascript:ShowHideResponse(&#39;ctl00_MainHolder_questionsControl_questionsRepeater_ctl02_textBoxAnswer&#39;);"><label for="ctl00_MainHolder_questionsControl_questionsRepeater_ctl02_checkBoxAnswer">Contestar</label></td>
+                            </tr>
+                            <tr class="ic_text-answer" style="display: none" id="Row_ctl00_MainHolder_questionsControl_1">
+                                <td class="ic-form-data-required">
+                                <input name="ctl00$MainHolder$questionsControl$questionsRepeater$ctl02$textBoxAnswer" type="text" maxlength="80" id="ctl00_MainHolder_questionsControl_questionsRepeater_ctl02_textBoxAnswer" class="ic-control-text" onpaste="return false;" onkeypress="return validCharactersOnly(this, event, &quot;^[^:;\&lt;&gt;&#39;\&quot;]*$&quot;)" style="width:90%;"></td>
+                                <td class="ic_text-answer"></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="ic_separator"><img src="./pixel_transp.gif" border="0" width="1" height="1"></td>
+                            </tr>
+                            <tr style="display: none">
+                                <td colspan="2" class="ic-form-data-no-border">
+                                    <input name="ctl00$MainHolder$questionsControl$questionsRepeater$ctl02$textBoxQuestionId" type="text" value="1" id="ctl00_MainHolder_questionsControl_questionsRepeater_ctl02_textBoxQuestionId" class="ic-control-text" onkeypress="return validCharactersOnly(this, event, &quot;^[^:;\&lt;&gt;&#39;\&quot;]*$&quot;)">
+                                    <script language="javascript" type="text/javascript">ShowResponse('Row_ctl00_MainHolder_questionsControl_1', 'ctl00_MainHolder_questionsControl_questionsRepeater_ctl02_checkBoxAnswer');</script>
+                                </td>
+                            </tr>
+                        
+                            <tr>
+                                <td class="ic-form-data-no-border">
+                                <span id="ctl00_MainHolder_questionsControl_questionsRepeater_ctl03_labelQuestionText">¿Cuál es el primer nombre de su abuelo paterno?</span></td>
+                                <td class="ic-form-data-no-border" align="right">
+                                <input id="ctl00_MainHolder_questionsControl_questionsRepeater_ctl03_checkBoxAnswer" type="checkbox" name="ctl00$MainHolder$questionsControl$questionsRepeater$ctl03$checkBoxAnswer" onclick="javascript:ShowHideResponse(&#39;ctl00_MainHolder_questionsControl_questionsRepeater_ctl03_textBoxAnswer&#39;);"><label for="ctl00_MainHolder_questionsControl_questionsRepeater_ctl03_checkBoxAnswer">Contestar</label></td>
+                            </tr>
+                            <tr class="ic_text-answer" style="display: none" id="Row_ctl00_MainHolder_questionsControl_20">
+                                <td class="ic-form-data-required">
+                                <input name="ctl00$MainHolder$questionsControl$questionsRepeater$ctl03$textBoxAnswer" type="text" maxlength="80" id="ctl00_MainHolder_questionsControl_questionsRepeater_ctl03_textBoxAnswer" class="ic-control-text" onpaste="return false;" onkeypress="return validCharactersOnly(this, event, &quot;^[^:;\&lt;&gt;&#39;\&quot;]*$&quot;)" style="width:90%;"></td>
+                                <td class="ic_text-answer"></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="ic_separator"><img src="./pixel_transp.gif" border="0" width="1" height="1"></td>
+                            </tr>
+                            <tr style="display: none">
+                                <td colspan="2" class="ic-form-data-no-border">
+                                    <input name="ctl00$MainHolder$questionsControl$questionsRepeater$ctl03$textBoxQuestionId" type="text" value="20" id="ctl00_MainHolder_questionsControl_questionsRepeater_ctl03_textBoxQuestionId" class="ic-control-text" onkeypress="return validCharactersOnly(this, event, &quot;^[^:;\&lt;&gt;&#39;\&quot;]*$&quot;)">
+                                    <script language="javascript" type="text/javascript">ShowResponse('Row_ctl00_MainHolder_questionsControl_20', 'ctl00_MainHolder_questionsControl_questionsRepeater_ctl03_checkBoxAnswer');</script>
+                                </td>
+                            </tr>
+                        
+                            <tr>
+                                <td class="ic-form-data-no-border">
+                                <span id="ctl00_MainHolder_questionsControl_questionsRepeater_ctl04_labelQuestionText">¿En qué ciudad fue su luna de miel?</span></td>
+                                <td class="ic-form-data-no-border" align="right">
+                                <input id="ctl00_MainHolder_questionsControl_questionsRepeater_ctl04_checkBoxAnswer" type="checkbox" name="ctl00$MainHolder$questionsControl$questionsRepeater$ctl04$checkBoxAnswer" onclick="javascript:ShowHideResponse(&#39;ctl00_MainHolder_questionsControl_questionsRepeater_ctl04_textBoxAnswer&#39;);"><label for="ctl00_MainHolder_questionsControl_questionsRepeater_ctl04_checkBoxAnswer">Contestar</label></td>
+                            </tr>
+                            <tr class="ic_text-answer" style="display: none" id="Row_ctl00_MainHolder_questionsControl_28">
+                                <td class="ic-form-data-required">
+                                <input name="ctl00$MainHolder$questionsControl$questionsRepeater$ctl04$textBoxAnswer" type="text" maxlength="80" id="ctl00_MainHolder_questionsControl_questionsRepeater_ctl04_textBoxAnswer" class="ic-control-text" onpaste="return false;" onkeypress="return validCharactersOnly(this, event, &quot;^[^:;\&lt;&gt;&#39;\&quot;]*$&quot;)" style="width:90%;"></td>
+                                <td class="ic_text-answer"></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="ic_separator"><img src="./pixel_transp.gif" border="0" width="1" height="1"></td>
+                            </tr>
+                            <tr style="display: none">
+                                <td colspan="2" class="ic-form-data-no-border">
+                                    <input name="ctl00$MainHolder$questionsControl$questionsRepeater$ctl04$textBoxQuestionId" type="text" value="28" id="ctl00_MainHolder_questionsControl_questionsRepeater_ctl04_textBoxQuestionId" class="ic-control-text" onkeypress="return validCharactersOnly(this, event, &quot;^[^:;\&lt;&gt;&#39;\&quot;]*$&quot;)">
+                                    <script language="javascript" type="text/javascript">ShowResponse('Row_ctl00_MainHolder_questionsControl_28', 'ctl00_MainHolder_questionsControl_questionsRepeater_ctl04_checkBoxAnswer');</script>
+                                </td>
+                            </tr>
+                        
+                            <tr>
+                                <td class="ic-form-data-no-border">
+                                <span id="ctl00_MainHolder_questionsControl_questionsRepeater_ctl05_labelQuestionText">¿En qué ciudad estaba ubicado su colegio de secundaria?</span></td>
+                                <td class="ic-form-data-no-border" align="right">
+                                <input id="ctl00_MainHolder_questionsControl_questionsRepeater_ctl05_checkBoxAnswer" type="checkbox" name="ctl00$MainHolder$questionsControl$questionsRepeater$ctl05$checkBoxAnswer" onclick="javascript:ShowHideResponse(&#39;ctl00_MainHolder_questionsControl_questionsRepeater_ctl05_textBoxAnswer&#39;);"><label for="ctl00_MainHolder_questionsControl_questionsRepeater_ctl05_checkBoxAnswer">Contestar</label></td>
+                            </tr>
+                            <tr class="ic_text-answer" style="display: none" id="Row_ctl00_MainHolder_questionsControl_14">
+                                <td class="ic-form-data-required">
+                                <input name="ctl00$MainHolder$questionsControl$questionsRepeater$ctl05$textBoxAnswer" type="text" maxlength="80" id="ctl00_MainHolder_questionsControl_questionsRepeater_ctl05_textBoxAnswer" class="ic-control-text" onpaste="return false;" onkeypress="return validCharactersOnly(this, event, &quot;^[^:;\&lt;&gt;&#39;\&quot;]*$&quot;)" style="width:90%;"></td>
+                                <td class="ic_text-answer"></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="ic_separator"><img src="./pixel_transp.gif" border="0" width="1" height="1"></td>
+                            </tr>
+                            <tr style="display: none">
+                                <td colspan="2" class="ic-form-data-no-border">
+                                    <input name="ctl00$MainHolder$questionsControl$questionsRepeater$ctl05$textBoxQuestionId" type="text" value="14" id="ctl00_MainHolder_questionsControl_questionsRepeater_ctl05_textBoxQuestionId" class="ic-control-text" onkeypress="return validCharactersOnly(this, event, &quot;^[^:;\&lt;&gt;&#39;\&quot;]*$&quot;)">
+                                    <script language="javascript" type="text/javascript">ShowResponse('Row_ctl00_MainHolder_questionsControl_14', 'ctl00_MainHolder_questionsControl_questionsRepeater_ctl05_checkBoxAnswer');</script>
+                                </td>
+                            </tr>
+                        
+                            <tr>
+                                <td class="ic-form-data-no-border">
+                                <span id="ctl00_MainHolder_questionsControl_questionsRepeater_ctl06_labelQuestionText">¿Quien es su personaje histórico favorito?</span></td>
+                                <td class="ic-form-data-no-border" align="right">
+                                <input id="ctl00_MainHolder_questionsControl_questionsRepeater_ctl06_checkBoxAnswer" type="checkbox" name="ctl00$MainHolder$questionsControl$questionsRepeater$ctl06$checkBoxAnswer" onclick="javascript:ShowHideResponse(&#39;ctl00_MainHolder_questionsControl_questionsRepeater_ctl06_textBoxAnswer&#39;);"><label for="ctl00_MainHolder_questionsControl_questionsRepeater_ctl06_checkBoxAnswer">Contestar</label></td>
+                            </tr>
+                            <tr class="ic_text-answer" style="display: none" id="Row_ctl00_MainHolder_questionsControl_26">
+                                <td class="ic-form-data-required">
+                                <input name="ctl00$MainHolder$questionsControl$questionsRepeater$ctl06$textBoxAnswer" type="text" maxlength="80" id="ctl00_MainHolder_questionsControl_questionsRepeater_ctl06_textBoxAnswer" class="ic-control-text" onpaste="return false;" onkeypress="return validCharactersOnly(this, event, &quot;^[^:;\&lt;&gt;&#39;\&quot;]*$&quot;)" style="width:90%;"></td>
+                                <td class="ic_text-answer"></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="ic_separator"><img src="./pixel_transp.gif" border="0" width="1" height="1"></td>
+                            </tr>
+                            <tr style="display: none">
+                                <td colspan="2" class="ic-form-data-no-border">
+                                    <input name="ctl00$MainHolder$questionsControl$questionsRepeater$ctl06$textBoxQuestionId" type="text" value="26" id="ctl00_MainHolder_questionsControl_questionsRepeater_ctl06_textBoxQuestionId" class="ic-control-text" onkeypress="return validCharactersOnly(this, event, &quot;^[^:;\&lt;&gt;&#39;\&quot;]*$&quot;)">
+                                    <script language="javascript" type="text/javascript">ShowResponse('Row_ctl00_MainHolder_questionsControl_26', 'ctl00_MainHolder_questionsControl_questionsRepeater_ctl06_checkBoxAnswer');</script>
+                                </td>
+                            </tr>
+                        
+                            <tr>
+                                <td class="ic-form-data-no-border">
+                                <span id="ctl00_MainHolder_questionsControl_questionsRepeater_ctl07_labelQuestionText">¿En qué ciudad vivió la mayor parte de su infancia?</span></td>
+                                <td class="ic-form-data-no-border" align="right">
+                                <input id="ctl00_MainHolder_questionsControl_questionsRepeater_ctl07_checkBoxAnswer" type="checkbox" name="ctl00$MainHolder$questionsControl$questionsRepeater$ctl07$checkBoxAnswer" onclick="javascript:ShowHideResponse(&#39;ctl00_MainHolder_questionsControl_questionsRepeater_ctl07_textBoxAnswer&#39;);"><label for="ctl00_MainHolder_questionsControl_questionsRepeater_ctl07_checkBoxAnswer">Contestar</label></td>
+                            </tr>
+                            <tr class="ic_text-answer" style="display: none" id="Row_ctl00_MainHolder_questionsControl_7">
+                                <td class="ic-form-data-required">
+                                <input name="ctl00$MainHolder$questionsControl$questionsRepeater$ctl07$textBoxAnswer" type="text" maxlength="80" id="ctl00_MainHolder_questionsControl_questionsRepeater_ctl07_textBoxAnswer" class="ic-control-text" onpaste="return false;" onkeypress="return validCharactersOnly(this, event, &quot;^[^:;\&lt;&gt;&#39;\&quot;]*$&quot;)" style="width:90%;"></td>
+                                <td class="ic_text-answer"></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="ic_separator"><img src="./pixel_transp.gif" border="0" width="1" height="1"></td>
+                            </tr>
+                            <tr style="display: none">
+                                <td colspan="2" class="ic-form-data-no-border">
+                                    <input name="ctl00$MainHolder$questionsControl$questionsRepeater$ctl07$textBoxQuestionId" type="text" value="7" id="ctl00_MainHolder_questionsControl_questionsRepeater_ctl07_textBoxQuestionId" class="ic-control-text" onkeypress="return validCharactersOnly(this, event, &quot;^[^:;\&lt;&gt;&#39;\&quot;]*$&quot;)">
+                                    <script language="javascript" type="text/javascript">ShowResponse('Row_ctl00_MainHolder_questionsControl_7', 'ctl00_MainHolder_questionsControl_questionsRepeater_ctl07_checkBoxAnswer');</script>
+                                </td>
+                            </tr>
+                        
+                            <tr>
+                                <td class="ic-form-data-no-border">
+                                <span id="ctl00_MainHolder_questionsControl_questionsRepeater_ctl08_labelQuestionText">¿Cuál fue el primer país extranjero que visitó?</span></td>
+                                <td class="ic-form-data-no-border" align="right">
+                                <input id="ctl00_MainHolder_questionsControl_questionsRepeater_ctl08_checkBoxAnswer" type="checkbox" name="ctl00$MainHolder$questionsControl$questionsRepeater$ctl08$checkBoxAnswer" onclick="javascript:ShowHideResponse(&#39;ctl00_MainHolder_questionsControl_questionsRepeater_ctl08_textBoxAnswer&#39;);"><label for="ctl00_MainHolder_questionsControl_questionsRepeater_ctl08_checkBoxAnswer">Contestar</label></td>
+                            </tr>
+                            <tr class="ic_text-answer" style="display: none" id="Row_ctl00_MainHolder_questionsControl_27">
+                                <td class="ic-form-data-required">
+                                <input name="ctl00$MainHolder$questionsControl$questionsRepeater$ctl08$textBoxAnswer" type="text" maxlength="80" id="ctl00_MainHolder_questionsControl_questionsRepeater_ctl08_textBoxAnswer" class="ic-control-text" onpaste="return false;" onkeypress="return validCharactersOnly(this, event, &quot;^[^:;\&lt;&gt;&#39;\&quot;]*$&quot;)" style="width:90%;"></td>
+                                <td class="ic_text-answer"></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="ic_separator"><img src="./pixel_transp.gif" border="0" width="1" height="1"></td>
+                            </tr>
+                            <tr style="display: none">
+                                <td colspan="2" class="ic-form-data-no-border">
+                                    <input name="ctl00$MainHolder$questionsControl$questionsRepeater$ctl08$textBoxQuestionId" type="text" value="27" id="ctl00_MainHolder_questionsControl_questionsRepeater_ctl08_textBoxQuestionId" class="ic-control-text" onkeypress="return validCharactersOnly(this, event, &quot;^[^:;\&lt;&gt;&#39;\&quot;]*$&quot;)">
+                                    <script language="javascript" type="text/javascript">ShowResponse('Row_ctl00_MainHolder_questionsControl_27', 'ctl00_MainHolder_questionsControl_questionsRepeater_ctl08_checkBoxAnswer');</script>
+                                </td>
+                            </tr>
+                        
+                            <tr>
+                                <td class="ic-form-data-no-border">
+                                <span id="ctl00_MainHolder_questionsControl_questionsRepeater_ctl09_labelQuestionText">¿Cuál es el primer nombre de su abuelo materno?</span></td>
+                                <td class="ic-form-data-no-border" align="right">
+                                <input id="ctl00_MainHolder_questionsControl_questionsRepeater_ctl09_checkBoxAnswer" type="checkbox" name="ctl00$MainHolder$questionsControl$questionsRepeater$ctl09$checkBoxAnswer" onclick="javascript:ShowHideResponse(&#39;ctl00_MainHolder_questionsControl_questionsRepeater_ctl09_textBoxAnswer&#39;);"><label for="ctl00_MainHolder_questionsControl_questionsRepeater_ctl09_checkBoxAnswer">Contestar</label></td>
+                            </tr>
+                            <tr class="ic_text-answer" style="display: none" id="Row_ctl00_MainHolder_questionsControl_18">
+                                <td class="ic-form-data-required">
+                                <input name="ctl00$MainHolder$questionsControl$questionsRepeater$ctl09$textBoxAnswer" type="text" maxlength="80" id="ctl00_MainHolder_questionsControl_questionsRepeater_ctl09_textBoxAnswer" class="ic-control-text" onpaste="return false;" onkeypress="return validCharactersOnly(this, event, &quot;^[^:;\&lt;&gt;&#39;\&quot;]*$&quot;)" style="width:90%;"></td>
+                                <td class="ic_text-answer"></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="ic_separator"><img src="./pixel_transp.gif" border="0" width="1" height="1"></td>
+                            </tr>
+                            <tr style="display: none">
+                                <td colspan="2" class="ic-form-data-no-border">
+                                    <input name="ctl00$MainHolder$questionsControl$questionsRepeater$ctl09$textBoxQuestionId" type="text" value="18" id="ctl00_MainHolder_questionsControl_questionsRepeater_ctl09_textBoxQuestionId" class="ic-control-text" onkeypress="return validCharactersOnly(this, event, &quot;^[^:;\&lt;&gt;&#39;\&quot;]*$&quot;)">
+                                    <script language="javascript" type="text/javascript">ShowResponse('Row_ctl00_MainHolder_questionsControl_18', 'ctl00_MainHolder_questionsControl_questionsRepeater_ctl09_checkBoxAnswer');</script>
+                                </td>
+                            </tr>
+                        
+                            <tr>
+                                <td class="ic-form-data-no-border">
+                                <span id="ctl00_MainHolder_questionsControl_questionsRepeater_ctl10_labelQuestionText">¿Cuál es el nombre de la institución donde curso su ultimo grado de secundaria?</span></td>
+                                <td class="ic-form-data-no-border" align="right">
+                                <input id="ctl00_MainHolder_questionsControl_questionsRepeater_ctl10_checkBoxAnswer" type="checkbox" name="ctl00$MainHolder$questionsControl$questionsRepeater$ctl10$checkBoxAnswer" onclick="javascript:ShowHideResponse(&#39;ctl00_MainHolder_questionsControl_questionsRepeater_ctl10_textBoxAnswer&#39;);"><label for="ctl00_MainHolder_questionsControl_questionsRepeater_ctl10_checkBoxAnswer">Contestar</label></td>
+                            </tr>
+                            <tr class="ic_text-answer" style="display: none" id="Row_ctl00_MainHolder_questionsControl_6">
+                                <td class="ic-form-data-required">
+                                <input name="ctl00$MainHolder$questionsControl$questionsRepeater$ctl10$textBoxAnswer" type="text" maxlength="80" id="ctl00_MainHolder_questionsControl_questionsRepeater_ctl10_textBoxAnswer" class="ic-control-text" onpaste="return false;" onkeypress="return validCharactersOnly(this, event, &quot;^[^:;\&lt;&gt;&#39;\&quot;]*$&quot;)" style="width:90%;"></td>
+                                <td class="ic_text-answer"></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="ic_separator"><img src="./pixel_transp.gif" border="0" width="1" height="1"></td>
+                            </tr>
+                            <tr style="display: none">
+                                <td colspan="2" class="ic-form-data-no-border">
+                                    <input name="ctl00$MainHolder$questionsControl$questionsRepeater$ctl10$textBoxQuestionId" type="text" value="6" id="ctl00_MainHolder_questionsControl_questionsRepeater_ctl10_textBoxQuestionId" class="ic-control-text" onkeypress="return validCharactersOnly(this, event, &quot;^[^:;\&lt;&gt;&#39;\&quot;]*$&quot;)">
+                                    <script language="javascript" type="text/javascript">ShowResponse('Row_ctl00_MainHolder_questionsControl_6', 'ctl00_MainHolder_questionsControl_questionsRepeater_ctl10_checkBoxAnswer');</script>
+                                </td>
+                            </tr>
+                        
+                            </tbody></table>
+                
+        </td>
+    </tr>
+    
+    <tr style="display: none">
+        <td>
+            <input name="ctl00$MainHolder$questionsControl$textBoxKeyAnswer" type="text" id="ctl00_MainHolder_questionsControl_textBoxKeyAnswer" class="ic-control-text" onkeypress="return validCharactersOnly(this, event, &quot;^[^:;\&lt;&gt;&#39;\&quot;]*$&quot;)">
+        </td>
+    </tr>
+</tbody></table>
+            <input name="ctl00$MainHolder$ctl00$MainHolder$ChangeAnswers_hdnMinimizeState" type="text" value="False" id="ctl00_MainHolder_ctl00_MainHolder_ChangeAnswers_hdnMinimizeState" class="ic-control-text" onkeypress="return validCharactersOnly(this, event, &quot;^[^:;\&lt;&gt;&#39;\&quot;]*$&quot;)" style="display:none">
+</div></td>
+					</tr>
+				</tbody></table></td>
+			</tr>
+		</tbody></table>
+            <table class="ic-grid-border" cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+			<tbody><tr>
+				<td><table id="ctl00_MainHolder_UserNamePanel_thePanel" class="ic-grid" cellspacing="0" cellpadding="0" align="Center" border="0" style="width:100%;border-collapse:collapse;">
+					<tbody><tr class="ic-grid-title-row">
+						<td><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+							<tbody><tr>
+								<td class="ic-grid-title-cell-left">&nbsp;</td><td class="ic-grid-title-cell" align="left" style="white-space:nowrap;">Preguntas del usuario</td><td class="ic-gridB-title-cell-right"><img id="ctl00_MainHolder_UserNamePanel_imgPlusMinus" onclick="javascript:MinMaxPanelControl(&#39;ctl00_MainHolder_UserNamePanel&#39;)" src="./bot-grid-minus.gif" alt="Minimizar/Maximizar el panel" align="absmiddle" style="border-width:0px;cursor:hand;"></td>
+							</tr>
+						</tbody></table></td>
+					</tr><tr>
+						<td align="center"><div id="ctl00_MainHolder_UserNamePanel" style="color:Black;border-color:DodgerBlue;font-family:verdana;font-size:10pt;width:100%;display:;">
+	
+                <table width="100%" border="0">
+                    <tbody><tr>
+                        <td class="ic-form-data" style="height: 24px">
+                            <span id="ctl00_MainHolder_LabelQuestion">Pregunta:</span>
+                        </td>
+                        <td class="ic-form-data-required" style="height: 24px">
+                            <input name="ctl00$MainHolder$TextBoxUserQuestion" type="text" maxlength="100" id="ctl00_MainHolder_TextBoxUserQuestion" class="ic-control-text" autocomplete="off" onkeypress="return validCharactersOnly(this, event, &quot;^[^:;\&lt;&gt;&#39;\&quot;]*$&quot;)" style="width:280px;">
+                            <span id="ctl00_MainHolder_RequiredFieldValidator2" style="color:Red;display:none;"></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="ic-form-data" style="height: 24px">
+                            <span id="ctl00_MainHolder_LabelAnswer">Respuesta:</span>
+                        </td>
+                        <td class="ic-form-data-required" style="height: 24px">
+                            <input name="ctl00$MainHolder$TextBoxUserAnswer" type="text" maxlength="100" id="ctl00_MainHolder_TextBoxUserAnswer" class="ic-control-text" autocomplete="off" onkeypress="return validCharactersOnly(this, event, &quot;^[^:;\&lt;&gt;&#39;\&quot;]*$&quot;)" style="width:280px;">
+                            <span id="ctl00_MainHolder_RequiredFieldValidator1" style="color:Red;display:none;"></span>&nbsp;
+                        </td>
+                    </tr>
+                </tbody></table>
+            <input name="ctl00$MainHolder$ctl00$MainHolder$UserNamePanel_hdnMinimizeState" type="text" value="False" id="ctl00_MainHolder_ctl00_MainHolder_UserNamePanel_hdnMinimizeState" class="ic-control-text" onkeypress="return validCharactersOnly(this, event, &quot;^[^:;\&lt;&gt;&#39;\&quot;]*$&quot;)" style="display:none">
+</div></td>
+					</tr>
+				</tbody></table></td>
+			</tr>
+		</tbody></table>
+            &nbsp;
+            <table nowrap="nowrap">
+                <tbody><tr>
+                    <td class="ic-message" style="width: 100%">
+                        Debe responder 3 preguntas como mínimo y establecer una propia.
+                    </td>
+                </tr>
+                <tr>
+                    <td class="ic-message" style="width: 100%">
+                        Las preguntas y respuestas de seguridad le serán requeridas cuando haya olvidado su clave y desee realizar una autogestión para recuperarla.
+                    </td>
+                    <td align="right" nowrap="nowrap">
+                        <a id="ctl00_MainHolder_linkButton2" class="ic-button-navigation" href="javascript:__doPostBack(&#39;ctl00$MainHolder$linkButton2&#39;,&#39;&#39;)">Volver</a>
+                    </td>
+                    <td align="right" nowrap="nowrap">
+                        <a id="ctl00_MainHolder_linkButton3" class="ic-button-navigation" href="javascript:WebForm_DoPostBackWithOptions(new WebForm_PostBackOptions(&quot;ctl00$MainHolder$linkButton3&quot;, &quot;&quot;, true, &quot;&quot;, &quot;&quot;, false, true))">Confirmar</a>
+                    </td>
+                </tr>
+            </tbody></table>
+        
+
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="right">
+                                        <div id="ctl00_validationSummaryFooter" style="color:Red;font-size:10px;display:none;">
+
+		</div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="95%" align="center">
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                            <tbody><tr>
+                                                <td align="right">
+                                                    
+                                                    
+                                                </td>
+                                            </tr>
+                                        </tbody></table>
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="ic-content-footer">
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                <tbody><tr class="ic-content-footer-dottedline">
+                                    <td align="right" nowrap="nowrap" style="width: 90%">
+                                    </td>
+                                    <td align="right" nowrap="nowrap" style="width: 10%">
+                                        <a id="ctl00_LinkButtonTermsAndConditions" class="ic-grid-link" href="javascript:__doPostBack(&#39;ctl00$LinkButtonTermsAndConditions&#39;,&#39;&#39;)">Términos y Condiciones</a>
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                </tbody></table>
+            </td>
+		<td id="ctl00_cellContentRight" class="ic-content-space-top-right" valign="top" style="display:none;">
+                <table class="ic-content-right" border="0" cellspacing="0" cellpadding="0">
+                    <tbody><tr>
+                        <td>
+                            <img src="./pixel.gif" width="8" height="1">
+                        </td>
+                        <td class="ic-right-panel">
+                            <table border="0" cellpadding="0" cellspacing="0" class="ic-right-panel-content">
+                                <tbody><tr>
+                                    <td width="8" class="ic-right-panel-collapse">
+                                        <input type="image" name="ctl00$imageButtonCollapse" id="ctl00_imageButtonCollapse" src="./bot-right-collapse.gif" style="height:47px;width:9px;border-width:0px;">
+                                    </td>
+                                    
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                </tbody></table>
+            </td>
+	</tr>
+</tbody></table>
+
+    
+    
+<script type="text/javascript">
+//<![CDATA[
+var Page_ValidationSummaries =  new Array(document.getElementById("ctl00_validationSummaryFooter"));
+var Page_Validators =  new Array(document.getElementById("ctl00_MainHolder_questionsControl_customValidatorAnswerAllSelected"), document.getElementById("ctl00_MainHolder_RequiredFieldValidator2"), document.getElementById("ctl00_MainHolder_RequiredFieldValidator1"));
+//]]>
+</script>
+
+<script type="text/javascript">
+//<![CDATA[
+var ctl00_MainHolder_questionsControl_customValidatorAnswerAllSelected = document.all ? document.all["ctl00_MainHolder_questionsControl_customValidatorAnswerAllSelected"] : document.getElementById("ctl00_MainHolder_questionsControl_customValidatorAnswerAllSelected");
+ctl00_MainHolder_questionsControl_customValidatorAnswerAllSelected.controltovalidate = "ctl00_MainHolder_questionsControl_textBoxKeyAnswer";
+ctl00_MainHolder_questionsControl_customValidatorAnswerAllSelected.errormessage = "CustomValidator";
+ctl00_MainHolder_questionsControl_customValidatorAnswerAllSelected.validationGroup = "Questions";
+ctl00_MainHolder_questionsControl_customValidatorAnswerAllSelected.evaluationfunction = "CustomValidatorEvaluateIsValid";
+var ctl00_MainHolder_RequiredFieldValidator2 = document.all ? document.all["ctl00_MainHolder_RequiredFieldValidator2"] : document.getElementById("ctl00_MainHolder_RequiredFieldValidator2");
+ctl00_MainHolder_RequiredFieldValidator2.controltovalidate = "ctl00_MainHolder_TextBoxUserQuestion";
+ctl00_MainHolder_RequiredFieldValidator2.focusOnError = "t";
+ctl00_MainHolder_RequiredFieldValidator2.display = "Dynamic";
+ctl00_MainHolder_RequiredFieldValidator2.evaluationfunction = "RequiredFieldValidatorEvaluateIsValid";
+ctl00_MainHolder_RequiredFieldValidator2.initialvalue = "";
+var ctl00_MainHolder_RequiredFieldValidator1 = document.all ? document.all["ctl00_MainHolder_RequiredFieldValidator1"] : document.getElementById("ctl00_MainHolder_RequiredFieldValidator1");
+ctl00_MainHolder_RequiredFieldValidator1.controltovalidate = "ctl00_MainHolder_TextBoxUserAnswer";
+ctl00_MainHolder_RequiredFieldValidator1.focusOnError = "t";
+ctl00_MainHolder_RequiredFieldValidator1.display = "Dynamic";
+ctl00_MainHolder_RequiredFieldValidator1.evaluationfunction = "RequiredFieldValidatorEvaluateIsValid";
+ctl00_MainHolder_RequiredFieldValidator1.initialvalue = "";
+var ctl00_validationSummaryFooter = document.all ? document.all["ctl00_validationSummaryFooter"] : document.getElementById("ctl00_validationSummaryFooter");
+ctl00_validationSummaryFooter.headertext = "Formulario inválido, por favor revise los datos ingresados:";
+ctl00_validationSummaryFooter.showsummary = "False";
+//]]>
+</script>
+
+
+<script type="text/javascript">
+//<![CDATA[
+
+var Page_ValidationActive = false;
+if (typeof(ValidatorOnLoad) == "function") {
+    ValidatorOnLoad();
+}
+
+function ValidatorOnSubmit() {
+    if (Page_ValidationActive) {
+        return ValidatorCommonOnSubmit();
+    }
+    else {
+        return true;
+    }
+}
+        
+document.getElementById('ctl00_validationSummaryFooter').dispose = function() {
+    Array.remove(Page_ValidationSummaries, document.getElementById('ctl00_validationSummaryFooter'));
+}
+Sys.Application.initialize();
+
+document.getElementById('ctl00_MainHolder_questionsControl_customValidatorAnswerAllSelected').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_questionsControl_customValidatorAnswerAllSelected'));
+}
+
+document.getElementById('ctl00_MainHolder_RequiredFieldValidator2').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_RequiredFieldValidator2'));
+}
+
+document.getElementById('ctl00_MainHolder_RequiredFieldValidator1').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_RequiredFieldValidator1'));
+}
+//]]>
+</script>
+</form>
+
+
+<div class="ui-dialog ui-widget ui-widget-content ui-corner-all" tabindex="-1" role="dialog" aria-labelledby="ui-dialog-title-sessionTimeoutWarning" style="display: none; z-index: 1000; outline: 0px;"><div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix"><span class="ui-dialog-title" id="ui-dialog-title-sessionTimeoutWarning">&nbsp;</span><a href="http://10.1.75.104:9080/Pages/Common/RegisterQuestions.aspx#" class="ui-dialog-titlebar-close ui-corner-all" role="button" style="display: none;"><span class="ui-icon ui-icon-closethick">close</span></a></div><div id="sessionTimeoutWarning" style="background-color: rgb(255, 255, 255); padding: 0px; height: 100%;" class="ui-dialog-content ui-widget-content">
+        <div id="sessionTimeoutWarningHeader">
+            <table width="100%">
+                 <tbody><tr>
+                    <td colspan="2" align="center" class="ic-form-data-modal">
+                        La sesión finalizará en <span id="sessionTimeoutCountdown"></span>&nbsp;segundos.
+                        Para seguir operando seleccioná “Continuar”
+                    </td>
+                </tr>
+            </tbody></table>
+        </div>
+    </div><div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix"><div class="ui-dialog-buttonset"><button type="button">Continuar </button><button type="button">Finalizar sesión</button></div></div></div></body></html>

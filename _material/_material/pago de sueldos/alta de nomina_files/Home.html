@@ -1,0 +1,762 @@
+
+<!-- saved from url=(0062)http://10.1.75.104:9080/Pages/Salary/NewBeneficiaryByFile.aspx -->
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><script src="./jquery-1.7.2.min.js.descarga" type="text/javascript"></script>
+<script src="./jquery-1.7.1.js.descarga" type="text/javascript"></script>
+<script src="./jquery-ui-1.8.19.custom.min.js.descarga" type="text/javascript"></script>
+<script src="./jquery.formatCurrency-1.4.0.js.descarga" type="text/javascript"></script>
+<script src="./idle-timer.js.descarga" type="text/javascript"></script>
+<script src="./idle-timer.min.js.descarga" type="text/javascript"></script>
+<script language="javascript" type="text/javascript">
+
+function Logout() {
+        if (confirm("¿ Desea salir del sistema ?") == true) {
+                    
+            window.location =  '/'+ "Logout.aspx";
+        }
+       
+    }
+    
+var focusedFormControl;    
+var dateFormat = 'dd/mm/aaaa';
+var applicationRoot = '/';      
+function OnRowClick(sender, args) {
+    if (sender.GetSelectedRowCount() == 0) {
+        sender.UnselectRowOnPage(args.visibleIndex);
+        SetPageLinkData("");
+    }
+    else {
+        _aspxClearSelection();
+        sender._selectAllRowsOnPage(false);
+        sender.SelectRow(args.visibleIndex, true);
+        SetPageLinkData(sender.GetRowKey(args.visibleIndex));
+    }
+}
+
+if (history.forward(1))
+{
+
+    location.replace(history.forward(1))
+} 
+
+function PrintPage() {
+
+    window.print();
+}
+
+function GoMyOption(select)
+{
+    var url = select.options[select.selectedIndex].value;
+    if( url != "")
+        window.location = url;
+}
+
+function GoFavourites(select)
+{
+
+    var url = select.options[select.selectedIndex].value;
+    if( url != "")
+        window.location = url;
+}
+
+function GoPrint()
+{
+
+window.print();
+}
+
+function addEvent(elm, evType, fn, useCapture)
+{
+
+  if (elm.addEventListener){
+    elm.addEventListener(evType, fn, useCapture);
+    return true;
+  } else if (elm.attachEvent){
+    var r = elm.attachEvent("on"+evType, fn);
+    return r;
+  } else {
+    alert("Handler could not be removed");
+  }
+} 
+
+function SetPageLinkData(data)
+{
+    pageLinkData = document.getElementById('PageLinkData');
+    pageLinkData.value = data;
+}
+
+function SetPageLinkUrl(url)
+{
+    pageLinkUrl = document.getElementById('PageLinkUrl');
+    pageLinkUrl.value = url;
+}
+
+function doPageLink(id)
+{
+    __doPostBack(id, 'PageLinkEvent');
+}
+
+function imprimirEstadoCuenta()
+{
+											
+    var ficha = document.getElementById('printDiv');		
+    var ventimp = window.open('', 'popimpr','height=450, width=550, scrollbars=1');																						
+    var fichaHTML = new String(ficha.innerHTML);
+    fichaHTML = fichaHTML.replace('Seleccione un período y oprima "Consultar".'," ");
+    //var i = document.getElementById('ctl00_MainHolder_panelDetalle_imgPlusMinus');
+    var html  = "<html>\n<head>\n<link rel=\"stylesheet\" type=\"text/css\" href=\"..\\..\\App_Themes\\Default\\Default.css \" />" 
+                + "</head><table width=\"100%\"><tr bgcolor=\"#FF0000\"><td><img src=\"..\\..\\App_Themes\\Default\\Images\\logoSantander.gif\" /></td></tr></table>" 
+                + fichaHTML 
+                + "</html>";
+    ventimp.document.write( html );
+    ventimp.document.close();
+    ventimp.print( );
+    ventimp.close();
+					
+}
+
+ function removeInvalidCharacters(control) {
+ 
+            !(/^[A-zÑñ0-9 ]*$/i).test(control.value) ? control.value = control.value.replace(/[^A-zÑñ0-9 ]/ig, '') : null
+        }
+        
+  function removeInvalidNumbers(control) {
+            !(/^[0-9,]*$/i).test(control.value) ? control.value = control.value.replace(/[^0-9,]/ig, '') : null
+        }
+function showLoading()
+{
+//debugger;
+    // aquí le pasamos la clase o id de nuestro div a centrar (en este caso "caja")
+    $('.ic-loading').css({
+       position:'absolute',
+       left: ($('#mainContainer').width()/2 - $('.ic-loading').outerWidth())/2,
+       //top: ($('#mainContainer').height()/2 - $('.ic-loading').outerHeight())/2
+       top: ($('#mainContainer').height()/2 - $('ic-loading').height()/2)
+    });
+    
+    $('#mainContainer').css('display','none');
+    $('#ic-loading').css('display','block');
+}
+//ModalDialog SessionTimeout
+var idleTime = (parseInt('1170') * 1000); // number of miliseconds until the user is considered idle
+var initialSessionTimeoutMessage = "La sesión finalizará en <span id='sessionTimeoutCountdown'></span> segundos. Para seguir operando seleccioná “Continuar”<br /><br />";
+var sessionTimeoutCountdownId = 'sessionTimeoutCountdown';
+var redirectAfter = (parseInt('30')) ; // number of seconds to wait before redirecting the user
+var redirectTo = '/' + "Logout.aspx"; // URL to relocate the user to once they have timed out
+var keepAliveURL = ''; // URL to call to keep the session alive
+var expiredMessage = ''; // message to show user when the countdown reaches 0
+var running = false; // var to check if the countdown is running 
+var timer; // reference to the setInterval timer so it can be stopped 
+var timerSB;  
+var timeout;  
+    $(document).ready(function() {     
+// create the warning window and set autoOpen to false  
+      var sessionTimeoutWarningDialog = $("#sessionTimeoutWarning"); 
+    $(sessionTimeoutWarningDialog).dialog({         
+        title: '',       
+        autoOpen: false,    // set this to false so we can manually open it         
+        closeOnEscape: false,         
+        draggable: false,         
+        width: 460,         
+        minHeight: 150,         
+        modal: true,           
+        beforeclose: function() { // bind to beforeclose so if the user clicks on the "X" or escape to close the dialog, it will work too             // stop the timer             
+            clearInterval(timer);               // stop countdown
+            running = false;               // ajax call to keep the server-side session alive    
+                  
+            $.ajax({               
+                url: keepAliveURL,               
+                async: false            
+            });         
+        },         
+        buttons: {      
+             'Continuar ': function() {                 
+                // close dialog 
+                window.location.reload();//BM24925: Se agrega esto para que el expired de una cookie se actualice y no se cierre la sesión luego de hacer click en continuar al terminar el timeout del webconfig. El valor del expired se pone en la tabla configuration en la clave SessionMaxMinutes.
+                //var valor = getCookie('ICBWebLogin'); //Esta función la dejo por las dudas, pero no la pude hacer andar poque el document.cookie no me trae las cookies del explorador.                
+                $(this).dialog('close');
+                clearInterval(timerSB);    
+                window.status = "";      
+                StatusBarCountDown();     
+            },
+            'Finalizar sesión': function() {                 
+                // close dialog                 
+                $(sessionTimeoutWarningDialog).html(expiredMessage);
+                $(sessionTimeoutWarningDialog).dialog('disable');                     
+                window.parent.location = redirectTo;           
+            }         
+        },         
+        resizable: false,         
+        open: function() {
+            $('body').css('overflow','auto');         
+        },         
+        close: function() {             
+            // reset overflow             
+            $('body').css('overflow','auto');         
+        }  
+           
+    }); // end of dialog  
+    jQuery("a.ui-dialog-titlebar-close").hide(); 
+          
+    // start the idle timer
+    $.idleTimer(idleTime);
+ 
+});
+
+// BM24925: Función para recuperar el valor de una cookie.
+// name - nombre de la cookie deseada
+// devuelve un string conteniendo el valor de la cookie especificada o null si la cookie no existe
+
+function getCookie(name){
+var micookie = (document.cookie.indexOf('ICBWebLogin=') === -1 ? '' : ("; " + document.cookie).split('; ICBWebLogin=')[1].split(';')[0]);
+
+  var cname = name + "=";               
+  var dc = document.cookie;             
+  if (dc.length > 0) {              
+    begin = dc.indexOf(cname);       
+    if (begin != -1) {           
+      begin += cname.length;       
+      end = dc.indexOf(";", begin);
+      if (end == -1) end = dc.length;
+        return unescape(dc.substring(begin, end));
+    } 
+  }
+  return null;
+}
+
+//Status Bar Countdown Script
+function StatusBarCountDown() 
+{
+    var redirectAfter = (parseInt('30'));
+    var timeout = '1200000';   
+    var redirectTo = '/' + "Logout.aspx"; // URL to relocate the user to once they have timed out   
+    timerSB = setInterval(function(){
+    timeout -= 1000;
+    if(timeout == redirectAfter * 1000)
+    {
+        window.focus();
+    }
+   if(timeout < redirectAfter * 1000)
+   {
+        $("#sessionTimeoutCountdown").html(timeout/1000);
+        $("#sessionTimeoutWarning").dialog('open'); 
+   }
+   if (timeout < 100)
+   {
+        $("#sessionTimeoutWarning").html(expiredMessage);
+        $("#sessionTimeoutWarning").dialog('disable');                     
+        window.parent.location = redirectTo;
+        clearInterval(timerSB);    
+        window.status = "";     
+   }
+        
+   window.status = "Su sesión expirará " + time(timeout) + " minutos";        
+    }, 1000);   
+         
+   function two(x)
+   {
+    return ((x > 9) ? "" : "0") + x
+   }   
+  
+   function time(ms)
+   {   
+       var t = '';   
+       var sec = Math.floor(ms / 1000);   
+       ms = ms % 1000   
+
+       var min = Math.floor(sec / 60);   
+       sec = sec % 60;   
+       t = two(sec);   
+
+       var hr = Math.floor(min / 60);   
+       min = min % 60;   
+       t = two(min) + ":" + t;   
+    return t;
+   }
+}
+
+StatusBarCountDown();
+
+
+
+</script>
+
+<link href="./Default.css" type="text/css" rel="stylesheet"><link href="./jquery-ui-1.8.19.custom.css" type="text/css" rel="stylesheet"><title>
+
+</title></head>
+<body>
+    <form name="aspnetForm" method="post" action="http://10.1.75.104:9080/Pages/Salary/NewBeneficiaryByFile.aspx" id="aspnetForm" enctype="multipart/form-data">
+<div>
+<input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="">
+<input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="">
+<input type="hidden" name="__LASTFOCUS" id="__LASTFOCUS" value="">
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwULLTIxNDAwMzg1NjgPZBYCZg9kFgICAQ8WAh4HZW5jdHlwZQUTbXVsdGlwYXJ0L2Zvcm0tZGF0YRYCAgEPZBYCZg9kFgQCAQ9kFgQCAg8PFgIeBFRleHRkZGQCBw9kFgYCAQ9kFgRmDw8WAh8BBQQyMDI0ZGQCAQ8QDxYGHg5EYXRhVmFsdWVGaWVsZAUIQnJhbmNoSWQeDURhdGFUZXh0RmllbGQFCFRvU3RyaW5nHgtfIURhdGFCb3VuZGdkEBVeGTEgLSBBR0VOQ0lBICBCQVJSSU8gTk9SVEUdMiAtIEFHRU5DSUEgIEFMVE9TIERFIFBBTEVSTU8SMyAtIEFHRU5DSUEgIEhBRURPFTQgLSBBR0VOQ0lBICBCT1VMT0dORRc1IC0gQUdFTkNJQSAgVFJJQlVOQUxFUxo2IC0gQUdFTkNJQSAgUExBWkEgRlJBTkNJQRU3IC0gQUdFTkNJQSAgQ09OR1JFU08VOCAtIEFHRU5DSUEgIEJFTEdSQU5PHTkgLSBBR0VOQ0lBICBQTEFaQSBTQU4gTUFSVElOFjEwIC0gQUdFTkNJQSAgUkVDT0xFVEEZMTEgLSBBR0VOQ0lBICBSQU1PUyBNRUpJQRcxMiAtIEFHRU5DSUEgIENBQkFMTElUTxsxMyAtIEFHRU5DSUEgIFZJTExBIEFERUxJTkEYMTQgLSBBR0VOQ0lBICBTQU4gTUFSVElOHTE1IC0gQUdFTkNJQSAgTE9NQVMgREUgWkFNT1JBFTE2IC0gQUdFTkNJQSAgUVVJTE1FUxMxNyAtIEFHRU5DSUEgIFBJTEFSEzE4IC0gQUdFTkNJQSAgTEFOVVMVMTkgLSBBR0VOQ0lBICBDT1JET0JBFjIwIC0gQUdFTkNJQSAgTUFSVElORVoTMjEgLSBBR0VOQ0lBICBCT0VETxUyMiAtIEFHRU5DSUEgIExJTklFUlMbMjMgLSBBR0VOQ0lBICBWSUNFTlRFIExPUEVaFTI0IC0gQUdFTkNJQSAgQURST0dVRRYyNSAtIEFHRU5DSUEgIEJPVEFOSUNPGDI2IC0gQUdFTkNJQSAgQ09MRUdJQUxFUxsyNyAtIEFHRU5DSUEgIFZJTExBIFVSUVVJWkEhMjggLSBBR0VOQ0lBICBMT01BUyBERSBTQU4gSVNJRFJPFzI5IC0gQUdFTkNJQSAgTEEgTFVDSUxBGjMwIC0gQUdFTkNJQSAgVklMTEEgREVWT1RPFTMxIC0gQUdFTkNJQSAgRVNDT0JBUhozMiAtIEFHRU5DSUEgIFBFRFJPIEdPWUVOQRczMyAtIEFHRU5DSUEgIEJBSk8gQUxFTRUzNCAtIEFHRU5DSUEgIE1FTkRPWkEbMzUgLSBBR0VOQ0lBICBWSUxMQSBBTExFTkRFGTM2IC0gQUdFTkNJQSAgTUlDUk9DRU5UUk8bMzkgLSBBR0VOQ0lBICBNQVIgREVMIFBMQVRBITQxIC0gQUdFTkNJQSAgQ09SRE9CQS1QTEFaQSBDT0xPThY0MiAtIEFHRU5DSUEgIFBBTE1BUkVTFTQzIC0gQUdFTkNJQSAgUk9TQVJJTxY0NCAtIEFHRU5DSUEgIFNBQVZFRFJBGTQ1IC0gQUdFTkNJQSAgQkVMR1JBTk8gIFITNDcgLSBBR0VOQ0lBICBMVUpBThg0OCAtIEFHRU5DSUEgIE1PTlRTRVJSQVQUNTAgLSBBR0VOQ0lBICBGTE9SRVMWNTEgLSBBR0VOQ0lBICBCQVJSQUNBUxY1MiAtIEFHRU5DSUEgIElNUFJFTlRBFjUzIC0gQUdFTkNJQSAgTEEgUExBVEEWNTQgLSBBR0VOQ0lBICBDQVNURUxBUhQ1NSAtIEFHRU5DSUEgIE9MSVZPUxo1NiAtIEFHRU5DSUEgIFBMQVpBIEdVRU1FUx41NyAtIEFHRU5DSUEgIFBMQVpBIFZURS4gTE9QRVoaNTggLSBBR0VOQ0lBICBWSUxMQSBDUkVTUE8YNjEgLSBBR0VOQ0lBICBMSUJFUlRBRE9SGjYyIC0gQUdFTkNJQSAgTU9OVEUgR1JBTkRFHzYzIC0gQUdFTkNJQSAgTEEgUExBVEEgQ0FURURSQUwiNjQgLSBBR0VOQ0lBICBNWkEuIC0gQkFSUklPIENJVklDTyI2NSAtIEFHRU5DSUEgU0FOIE1JR1VFTCBERSBUVUNVTUFOITY2IC0gU1VDVVJTQUwgTUlDUk9DRU5UUk8gTUVORE9aQRY2NyAtIFNVQ1VSU0FMIFNBTiBKT1NFFzY4IC0gU1VDVVJTQUwgR1VUSUVSUkVaIDY5IC0gU1VDVVJTQUwgQkFMQ0FSQ0UgLSBNRU5ET1pBFzczIC0gU1VDVVJTQUwgVFVQVU5HQVRPFTc0IC0gU1VDVVJTQUwgVFVOVVlBThY3NSAtIFNVQ1VSU0FMIFNIT1BQSU5HHDc2IC0gU1VDVVJTQUwgR0VORVJBTCBBTFZFQVIXNzcgLSBTVUNVUlNBTCBMQVMgSEVSQVMgNzggLSBTVUNVUlNBTCBCT1VMRVZBUkQgQkVMR1JBTk8eNzkgLSBTVUNVUlNBTCBST0RFTyBERSBMQSBDUlVaFzgwIC0gU1VDVVJTQUwgTUFMQVJHw5xFGjgyIC0gU1VDVVJTQUwgQlVFTk9TIEFJUkVTFjkxIC0gU1VDVVJTQUwgU0FOIEpVQU4cOTIgLSBTVUNVUlNBTCBSSU8gQ1VBUlRPIElJSR45MyAtIFNVQ1VSU0FMIENBw5FPTiBERUwgQVRVRUwbOTQgLSBTVUNVUlNBTCBMVUpBTiBERSBDVVlPHjk1IC0gU1VDVVJTQUwgUExBWkEgR09ET1kgQ1JVWiExMDEgLSBTVUNVUlNBTCBTQU4gTFVJUyAtIENBUElUQUwdMTAyIC0gU1VDVVJTQUwgVklMTEEgTUVSQ0VERVMZMTAzIC0gU1VDVVJTQUwgU0FOVEEgUk9TQRUxMDQgLSBTVUNVUlNBTCBRVUlORVMWMTA1IC0gU1VDVVJTQUwgTEEgVE9NQRsxMDYgLSBTVUNVUlNBTCBKVVNUTyBEQVJBQ1QaMTA3IC0gU1VDVVJTQUwgTlVFVkEgR0FMSUEXMTA4IC0gU1VDVVJTQUwgQ09OQ0FSQU4cMTA5IC0gU1VDVVJTQUwgU0FOIEZSQU5DSVNDTxQxMTAgLSBTVUNVUlNBTCBNRVJMTx4xMTEgLSBTVUNVUlNBTCBCVUVOQSBFU1BFUkFOWkEWMTEyIC0gU1VDVVJTQUwgQVJJWk9OQRQxMTQgLSBTVUNVUlNBTCBVTklPThYxMTUgLSBTVUNVUlNBTCBOQVNDSEVMGDExNiAtIFNVQ1VSU0FMIFRJTElTQVJBTxkxMTkgLSBTVUNVUlNBTCBDQU5ERUxBUklBGjEzMSAtIFNVQ1VSU0FMIFZJTExBIE1BUklBC1NlbGVjY2lvbmFyFV4BMQEyATMBNAE1ATYBNwE4ATkCMTACMTECMTICMTMCMTQCMTUCMTYCMTcCMTgCMTkCMjACMjECMjICMjMCMjQCMjUCMjYCMjcCMjgCMjkCMzACMzECMzICMzMCMzQCMzUCMzYCMzkCNDECNDICNDMCNDQCNDUCNDcCNDgCNTACNTECNTICNTMCNTQCNTUCNTYCNTcCNTgCNjECNjICNjMCNjQCNjUCNjYCNjcCNjgCNjkCNzMCNzQCNzUCNzYCNzcCNzgCNzkCODACODICOTECOTICOTMCOTQCOTUDMTAxAzEwMgMxMDMDMTA0AzEwNQMxMDYDMTA3AzEwOAMxMDkDMTEwAzExMQMxMTIDMTE0AzExNQMxMTYDMTE5AzEzMQAUKwNeZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2RkAgMPDxYCHwEFTEVsIGhvcmFyaW8gcGFyYSBkYXIgZGUgYWx0YSBsb3MgYmVuZWZpY2lhcmlvcyBlcyBlbnRyZSBsYXMgMDg6MDAgeSBsYXMgMTg6MDBkZAIFD2QWBAIDD2QWAgIBD2QWBGYPZBYEZg8PFgIeBVRpdGxlBRBFc3RhZG8gUmVjaWJpZG9zZBYCAgEPPCsAFgIADxYIHg9EYXRhU291cmNlQm91bmRnHg5fIVVzZVZpZXdTdGF0ZWceEUNsaWVudFN0YXRlTG9hZGVkaB4NQ2FsbGJhY2tTdGF0ZWVkBg9kEBYEZgIBAgICAxYEPCsACwEAFgIeD0NvbFZpc2libGVJbmRleGY8KwALAQAWAh8KAgE8KwALAQAWAh8KAgM8KwALAQAWAh8KAgIPFgQCAQIBAgECARYBBaABSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbi5DbGFzc2VzLkdyaWRWaWV3RGF0YVRleHRDb2x1bW5UZXh0LCBJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLCBWZXJzaW9uPTMuMC4xLjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49NzE4NjI4MDE3ZmZiOTY2ZWQCAg8PFgIfAQUPVG90YWwgUmVjaWJpZG9zZGQCAQ9kFgRmDw8WAh8FBRFFc3RhZG8gUmVjaGF6YWRvc2QWAgIBDzwrABYCAA8WCB8GZx8HZx8IaB8JZWQGD2QQFgRmAgECAgIDFgQ8KwALAQAWAh8KZjwrAAsBABYCHwoCATwrAAsBABYCHwoCAzwrAAsBABYCHwoCAg8WBAIBAgECAQIBFgEFoAFJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLkNsYXNzZXMuR3JpZFZpZXdEYXRhVGV4dENvbHVtblRleHQsIEluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24sIFZlcnNpb249My4wLjEuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj03MTg2MjgwMTdmZmI5NjZlZAICDw8WAh8BBRBUb3RhbCBSZWNoYXphZG9zZGQCBA9kFgICAQ9kFgJmD2QWBGYPZBYCAgEPZBYIAgMPDxYEHgtDaGFyc0ZpbHRlcgUOXlteOjtcPD4nXCJdKiQeEkNoYXJzRmlsdGVyRW5hYmxlZGcWAh4Kb25rZXlwcmVzcwU5cmV0dXJuIHZhbGlkQ2hhcmFjdGVyc09ubHkodGhpcywgZXZlbnQsICJeW146O1w8PidcIl0qJCIpZAIFDw8WAh4HRW5hYmxlZGhkZAIHDw8WAh8OaGRkAgkPDxYCHw5oZGQCAQ9kFgICAQ9kFgICAw9kFgJmD2QWAgIBDw8WBB8LBQ5eW146O1w8PidcIl0qJB8MZxYCHw0FOXJldHVybiB2YWxpZENoYXJhY3RlcnNPbmx5KHRoaXMsIGV2ZW50LCAiXlteOjtcPD4nXCJdKiQiKWQCAg8WAh4Fc3R5bGUFDWRpc3BsYXk6bm9uZTsWAgIFDxYCHgdWaXNpYmxlaBYEAgEPEBYGHwMFBVRpdGxlHwIFA1VyaR8EZxAVAQAVAQAUKwMBZxQrAQBkAgMPFgIfDwUNZGlzcGxheTpub25lOxYCZg9kFgICAQ8WAh8PBQ1kaXNwbGF5Om5vbmU7ZBgDBR5fX0NvbnRyb2xzUmVxdWlyZVBvc3RCYWNrS2V5X18WDAUeY3RsMDAkTWFpbkhvbGRlciRwYW5lbENvbnZlbmlvBSRjdGwwMCRNYWluSG9sZGVyJFJlcXVlc3RQYW5lbENvbnRyb2wFHmN0bDAwJE1haW5Ib2xkZXIkUGFuZWxDb250cm9sMwUeY3RsMDAkTWFpbkhvbGRlciRwTWVuc2FqZUVycm9yBR5jdGwwMCRNYWluSG9sZGVyJFBhbmVsQ29udHJvbDUFGmN0bDAwJE1haW5Ib2xkZXIkcG5sU3VtYXJ5BThjdGwwMCRNYWluSG9sZGVyJE5ld0JlbmVmaWNpYXJ5R3JpZE9rJHBubEJlbmVmaWNpYXJ5R3JpZAU7Y3RsMDAkTWFpbkhvbGRlciROZXdCZW5lZmljaWFyeUdyaWRFcnJvciRwbmxCZW5lZmljaWFyeUdyaWQFKGN0bDAwJE1haW5Ib2xkZXIkVG9rZW5Tb2xpY2l0YXRpb24kcGNNQUMFKmN0bDAwJE1haW5Ib2xkZXIkVG9rZW5Tb2xpY2l0YXRpb24kcGNUb2tlbgUxY3RsMDAkTWFpbkhvbGRlciREb3duTG9hZFVuc3VjY2Vzc2Z1bFBhbmVsQ29udHJvbAUZY3RsMDAkaW1hZ2VCdXR0b25Db2xsYXBzZQUaY3RsMDAkTWFpbkhvbGRlciRtdWx0aVZpZXcPD2RmZAUqY3RsMDAkTWFpbkhvbGRlciRUb2tlblNvbGljaXRhdGlvbiRtdlRva2VuDw9kZmREzAikvF7hKOjrbo/93pB70kPGQA==">
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+var theForm = document.forms['aspnetForm'];
+if (!theForm) {
+    theForm = document.aspnetForm;
+}
+function __doPostBack(eventTarget, eventArgument) {
+    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+        theForm.__EVENTTARGET.value = eventTarget;
+        theForm.__EVENTARGUMENT.value = eventArgument;
+        theForm.submit();
+    }
+}
+//]]>
+</script>
+
+
+<script src="./WebResource.axd" type="text/javascript"></script>
+
+<script src="./DataEntry.js.descarga"></script>
+						<style>							
+							P.PanelControlTitleStyle
+							{
+ 								font-family:verdana;
+ 								font-size: 12px;
+								font-weight : bold;
+								text-align: center;  								
+							}
+						</style>						
+						<script language="javascript">
+						function MinMaxPanelControl(cntrlId)
+						{
+						    var imgPath='/App_Themes/Default/Images/';	
+					
+							//Get state from hidden control.													
+							if ( document.getElementById(cntrlId).style.display == 'none' )
+							{
+								document.getElementById(cntrlId).style.display = '';						
+								document.getElementById(cntrlId+'_imgPlusMinus').src = imgPath + 'bot-grid-minus.gif';
+							}
+							else 
+							{
+								document.getElementById(cntrlId).style.display = 'none';								
+								document.getElementById(cntrlId+'_imgPlusMinus').src = imgPath + 'bot-grid-plus.gif';
+							}
+						}
+						</script>
+			
+<script type="text/javascript">
+//<![CDATA[
+var __cultureInfo = '{"name":"es-UY","numberFormat":{"CurrencyDecimalDigits":2,"CurrencyDecimalSeparator":",","IsReadOnly":false,"CurrencyGroupSizes":[3],"NumberGroupSizes":[3],"PercentGroupSizes":[3],"CurrencyGroupSeparator":".","CurrencySymbol":"$U","NaNSymbol":"NeuN","CurrencyNegativePattern":14,"NumberNegativePattern":1,"PercentPositivePattern":0,"PercentNegativePattern":0,"NegativeInfinitySymbol":"-Infinito","NegativeSign":"-","NumberDecimalDigits":2,"NumberDecimalSeparator":",","NumberGroupSeparator":".","CurrencyPositivePattern":2,"PositiveInfinitySymbol":"Infinito","PositiveSign":"+","PercentDecimalDigits":2,"PercentDecimalSeparator":",","PercentGroupSeparator":".","PercentSymbol":"%","PerMilleSymbol":"‰","NativeDigits":["0","1","2","3","4","5","6","7","8","9"],"DigitSubstitution":1},"dateTimeFormat":{"AMDesignator":"a.m.","Calendar":{"MinSupportedDateTime":"\/Date(-62135586000000)\/","MaxSupportedDateTime":"\/Date(253402300799999)\/","AlgorithmType":1,"CalendarType":1,"Eras":[1],"TwoDigitYearMax":2029,"IsReadOnly":false},"DateSeparator":"/","FirstDayOfWeek":1,"CalendarWeekRule":0,"FullDateTimePattern":"dddd, dd\u0027 de \u0027MMMM\u0027 de \u0027yyyy hh:mm:ss tt","LongDatePattern":"dddd, dd\u0027 de \u0027MMMM\u0027 de \u0027yyyy","LongTimePattern":"hh:mm:ss tt","MonthDayPattern":"dd MMMM","PMDesignator":"p.m.","RFC1123Pattern":"ddd, dd MMM yyyy HH\u0027:\u0027mm\u0027:\u0027ss \u0027GMT\u0027","ShortDatePattern":"dd/MM/yyyy","ShortTimePattern":"hh:mm tt","SortableDateTimePattern":"yyyy\u0027-\u0027MM\u0027-\u0027dd\u0027T\u0027HH\u0027:\u0027mm\u0027:\u0027ss","TimeSeparator":":","UniversalSortableDateTimePattern":"yyyy\u0027-\u0027MM\u0027-\u0027dd HH\u0027:\u0027mm\u0027:\u0027ss\u0027Z\u0027","YearMonthPattern":"MMMM\u0027 de \u0027yyyy","AbbreviatedDayNames":["dom","lun","mar","mié","jue","vie","sáb"],"ShortestDayNames":["do","lu","ma","mi","ju","vi","sá"],"DayNames":["domingo","lunes","martes","miércoles","jueves","viernes","sábado"],"AbbreviatedMonthNames":["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic",""],"MonthNames":["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre",""],"IsReadOnly":false,"NativeCalendarName":"calendario gregoriano","AbbreviatedMonthGenitiveNames":["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic",""],"MonthGenitiveNames":["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre",""]}}';//]]>
+</script>
+
+<script src="./ScriptResource.axd" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+if (typeof(Sys) === 'undefined') throw new Error('ASP.NET Ajax client-side framework failed to load.');
+//]]>
+</script>
+
+<script src="./ScriptResource(1).axd" type="text/javascript"></script>
+<div>
+
+	<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEWZgKTwLmbDgKBxdejBwKOqv3NCwKPqv3NCwKMqv3NCwKNqv3NCwKKqv3NCwKLqv3NCwKIqv3NCwKZqv3NCwKWqv3NCwKOqr3OCwKOqrHOCwKOqrXOCwKOqonOCwKOqo3OCwKOqoHOCwKOqoXOCwKOqpnOCwKOqt3NCwKOqtHNCwKPqr3OCwKPqrHOCwKPqrXOCwKPqonOCwKPqo3OCwKPqoHOCwKPqoXOCwKPqpnOCwKPqt3NCwKPqtHNCwKMqr3OCwKMqrHOCwKMqrXOCwKMqonOCwKMqo3OCwKMqoHOCwKMqoXOCwKMqtHNCwKNqrHOCwKNqrXOCwKNqonOCwKNqo3OCwKNqoHOCwKNqpnOCwKNqt3NCwKKqr3OCwKKqrHOCwKKqrXOCwKKqonOCwKKqo3OCwKKqoHOCwKKqoXOCwKKqpnOCwKKqt3NCwKLqrHOCwKLqrXOCwKLqonOCwKLqo3OCwKLqoHOCwKLqoXOCwKLqpnOCwKLqt3NCwKLqtHNCwKIqonOCwKIqo3OCwKIqoHOCwKIqoXOCwKIqpnOCwKIqt3NCwKIqtHNCwKZqr3OCwKZqrXOCwKWqrHOCwKWqrXOCwKWqonOCwKWqo3OCwKWqoHOCwLF0vzsAgLexZ7HCAL7rLHaDgKUltOsAwKx+fWHCQLK4JeaDwLny4ntBQLQocmzDQLtiOuGAwKo696ZDALF0vDsAgLexZLHCAKUltesAwKx+cmHCQLK4OuaDwLtiO+GAwLF0sjsAgKBxdejBwKxnLTxCAK9vos3AseIwpgFAvPSkIAMAtGqzMkOAom34LsBUPVsScXaIWkIhfAWePXOAtkA+z0=">
+</div>
+    <script type="text/javascript">
+//<![CDATA[
+Sys.WebForms.PageRequestManager._initialize('ctl00$scriptManager', document.getElementById('aspnetForm'));
+Sys.WebForms.PageRequestManager.getInstance()._updateControls([], [], [], 90);
+//]]>
+</script>
+
+    <input type="hidden" id="PageLinkData" name="PageLinkData" value="">
+    <input type="hidden" id="PageLinkUrl" name="PageLinkUrl" value="">
+    <input type="hidden" id="PageUrl" value="/Pages/Salary/NewBeneficiaryByFile.aspx">
+    <table id="ctl00_tableContent" width="100%" border="0" cellpadding="0" cellspacing="0" class="ic-content">
+	<tbody><tr>
+		<td class="ic-content-left-aux">
+                <img src="./log-img-aux-left-bottom.gif" width="9" height="110">
+            </td>
+		<td style="width: 100%">
+                <table width="100%" border="0" cellpadding="0" cellspacing="0" class="ic-content-left">
+                    <tbody><tr>
+                        <td id="TdCPM" class="ic-content-space-top" valign="top">
+                            <table id="TablaCPM" width="100%" border="0" cellspacing="0" cellpadding="0">
+                                
+                                <tbody><tr>
+                                    <td>
+                                        <table id="ctl00_tableHeader" width="100%" border="0" cellspacing="0" cellpadding="0">
+			<tbody><tr>
+				<td class="ic-breadcrumb-container">
+                                                    
+                                                    &gt;
+                                                    <span id="ctl00_siteMapNavigator"><a href="http://10.1.75.104:9080/Pages/Salary/NewBeneficiaryByFile.aspx#ctl00_siteMapNavigator_SkipLink"><img alt="Skip Navigation Links" height="0" width="0" src="./WebResource(1).axd" style="border-width:0px;"></a><span><a href="http://10.1.75.104:9080/Home.aspx">Posición Consolidada</a></span><span> &gt; </span><span><a>Pago de Sueldos</a></span><span> &gt; </span><span><a>Alta de Nómina</a></span><span> &gt; </span><span>Por Archivo</span><a id="ctl00_siteMapNavigator_SkipLink"></a></span>
+                                                    </td>
+				<td class="ic-toolbar-container">
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tbody><tr>
+                                                            <td width="16">
+                                                                <img src="./ico-print.gif" id="ctl00_Img4" width="16" height="16">
+                                                            </td>
+                                                            <td class="ic-links-toolbar">
+                                                                <a href="http://10.1.75.104:9080/Pages/Salary/NewBeneficiaryByFile.aspx#" onclick="javascript: GoPrint();">
+                                                                    Imprimir página</a>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody></table>
+                                                </td>
+			</tr>
+		</tbody></table>
+		
+                                    </td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>
+                                        <span id="ctl00_labelTitle" class="ic-page-title"></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td id="ctl00_cellRequiered" align="right">&nbsp;</td>
+		
+                                </tr>
+                                <tr>
+                                    <td width="95%" align="center">
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                            <tbody><tr>
+                                                <td align="right">
+                                                    
+                                                    
+                                                </td>
+                                            </tr>
+                                        </tbody></table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="100%" align="center">
+                                        <div id="ic-loading" class="ic-loading-bg" style="display: none;">
+                                            <div class="ic-loading">
+                                                <div id="message">
+                                                    <img src="./cargandoBAR.gif" id="ctl00_imgLoading"><br>
+                                                    <span id="ctl00_WaitingMessage">Procesando...</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="mainContainer">
+                                            
+    <table class="ic-grid-border" cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+			<tbody><tr>
+				<td><table id="ctl00_MainHolder_panelConvenio_thePanel" class="ic-grid" cellspacing="0" cellpadding="0" align="Center" border="0" style="width:100%;border-collapse:collapse;">
+					<tbody><tr class="ic-grid-title-row">
+						<td><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+							<tbody><tr>
+								<td class="ic-grid-title-cell-left">&nbsp;</td><td class="ic-grid-title-cell" align="left" style="white-space:nowrap;">Alta Beneficiarios</td>
+							</tr>
+						</tbody></table></td>
+					</tr><tr>
+						<td align="center"><div id="ctl00_MainHolder_panelConvenio" style="color:Black;border-color:DodgerBlue;font-family:verdana;font-size:10pt;width:100%;display:;">
+	
+        <table width="100%" cellpadding="0" cellspacing="0">
+            <tbody><tr class="ic-form-data">
+                <td class="ic-form-label" style="width: 10%; text-align: right">
+                    Convenio:
+                </td>
+                <td style="width: 10%; text-align: left">
+                    <span id="ctl00_MainHolder_lblNroConvenio" class="ic-form-data-center">2024</span>
+                </td>
+                <td class="ic-form-label" style="width: 20%; text-align: right">
+                    Sucursal:
+                </td>
+                <td style="width: 10%; text-align: left">
+                    <select name="ctl00$MainHolder$ddlSucursal" onchange="javascript:setTimeout(&#39;__doPostBack(\&#39;ctl00$MainHolder$ddlSucursal\&#39;,\&#39;\&#39;)&#39;, 0)" id="ctl00_MainHolder_ddlSucursal" tabindex="2" class="ic-control-select" style="width:300px;">
+		<option value="1">1 - AGENCIA  BARRIO NORTE</option>
+		<option value="2">2 - AGENCIA  ALTOS DE PALERMO</option>
+		<option value="3">3 - AGENCIA  HAEDO</option>
+		<option value="4">4 - AGENCIA  BOULOGNE</option>
+		<option value="5">5 - AGENCIA  TRIBUNALES</option>
+		<option value="6">6 - AGENCIA  PLAZA FRANCIA</option>
+		<option value="7">7 - AGENCIA  CONGRESO</option>
+		<option value="8">8 - AGENCIA  BELGRANO</option>
+		<option value="9">9 - AGENCIA  PLAZA SAN MARTIN</option>
+		<option value="10">10 - AGENCIA  RECOLETA</option>
+		<option value="11">11 - AGENCIA  RAMOS MEJIA</option>
+		<option value="12">12 - AGENCIA  CABALLITO</option>
+		<option value="13">13 - AGENCIA  VILLA ADELINA</option>
+		<option value="14">14 - AGENCIA  SAN MARTIN</option>
+		<option value="15">15 - AGENCIA  LOMAS DE ZAMORA</option>
+		<option value="16">16 - AGENCIA  QUILMES</option>
+		<option value="17">17 - AGENCIA  PILAR</option>
+		<option value="18">18 - AGENCIA  LANUS</option>
+		<option value="19">19 - AGENCIA  CORDOBA</option>
+		<option value="20">20 - AGENCIA  MARTINEZ</option>
+		<option value="21">21 - AGENCIA  BOEDO</option>
+		<option value="22">22 - AGENCIA  LINIERS</option>
+		<option value="23">23 - AGENCIA  VICENTE LOPEZ</option>
+		<option value="24">24 - AGENCIA  ADROGUE</option>
+		<option value="25">25 - AGENCIA  BOTANICO</option>
+		<option value="26">26 - AGENCIA  COLEGIALES</option>
+		<option value="27">27 - AGENCIA  VILLA URQUIZA</option>
+		<option value="28">28 - AGENCIA  LOMAS DE SAN ISIDRO</option>
+		<option value="29">29 - AGENCIA  LA LUCILA</option>
+		<option value="30">30 - AGENCIA  VILLA DEVOTO</option>
+		<option value="31">31 - AGENCIA  ESCOBAR</option>
+		<option value="32">32 - AGENCIA  PEDRO GOYENA</option>
+		<option value="33">33 - AGENCIA  BAJO ALEM</option>
+		<option value="34">34 - AGENCIA  MENDOZA</option>
+		<option value="35">35 - AGENCIA  VILLA ALLENDE</option>
+		<option value="36">36 - AGENCIA  MICROCENTRO</option>
+		<option value="39">39 - AGENCIA  MAR DEL PLATA</option>
+		<option value="41">41 - AGENCIA  CORDOBA-PLAZA COLON</option>
+		<option value="42">42 - AGENCIA  PALMARES</option>
+		<option value="43">43 - AGENCIA  ROSARIO</option>
+		<option value="44">44 - AGENCIA  SAAVEDRA</option>
+		<option value="45">45 - AGENCIA  BELGRANO  R</option>
+		<option value="47">47 - AGENCIA  LUJAN</option>
+		<option value="48">48 - AGENCIA  MONTSERRAT</option>
+		<option value="50">50 - AGENCIA  FLORES</option>
+		<option value="51">51 - AGENCIA  BARRACAS</option>
+		<option value="52">52 - AGENCIA  IMPRENTA</option>
+		<option value="53">53 - AGENCIA  LA PLATA</option>
+		<option value="54">54 - AGENCIA  CASTELAR</option>
+		<option value="55">55 - AGENCIA  OLIVOS</option>
+		<option value="56">56 - AGENCIA  PLAZA GUEMES</option>
+		<option value="57">57 - AGENCIA  PLAZA VTE. LOPEZ</option>
+		<option value="58">58 - AGENCIA  VILLA CRESPO</option>
+		<option value="61">61 - AGENCIA  LIBERTADOR</option>
+		<option value="62">62 - AGENCIA  MONTE GRANDE</option>
+		<option value="63">63 - AGENCIA  LA PLATA CATEDRAL</option>
+		<option value="64">64 - AGENCIA  MZA. - BARRIO CIVICO</option>
+		<option value="65">65 - AGENCIA SAN MIGUEL DE TUCUMAN</option>
+		<option value="66">66 - SUCURSAL MICROCENTRO MENDOZA</option>
+		<option value="67">67 - SUCURSAL SAN JOSE</option>
+		<option value="68">68 - SUCURSAL GUTIERREZ</option>
+		<option value="69">69 - SUCURSAL BALCARCE - MENDOZA</option>
+		<option value="73">73 - SUCURSAL TUPUNGATO</option>
+		<option value="74">74 - SUCURSAL TUNUYAN</option>
+		<option value="75">75 - SUCURSAL SHOPPING</option>
+		<option value="76">76 - SUCURSAL GENERAL ALVEAR</option>
+		<option value="77">77 - SUCURSAL LAS HERAS</option>
+		<option value="78">78 - SUCURSAL BOULEVARD BELGRANO</option>
+		<option value="79">79 - SUCURSAL RODEO DE LA CRUZ</option>
+		<option value="80">80 - SUCURSAL MALARGÜE</option>
+		<option value="82">82 - SUCURSAL BUENOS AIRES</option>
+		<option value="91">91 - SUCURSAL SAN JUAN</option>
+		<option value="92">92 - SUCURSAL RIO CUARTO III</option>
+		<option value="93">93 - SUCURSAL CAÑON DEL ATUEL</option>
+		<option value="94">94 - SUCURSAL LUJAN DE CUYO</option>
+		<option value="95">95 - SUCURSAL PLAZA GODOY CRUZ</option>
+		<option value="101">101 - SUCURSAL SAN LUIS - CAPITAL</option>
+		<option value="102">102 - SUCURSAL VILLA MERCEDES</option>
+		<option value="103">103 - SUCURSAL SANTA ROSA</option>
+		<option value="104">104 - SUCURSAL QUINES</option>
+		<option value="105">105 - SUCURSAL LA TOMA</option>
+		<option value="106">106 - SUCURSAL JUSTO DARACT</option>
+		<option value="107">107 - SUCURSAL NUEVA GALIA</option>
+		<option value="108">108 - SUCURSAL CONCARAN</option>
+		<option value="109">109 - SUCURSAL SAN FRANCISCO</option>
+		<option value="110">110 - SUCURSAL MERLO</option>
+		<option value="111">111 - SUCURSAL BUENA ESPERANZA</option>
+		<option value="112">112 - SUCURSAL ARIZONA</option>
+		<option value="114">114 - SUCURSAL UNION</option>
+		<option value="115">115 - SUCURSAL NASCHEL</option>
+		<option value="116">116 - SUCURSAL TILISARAO</option>
+		<option value="119">119 - SUCURSAL CANDELARIA</option>
+		<option value="131">131 - SUCURSAL VILLA MARIA</option>
+		<option selected="selected" value="">Seleccionar</option>
+
+	</select>
+                </td>
+                <td class="ic-form-label-title" style="width: 40%; text-align: right"></td>
+            </tr>
+        </tbody></table>
+    
+</div></td>
+					</tr>
+				</tbody></table></td>
+			</tr>
+		</tbody></table>
+    <table width="100%" cellpadding="0" cellspacing="0">
+        <tbody><tr class="ic-form-data">
+            <td class="ic-form-label" style="width: 10%; text-align: left">
+                <br>
+                <span id="ctl00_MainHolder_lblHorario" class="ic-message">El horario para dar de alta los beneficiarios es entre las 08:00 y las 18:00</span>
+            </td>
+        </tr>
+    </tbody></table>
+    <br>
+    
+
+            <table class="ic-grid-border" cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+			<tbody><tr>
+				<td><table id="ctl00_MainHolder_RequestPanelControl_thePanel" class="ic-grid" cellspacing="0" cellpadding="0" align="Center" border="0" style="width:100%;border-collapse:collapse;">
+					<tbody><tr class="ic-grid-title-row">
+						<td><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+							<tbody><tr>
+								<td class="ic-grid-title-cell-left">&nbsp;</td><td class="ic-grid-title-cell" align="left" style="white-space:nowrap;">Selección de archivo</td><td class="ic-gridB-title-cell-right"><img id="ctl00_MainHolder_RequestPanelControl_imgPlusMinus" onclick="javascript:MinMaxPanelControl(&#39;ctl00_MainHolder_RequestPanelControl&#39;)" src="./bot-grid-minus.gif" alt="Minimizar/Maximizar el panel" align="absmiddle" style="border-width:0px;cursor:hand;"></td>
+							</tr>
+						</tbody></table></td>
+					</tr><tr>
+						<td align="center"><div id="ctl00_MainHolder_RequestPanelControl" style="color:Black;border-color:DodgerBlue;font-family:verdana;font-size:10pt;width:100%;display:;">
+	
+                <table style="width: 100%">
+                    <tbody><tr class="ic-form-row">
+                        <td class="ic-form-label" width="30%">
+                            Archivo a importar:
+                        </td>
+                        <td class="ic-form-data-required" style="width: 70%">
+                            <input type="file" name="ctl00$MainHolder$fileUpload" id="ctl00_MainHolder_fileUpload" class="ic-button-navigation">
+                        </td>
+                    </tr>
+                </tbody></table>
+            <input name="ctl00$MainHolder$ctl00$MainHolder$RequestPanelControl_hdnMinimizeState" type="text" value="False" id="ctl00_MainHolder_ctl00_MainHolder_RequestPanelControl_hdnMinimizeState" class="ic-control-text" onkeypress="return validCharactersOnly(this, event, &quot;^[^:;\&lt;&gt;&#39;\&quot;]*$&quot;)" style="display:none">
+</div></td>
+					</tr>
+				</tbody></table></td>
+			</tr>
+		</tbody></table>
+            <br>
+            <table class="ic-grid-border" cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+			<tbody><tr>
+				<td><table id="ctl00_MainHolder_PanelControl3_thePanel" class="ic-grid" cellspacing="0" cellpadding="0" align="Center" border="0" style="width:100%;border-collapse:collapse;">
+					<tbody><tr class="ic-grid-title-row">
+						<td><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+							<tbody><tr>
+								<td class="ic-grid-title-cell-left">&nbsp;</td><td class="ic-grid-title-cell" align="left" style="white-space:nowrap;">Diseño de Archivo</td><td class="ic-gridB-title-cell-right"><img id="ctl00_MainHolder_PanelControl3_imgPlusMinus" onclick="javascript:MinMaxPanelControl(&#39;ctl00_MainHolder_PanelControl3&#39;)" src="./bot-grid-minus.gif" alt="Minimizar/Maximizar el panel" align="absmiddle" style="border-width:0px;cursor:hand;"></td>
+							</tr>
+						</tbody></table></td>
+					</tr><tr>
+						<td align="center"><div id="ctl00_MainHolder_PanelControl3" style="color:Black;border-color:DodgerBlue;font-family:verdana;font-size:10pt;width:100%;display:;">
+	
+                <table style="width: 100%">
+                    <tbody><tr class="ic-form-row">
+                        <td class="ic-form-label" width="30%">
+                            Descargar generador de archivo
+                        </td>
+                        <td style="width: 70%">
+                            <a id="ctl00_MainHolder_DownloadFileFormatLinkButton" class="ic-button-navigation" href="javascript:__doPostBack(&#39;ctl00$MainHolder$DownloadFileFormatLinkButton&#39;,&#39;&#39;)">Descargar</a>
+                        </td>
+                    </tr>
+                </tbody></table>
+            <input name="ctl00$MainHolder$ctl00$MainHolder$PanelControl3_hdnMinimizeState" type="text" value="False" id="ctl00_MainHolder_ctl00_MainHolder_PanelControl3_hdnMinimizeState" class="ic-control-text" onkeypress="return validCharactersOnly(this, event, &quot;^[^:;\&lt;&gt;&#39;\&quot;]*$&quot;)" style="display:none">
+</div></td>
+					</tr>
+				</tbody></table></td>
+			</tr>
+		</tbody></table>
+            <br>
+            &nbsp;            
+            <table width="100%">
+                <tbody><tr>
+                    <td class="ic-message" style="width: 100%">
+                        Revise la información ingresada y presione "Confirmar".
+                    </td>
+                    <td align="right">
+                        <a onclick="return showLoading();" id="ctl00_MainHolder_confirmNewLinkButton" class="ic-button-navigation" href="javascript:__doPostBack(&#39;ctl00$MainHolder$confirmNewLinkButton&#39;,&#39;&#39;)">Confirmar</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="ic-message" style="width: 100%">
+                        <span id="ctl00_MainHolder_Label3">Descargue desde el panel "Generador de archivo" una herramienta para crear el archivo utilizado por el Home Banking.</span>
+                    </td>
+                </tr>
+            </tbody></table>
+        
+
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="right">
+                                        <div id="ctl00_validationSummaryFooter" style="color:Red;font-size:10px;display:none;">
+
+		</div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="95%" align="center">
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                            <tbody><tr>
+                                                <td align="right">
+                                                    
+                                                    
+                                                </td>
+                                            </tr>
+                                        </tbody></table>
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="ic-content-footer">
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                <tbody><tr class="ic-content-footer-dottedline">
+                                    <td align="right" nowrap="nowrap" style="width: 90%">
+                                    </td>
+                                    <td align="right" nowrap="nowrap" style="width: 10%">
+                                        <a id="ctl00_LinkButtonTermsAndConditions" class="ic-grid-link" href="javascript:__doPostBack(&#39;ctl00$LinkButtonTermsAndConditions&#39;,&#39;&#39;)">Términos y Condiciones</a>
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                </tbody></table>
+            </td>
+		<td id="ctl00_cellContentRight" class="ic-content-space-top-right" valign="top" style="display:none;">
+                <table class="ic-content-right" border="0" cellspacing="0" cellpadding="0">
+                    <tbody><tr>
+                        <td>
+                            <img src="./pixel.gif" width="8" height="1">
+                        </td>
+                        <td class="ic-right-panel">
+                            <table border="0" cellpadding="0" cellspacing="0" class="ic-right-panel-content">
+                                <tbody><tr>
+                                    <td width="8" class="ic-right-panel-collapse">
+                                        <input type="image" name="ctl00$imageButtonCollapse" id="ctl00_imageButtonCollapse" src="./bot-right-collapse.gif" style="height:47px;width:9px;border-width:0px;">
+                                    </td>
+                                    
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                </tbody></table>
+            </td>
+	</tr>
+</tbody></table>
+
+    
+    
+<script type="text/javascript">
+//<![CDATA[
+var Page_ValidationSummaries =  new Array(document.getElementById("ctl00_validationSummaryFooter"));
+//]]>
+</script>
+
+<script type="text/javascript">
+//<![CDATA[
+var ctl00_validationSummaryFooter = document.all ? document.all["ctl00_validationSummaryFooter"] : document.getElementById("ctl00_validationSummaryFooter");
+ctl00_validationSummaryFooter.headertext = "Formulario inválido, por favor revise los datos ingresados:";
+ctl00_validationSummaryFooter.showsummary = "False";
+//]]>
+</script>
+
+
+<script type="text/javascript">
+//<![CDATA[
+
+document.getElementById('ctl00_validationSummaryFooter').dispose = function() {
+    Array.remove(Page_ValidationSummaries, document.getElementById('ctl00_validationSummaryFooter'));
+}
+Sys.Application.initialize();
+//]]>
+</script>
+</form>
+
+
+<div class="ui-dialog ui-widget ui-widget-content ui-corner-all" tabindex="-1" role="dialog" aria-labelledby="ui-dialog-title-sessionTimeoutWarning" style="display: none; z-index: 1000; outline: 0px;"><div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix"><span class="ui-dialog-title" id="ui-dialog-title-sessionTimeoutWarning">&nbsp;</span><a href="http://10.1.75.104:9080/Pages/Salary/NewBeneficiaryByFile.aspx#" class="ui-dialog-titlebar-close ui-corner-all" role="button" style="display: none;"><span class="ui-icon ui-icon-closethick">close</span></a></div><div id="sessionTimeoutWarning" style="background-color: rgb(255, 255, 255); padding: 0px; height: 100%;" class="ui-dialog-content ui-widget-content">
+        <div id="sessionTimeoutWarningHeader">
+            <table width="100%">
+                 <tbody><tr>
+                    <td colspan="2" align="center" class="ic-form-data-modal">
+                        La sesión finalizará en <span id="sessionTimeoutCountdown"></span>&nbsp;segundos.
+                        Para seguir operando seleccioná “Continuar”
+                    </td>
+                </tr>
+            </tbody></table>
+        </div>
+    </div><div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix"><div class="ui-dialog-buttonset"><button type="button">Continuar </button><button type="button">Finalizar sesión</button></div></div></div></body></html>

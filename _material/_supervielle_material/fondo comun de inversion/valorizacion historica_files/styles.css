@@ -1,0 +1,304 @@
+A:link { text-decoration: none; }
+A:visited { text-decoration: none; }
+A:active { text-decoration: none; }
+
+.Button {font-size: 9pt; }
+.TextoChico {font-size: 8px; color:rgb(140, 197, 90);}
+.Mensajes {font-size: 10px; color: gray; font-weight:bold; }
+.labelval {color: black; font-size:9pt; }
+.labelvals {color: black; font-size:8pt;}
+.labelb {color: gray; font-size:9pt;  }
+
+.TitulosGraficos {font-size: 8pt; text-align:center; font-weight:bold; color: #9f0101}
+.TextoChicoGrafico {text-align:center; font-size: 7pt; color: #000}
+
+/* informe de gestion*/
+.TitulosLeft {font-size: 11pt; text-align:left;  font-weight:bold; width:100%; padding-left:20px; }
+.TitulosGray {font-size: 10pt; text-align:right; color: rgb(127,127,127); width:100%; padding-right:20px;}
+.TituloSeccion {background-color: #C7C8C9;  font-size: 12pt;}
+.TitulosBajosGray {font-size: 9pt; color: rgb(127,127,127); font-weight:bold; text-align: left;}
+/* fin informe de gestion*/
+
+.table-body {width: 100%; background-color: white; }
+.table-header
+{
+    border-collapse:collapse;
+    font-family:Verdana, Arial, Helvetica, sans-serif;
+    font-size:7pt;
+    margin:10px;
+    font-weight: bold;	
+    text-align:center ;
+    color: black;
+    border:0px none;
+    border-color:White;
+}
+
+.table-cell-header
+{
+    background-color:rgb(244, 244, 244); 
+    color:#b20000;
+    font-size:7pt;
+    padding: 2px 0px 2px 0px
+}
+
+.table-cell
+{
+    font-weight: normal;
+    white-space:nowrap;
+}
+
+.table-cell-title
+{
+    border-bottom: solid 1px gainsboro;
+    font-weight: bold ;
+}
+
+.login-title, .login-subtitle, .login-link-gold, .login-link-gold:link, .login-link-gold:visited
+{				
+    color:rgb(0,118,168);  /* #FF9900;*/
+    font-size: 8pt;
+}
+
+.login-title	
+{				
+    font-size: 10pt;
+    font-weight: bold;
+    font-family:Verdana, Arial, Helvetica, sans-serif;
+}
+
+.login-subtitle
+{
+    font-weight: normal;
+}
+
+.login-text
+{
+    color: gray;
+    font-size: 8pt;
+    font-weight: normal;
+}
+
+.login-error
+{
+    color: red;
+    font-size: 9pt;
+    font-weight: normal;
+}
+
+.login-link, .login-link:link, .login-link:visited
+{ 
+    color: gray;
+    font-weight: bold;
+    text-decoration:none;
+}
+
+.login-link:active, .login-link:hover
+{ 
+    text-decoration:underline;
+}
+
+.login-link-gold, .login-link-gold:link, .login-link-gold:visited
+{
+    font-weight: normal;
+}
+
+.login-link-gold:active, .login-link-gold:hover
+{ 
+    text-decoration:underline;
+}
+
+.Panel_Label
+{
+    font-weight:normal ;
+    font-size:7pt;
+    vertical-align:middle ;
+    border: none 0px;
+    border-collapse:collapse ;
+}
+
+.Panel_BL {background-image: url(../appimg/pnl_lb_rec.jpg); width: 5px; height: 5px;}
+.Panel_BC {background-image: url(../appimg/pnl_b_rec.jpg);}
+.Panel_BR {background-image: url(../appimg/pnl_rb_rec.jpg); width: 5px; height: 5px;}
+
+.Panel_Buttons
+{
+    text-align:right; 
+    border-top:dotted 1px gainsboro; 
+    padding-top:5px;
+}
+
+/*operaciones*/
+.orden_title,.orden_titlevalue { font-size:9pt; font-weight:bold;} 
+.orden_titlevalue {color:Black; }
+.orden_title{color:rgb(169, 0, 0)  } 
+.orden_titlesmall{color:#b20000; font-size:7pt; } 
+
+.orden_label {color:black; font-size:8pt}
+.orden_fila_alt {margin-top:5px;}
+.orden_fila_alt2 {margin-top:5px;}
+
+/* fin operaciones*/
+/* grilla */
+
+A.DET
+{
+    color:Blue ;
+    text-decoration: underline;
+}
+
+
+/*VALIDADORES DE ERROR DE INPUT */
+
+.validators {font-size:8pt; font-family:Verdana, Arial, Helvetica, sans-serif;}
+.Home_cell, .Home_cell_alt {font-size:8pt; font-family:Verdana, Arial, Helvetica, sans-serif;}
+.Home_cell_alt { background-color:RGB(247,246,229)}
+
+TABLE.DGDET
+{
+    position:absolute ;
+    left:0px;
+    top:0px;
+    border: solid 1px gray;
+    font-size:11px;
+    color:#000000;
+    cursor:default;
+    border-collapse:collapse ;
+}
+
+TD.DG_DET
+{
+    border-right: solid 1px gray;
+    background-color: White;
+}
+
+TD.DG_HDET
+{
+    background-color:Gray ;
+    font-weight:bold;
+    color:white;	
+    text-align:center ;
+}
+
+
+A.DET
+{
+    color:Blue ;
+    text-decoration: underline;
+}
+
+
+/*tablas*/
+TABLE.TituloExtracto
+{
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+TR.Header
+{
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    background-color: #EAEAEA;
+}
+
+.Rows
+{
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 11px;
+}
+
+/* informe gestion */
+TABLE.TablaConLineas
+{
+    empty-cells: show;
+    border-collapse: collapse;
+}
+
+.NoDatos
+{
+    font-size: 10pt;
+    text-align: center;
+}
+
+.NoDatosAtencion
+{
+    color: Red;
+    text-align: center;
+}
+
+.PosicionCptTopHeader, .PosicionCptHeader, .PosicionCptGroupBy, .PosicionCptItem ,.PosicionCptAlternatingItem, .PosicionTotal
+{font-size:8pt; font-family:Verdana, Arial, Helvetica, sans-serif; }
+
+.PosicionCptTopHeader
+{
+    background-color: rgb(65,120,148) ;  
+    color:White;
+    padding: 4px 2px 4px 2px;
+    height: 20px; 
+    font-weight:bold;
+}
+
+.PosicionCptHeader
+{
+    background-color: rgb(109,135,148) ; 
+    height: 20px; 
+    color:White;
+    font-weight:bold;
+}
+
+.PosicionCptGroupBy
+{
+    background-color: rgb(215,215,215) ; 
+    padding: 4px 2px 4px 2px;
+}
+
+.PosicionCptAlternatingItem
+{
+    background-color:rgb(241,241,241) ; 
+}
+
+.PosicionCptItem
+{
+    color:Gray ;
+}
+
+.PosicionTotal
+{ background-color: rgb(243,245,239) ;
+  font-weight:bold;
+}
+    
+.xlink {cursor:crosshair}
+.hlink{cursor:help}
+
+A.LinkConso
+{
+    padding-right:30px;
+    border:0px none;
+    background-color:transparent;
+    font-size:8pt;
+    color:#b20000
+}
+A.LinkConsoSelected
+{
+    padding-right:30px;
+    color:black;
+    font-size:8pt;
+}
+
+A.LinkConso:hover, A.LinkConsoSelected:hover
+{
+    font-weight:bold;cursor:pointer ;
+}
+
+A.LinkConso:visited{text-decoration:none;}
+A.LinkConsoSelected:visited{text-decoration:none;}
+
+/* temporal */
+
+#ctl00_ContentPlaceHolder_lnkCertificacionSaldo {font-size:8pt !Important;color:#b20000}
+#ctl00_ContentPlaceHolder_lnkMisSolicitudes {font-size:8pt !Important;color:#b20000}
+
+
+

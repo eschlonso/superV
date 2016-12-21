@@ -1,0 +1,166 @@
+function numbersonly(myfield, e, isDecimal, decimalSeparator)
+{
+    var key;
+    var keychar;
+    
+    if (window.event)
+        key = window.event.keyCode;
+    else if (e)
+        key = e.which;
+    else
+        return true;
+
+    keychar = String.fromCharCode(key);
+
+    if (key == 46) {
+        ChangeDecimalCharacter(myfield, e)
+        return false;
+    }
+    
+    if ((key==null) || (key==0) || (key==8) || (key==9) || (key==13) || (key==27) )
+        return true;
+    else if ((("0123456789").indexOf(keychar) > -1))
+        return true;
+    else if (isDecimal && keychar == decimalSeparator && myfield.value.length > 0 && myfield.value.indexOf(keychar) == -1)
+        return true;
+    else
+        return false;
+}
+
+function dateNumbersOnly(myfield, e)
+{
+    var key;
+    var keychar;
+    
+    if (window.event)
+        key = window.event.keyCode;
+    else if (e)
+        key = e.which;
+    else
+        return true;
+
+    keychar = String.fromCharCode(key);
+    
+    if ((key==null) || (key==0) || (key==8) || (key==9) || (key==13) || (key==27) )
+        return true;
+    else if ((("0123456789/").indexOf(keychar) > -1))
+        return true;
+    else
+        return false;
+}
+
+function isValidDate(source, args)
+{
+    args.IsValid = isValidDateString(args.Value);
+}
+
+function isValidDateString(dateStr)
+{    
+    
+    var datePat = /^(\d{2}|\d{1})(\/|-)(\d{2}|\d{1})\2(\d{4})$/;
+    
+    var matchArray = dateStr.match(datePat);
+    
+    if (matchArray == null)
+        return false;
+    
+    if (dateFormat != null && dateFormat == "mm/dd/yyyy")
+    {
+        month = matchArray[1];
+        day = matchArray[3];
+        year = matchArray[4];
+    }
+    else
+    {
+        month = matchArray[3];
+        day = matchArray[1];
+        year = matchArray[4];
+    }
+    
+    if (month < 1 || month > 12)
+        return false;
+
+    if (day < 1 || day > 31)
+        return false;
+
+    if ((month==4 || month==6 || month==9 || month==11) && day==31)
+        return false;
+    
+    if (month == 2) {
+        var isleap = (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0));
+        if (day>29 || (day==29 && !isleap))
+            return false;
+    }
+
+    return true;
+}
+
+function isValidNumber(numberStr){
+    if( numberStr == "" )
+        return false;
+    else
+    {
+        var valid = ".0123456789"
+        var temp;
+        
+        for (var i=0; i<numberStr.length; i++) {
+            temp = "" + numberStr.substring(i, i+1);
+
+            if (valid.indexOf(temp) == "-1")
+                return false;
+        }
+
+        return true;
+    }
+}
+
+function isValidEmail(valor)
+{
+    if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(valor))
+    {
+        return (true);
+    }
+    else
+    {
+        return (false);
+    }
+}
+
+function textIsValid(text)
+{
+    var plantilla =/^[^:;\<>'"]*$/i
+
+   	if (plantilla.test(text))
+ 		return true;
+	else 
+    	return false;
+}
+
+function checkInvalidCharacters(source, arguments)
+{
+	/* chequea caracteres inválidos por expresión regular */
+		
+    arguments.IsValid = textIsValid(arguments.Value);   
+}
+
+function validCharactersOnly(myfield, e, charsFilter)
+{
+    var key;
+    var keychar;
+    
+    if (window.event)
+        key = window.event.keyCode;
+    else if (e)
+        key = e.which;
+    else
+        return true;
+
+    keychar = String.fromCharCode(key);
+    
+    return (new RegExp(charsFilter).test(keychar));
+}
+
+function ChangeDecimalCharacter(myfield, e) {
+    myfield.value += ',';
+}
+

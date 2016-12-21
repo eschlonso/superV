@@ -1,0 +1,850 @@
+
+<!-- saved from url=(0077)https://empresas.supervielle.com.ar/Pages/Transfers/ExtraBankTransferNew.aspx -->
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><script src="./jquery-1.7.2.min.js.descarga" type="text/javascript"></script>
+<script src="./jquery-1.7.1.js.descarga" type="text/javascript"></script>
+<script src="./jquery-ui-1.8.19.custom.min.js.descarga" type="text/javascript"></script>
+<script src="./jquery.formatCurrency-1.4.0.js.descarga" type="text/javascript"></script>
+<script src="./idle-timer.js.descarga" type="text/javascript"></script>
+<script src="./idle-timer.min.js.descarga" type="text/javascript"></script>
+<script language="javascript" type="text/javascript">
+
+function Logout() {
+        if (confirm("¿ Desea salir del sistema ?") == true) {
+                    
+            window.location =  '/'+ "Logout.aspx";
+        }
+       
+    }
+    
+var focusedFormControl;    
+var dateFormat = 'dd/mm/aaaa';
+var applicationRoot = '/';      
+function OnRowClick(sender, args) {
+    if (sender.GetSelectedRowCount() == 0) {
+        sender.UnselectRowOnPage(args.visibleIndex);
+        SetPageLinkData("");
+    }
+    else {
+        _aspxClearSelection();
+        sender._selectAllRowsOnPage(false);
+        sender.SelectRow(args.visibleIndex, true);
+        SetPageLinkData(sender.GetRowKey(args.visibleIndex));
+    }
+}
+
+if (history.forward(1))
+{
+
+    location.replace(history.forward(1))
+} 
+
+function PrintPage() {
+
+    window.print();
+}
+
+function GoMyOption(select)
+{
+    var url = select.options[select.selectedIndex].value;
+    if( url != "")
+        window.location = url;
+}
+
+function GoFavourites(select)
+{
+
+    var url = select.options[select.selectedIndex].value;
+    if( url != "")
+        window.location = url;
+}
+
+function GoPrint()
+{
+
+window.print();
+}
+
+function addEvent(elm, evType, fn, useCapture)
+{
+
+  if (elm.addEventListener){
+    elm.addEventListener(evType, fn, useCapture);
+    return true;
+  } else if (elm.attachEvent){
+    var r = elm.attachEvent("on"+evType, fn);
+    return r;
+  } else {
+    alert("Handler could not be removed");
+  }
+} 
+
+function SetPageLinkData(data)
+{
+    pageLinkData = document.getElementById('PageLinkData');
+    pageLinkData.value = data;
+}
+
+function SetPageLinkUrl(url)
+{
+    pageLinkUrl = document.getElementById('PageLinkUrl');
+    pageLinkUrl.value = url;
+}
+
+function doPageLink(id)
+{
+    __doPostBack(id, 'PageLinkEvent');
+}
+
+function imprimirEstadoCuenta()
+{
+											
+    var ficha = document.getElementById('printDiv');		
+    var ventimp = window.open('', 'popimpr','height=450, width=550, scrollbars=1');																						
+    var fichaHTML = new String(ficha.innerHTML);
+    fichaHTML = fichaHTML.replace('Seleccione un período y oprima "Consultar".'," ");
+    //var i = document.getElementById('ctl00_MainHolder_panelDetalle_imgPlusMinus');
+    var html  = "<html>\n<head>\n<link rel=\"stylesheet\" type=\"text/css\" href=\"..\\..\\App_Themes\\Default\\Default.css \" />" 
+                + "</head><table width=\"100%\"><tr bgcolor=\"#FF0000\"><td><img src=\"..\\..\\App_Themes\\Default\\Images\\logoSantander.gif\" /></td></tr></table>" 
+                + fichaHTML 
+                + "</html>";
+    ventimp.document.write( html );
+    ventimp.document.close();
+    ventimp.print( );
+    ventimp.close();
+					
+}
+
+ function removeInvalidCharacters(control) {
+ 
+            !(/^[A-zÑñ0-9 ]*$/i).test(control.value) ? control.value = control.value.replace(/[^A-zÑñ0-9 ]/ig, '') : null
+        }
+        
+  function removeInvalidNumbers(control) {
+            !(/^[0-9,]*$/i).test(control.value) ? control.value = control.value.replace(/[^0-9,]/ig, '') : null
+        }
+function showLoading()
+{
+//debugger;
+    // aquí le pasamos la clase o id de nuestro div a centrar (en este caso "caja")
+    $('.ic-loading').css({
+       position:'absolute',
+       left: ($('#mainContainer').width()/2 - $('.ic-loading').outerWidth())/2,
+       //top: ($('#mainContainer').height()/2 - $('.ic-loading').outerHeight())/2
+       top: ($('#mainContainer').height()/2 - $('ic-loading').height()/2)
+    });
+    
+    $('#mainContainer').css('display','none');
+    $('#ic-loading').css('display','block');
+}
+//ModalDialog SessionTimeout
+var idleTime = (parseInt('1170') * 1000); // number of miliseconds until the user is considered idle
+var initialSessionTimeoutMessage = "La sesión finalizará en <span id='sessionTimeoutCountdown'></span> segundos. Para seguir operando seleccioná “Continuar”<br /><br />";
+var sessionTimeoutCountdownId = 'sessionTimeoutCountdown';
+var redirectAfter = (parseInt('30')) ; // number of seconds to wait before redirecting the user
+var redirectTo = '/' + "Logout.aspx"; // URL to relocate the user to once they have timed out
+var keepAliveURL = ''; // URL to call to keep the session alive
+var expiredMessage = ''; // message to show user when the countdown reaches 0
+var running = false; // var to check if the countdown is running 
+var timer; // reference to the setInterval timer so it can be stopped 
+var timerSB;  
+var timeout;  
+    $(document).ready(function() {     
+// create the warning window and set autoOpen to false  
+      var sessionTimeoutWarningDialog = $("#sessionTimeoutWarning"); 
+    $(sessionTimeoutWarningDialog).dialog({         
+        title: '',       
+        autoOpen: false,    // set this to false so we can manually open it         
+        closeOnEscape: false,         
+        draggable: false,         
+        width: 460,         
+        minHeight: 150,         
+        modal: true,           
+        beforeclose: function() { // bind to beforeclose so if the user clicks on the "X" or escape to close the dialog, it will work too             // stop the timer             
+            clearInterval(timer);               // stop countdown
+            running = false;               // ajax call to keep the server-side session alive    
+                  
+            $.ajax({               
+                url: keepAliveURL,               
+                async: false            
+            });         
+        },         
+        buttons: {      
+             'Continuar ': function() {                 
+                // close dialog 
+                window.location.reload();//BM24925: Se agrega esto para que el expired de una cookie se actualice y no se cierre la sesión luego de hacer click en continuar al terminar el timeout del webconfig. El valor del expired se pone en la tabla configuration en la clave SessionMaxMinutes.
+                //var valor = getCookie('ICBWebLogin'); //Esta función la dejo por las dudas, pero no la pude hacer andar poque el document.cookie no me trae las cookies del explorador.                
+                $(this).dialog('close');
+                clearInterval(timerSB);    
+                window.status = "";      
+                StatusBarCountDown();     
+            },
+            'Finalizar sesión': function() {                 
+                // close dialog                 
+                $(sessionTimeoutWarningDialog).html(expiredMessage);
+                $(sessionTimeoutWarningDialog).dialog('disable');                     
+                window.parent.location = redirectTo;           
+            }         
+        },         
+        resizable: false,         
+        open: function() {
+            $('body').css('overflow','auto');         
+        },         
+        close: function() {             
+            // reset overflow             
+            $('body').css('overflow','auto');         
+        }  
+           
+    }); // end of dialog  
+    jQuery("a.ui-dialog-titlebar-close").hide(); 
+          
+    // start the idle timer
+    $.idleTimer(idleTime);
+ 
+});
+
+// BM24925: Función para recuperar el valor de una cookie.
+// name - nombre de la cookie deseada
+// devuelve un string conteniendo el valor de la cookie especificada o null si la cookie no existe
+
+function getCookie(name){
+var micookie = (document.cookie.indexOf('ICBWebLogin=') === -1 ? '' : ("; " + document.cookie).split('; ICBWebLogin=')[1].split(';')[0]);
+
+  var cname = name + "=";               
+  var dc = document.cookie;             
+  if (dc.length > 0) {              
+    begin = dc.indexOf(cname);       
+    if (begin != -1) {           
+      begin += cname.length;       
+      end = dc.indexOf(";", begin);
+      if (end == -1) end = dc.length;
+        return unescape(dc.substring(begin, end));
+    } 
+  }
+  return null;
+}
+
+//Status Bar Countdown Script
+function StatusBarCountDown() 
+{
+    var redirectAfter = (parseInt('30'));
+    var timeout = '1200000';   
+    var redirectTo = '/' + "Logout.aspx"; // URL to relocate the user to once they have timed out   
+    timerSB = setInterval(function(){
+    timeout -= 1000;
+    if(timeout == redirectAfter * 1000)
+    {
+        window.focus();
+    }
+   if(timeout < redirectAfter * 1000)
+   {
+        $("#sessionTimeoutCountdown").html(timeout/1000);
+        $("#sessionTimeoutWarning").dialog('open'); 
+   }
+   if (timeout < 100)
+   {
+        $("#sessionTimeoutWarning").html(expiredMessage);
+        $("#sessionTimeoutWarning").dialog('disable');                     
+        window.parent.location = redirectTo;
+        clearInterval(timerSB);    
+        window.status = "";     
+   }
+        
+   window.status = "Su sesión expirará " + time(timeout) + " minutos";        
+    }, 1000);   
+         
+   function two(x)
+   {
+    return ((x > 9) ? "" : "0") + x
+   }   
+  
+   function time(ms)
+   {   
+       var t = '';   
+       var sec = Math.floor(ms / 1000);   
+       ms = ms % 1000   
+
+       var min = Math.floor(sec / 60);   
+       sec = sec % 60;   
+       t = two(sec);   
+
+       var hr = Math.floor(min / 60);   
+       min = min % 60;   
+       t = two(min) + ":" + t;   
+    return t;
+   }
+}
+
+StatusBarCountDown();
+
+
+
+</script>
+
+<link href="./Default.css" type="text/css" rel="stylesheet"><link href="./jquery-ui-1.8.19.custom.css" type="text/css" rel="stylesheet"><title>
+
+</title></head>
+<body>
+    <form name="aspnetForm" method="post" action="https://empresas.supervielle.com.ar/Pages/Transfers/ExtraBankTransferNew.aspx" id="aspnetForm">
+<div>
+<input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="">
+<input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="">
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="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ZQWgDi93RVdCQjRFUkdGMFlRWE1DVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlJVRkJRVUZDVlVaellWZEdla0pWUm5OaFYwWjZRbmRCUVVSclVuWlpNMVowV2xjMU1GUnVWblJaYlZaNVJHdFNkbGt6Vm5SYVZ6VXdWRzVXZEZsdFZubENkMEZCUVRCT1ExWlJUa1JSYkZWSVFVRkJSVlJ0Um5SYVVWSlBXVmN4YkVKM1FVRlBaMEZCUVVKQ1FtUnRSbkJpUjBacFlrZFdRMWxYZUdoaWJVNXNSRlZHYWxreU9URmlibEpQWkZjeGFWcFlTVWxSTTFaNVkyMVdkVmt6YTBkV1NHeDNXbFZzYTBNd1JtcFpNamt4WW01U1ZXVllRbXhGUlU1MllrZDRiRmt6VW14YVJVcG9Za2RHZFZreVZVWlVNMlIxV2xoSlIxRnVTbWhpYlU1dlEwVktlVmxYTldwaFJXeHJRbFpPTUZsWVVteENSVTV3WkVoclRWVnRWbnBrU0Vwd1dUTlNjR0l5TlhwRVJWWjFXVE5LTldOSVVteGFSWFJzWlZKR1RXSXlOVzVSVjA1cVlqTldkV1JGTlRGaVYwcHNZMmc1VFdJeU5XNVJWMDVxWWpOV2RXUkZOVEZpVjBwc1kyc3hkbHBJVm5OYVZVNHhZMjVLYkdKdFRqVkhWWGgyWW0xa1Fsa3lUblprVnpVd1ZHNVdkRmx0Vm5sUk0xWjVZMjFXZFZremEweFNNMHB3V2tWR2Fsa3lPVEZpYmxGVVZsYzFjR05ZVm14UlYwNXFZak5XZFdSRk5URmlWMHBzWTJjNVNHTnRiR3RXU0d4M1dsVkdhbGt5T1RGaWJsRmFWRWM1ZFZvd1JtcFpNamt4WW01U1QyUlhNV2xhV0VwVlkyMUdkV015V214aloxSkRXVmMxY2tSclNuTmlNazV5V2xkU1ExbFhlR2hpYlU1c1ExVTVNbHBZU210amJVWnRaRUZrUkdJeU1YZFpWelUxUkVWU2Rsa3pWblJhVnpVd1ZraHNkMXBSV2s1aU1sSXhZa2RWUmxWSFJuZGFXRWxRVkROQ2JHTnRSakJoVnpsMVZHNVdkRmx0Vm5sRmJFNHhXV3M1ZDFwWVNtaGtSMngyWW1zMU1XSlhTbXhqWnpGUVkwZFdlVmxZVW5CaU1qVlZaVmhDYkVVd1RqRmpia3BzWW0xT05WSkhWbnBaTTBwd1kwaFNjR0l5TkU5Uk0xWjVZMjFXZFZremJGUmxWekZwWWpKM1VsUlhPV3RrVjNoc1VrZFdlbGt6U25CalNGSndZakkwVEZGdFJuTlpWelZxV2xWU2FHUkhWVlZTV0dnd1kyMUdhbVJGV25sYVdFWXhXbGMxYW1WVlRuWmFSMVZpVWxob01HTnRSbXBrUlZwNVdsaEdNVnBYTldwbFZWSnNZekpPZVdGWVFqQmhWemwxUkRCV05HUklTbWhaTTFKVlpWaENiRkV5T1d0YVVscEdaVWhTZVZsWFRqQldTR3gzV2xWU2JHTXlUbmxoV0VJd1lWYzVkVU13VW1obFdFNVFaRzFXZVZwSVZteERiRUo1WWpOYWNHSnRUbXhUVjFGVlUxaE9WR1JZUW14amJscHdXbGQ0YzFwVlJtcFpNamt4WW01UlRWUXlTbnBhV0VveVdWaFNjR0l5TlhwRGJFNW9ZbGRXU1dJeWVHdGFXRWxKVlROU2FHUklWbnBUVjFGT1VsaG9iRmt6VmpCaFdGcHNVVEk1YTFwUk1VWmxSMVpxWkZoU2NHUnRWazlaVnpGc1JGVldOR0ZZVGpCak1HeDFWRWM1YWxsWGQxaFNSemxxWkZjeGJHSnVVbFZsV0VKc1VrZFdlbGt6U25CalNGSndZakkwVlZGdFJuVmFWM2hxWWpCR2Fsa3lPVEZpYmxKUFpGY3hhVnBZU1ZKVlNFcHNVVmhDZDJOdE9USmFWMUpEVkRBMWFHSlhWVVpTVnpGb1lWZDNTMUZYVG1waU0xWjFaRVU1TTJKblRsVmFWMFZXVkcxV00xVXlWbmxrYld4cVdsVmtiR1JHUW5saU1sSXhXVE5TZWtKc1RqQlpXRkl4WTNkNFFscEhhR3hqTW14MllteFNOV05IVlVwVlNFcDJXa2hXYW1SRmJHdERNVUo1WWpKU01Wa3pVa1JpTWxKc1FuZEJTRUZCUFQwZUJWTjBZWFJsQlhSQ2QxVklRVUZKUWtKM1JVTkJVV05EUVdkRlNFRjNTVUpDZDFGRFFWRmpRVUozUVVoQlFXTkJRV2RCUnk4dk9FcEJaMDVFVVd4VlNrRm5RVU5CUVUxSVFrRkpRVUozUVVOQlVXTkNRbmRKVjAxRVFUTk5SR3MxVDFSQmVrMUVRWGRPVkVVd1QwUk5lRTVFVlhsT1FVbENRbmRCUFE9PWQBPCsADAEAFgQeC0JvcmRlclN0eWxlCyolU3lzdGVtLldlYi5VSS5XZWJDb250cm9scy5Cb3JkZXJTdHlsZQEfCQJABDwrAEMEBzwrAAwBABYOHgtCb3JkZXJXaWR0aBsAAAAAAAAAAAEAAAAeCkZvbnRfTmFtZXMVAQdWZXJkYW5hHglGb250X1NpemUoKiJTeXN0ZW0uV2ViLlVJLldlYkNvbnRyb2xzLkZvbnRVbml0AzdwdB4JRm9udF9Cb2xkZx4JRm9yZUNvbG9yCRAcvP8fCgn/////HwkCrBwMPCsADAEAFgQfFQkQHLz/HwkCBBM8KwAMAQAWCB8RGwAAAAAAAAAAAQAAAB8TKCsFAzdwdB8SFQEHVmVyZGFuYR8JAqAMGjwrAAwBABYEHxUJEBy8/x8JAgQGD2QQFgVmAgECAgIDAgQWBTwrAAwBABYCHg9Db2xWaXNpYmxlSW5kZXhmPCsACwEAFggfFgIBHglTb3J0SW5kZXgC/////w8eCkdyb3VwSW5kZXgC/////w8eCVNvcnRPcmRlcgspeERldkV4cHJlc3MuRGF0YS5Db2x1bW5Tb3J0T3JkZXIsIERldkV4cHJlc3MuRGF0YS52OC4zLCBWZXJzaW9uPTguMy41LjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49Yjg4ZDE3NTRkNzAwZTQ5YQA8KwALAQAWCB8WAgIfFwL/////Dx8YAv////8PHxkLKwYAPCsACwEAFggfFgIDHxcC/////w8fGAL/////Dx8ZCysGADwrAAsBABYIHxYCBB8XAv////8PHxgC/////w8fGQsrBgAPFgUCAQICAgICAgICFgIFlgFEZXZFeHByZXNzLldlYi5BU1B4R3JpZFZpZXcuR3JpZFZpZXdDb21tYW5kQ29sdW1uLCBEZXZFeHByZXNzLldlYi5BU1B4R3JpZFZpZXcudjguMywgVmVyc2lvbj04LjMuNS4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWI4OGQxNzU0ZDcwMGU0OWEFoAFJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLkNsYXNzZXMuR3JpZFZpZXdEYXRhVGV4dENvbHVtblRleHQsIEluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24sIFZlcnNpb249My4wLjEuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj03MTg2MjgwMTdmZmI5NjZlZAIHDw8WBB8BBQlTaWd1aWVudGUeDU9uQ2xpZW50Q2xpY2sFMmN0bDAwX01haW5Ib2xkZXJfRmlyc3RTdGVwTmV4dExpbmtCdXR0b25fU3VibWl0KCk7ZGQCCQ8PFgYfAQUJU2lndWllbnRlHxoFNmN0bDAwX01haW5Ib2xkZXJfRmlyc3RTdGVwNDhoc05leHRMaW5rQnV0dG9uX1N1Ym1pdCgpOx4HVmlzaWJsZWhkZAIBD2QWAgIBD2QWDAIBD2QWAgIBDw8WAh8BBRxDYXJnYSBkZSBkYXRvcyAtIHBhc28gMiBkZSA0ZGQCAw9kFgICAQ8PFgIfAQUQQ0EgMTAwLTMxOTYzNDMtMmRkAgUPZBYMZg8PFgIfAQUWMDA3MDk5OTAzMDAwNTE0ODMxNDUyNGRkAgEPDxYCHwEFEEJBTkNPIERFIEdBTElDSUFkZAICDw8WAh8BBRJPdHJhIEN1ZW50YSBQcm9waWFkZAIDDw8WAh8BBRFDVVJDSU8gIFNFQkFTVElBTmRkAgQPDxYCHwEFCzIwMzE0NDc1ODk2ZGQCBQ8PFgIfAQUUcy5jdXJjaW9AaG90bWFpbC5jb21kZAIHD2QWBGYPDxYCHwEFBlZhcmlvc2RkAgEPDxYCHwEFBGRlbW9kZAIJD2QWBGYPDxYCHwEFBiQgMCwxMGRkAgEPDxYCHwEFBVBlc29zZGQCCw8PFgIfAQWgAlN1amV0byBhIEltcHVlc3RvcyB5IGNvbWlzaW9uZXM8YnI+DQogICAgICAgICAgIExlIGluZm9ybWFtb3MgcXVlIGVzdGEgb3BlcmFjacOzbiB0aWVuZSBhY3JlZGl0YWNpw7NuIGlubWVkaWF0YSBsb3MgZMOtYXMgaGFiaWxlcyBlbiBlbCBob3JhcmlvIGRlIDggYSAxOGhzLiBGdWVyYSBkZSBlc29zIGTDrWFzIHkgaG9yYXJpbywgZWwgcGxhem8gZGUgYWNyZWRpdGFjacOzbiBkZXBlbmRlcsOhIGRlbCB0cmF0YW1pZW50byBkYWRvIHBvciBlbCBiYW5jbyByZWNlcHRvciBkZSBsb3MgZm9uZG9zLg0KICAgIGRkAgMPZBYGAgEPZBYCZg9kFgRmD2QWAgIBD2QWCAIDDw8WBB8FBQ5eW146O1w8PidcIl0qJB8GZxYCHwcFOXJldHVybiB2YWxpZENoYXJhY3RlcnNPbmx5KHRoaXMsIGV2ZW50LCAiXlteOjtcPD4nXCJdKiQiKWQCBQ8PFgIfCGhkZAIHDw8WAh8IaGRkAgkPDxYCHwhoZGQCAQ9kFgICAQ9kFgQCAw9kFgJmD2QWAgIBDw8WBB8FBQ5eW146O1w8PidcIl0qJB8GZxYCHwcFOXJldHVybiB2YWxpZENoYXJhY3RlcnNPbmx5KHRoaXMsIGV2ZW50LCAiXlteOjtcPD4nXCJdKiQiKWQCBw9kFgJmD2QWAgIBD2QWAgIBDw8WAh8BBUJQcmVzaW9uZSBlbCBib3RvbiA8Yj5Tb2xpY2l0YXIgQ0RBPC9iPiBwYXJhIGNvbWVuemFyIGxhIG9wZXJhY2nDs25kZAIDDw8WBB8BBQZWb2x2ZXIfGgUyY3RsMDBfTWFpbkhvbGRlcl9UaGlyZFN0ZXBCYWNrTGlua0J1dHRvbl9TdWJtaXQoKTtkZAIFDw8WBB8aBTVjdGwwMF9NYWluSG9sZGVyX1RoaXJkU3RlcENvbmZpcm1MaW5rQnV0dG9uX1N1Ym1pdCgpOx8BBQlDb25maXJtYXJkZAIED2QWAgIBD2QWBmYPDxYCHwEFHENhcmdhIGRlIGRhdG9zIC0gcGFzbyA0IGRlIDRkZAIBDw8WAh8BBSFPcGVyYWNpw7NuIGVqZWN1dGFkYSBjb24gw6l4aXRvIS5kZAICDw8WAh8BBf8BICANCiAgICAgICAgICAgTGUgaW5mb3JtYW1vcyBxdWUgZXN0YSBvcGVyYWNpw7NuIHRpZW5lIGFjcmVkaXRhY2nDs24gaW5tZWRpYXRhIGxvcyBkw61hcyBoYWJpbGVzIGVuIGVsIGhvcmFyaW8gZGUgOCBhIDE4aHMuIEZ1ZXJhIGRlIGVzb3MgZMOtYXMgeSBob3JhcmlvLCBlbCBwbGF6byBkZSBhY3JlZGl0YWNpw7NuIGRlcGVuZGVyw6EgZGVsIHRyYXRhbWllbnRvIGRhZG8gcG9yIGVsIGJhbmNvIHJlY2VwdG9yIGRlIGxvcyBmb25kb3MuDQogICAgZGQCAg8WAh4Fc3R5bGUFDWRpc3BsYXk6bm9uZTsWAgIFDxYCHxtoFgQCAQ8QFgYfAwUFVGl0bGUfAgUDVXJpHwRnEBUBABUBABQrAwFnFCsBAGQCAw8WAh8cBQ1kaXNwbGF5Om5vbmU7FgJmD2QWAgIBDxYCHxwFDWRpc3BsYXk6bm9uZTtkGAMFHl9fQ29udHJvbHNSZXF1aXJlUG9zdEJhY2tLZXlfXxYNBUFjdGwwMCRNYWluSG9sZGVyJEV4dHJhQmFua1RyYW5zZmVyRmlyc3RTdGVwTmV3JE9yaWdpbkFjY291bnRQYW5lbAVGY3RsMDAkTWFpbkhvbGRlciRFeHRyYUJhbmtUcmFuc2ZlckZpcnN0U3RlcE5ldyREZXN0aW5hdGlvbkFjY291bnRQYW5lbAVBY3RsMDAkTWFpbkhvbGRlciRFeHRyYUJhbmtUcmFuc2ZlckZpcnN0U3RlcE5ldyRSZWZlcmVuY2VEYXRhUGFuZWwFQmN0bDAwJE1haW5Ib2xkZXIkRXh0cmFCYW5rVHJhbnNmZXJGaXJzdFN0ZXBOZXckVHJhbnNmZXJBbW91bnRQYW5lbAVDY3RsMDAkTWFpbkhvbGRlciRFeHRyYUJhbmtUcmFuc2ZlckZpcnN0U3RlcE5ldyRDQlVEaWFyeUFjY291bnRQYW5lbAVCY3RsMDAkTWFpbkhvbGRlciRFeHRyYUJhbmtUcmFuc2ZlckZpcnN0U3RlcE5ldyRDcmVkaXRBY2NvdW50c1BhbmVsBUJjdGwwMCRNYWluSG9sZGVyJEV4dHJhQmFua1RyYW5zZmVyU2Vjb25kU3RlcE5ldyRPcmlnaW5BY2NvdW50UGFuZWwFR2N0bDAwJE1haW5Ib2xkZXIkRXh0cmFCYW5rVHJhbnNmZXJTZWNvbmRTdGVwTmV3JERlc3RpbmF0aW9uQWNjb3VudFBhbmVsBUJjdGwwMCRNYWluSG9sZGVyJEV4dHJhQmFua1RyYW5zZmVyU2Vjb25kU3RlcE5ldyRSZWZlcmVuY2VEYXRhUGFuZWwFQ2N0bDAwJE1haW5Ib2xkZXIkRXh0cmFCYW5rVHJhbnNmZXJTZWNvbmRTdGVwTmV3JFRyYW5zZmVyQW1vdW50UGFuZWwFKGN0bDAwJE1haW5Ib2xkZXIkVG9rZW5Tb2xpY2l0YXRpb24kcGNNQUMFKmN0bDAwJE1haW5Ib2xkZXIkVG9rZW5Tb2xpY2l0YXRpb24kcGNUb2tlbgUZY3RsMDAkaW1hZ2VCdXR0b25Db2xsYXBzZQUbY3RsMDAkTWFpbkhvbGRlciRtdWx0aVZpZXcxDw9kAgFkBSpjdGwwMCRNYWluSG9sZGVyJFRva2VuU29saWNpdGF0aW9uJG12VG9rZW4PD2QCAWTaINGUqeBUue+MtbvTcBaB7Rz1WA==">
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+var theForm = document.forms['aspnetForm'];
+if (!theForm) {
+    theForm = document.aspnetForm;
+}
+function __doPostBack(eventTarget, eventArgument) {
+    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+        theForm.__EVENTTARGET.value = eventTarget;
+        theForm.__EVENTARGUMENT.value = eventArgument;
+        theForm.submit();
+    }
+}
+//]]>
+</script>
+
+
+<script src="./WebResource.axd" type="text/javascript"></script>
+
+<script src="./DataEntry.js.descarga"></script><script src="./DataEntry.js.descarga"></script>
+<script type="text/javascript">
+//<![CDATA[
+function ctl00_MainHolder_FirstStepNextLinkButton_Submit()
+{ 
+    if (typeof(Page_ClientValidate) == 'function')
+    {
+        var oldPage_IsValid = Page_IsValid;
+        var oldPage_BlockSubmit = Page_BlockSubmit;
+        if (Page_ClientValidate('Confirmation') == false)
+        {
+            Page_IsValid = oldPage_IsValid;
+            Page_BlockSubmit = oldPage_BlockSubmit;
+            return false;
+        }
+    }
+    showLoading();
+    __doPostBack('ctl00$MainHolder$FirstStepNextLinkButton','');
+    return true;
+}
+function ctl00_MainHolder_FirstStep48hsNextLinkButton_Submit()
+{ 
+    if (typeof(Page_ClientValidate) == 'function')
+    {
+        var oldPage_IsValid = Page_IsValid;
+        var oldPage_BlockSubmit = Page_BlockSubmit;
+        if (Page_ClientValidate('Confirmation') == false)
+        {
+            Page_IsValid = oldPage_IsValid;
+            Page_BlockSubmit = oldPage_BlockSubmit;
+            return false;
+        }
+    }
+    showLoading();
+    __doPostBack('ctl00$MainHolder$FirstStep48hsNextLinkButton','');
+    return true;
+}
+function ctl00_MainHolder_ThirdStepBackLinkButton_Submit()
+{ 
+    if (typeof(Page_ClientValidate) == 'function')
+    {
+        var oldPage_IsValid = Page_IsValid;
+        var oldPage_BlockSubmit = Page_BlockSubmit;
+        if (Page_ClientValidate('') == false)
+        {
+            Page_IsValid = oldPage_IsValid;
+            Page_BlockSubmit = oldPage_BlockSubmit;
+            return false;
+        }
+    }
+    showLoading();
+    __doPostBack('ctl00$MainHolder$ThirdStepBackLinkButton','');
+    return true;
+}
+function ctl00_MainHolder_ThirdStepConfirmLinkButton_Submit()
+{ 
+    if (!(ctl00_MainHolder_ThirdStepConfirmLinkButton_OnSubmit()))    {
+      return false;
+    }
+    if (typeof(Page_ClientValidate) == 'function')
+    {
+        var oldPage_IsValid = Page_IsValid;
+        var oldPage_BlockSubmit = Page_BlockSubmit;
+        if (Page_ClientValidate('ValidateMac') == false)
+        {
+            Page_IsValid = oldPage_IsValid;
+            Page_BlockSubmit = oldPage_BlockSubmit;
+            return false;
+        }
+    }
+    showLoading();
+    __doPostBack('ctl00$MainHolder$ThirdStepConfirmLinkButton','');
+    return true;
+}
+function ctl00_MainHolder_ThirdStepConfirmLinkButton_OnSubmit()
+{ 
+  if (Page_ClientValidate() == false){return false;} showLoading();;
+}
+//]]>
+</script>
+
+						<style>							
+							P.PanelControlTitleStyle
+							{
+ 								font-family:verdana;
+ 								font-size: 12px;
+								font-weight : bold;
+								text-align: center;  								
+							}
+						</style>						
+						<script language="javascript">
+						function MinMaxPanelControl(cntrlId)
+						{
+						    var imgPath='/App_Themes/Default/Images/';	
+					
+							//Get state from hidden control.													
+							if ( document.getElementById(cntrlId).style.display == 'none' )
+							{
+								document.getElementById(cntrlId).style.display = '';						
+								document.getElementById(cntrlId+'_imgPlusMinus').src = imgPath + 'bot-grid-minus.gif';
+							}
+							else 
+							{
+								document.getElementById(cntrlId).style.display = 'none';								
+								document.getElementById(cntrlId+'_imgPlusMinus').src = imgPath + 'bot-grid-plus.gif';
+							}
+						}
+						</script>
+			
+<script type="text/javascript">
+//<![CDATA[
+var __cultureInfo = '{"name":"es-UY","numberFormat":{"CurrencyDecimalDigits":2,"CurrencyDecimalSeparator":",","IsReadOnly":false,"CurrencyGroupSizes":[3],"NumberGroupSizes":[3],"PercentGroupSizes":[3],"CurrencyGroupSeparator":".","CurrencySymbol":"$U","NaNSymbol":"NeuN","CurrencyNegativePattern":14,"NumberNegativePattern":1,"PercentPositivePattern":0,"PercentNegativePattern":0,"NegativeInfinitySymbol":"-Infinito","NegativeSign":"-","NumberDecimalDigits":2,"NumberDecimalSeparator":",","NumberGroupSeparator":".","CurrencyPositivePattern":2,"PositiveInfinitySymbol":"Infinito","PositiveSign":"+","PercentDecimalDigits":2,"PercentDecimalSeparator":",","PercentGroupSeparator":".","PercentSymbol":"%","PerMilleSymbol":"‰","NativeDigits":["0","1","2","3","4","5","6","7","8","9"],"DigitSubstitution":1},"dateTimeFormat":{"AMDesignator":"a.m.","Calendar":{"MinSupportedDateTime":"\/Date(-62135586000000)\/","MaxSupportedDateTime":"\/Date(253402300799999)\/","AlgorithmType":1,"CalendarType":1,"Eras":[1],"TwoDigitYearMax":2029,"IsReadOnly":false},"DateSeparator":"/","FirstDayOfWeek":1,"CalendarWeekRule":0,"FullDateTimePattern":"dddd, dd\u0027 de \u0027MMMM\u0027 de \u0027yyyy hh:mm:ss tt","LongDatePattern":"dddd, dd\u0027 de \u0027MMMM\u0027 de \u0027yyyy","LongTimePattern":"hh:mm:ss tt","MonthDayPattern":"dd MMMM","PMDesignator":"p.m.","RFC1123Pattern":"ddd, dd MMM yyyy HH\u0027:\u0027mm\u0027:\u0027ss \u0027GMT\u0027","ShortDatePattern":"dd/MM/yyyy","ShortTimePattern":"hh:mm tt","SortableDateTimePattern":"yyyy\u0027-\u0027MM\u0027-\u0027dd\u0027T\u0027HH\u0027:\u0027mm\u0027:\u0027ss","TimeSeparator":":","UniversalSortableDateTimePattern":"yyyy\u0027-\u0027MM\u0027-\u0027dd HH\u0027:\u0027mm\u0027:\u0027ss\u0027Z\u0027","YearMonthPattern":"MMMM\u0027 de \u0027yyyy","AbbreviatedDayNames":["dom","lun","mar","mié","jue","vie","sáb"],"ShortestDayNames":["do","lu","ma","mi","ju","vi","sá"],"DayNames":["domingo","lunes","martes","miércoles","jueves","viernes","sábado"],"AbbreviatedMonthNames":["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic",""],"MonthNames":["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre",""],"IsReadOnly":false,"NativeCalendarName":"calendario gregoriano","AbbreviatedMonthGenitiveNames":["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic",""],"MonthGenitiveNames":["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre",""]}}';//]]>
+</script>
+
+<script src="./ScriptResource.axd" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+if (typeof(Sys) === 'undefined') throw new Error('ASP.NET Ajax client-side framework failed to load.');
+//]]>
+</script>
+
+<script src="./ScriptResource(1).axd" type="text/javascript"></script>
+<div>
+
+	<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEWBQLN1NfjDwLaqqD9DgKCvLasAgLRqszJDgKJt+C7AW3baxAJ+lcEmu6ukFwMb1m3cI3H">
+</div>
+    <script type="text/javascript">
+//<![CDATA[
+Sys.WebForms.PageRequestManager._initialize('ctl00$scriptManager', document.getElementById('aspnetForm'));
+Sys.WebForms.PageRequestManager.getInstance()._updateControls([], [], [], 90);
+//]]>
+</script>
+
+    <input type="hidden" id="PageLinkData" name="PageLinkData" value="">
+    <input type="hidden" id="PageLinkUrl" name="PageLinkUrl" value="">
+    <input type="hidden" id="PageUrl" value="/Pages/Transfers/ExtraBankTransferNew.aspx">
+    <table id="ctl00_tableContent" width="100%" border="0" cellpadding="0" cellspacing="0" class="ic-content">
+	<tbody><tr>
+		<td class="ic-content-left-aux">
+                <img src="./log-img-aux-left-bottom.gif" width="9" height="110">
+            </td>
+		<td style="width: 100%">
+                <table width="100%" border="0" cellpadding="0" cellspacing="0" class="ic-content-left">
+                    <tbody><tr>
+                        <td id="TdCPM" class="ic-content-space-top" valign="top">
+                            <table id="TablaCPM" width="100%" border="0" cellspacing="0" cellpadding="0">
+                                
+                                <tbody><tr>
+                                    <td>
+                                        <table id="ctl00_tableHeader" width="100%" border="0" cellspacing="0" cellpadding="0">
+			<tbody><tr>
+				<td class="ic-breadcrumb-container">
+                                                    
+                                                    &gt;
+                                                    <span id="ctl00_siteMapNavigator"><a href="https://empresas.supervielle.com.ar/Pages/Transfers/ExtraBankTransferNew.aspx#ctl00_siteMapNavigator_SkipLink"><img alt="Skip Navigation Links" height="0" width="0" src="./WebResource(1).axd" style="border-width:0px;"></a><span><a href="https://empresas.supervielle.com.ar/Home.aspx">Posición Consolidada</a></span><span> &gt; </span><span><a>Transferencias</a></span><span> &gt; </span><span><a>Transferencias Inmediatas</a></span><span> &gt; </span><span>A ctas de otros bancos</span><a id="ctl00_siteMapNavigator_SkipLink"></a></span>
+                                                    </td>
+				<td class="ic-toolbar-container">
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tbody><tr>
+                                                            <td width="16">
+                                                                <img src="./ico-print.gif" id="ctl00_Img4" width="16" height="16">
+                                                            </td>
+                                                            <td class="ic-links-toolbar">
+                                                                <a href="https://empresas.supervielle.com.ar/Pages/Transfers/ExtraBankTransferNew.aspx#" onclick="javascript: GoPrint();">
+                                                                    Imprimir página</a>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody></table>
+                                                </td>
+			</tr>
+		</tbody></table>
+		
+                                    </td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>
+                                        <span id="ctl00_labelTitle" class="ic-page-title">Transferencia a cuentas en otros bancos</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td id="ctl00_cellRequiered" align="right">&nbsp;</td>
+		
+                                </tr>
+                                <tr>
+                                    <td width="95%" align="center">
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                            <tbody><tr>
+                                                <td align="right">
+                                                    
+                                                    
+                                                </td>
+                                            </tr>
+                                        </tbody></table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="100%" align="center">
+                                        <div id="ic-loading" class="ic-loading-bg" style="display: none;">
+                                            <div class="ic-loading">
+                                                <div id="message">
+                                                    <img src="./cargandoBAR.gif" id="ctl00_imgLoading"><br>
+                                                    <span id="ctl00_WaitingMessage">Procesando...</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="mainContainer">
+                                            
+    
+            
+
+<table style="width: 100%" border="0">
+    <tbody><tr>
+        <td id="ctl00_MainHolder_ExtraBankTransferSecondStepNew_Td1" class="ic-red-title" align="left">
+            <span id="ctl00_MainHolder_ExtraBankTransferSecondStepNew_SecondStepTitle">Carga de datos - paso 2 de 4</span>
+        </td>
+		
+    </tr>
+</tbody></table>
+<br>
+<table class="ic-grid-border" cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+			<tbody><tr>
+				<td><table id="ctl00_MainHolder_ExtraBankTransferSecondStepNew_OriginAccountPanel_thePanel" class="ic-grid" cellspacing="0" cellpadding="0" align="Center" border="0" style="width:100%;border-collapse:collapse;">
+					<tbody><tr class="ic-grid-title-row">
+						<td><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+							<tbody><tr>
+								<td class="ic-gridB-title-cell-left">&nbsp;</td><td class="ic-gridB-title-cell" align="left" style="white-space:nowrap;">Cuenta Origen</td>
+							</tr>
+						</tbody></table></td>
+					</tr><tr>
+						<td align="center"><div id="ctl00_MainHolder_ExtraBankTransferSecondStepNew_OriginAccountPanel" style="color:Black;border-color:DodgerBlue;font-family:verdana;font-size:10pt;width:100%;display:;">
+	
+<table width="100%">
+    <tbody><tr>
+        <td style="width: 20%" class="ic-form-label-left">
+            <span id="ctl00_MainHolder_ExtraBankTransferSecondStepNew_originAccountLabel">CA 100-3196343-2</span> 
+        </td>
+    </tr>
+</tbody></table>
+
+</div></td>
+					</tr>
+				</tbody></table></td>
+			</tr>
+		</tbody></table>
+<br>
+<table class="ic-grid-border" cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+			<tbody><tr>
+				<td><table id="ctl00_MainHolder_ExtraBankTransferSecondStepNew_DestinationAccountPanel_thePanel" class="ic-grid" cellspacing="0" cellpadding="0" align="Center" border="0" style="width:100%;border-collapse:collapse;">
+					<tbody><tr class="ic-grid-title-row">
+						<td><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+							<tbody><tr>
+								<td class="ic-gridB-title-cell-left">&nbsp;</td><td class="ic-gridB-title-cell" align="left" style="white-space:nowrap;">Cuenta Destino</td>
+							</tr>
+						</tbody></table></td>
+					</tr><tr>
+						<td align="center"><div id="ctl00_MainHolder_ExtraBankTransferSecondStepNew_DestinationAccountPanel" style="color:Black;border-color:DodgerBlue;font-family:verdana;font-size:10pt;width:100%;display:;">
+	
+<table width="100%">
+    <tbody><tr>
+        <td style="width: 20%" class="ic-form-label-left">
+            CBU (Clave Bancaria Uniforme)
+        </td>
+        <td class="ic-form-data" style="width: 22%">
+            <span id="ctl00_MainHolder_ExtraBankTransferSecondStepNew_CBULabel">0070999030005148314524</span>
+        </td>
+        <td class="ic-form-label-no-border" align="right" style="width: 5%">
+            Banco
+        </td>
+        <td class="ic-form-data">
+            <span id="ctl00_MainHolder_ExtraBankTransferSecondStepNew_BankLabel">BANCO DE GALICIA</span>
+        </td>
+    </tr>
+    <tr>
+        <td style="width: 20%" class="ic-form-label-left">
+            Tipo de Cuenta
+        </td>
+        <td class="ic-form-data">
+            <span id="ctl00_MainHolder_ExtraBankTransferSecondStepNew_accountTypeLabel">Otra Cuenta Propia</span>
+        </td>
+        <td class="ic-form-data">
+         &nbsp;
+        </td>
+        <td class="ic-form-data">
+        &nbsp;
+        </td>
+    </tr>
+    <tr>
+        <td style="width: 20%" class="ic-form-label-left">
+            Titular
+        </td>
+        <td class="ic-form-data">
+            <span id="ctl00_MainHolder_ExtraBankTransferSecondStepNew_ownerLabel">CURCIO  SEBASTIAN</span>
+        </td>
+        <td class="ic-form-data">
+        &nbsp;
+        </td>
+        <td class="ic-form-data">
+        &nbsp;
+        </td>
+    </tr>
+    <tr>
+        <td style="width: 20%" class="ic-form-label-left">
+            CUIL
+        </td>
+        <td class="ic-form-data">
+            <span id="ctl00_MainHolder_ExtraBankTransferSecondStepNew_cuilLabel">20314475896</span>
+        </td>
+        <td class="ic-form-data">
+        &nbsp;
+        </td>
+        <td class="ic-form-data">
+        &nbsp;
+        </td>
+    </tr>
+    <tr>
+        <td style="width: 20%" class="ic-form-label-left">
+            e-mail del destinatario
+        </td>
+        <td class="ic-form-data">
+            <span id="ctl00_MainHolder_ExtraBankTransferSecondStepNew_mailLabel">s.curcio@hotmail.com</span>
+        </td>
+        <td class="ic-form-data">
+        &nbsp;
+        </td>
+        <td class="ic-form-data">
+        &nbsp;
+        </td>
+    </tr>
+</tbody></table>
+
+</div></td>
+					</tr>
+				</tbody></table></td>
+			</tr>
+		</tbody></table>
+<br>
+<table class="ic-grid-border" cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+			<tbody><tr>
+				<td><table id="ctl00_MainHolder_ExtraBankTransferSecondStepNew_ReferenceDataPanel_thePanel" class="ic-grid" cellspacing="0" cellpadding="0" align="Center" border="0" style="width:100%;border-collapse:collapse;">
+					<tbody><tr class="ic-grid-title-row">
+						<td><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+							<tbody><tr>
+								<td class="ic-gridB-title-cell-left">&nbsp;</td><td class="ic-gridB-title-cell" align="left" style="white-space:nowrap;">Datos de Referencia</td>
+							</tr>
+						</tbody></table></td>
+					</tr><tr>
+						<td align="center"><div id="ctl00_MainHolder_ExtraBankTransferSecondStepNew_ReferenceDataPanel" style="color:Black;border-color:DodgerBlue;font-family:verdana;font-size:10pt;width:100%;display:;">
+	
+<table width="100%">
+    <tbody><tr>
+        <td style="width: 7%" class="ic-form-label-left">
+            Concepto
+        </td>
+        <td class="ic-form-data" style="width: 16%">
+            <span id="ctl00_MainHolder_ExtraBankTransferSecondStepNew_conceptLabel">Varios</span>
+        </td>
+        <td class="ic-form-data" style="width: 9%">
+            &nbsp;
+        </td>        
+        <td class="ic-form-label-no-border" align="right" style="width: 10%">
+            Referencia
+        </td>
+        <td class="ic-form-data">
+             <span id="ctl00_MainHolder_ExtraBankTransferSecondStepNew_referenceLabel">demo</span>
+        </td>
+    </tr>
+</tbody></table>
+
+</div></td>
+					</tr>
+				</tbody></table></td>
+			</tr>
+		</tbody></table>
+<br>
+<table class="ic-grid-border" cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+			<tbody><tr>
+				<td><table id="ctl00_MainHolder_ExtraBankTransferSecondStepNew_TransferAmountPanel_thePanel" class="ic-grid" cellspacing="0" cellpadding="0" align="Center" border="0" style="width:100%;border-collapse:collapse;">
+					<tbody><tr class="ic-grid-title-row">
+						<td><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+							<tbody><tr>
+								<td class="ic-gridB-title-cell-left">&nbsp;</td><td class="ic-gridB-title-cell" align="left" style="white-space:nowrap;">Importe a Transferir</td>
+							</tr>
+						</tbody></table></td>
+					</tr><tr>
+						<td align="center"><div id="ctl00_MainHolder_ExtraBankTransferSecondStepNew_TransferAmountPanel" style="color:Black;border-color:DodgerBlue;font-family:verdana;font-size:10pt;width:100%;display:;">
+	
+<table width="100%">
+    <tbody><tr>
+        <td style="width: 25%" class="ic-form-data">
+            <span id="ctl00_MainHolder_ExtraBankTransferSecondStepNew_amountlabel" style="color:Black;">$ 0,10</span>
+        </td>
+        <td class="ic-form-data" style="width: 7%">
+        </td>
+        <td class="ic-form-label-no-border" style="width: 10%">
+            Moneda
+        </td>
+        <td class="ic-form-data">
+            <span id="ctl00_MainHolder_ExtraBankTransferSecondStepNew_currencyLabel">Pesos</span>
+        </td>
+    </tr>
+</tbody></table>
+
+</div></td>
+					</tr>
+				</tbody></table></td>
+			</tr>
+		</tbody></table>
+<br>
+<table width="100%">
+    <tbody><tr>
+        <td>
+            <span id="ctl00_MainHolder_ExtraBankTransferSecondStepNew_messageLabel">Sujeto a Impuestos y comisiones<br>
+           Le informamos que esta operación tiene acreditación inmediata los días habiles en el horario de 8 a 18hs. Fuera de esos días y horario, el plazo de acreditación dependerá del tratamiento dado por el banco receptor de los fondos.
+    </span> 
+        </td>
+    </tr>
+</tbody></table>
+            <table width="100%">
+                <tbody><tr>
+                    <td align="left">
+                        <img id="ctl00_MainHolder_Image1" src="./banelco_logo_large.PNG" style="border-width:0px;">
+                    </td>
+                    <td style="width: 100%">                                 
+                    </td>                     
+                    <td align="right" nowrap="nowrap">
+                        <a id="ctl00_MainHolder_SecondStepLinkButtonBack" class="ic-button-navigation" href="javascript:__doPostBack(&#39;ctl00$MainHolder$SecondStepLinkButtonBack&#39;,&#39;&#39;)">Volver</a>                        
+                    </td>
+                    <td align="right" nowrap="nowrap">
+                        <a id="ctl00_MainHolder_SecondStepLinkButton" class="ic-button-navigation" href="javascript:__doPostBack(&#39;ctl00$MainHolder$SecondStepLinkButton&#39;,&#39;&#39;)">Confirmar</a>
+                    </td>                                       
+                </tr>
+            </tbody></table>  
+        
+
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="right">
+                                        <div id="ctl00_validationSummaryFooter" style="color:Red;font-size:10px;display:none;">
+
+		</div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="95%" align="center">
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                            <tbody><tr>
+                                                <td align="right">
+                                                    
+                                                    
+                                                </td>
+                                            </tr>
+                                        </tbody></table>
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="ic-content-footer">
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                <tbody><tr class="ic-content-footer-dottedline">
+                                    <td align="right" nowrap="nowrap" style="width: 90%">
+                                    </td>
+                                    <td align="right" nowrap="nowrap" style="width: 10%">
+                                        <a id="ctl00_LinkButtonTermsAndConditions" class="ic-grid-link" href="javascript:__doPostBack(&#39;ctl00$LinkButtonTermsAndConditions&#39;,&#39;&#39;)">Términos y Condiciones</a>
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                </tbody></table>
+            </td>
+		<td id="ctl00_cellContentRight" class="ic-content-space-top-right" valign="top" style="display:none;">
+                <table class="ic-content-right" border="0" cellspacing="0" cellpadding="0">
+                    <tbody><tr>
+                        <td>
+                            <img src="./pixel.gif" width="8" height="1">
+                        </td>
+                        <td class="ic-right-panel">
+                            <table border="0" cellpadding="0" cellspacing="0" class="ic-right-panel-content">
+                                <tbody><tr>
+                                    <td width="8" class="ic-right-panel-collapse">
+                                        <input type="image" name="ctl00$imageButtonCollapse" id="ctl00_imageButtonCollapse" src="./bot-right-collapse.gif" style="height:47px;width:9px;border-width:0px;">
+                                    </td>
+                                    
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                </tbody></table>
+            </td>
+	</tr>
+</tbody></table>
+
+    
+    
+<script type="text/javascript">
+//<![CDATA[
+var Page_ValidationSummaries =  new Array(document.getElementById("ctl00_validationSummaryFooter"));
+//]]>
+</script>
+
+<script type="text/javascript">
+//<![CDATA[
+var ctl00_validationSummaryFooter = document.all ? document.all["ctl00_validationSummaryFooter"] : document.getElementById("ctl00_validationSummaryFooter");
+ctl00_validationSummaryFooter.headertext = "Formulario inválido, por favor revise los datos ingresados:";
+ctl00_validationSummaryFooter.showsummary = "False";
+//]]>
+</script>
+
+
+<script type="text/javascript">
+//<![CDATA[
+
+document.getElementById('ctl00_validationSummaryFooter').dispose = function() {
+    Array.remove(Page_ValidationSummaries, document.getElementById('ctl00_validationSummaryFooter'));
+}
+Sys.Application.initialize();
+//]]>
+</script>
+</form>
+
+
+<div class="ui-dialog ui-widget ui-widget-content ui-corner-all" tabindex="-1" role="dialog" aria-labelledby="ui-dialog-title-sessionTimeoutWarning" style="display: none; z-index: 1000; outline: 0px;"><div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix"><span class="ui-dialog-title" id="ui-dialog-title-sessionTimeoutWarning">&nbsp;</span><a href="https://empresas.supervielle.com.ar/Pages/Transfers/ExtraBankTransferNew.aspx#" class="ui-dialog-titlebar-close ui-corner-all" role="button" style="display: none;"><span class="ui-icon ui-icon-closethick">close</span></a></div><div id="sessionTimeoutWarning" style="background-color: rgb(255, 255, 255); padding: 0px; height: 100%;" class="ui-dialog-content ui-widget-content">
+        <div id="sessionTimeoutWarningHeader">
+            <table width="100%">
+                 <tbody><tr>
+                    <td colspan="2" align="center" class="ic-form-data-modal">
+                        La sesión finalizará en <span id="sessionTimeoutCountdown"></span>&nbsp;segundos.
+                        Para seguir operando seleccioná “Continuar”
+                    </td>
+                </tr>
+            </tbody></table>
+        </div>
+    </div><div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix"><div class="ui-dialog-buttonset"><button type="button">Continuar </button><button type="button">Finalizar sesión</button></div></div></div></body></html>

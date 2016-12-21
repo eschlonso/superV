@@ -1,0 +1,6 @@
+﻿//ubica mejor (ie, ff, chrome) la imagen de calendario que se encuentra al lado de campo fecha
+$(document).ready(function ($) {
+    $('img[src*="date.png"]').each(function () {
+        $(this).removeAttr('align')
+    });
+});

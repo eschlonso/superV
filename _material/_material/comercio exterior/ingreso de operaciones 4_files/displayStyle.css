@@ -1,0 +1,589 @@
+.eComexDemo {
+	border-width: 1px;
+	border-color: rgb(102, 102, 102);
+	border-style: solid;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	width: 100%;
+	background-color: #FFFFFF;
+}
+
+table.eComexDemo thead tr {
+	background-color: #69c;
+	color: white;
+}
+
+table.eComexDemo tr.even { //
+	background-color: #def;
+	background-color: #EAF4FF;
+}
+
+table.eComexDemo td {
+	padding: 2px;
+	font-family: verdana, arial;
+	font-size: 11px;
+}
+
+table.eComexDemo a {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: bold;
+	color: #000000;
+	text-decoration: none;
+}
+
+.navigation-displaytag {
+	background-color: #eee;
+	border: 1px solid #999;
+	padding-bottom: 2px;
+	padding-top: 2px;
+	padding-left: 0px;
+	padding-right: 0px;
+	display: block;
+	border-top: none;
+	margin-bottom: 0px;
+	margin-right: 0px;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	text-align: right;
+}
+
+.rowpar .textfield {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: normal;
+	color: #000000;
+	border-top-style: solid;
+	background-color: #f7f5ef;
+	border: 1px solid #CCCCCC;
+	text-align: center;
+}
+
+.rowimpar .textfield {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: normal;
+	color: #000000;
+	border-top-style: solid;
+	background-color: #FFFFFF;
+	border: 1px solid #FFFFFF;
+	text-align: center;
+}
+
+.rowimpar a,.rowpar a {
+	color: #B20000;
+}
+
+th.sorted a,th.sortable a {
+	background-position: right;
+	display: block;
+	width: 100%;
+}
+
+th.sortable a {
+	background-image: url(../images/arrow_off.png);
+	background-repeat: no-repeat;
+}
+
+th.order1 a {
+	background-image: url(../images/arrow_down.png);
+}
+
+th.order2 a {
+	background-image: url(../images/arrow_up.png);
+}
+
+.idColumn {
+	display: none;
+}
+
+.pointerColumn {
+	cursor: pointer;
+}
+
+.cellazul {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: normal;
+	color: #FFFFFF;
+	text-decoration: none;
+	background-color: #003399;
+	margin-top: 2px;
+	margin-right: 5px;
+	margin-bottom: 3px;
+	margin-left: 5px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+
+.cellroja {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: bold;
+	color: #FFFFFF;
+	background-color: #003399;
+	margin-top: 3px;
+	margin-right: 5px;
+	margin-bottom: 4px;
+	margin-left: 5px;
+	padding-top: 2px;
+	padding-bottom: 3px;
+}
+
+.rowpar {
+	overflow: hidden;
+	border: 0px;
+	background-color: #f7f5ef;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 10px;
+}
+
+.rowimpar {
+	overflow: hidden;
+	border: 0px;
+	background-color: #ffffff;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 10px;
+}
+
+.rowpar td, .rowimpar td {
+  padding: 3px 6px 4px 6px;	
+}
+
+.rowCeleste {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: normal;
+	color: #000000;
+	text-decoration: none;
+	background-color: #ade0ec;
+	margin-top: 2px;
+	margin-right: 5px;
+	margin-bottom: 3px;
+	margin-left: 5px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+
+.inputamarillo {
+	background-color: #FFFF00;
+}
+
+.inputazul {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: normal;
+	color: #000000;
+	text-decoration: none;
+	background-color: #FFFFFF;
+	border: 1px solid #002362;
+	border-top-style: solid;
+}
+
+.textoazul {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: normal;
+	color: #000000;
+	text-decoration: none;
+	margin-top: 2px;
+	margin-right: 10px;
+	margin-bottom: 3px;
+	margin-left: 0px;
+}
+
+.paginadoRow {
+	FONT-WEIGHT: normal;
+	FONT-SIZE: 11px;
+	FLOAT: none;
+	WIDTH: 70%;
+	COLOR: #000000;
+	FONT-FAMILY: Verdana, Arial, Helvetica, sans-serif;
+	TEXT-DECORATION: none;
+	text-align:left;
+	margin-top: 2px;
+}
+
+.paginadoText {
+	display: inline;
+	float: left;
+	FONT-SIZE: 11px;
+	FONT-FAMILY: Verdana, Arial, Helvetica, sans-serif;
+	TEXT-DECORATION: none;
+	text-align: left;
+	margin-top: 5px;
+	margin-right: 10px;
+}
+
+.enlace1 {
+  padding: 0 3px;
+  color: #2E64FE;
+}
+
+#transaccionesTable TABLE {
+	margin-top: 8px;
+	clear: both;
+}
+
+#utilizacionesTable TABLE {
+	margin-top: 8px;
+	clear: both;
+}
+
+#seccionesTable TABLE {
+	margin-top: 8px;
+	clear: both;
+}
+
+#textoTable TABLE {
+	margin-top: 8px;
+	clear: both;
+}
+
+#swiftTable TABLE {
+	margin-top: 8px;
+	clear: both;
+}
+
+#liquidacionTable TABLE {
+	margin-top: 8px;
+	clear: both;
+}
+
+#formularioTable TABLE {
+	margin-top: 8px;
+	clear: both;
+}
+
+#permisosEmbarqueTable TABLE {
+	margin-top: 8px;
+	clear: both;
+}
+
+#permisosEmbarqueDetalleTable TABLE {
+	margin-top: 8px;
+	clear: both;
+}
+
+#anticipoPrefinanciacionHeadersTable TABLE {
+	margin-top: 8px;
+	clear: both;
+}
+
+#anticipoPrefinanciacionOperacionDetailsTable TABLE {
+	margin-top: 8px;
+	clear: both;
+}
+
+#anticipoPrefinanciacionAfectacionDetailsTable TABLE {
+	margin-top: 8px;
+	clear: both;
+}
+
+#estadisticaDocumentoTable TABLE {
+	margin-top: 8px;
+	clear: both;
+}
+
+#estadisticaPantallaTable TABLE {
+	margin-top: 8px;
+	clear: both;
+}
+
+#periodoVencimientoTable TABLE {
+	margin-top: 8px;
+	clear: both;
+}
+
+#seccionesTable TABLE {
+	margin-top: 8px;
+	clear: both;
+}
+
+#administracionBannerTable TABLE {
+	margin-top: 8px;
+	clear: both;
+}
+
+#gestionCategoriaTable TABLE {
+	margin-top: 8px;
+	clear: both;
+}
+
+#gestionFormularioTable TABLE {
+	margin-top: 8px;
+	clear: both;
+}
+
+#frecuenciaResumenTable TABLE {
+	margin-top: 8px;
+	clear: both;
+}
+
+.linkpagina {
+	font-family: Verdana, Arial, Helvetica, 'sans-serif';
+	font-size: 11px;
+	color: black;
+	text-decoration: none;
+	font-weight: bold;
+	padding-right: 4px;
+	padding-left: 4px;
+}
+
+.rowgris td {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: normal;
+	color: #000000;
+	text-decoration: none;
+	background-color: #CCCCCC;
+	margin-top: 2px;
+	margin-right: 5px;
+	margin-bottom: 3px;
+	margin-left: 5px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+
+.rowblanca td {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: normal;
+	color: #000000;
+	text-decoration: none;
+	background-color: #ffffff;
+	margin-top: 2px;
+	margin-right: 5px;
+	margin-bottom: 3px;
+	margin-left: 5px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+
+.camposobligatorios {
+	font-family: Verdana, Arial, Helvetica, 'sans-serif';
+	font-size: 11px;
+	color: #003399;
+	text-decoration: none;
+	font-weight: normal;
+}
+
+.camposobligatorios ul {
+	margin-top: 0px;
+	margin-bottom: 0px;
+	padding-top: 0px;
+	padding-bottom: 0px;
+}
+
+.camposobligatorios ul li {
+	margin-top: 0px;
+	margin-bottom: 0px;
+	padding-top: 0px;
+	padding-bottom: 4px;
+}
+
+.lineaAzulHeader {
+	background-color: #002469;
+}
+
+.linkboton {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: normal;
+	color: #000000;
+	text-decoration: none;
+	text-decoration: none;
+	text-align: center;
+}
+
+.linkboton:hover {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: normal;
+	color: #000000;
+	text-decoration: none;
+	text-decoration: none;
+	text-align: center;
+}
+
+.mainTable {
+	width: 100%;
+	height: 100%;
+	text-align: center;
+	margin: auto;
+	vertical-align: top;
+	border: 0px;
+	cellspacing: 1px;
+	cellpadding: 1px;
+}
+
+.inputazulDisabled {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: normal;
+	color: #000000;
+	text-decoration: none;
+	border: 1px solid #002362;
+	border-top-style: solid;
+}
+
+.tableFooter tfoot {
+	cellspacing: "0";
+	cellpadding: "0";
+}
+
+.footerCell td {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: bold;
+	color: #FFFFFF;
+	background-color: #003399;
+	margin-top: 3px;
+	margin-right: 5px;
+	margin-bottom: 4px;
+	margin-left: 5px;
+	padding-top: 2px;
+	padding-bottom: 3px;
+}
+
+.headerCell {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: bold;
+	color: #FFFFFF;
+	background-color: #003399;
+	margin-top: 3px;
+	margin-right: 5px;
+	margin-bottom: 4px;
+	margin-left: 5px;
+	padding-top: 2px;
+	padding-bottom: 3px;
+}
+
+.sortable a {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: bold;
+	color: #FFFFFF;
+	background-color: #003399;
+	margin-top: 3px;
+	margin-right: 5px;
+	margin-bottom: 4px;
+	margin-left: 5px;
+	padding-top: 2px;
+	padding-bottom: 3px;
+}
+
+.sortable a:hover {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: bold;
+	color: #FFCC00;
+	background-color: #003399;
+	margin-top: 3px;
+	margin-right: 5px;
+	margin-bottom: 4px;
+	margin-left: 5px;
+	padding-top: 2px;
+	padding-bottom: 3px;
+}
+
+.scrollable {
+	overflow: auto;
+}
+
+.textodisabled {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: normal;
+	color: #666666;
+	text-decoration: none;
+	margin-top: 2px;
+	margin-right: 10px;
+	margin-bottom: 3px;
+	margin-left: 0px;
+}
+
+.fuenteRoja {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: normal;
+	color: #FF0000;
+	text-decoration: none;
+}
+
+.errorMessage {
+	font-family: Verdana, Arial, Helvetica, 'sans-serif';
+	font-size: 11px;
+	color: #003399;
+	text-decoration: none;
+	font-weight: normal;
+	aling: left;
+}
+
+.cajitaazul {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: normal;
+	color: #000000;
+	text-decoration: none;
+	background-color: #ffffff;
+	margin-top: 2px;
+	margin-right: 5px;
+	margin-bottom: 3px;
+	margin-left: 5px;
+	padding-top: 2px;
+	padding-right: 6px;
+	padding-bottom: 2px;
+	padding-left: 6px;
+}
+
+.erroresDetectados {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: normal;
+	color: #000000;
+	text-decoration: none;
+	background-color: #ffffff;
+	margin-top: 0px;
+	margin-right: 5px;
+	margin-bottom: 3px;
+	margin-left: 1px;
+	padding-top: 0px;
+	padding-right: 6px;
+	padding-bottom: 2px;
+	padding-left: 1px;
+}
+
+.camposobligatorios li {
+	font-family: Verdana, Arial, Helvetica, 'sans-serif';
+	font-size: 11px;
+	color: #003399;
+	text-decoration: none;
+	font-weight: normal;
+}
+
+.camposobligatorios ul {
+	padding-left: 5px;
+	margin-left: 5px;
+}
+
+/* ----------------------------- */
+.botonFondo {
+	background-image: url('../../assets/images/boton/boton_estirame.gif');
+}
+
+.fontBoton {
+	color: #616A74;
+	font-size: 11px;
+	font-family: Arial;
+	font-weight: normal;
+	text-decoration: none;
+}
+
+.paginadoRow img {
+  padding:0;
+  margin:0;
+  vertical-align:middle;
+  padding-bottom: 4px;
+}

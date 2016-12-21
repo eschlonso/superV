@@ -1,0 +1,886 @@
+
+<!-- saved from url=(0046)https://empresas.supervielle.com.ar/Menu.aspx# -->
+<html xmlns="http://www.w3.org/1999/xhtml"><head id="Head1"><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<script type="text/javascript">
+    var selectedMenuItem = null;
+    
+
+function OpenItem(subMenuItem) {
+    window.top.frames.mainFrame.location = subMenuItem;
+
+
+}
+
+function ActivateMenuItem(item) {    
+    if (selectedMenuItem != null) {
+        if (selectedMenuItem.childNodes[0].className == "ic-menu-item-ico-active") {
+            selectedMenuItem.childNodes[0].className = "ic-menu-item-ico";
+        }
+        else {
+            selectedMenuItem.childNodes[0].className = "ic-menu-item-ico-end";
+        }
+
+        if (selectedMenuItem.childNodes.length == 2) {
+            if (selectedMenuItem.childNodes[1].className == "ic-menu-item-active") {
+                selectedMenuItem.childNodes[1].className = "ic-menu-item";
+            }
+            else {
+                selectedMenuItem.childNodes[1].className = "ic-menu-item-end";
+            }
+        }
+    }
+
+    selectedMenuItem = item;
+
+    if (item.childNodes[0].className == "ic-menu-item-ico") {
+        item.childNodes[0].className = "ic-menu-item-ico-active";
+    }
+    else {
+        item.childNodes[0].className = "ic-menu-item-ico-end-active";
+    }
+
+    if (item.childNodes.length == 2) {
+        if (item.childNodes[1].className == "ic-menu-item") {
+            item.childNodes[1].className = "ic-menu-item-active";
+        }
+        else {
+            item.childNodes[1].className = "ic-menu-item-end-active";
+        }
+    }
+}
+
+function ShowSubMenuItem(subMenuTableID, parentID) {    
+    if (document.getElementById(subMenuTableID).className == "ic-menu-item_level_2_with_Child_collapse") {
+        document.getElementById(subMenuTableID).className = "ic-menu-item_level_2_with_Child";
+        document.getElementById(parentID).className = "ic-menu-item_level_3_Extended";    
+    }
+    else {
+        document.getElementById(subMenuTableID).className = "ic-menu-item_level_2_with_Child_collapse";
+        document.getElementById(parentID).className = "ic-menu-item_level_3";
+    }
+}
+
+function ChangeMenuSize(expand) {    
+    if (expand) {
+        parent.document.getElementById('frameMenuHome').cols = "220,*";
+    }
+    else {
+        parent.document.getElementById('frameMenuHome').cols = "70,*";
+    }
+}
+</script>
+<link href="./Menu.css" type="text/css" rel="stylesheet"><title>
+
+</title></head>
+<body>
+    <form name="form1" method="post" action="https://empresas.supervielle.com.ar/Menu.aspx" id="form1">
+<div>
+<input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="">
+<input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="">
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUKMTA2NjkxMDYwN2QYAgUeX19Db250cm9sc1JlcXVpcmVQb3N0QmFja0tleV9fFgIFDlF1b3RhdGlvblBhbmVsBRBsYW5ndWFnZVNlbGVjdG9yBQltdWx0aVZpZXcPD2RmZDeOn1MRXEhs707uJG9YcyQ5cpn5">
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+var theForm = document.forms['form1'];
+if (!theForm) {
+    theForm = document.form1;
+}
+function __doPostBack(eventTarget, eventArgument) {
+    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+        theForm.__EVENTTARGET.value = eventTarget;
+        theForm.__EVENTARGUMENT.value = eventArgument;
+        theForm.submit();
+    }
+}
+//]]>
+</script>
+
+
+
+<script type="text/javascript">
+//<![CDATA[
+function ShowSubMenu(subMenuTable) {
+    if (subMenuTable.className == 'ic-menu-item_level_2') {
+        subMenuTable.className = 'ic-menu-item_level_2_collapse';
+    }
+    else {
+        document.getElementById('ctl17').className = 'ic-menu-item_level_2_collapse';
+ctl17
+        document.getElementById('ctl33').className = 'ic-menu-item_level_2_collapse';
+ctl33
+        document.getElementById('ctl61').className = 'ic-menu-item_level_2_collapse';
+ctl61
+        document.getElementById('ctl99').className = 'ic-menu-item_level_2_collapse';
+ctl99
+        document.getElementById('ctl127').className = 'ic-menu-item_level_2_collapse';
+ctl127
+        document.getElementById('ctl139').className = 'ic-menu-item_level_2_collapse';
+ctl139
+        document.getElementById('ctl161').className = 'ic-menu-item_level_2_collapse';
+ctl161
+        document.getElementById('ctl199').className = 'ic-menu-item_level_2_collapse';
+ctl199
+        document.getElementById('ctl211').className = 'ic-menu-item_level_2_collapse';
+ctl211
+        document.getElementById('ctl223').className = 'ic-menu-item_level_2_collapse';
+ctl223
+        document.getElementById('ctl283').className = 'ic-menu-item_level_2_collapse';
+ctl283
+        document.getElementById('ctl339').className = 'ic-menu-item_level_2_collapse';
+ctl339
+        document.getElementById('ctl385').className = 'ic-menu-item_level_2_collapse';
+ctl385
+        document.getElementById('ctl430').className = 'ic-menu-item_level_2_collapse';
+ctl430
+        document.getElementById('ctl492').className = 'ic-menu-item_level_2_collapse';
+ctl492
+        document.getElementById('ctl513').className = 'ic-menu-item_level_2_collapse';
+ctl513
+        document.getElementById('ctl525').className = 'ic-menu-item_level_2_collapse';
+ctl525
+        document.getElementById('ctl562').className = 'ic-menu-item_level_2_collapse';
+ctl562
+        subMenuTable.className = 'ic-menu-item_level_2';
+    }
+}
+//]]>
+</script>
+
+						<style>							
+							P.PanelControlTitleStyle
+							{
+ 								font-family:verdana;
+ 								font-size: 12px;
+								font-weight : bold;
+								text-align: center;  								
+							}
+						</style>						
+						<script language="javascript">
+						function MinMaxPanelControl(cntrlId)
+						{
+						    var imgPath='/App_Themes/Menu/Images/';	
+					
+							//Get state from hidden control.													
+							if ( document.getElementById(cntrlId).style.display == 'none' )
+							{
+								document.getElementById(cntrlId).style.display = '';						
+								document.getElementById(cntrlId+'_imgPlusMinus').src = imgPath + 'bot-grid-minus.gif';
+							}
+							else 
+							{
+								document.getElementById(cntrlId).style.display = 'none';								
+								document.getElementById(cntrlId+'_imgPlusMinus').src = imgPath + 'bot-grid-plus.gif';
+							}
+						}
+						</script>
+			
+<div>
+
+	<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEWAwK+9LXtCwKCz8mXCwK40MygD4E+NR5CUFDoRdCGOXSjsCOVckKn">
+</div>
+        
+                <table border="0" cellpadding="0" cellspacing="0" style="width:100%; height:100%" class="ic-content-left">
+                    <tbody><tr>
+                       <td class="ic-content-space-top-left" valign="top">
+                        <table border="0" cellpadding="0" cellspacing="0">
+                            <tbody><tr>
+                                <td valign="top">
+                                    <table border="0" cellspacing="0" cellpadding="0">
+                                    <tbody><tr>
+                                        <td class="ic-left-panel">
+                                            <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                                <tbody><tr>
+                                                    <td width="10" class="ic-menu-left">
+                                                        <img src="./img-menu-left.gif" style="height:1px;width:10px;border-width:0px;">
+                                                    </td>
+                                                    <td valign="top" width="183">
+                                                        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="ic-menu-content">
+                                                            <tbody><tr>
+                                                                <td class="ic-menu-title">Menú</td>
+                                                                <td class="ic-menu-title-language">
+                                                                <!--
+                                                                    <input type="image" name="languageSelector" id="languageSelector" src="App_Themes/Menu/Images/img-flag-eng.gif" style="border-width:0px;height: 9px" />
+                                                                    <a id="languageButton" class="ic-menu-text-language" href="javascript:__doPostBack('languageButton','')">EN</a>
+                                                                    -->
+                                                                </td>
+                                                                </tr>
+                                                                <tr>
+                                                                <td colspan="2">
+                                                                <div class="ic-menu-overflow">
+                                                                    <table id="tableMenuExpanded" width="100%" border="0" cellspacing="0" cellpadding="0" class="ic-menu-content">
+	<tbody><tr>
+		<td align="center" class="ic-menu-item-ico"><img src="./icon_home.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="ActivateMenuItem(this.parentNode.parentNode); OpenItem(&#39;/Home.aspx&#39;);">Posición Consolidada</a></td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="./icon_transferencias.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="ActivateMenuItem(this.parentNode.parentNode);ShowSubMenu(ctl17);OpenItem(&#39;/Pages/Common/Transaction_Aproved.aspx&#39;);">Aprobaciones</a></td>
+	</tr>
+	<tr>
+		<td colspan="2"><table id="ctl17" class="ic-menu-item_level_2_collapse" width="100%" border="0" cellpadding="0" cellspacing="0">
+			<tbody><tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Common/Transaction_Aproved.aspx&#39;);">Aprobaciones</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Common/TransactionHistory.aspx&#39;);">Historial</a></td>
+			</tr>
+		</tbody></table>
+		</td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="./icon_cuentas.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="ActivateMenuItem(this.parentNode.parentNode);ShowSubMenu(ctl33);OpenItem(&#39;/Pages/Accounts/AccountStatus.aspx&#39;);">Cuentas</a></td>
+	</tr>
+	<tr>
+		<td colspan="2"><table id="ctl33" class="ic-menu-item_level_2_collapse" width="100%" border="0" cellpadding="0" cellspacing="0">
+			<tbody><tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Accounts/AccountStatus.aspx&#39;);">Movimientos</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Accounts/Agreement.aspx&#39;);">Acuerdos</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Accounts/CheckBook.aspx&#39;);">Solicitud Chequeras</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Accounts/Resumen.aspx&#39;);">Resumen digital</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Accounts/AdhesionDigitalSummary.aspx&#39;);">Adhesión al resumen digital</a></td>
+			</tr>
+		</tbody></table>
+		</td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="./icon_transferencias.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="ActivateMenuItem(this.parentNode.parentNode);ShowSubMenu(ctl61);OpenItem(&#39;/Pages/Transfers/MyCreditAccounts.aspx&#39;);">Transferencias</a></td>
+	</tr>
+	<tr>
+		<td colspan="2"><table id="ctl61" class="ic-menu-item_level_2_collapse" width="100%" border="0" cellpadding="0" cellspacing="0">
+			<tbody><tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Transfers/MyCreditAccounts.aspx&#39;);">Mis cuentas de crédito</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><table id="ctl69" class="ic-menu-item_level_3_Extended">
+					<tbody><tr>
+						<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="ShowSubMenuItem(&#39;ctl73&#39;, &#39;ctl69&#39;);">Transferencias Inmediatas</a></td>
+					</tr>
+				</tbody></table>
+				<table id="ctl73" class="ic-menu-item_level_2_with_Child">
+					<tbody><tr>
+						<td class="ic-menu-item_level_2_with_Child"><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Transfers/IntraBankTransfer.aspx&#39;);">Entre ctas Supervielle</a></td>
+					</tr>
+					<tr>
+						<td class="ic-menu-item_level_2_with_Child"><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Transfers/ExtraBankTransferNew.aspx&#39;);">A ctas de otros bancos</a></td>
+					</tr>
+				</tbody></table>
+				</td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Transfers/ExtraBankTransfer.aspx&#39;);">Transferencias 24/48 horas</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Transfers/TransfersAuthorizations.aspx&#39;);">Aprobaciones</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Transfers/TransfersTransactionsHistory.aspx&#39;);">Historial</a></td>
+			</tr>
+		</tbody></table>
+		</td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="./icon_cuentas.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="ActivateMenuItem(this.parentNode.parentNode);ShowSubMenu(ctl99);OpenItem(&#39;/Pages/ServicePayments/ServicePayments.aspx&#39;);">Pago de Servicios</a></td>
+	</tr>
+	<tr>
+		<td colspan="2"><table id="ctl99" class="ic-menu-item_level_2" width="100%" border="0" cellpadding="0" cellspacing="0">
+			<tbody><tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/ServicePayments/ServicePayments.aspx&#39;);">Pagos</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/ServicePayments/ServicePaymentsAuthorization.aspx&#39;);">Aprobaciones</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/ServicePayments/ServicePaymentsAdhesion.aspx&#39;);">Adhesión de Servicios</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/ServicePayments/ServicePaymentsHistory.aspx&#39;);">Consultas</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/ServicePayments/ServicePaymentsNotifications.aspx&#39;);">Notificaciones</a></td>
+			</tr>
+		</tbody></table>
+		</td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="./icon_cheques.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="ActivateMenuItem(this.parentNode.parentNode);ShowSubMenu(ctl127);OpenItem(&#39;/Pages/Checks/Check.aspx&#39;);">Cheques</a></td>
+	</tr>
+	<tr>
+		<td colspan="2"><table id="ctl127" class="ic-menu-item_level_2_collapse" width="100%" border="0" cellpadding="0" cellspacing="0">
+			<tbody><tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Checks/Check.aspx&#39;);">Detalles</a></td>
+			</tr>
+		</tbody></table>
+		</td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="./icon_plazoFijo.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="ActivateMenuItem(this.parentNode.parentNode);ShowSubMenu(ctl139);OpenItem(&#39;/Pages/FixedDeposits/FixedDepositDetails.aspx&#39;);">Plazos Fijos</a></td>
+	</tr>
+	<tr>
+		<td colspan="2"><table id="ctl139" class="ic-menu-item_level_2_collapse" width="100%" border="0" cellpadding="0" cellspacing="0">
+			<tbody><tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/FixedDeposits/FixedDepositDetails.aspx&#39;);">Detalles</a></td>
+			</tr>
+		</tbody></table>
+		</td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="./icon_tarjetasCredito.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="ActivateMenuItem(this.parentNode.parentNode); OpenItem(&#39;/Pages/CreditCards/TradeSettlements.aspx&#39;);">Liquidaciones de Comercio</a></td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="./icon_tarjetasCredito.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a href="https://empresas.supervielle.com.ar/Menu.aspx#" title="Tarjetas de Crédito Corporativas" onclick="OpenItem(&#39;/Pages/AccessDeniedOrganizations.aspx?title=Tarjetas de Crédito Corporativas&amp;Node=Posición ConsolidadazzzzzTarjetas de Crédito Corporativas&#39;);">Tarjetas de Crédito Corporativas</a></td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="./icon_transferencias.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="ActivateMenuItem(this.parentNode.parentNode);ShowSubMenu(ctl161);OpenItem(&#39;/Pages/ClubMeetingPoints/ChangePointsHistory.aspx&#39;);">Club de Puntos</a></td>
+	</tr>
+	<tr>
+		<td colspan="2"><table id="ctl161" class="ic-menu-item_level_2_collapse" width="100%" border="0" cellpadding="0" cellspacing="0">
+			<tbody><tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/ClubMeetingPoints/ChangePointsHistory.aspx&#39;);">Mis Canjes</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><table id="ctl169" class="ic-menu-item_level_3">
+					<tbody><tr>
+						<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="ShowSubMenuItem(&#39;ctl173&#39;, &#39;ctl169&#39;);">Detalle de Millas</a></td>
+					</tr>
+				</tbody></table>
+				<table id="ctl173" class="ic-menu-item_level_2_with_Child_collapse">
+					<tbody><tr>
+						<td class="ic-menu-item_level_2_with_Child"><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/ClubMeetingPoints/MilesDetail.aspx&#39;);">Millas acumuladas</a></td>
+					</tr>
+					<tr>
+						<td class="ic-menu-item_level_2_with_Child"><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/ClubMeetingPoints/MilesToExpire.aspx&#39;);">Millas a vencer</a></td>
+					</tr>
+				</tbody></table>
+				</td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/ClubMeetingPoints/CHM2.aspx&#39;);">Canje de Millas</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/ClubMeetingPoints/RewardCatalog.aspx&#39;);">Catálogo de premios</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/ClubMeetingPoints/ClubPointsProgram.aspx&#39;);">El programa</a></td>
+			</tr>
+		</tbody></table>
+		</td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="./icon_prestamos.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="ActivateMenuItem(this.parentNode.parentNode);ShowSubMenu(ctl199);OpenItem(&#39;/Pages/Loans/LoanDetails.aspx&#39;);">Préstamos</a></td>
+	</tr>
+	<tr>
+		<td colspan="2"><table id="ctl199" class="ic-menu-item_level_2_collapse" width="100%" border="0" cellpadding="0" cellspacing="0">
+			<tbody><tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Loans/LoanDetails.aspx&#39;);">Detalles</a></td>
+			</tr>
+		</tbody></table>
+		</td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="./icon_leasing.png" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="ActivateMenuItem(this.parentNode.parentNode);ShowSubMenu(ctl211);OpenItem(&#39;/Pages/Leasing/Leasing.aspx&#39;);">Leasing</a></td>
+	</tr>
+	<tr>
+		<td colspan="2"><table id="ctl211" class="ic-menu-item_level_2_collapse" width="100%" border="0" cellpadding="0" cellspacing="0">
+			<tbody><tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Leasing/Leasing.aspx&#39;);">Detalles</a></td>
+			</tr>
+		</tbody></table>
+		</td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="./icon_factoring.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="ActivateMenuItem(this.parentNode.parentNode);ShowSubMenu(ctl223);OpenItem(&#39;/Pages/Factoring/Resumen.aspx&#39;);">Factoring/Depósitos</a></td>
+	</tr>
+	<tr>
+		<td colspan="2"><table id="ctl223" class="ic-menu-item_level_2_collapse" width="100%" border="0" cellpadding="0" cellspacing="0">
+			<tbody><tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Factoring/Resumen.aspx&#39;);">Resumen</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Factoring/Detalle.aspx&#39;);">Detalle</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Factoring/Custodia.aspx&#39;);">Custodia</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Factoring/CargaCheques.aspx&#39;);">Carga de Cheques</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Factoring/IngresoOperaciones.aspx&#39;);">Ingreso de Operaciones</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><table id="ctl247" class="ic-menu-item_level_3">
+					<tbody><tr>
+						<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="ShowSubMenuItem(&#39;ctl251&#39;, &#39;ctl247&#39;);">Consultas</a></td>
+					</tr>
+				</tbody></table>
+				<table id="ctl251" class="ic-menu-item_level_2_with_Child_collapse">
+					<tbody><tr>
+						<td class="ic-menu-item_level_2_with_Child"><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Factoring/ConsultaDeOperaciones.aspx&#39;);">Operaciones</a></td>
+					</tr>
+					<tr>
+						<td class="ic-menu-item_level_2_with_Child"><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Factoring/ConsultaDeDocumentos.aspx&#39;);">Documentos</a></td>
+					</tr>
+					<tr>
+						<td class="ic-menu-item_level_2_with_Child"><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Factoring/ConsultaDeDocNoTomados.aspx&#39;);">Doc. No Tomados</a></td>
+					</tr>
+					<tr>
+						<td class="ic-menu-item_level_2_with_Child"><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Factoring/FactoringDeferredDelivery.aspx&#39;);">Bandeja de Pendientes</a></td>
+					</tr>
+				</tbody></table>
+				</td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Factoring/FactoringAutorizations.aspx&#39;);">Aprobaciones</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Factoring/FactoringHistorial.aspx&#39;);">Historial</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Factoring/Contratos.aspx&#39;);">Contratos</a></td>
+			</tr>
+		</tbody></table>
+		</td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="./icon_factoring.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="ActivateMenuItem(this.parentNode.parentNode);ShowSubMenu(ctl283);OpenItem(&#39;/Pages/FCI/FCITenencia.aspx&#39;);">Fondo Común de Inversión</a></td>
+	</tr>
+	<tr>
+		<td colspan="2"><table id="ctl283" class="ic-menu-item_level_2_collapse" width="100%" border="0" cellpadding="0" cellspacing="0">
+			<tbody><tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/FCI/FCITenencia.aspx&#39;);">Tenencia</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/FCI/FCIResumenCuenta.aspx&#39;);">Resumen de Cuenta</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/FCI/FCILiquidaciones.aspx&#39;);">Liquidaciones</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/FCI/FCIValorizacionHistorica.aspx&#39;);">Valorización Histórica</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/FCI/FCIMisSolicitudes.aspx&#39;);">Mis Solicitudes</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/FCI/FCIConsultaPublicaciones.aspx&#39;);">Consulta de Publicaciones</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/FCI/FCICertificaciones.aspx&#39;);">Certificaciones</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/FCI/FCISuscripcionRescate.aspx&#39;);">Suscripción</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/FCI/FCIRescate.aspx&#39;);">Rescate</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/FCI/FCISeleccionDeCuentas.aspx&#39;);">Selección de Cuentas</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/FCI/FCIHistory.aspx&#39;);">Historial</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/FCI/FCIAuthorizations.aspx&#39;);">Aprobaciones</a></td>
+			</tr>
+		</tbody></table>
+		</td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="./icon_pagoProveedores.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="ActivateMenuItem(this.parentNode.parentNode);ShowSubMenu(ctl339);OpenItem(&#39;/Pages/ProvidersCheck/ResumenOperaciones.aspx&#39;);">Pago a Proveedores</a></td>
+	</tr>
+	<tr>
+		<td colspan="2"><table id="ctl339" class="ic-menu-item_level_2_collapse" width="100%" border="0" cellpadding="0" cellspacing="0">
+			<tbody><tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/ProvidersCheck/ResumenOperaciones.aspx&#39;);">Resumen de Operaciones</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><table id="ctl347" class="ic-menu-item_level_3">
+					<tbody><tr>
+						<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="ShowSubMenuItem(&#39;ctl351&#39;, &#39;ctl347&#39;);">Consulta de Lotes</a></td>
+					</tr>
+				</tbody></table>
+				<table id="ctl351" class="ic-menu-item_level_2_with_Child_collapse">
+					<tbody><tr>
+						<td class="ic-menu-item_level_2_with_Child"><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/ProvidersCheck/ConsultaLoteCheque.aspx&#39;);">Cheques</a></td>
+					</tr>
+					<tr>
+						<td class="ic-menu-item_level_2_with_Child"><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/ProvidersCheck/ConsultaLoteTransferencia.aspx&#39;);">Transferencias</a></td>
+					</tr>
+				</tbody></table>
+				</td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/ProvidersCheck/ConsultaCheques.aspx&#39;);">Consulta de Cheques</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/ProvidersCheck/LoadFile.aspx&#39;);">Ingreso por Archivo</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/ProvidersCheck/LoadData.aspx&#39;);">Ingreso Manual</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/ProvidersCheck/ProvidersCheckAuthorizations.aspx&#39;);">Aprobaciones</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/ProvidersCheck/ProvidersCheckTransactionsHistory.aspx&#39;);">Historial</a></td>
+			</tr>
+		</tbody></table>
+		</td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="./icon_pagoSueldos.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="ActivateMenuItem(this.parentNode.parentNode);ShowSubMenu(ctl385);OpenItem(&#39;/Pages/Salary/PayrollInquiry.aspx&#39;);">Pago de Sueldos</a></td>
+	</tr>
+	<tr>
+		<td colspan="2"><table id="ctl385" class="ic-menu-item_level_2_collapse" width="100%" border="0" cellpadding="0" cellspacing="0">
+			<tbody><tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Salary/PayrollInquiry.aspx&#39;);">Consulta de Nómina</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><table id="ctl393" class="ic-menu-item_level_3">
+					<tbody><tr>
+						<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="ShowSubMenuItem(&#39;ctl397&#39;, &#39;ctl393&#39;);">Alta de Nómina</a></td>
+					</tr>
+				</tbody></table>
+				<table id="ctl397" class="ic-menu-item_level_2_with_Child_collapse">
+					<tbody><tr>
+						<td class="ic-menu-item_level_2_with_Child"><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Salary/NewBeneficiaryByFile.aspx&#39;);">Por Archivo</a></td>
+					</tr>
+				</tbody></table>
+				</td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><table id="ctl404" class="ic-menu-item_level_3">
+					<tbody><tr>
+						<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="ShowSubMenuItem(&#39;ctl408&#39;, &#39;ctl404&#39;);">Acreditación</a></td>
+					</tr>
+				</tbody></table>
+				<table id="ctl408" class="ic-menu-item_level_2_with_Child_collapse">
+					<tbody><tr>
+						<td class="ic-menu-item_level_2_with_Child"><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Salary/LoadFileNew.aspx&#39;);">Por Archivo</a></td>
+					</tr>
+					<tr>
+						<td class="ic-menu-item_level_2_with_Child"><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Salary/Nomina.aspx&#39;);">Manual</a></td>
+					</tr>
+				</tbody></table>
+				</td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Salary/SalariesTransactionAuthorization.aspx&#39;);">Aprobaciones</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Salary/SalariesTransactionsHistory.aspx&#39;);">Historial</a></td>
+			</tr>
+		</tbody></table>
+		</td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="./icon_comercioExterior.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="ActivateMenuItem(this.parentNode.parentNode);ShowSubMenu(ctl430);OpenItem(&#39;/Pages/EComex/ConsultaOperaciones.aspx&#39;);">Comercio Exterior</a></td>
+	</tr>
+	<tr>
+		<td colspan="2"><table id="ctl430" class="ic-menu-item_level_2_collapse" width="100%" border="0" cellpadding="0" cellspacing="0">
+			<tbody><tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/EComex/ConsultaOperaciones.aspx&#39;);">Consulta de Operaciones</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/EComex/PermisosEmbarques.aspx&#39;);">Permisos de Embarque</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/EComex/ConsultaFinanciaciones.aspx&#39;);">Financiaciones</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><table id="ctl446" class="ic-menu-item_level_3">
+					<tbody><tr>
+						<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="ShowSubMenuItem(&#39;ctl450&#39;, &#39;ctl446&#39;);">Sepa Impo</a></td>
+					</tr>
+				</tbody></table>
+				<table id="ctl450" class="ic-menu-item_level_2_with_Child_collapse">
+					<tbody><tr>
+						<td class="ic-menu-item_level_2_with_Child"><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/EComex/PagosAnticipados.aspx&#39;);">Pagos Anticipados</a></td>
+					</tr>
+					<tr>
+						<td class="ic-menu-item_level_2_with_Child"><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/EComex/SEPAIMPO.aspx&#39;);">Despachos</a></td>
+					</tr>
+				</tbody></table>
+				</td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/EComex/AlertaOpe_aVencer.aspx&#39;);">Alerta de Vencimientos</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/EComex/AlertaOperaciones.aspx&#39;);">Alerta de Órdenes de Pago</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/EComex/Regimenes.aspx&#39;);">Alerta de Regímenes</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/EComex/FormulariosCirculares.aspx&#39;);">Formularios y Circulares</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/EComex/OperationsEntry.aspx&#39;);">Ingreso de Operaciones</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/EComex/Aprobations.aspx&#39;);">Aprobaciones</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/EComex/Historical.aspx&#39;);">Historial</a></td>
+			</tr>
+		</tbody></table>
+		</td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="./icon_recaudaciones.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="ActivateMenuItem(this.parentNode.parentNode);ShowSubMenu(ctl492);OpenItem(&#39;/Pages/CashPayments/ByCashier.aspx&#39;);">Recaudaciones</a></td>
+	</tr>
+	<tr>
+		<td colspan="2"><table id="ctl492" class="ic-menu-item_level_2_collapse" width="100%" border="0" cellpadding="0" cellspacing="0">
+			<tbody><tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/CashPayments/ByCashier.aspx&#39;);">Por Caja</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/CashPayments/DAForwardFile.aspx&#39;);">DA – Remitir archivo</a></td>
+			</tr>
+		</tbody></table>
+		</td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="./icon_financialinformation.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="ActivateMenuItem(this.parentNode.parentNode); OpenItem(&#39;/Pages/Services/FinancialInformation.aspx&#39;);">Cotización de monedas</a></td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="./icon_cajasSeguridad.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="ActivateMenuItem(this.parentNode.parentNode);ShowSubMenu(ctl513);OpenItem(&#39;/Pages/SafeDepositBoxes/SafeDepositBox.aspx&#39;);">Cajas de Seguridad</a></td>
+	</tr>
+	<tr>
+		<td colspan="2"><table id="ctl513" class="ic-menu-item_level_2_collapse" width="100%" border="0" cellpadding="0" cellspacing="0">
+			<tbody><tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/SafeDepositBoxes/SafeDepositBox.aspx&#39;);">Detalles</a></td>
+			</tr>
+		</tbody></table>
+		</td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="./icon_administracion.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="ActivateMenuItem(this.parentNode.parentNode);ShowSubMenu(ctl525);OpenItem(&#39;/Pages/Administration/ViewUsers.aspx&#39;);">Administración</a></td>
+	</tr>
+	<tr>
+		<td colspan="2"><table id="ctl525" class="ic-menu-item_level_2_collapse" width="100%" border="0" cellpadding="0" cellspacing="0">
+			<tbody><tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Administration/ViewUsers.aspx&#39;);">Usuarios</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Administration/ViewAccounts.aspx&#39;);">Cuentas</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Administration/GenerateMac.aspx&#39;);">Generar clave CET</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Administration/Permission.aspx&#39;);">Permisos</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Administration/Signatures.aspx&#39;);">Esquemas de firmas</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Administration/FormsDownload.aspx&#39;);">Formularios</a></td>
+			</tr>
+		</tbody></table>
+		</td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="./icon_personalize.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="ActivateMenuItem(this.parentNode.parentNode); OpenItem(&#39;/Pages/Administration/UpdatePhoneNumber.aspx&#39;);">Administrar CDA</a></td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="./icon_personalize.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="ActivateMenuItem(this.parentNode.parentNode);ShowSubMenu(ctl562);OpenItem(&#39;/Pages/Common/Personalize.aspx&#39;);">Configuraciones</a></td>
+	</tr>
+	<tr>
+		<td colspan="2"><table id="ctl562" class="ic-menu-item_level_2_collapse" width="100%" border="0" cellpadding="0" cellspacing="0">
+			<tbody><tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Common/Personalize.aspx&#39;);">Mis favoritos</a></td>
+			</tr>
+			<tr>
+				<td class="ic-menu-item_level2_left"> </td>
+				<td><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="OpenItem(&#39;/Pages/Administration/ViewEconomicGroups.aspx&#39;);">Mis empresas</a></td>
+			</tr>
+		</tbody></table>
+		</td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico"><img src="./icon_help.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item"><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="ActivateMenuItem(this.parentNode.parentNode); OpenItem(&#39;/Help.aspx&#39;);">Ayuda</a></td>
+	</tr>
+	<tr>
+		<td align="center" class="ic-menu-item-ico-end"><img src="./icon_logout.gif" width="12" height="12" border="0"></td>
+		<td class="ic-menu-item-end"><a href="https://empresas.supervielle.com.ar/Menu.aspx#" onclick="ActivateMenuItem(this.parentNode.parentNode); OpenItem(&#39;javascript:Logout();&#39;);">Salir del sistema</a></td>
+	</tr>
+</tbody></table>
+
+                                                                </div>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody></table>
+                                                    </td>
+                                                    <td width="10" class="ic-menu-right">&nbsp;</td>
+                                               </tr>
+                                               <tr>
+                                                 <td colspan="3" height="12">
+                                                    <table width="100%" border="0" cellpadding="0" cellspacing="0" class="ic-menu-bottom">
+                                                               <tbody><tr>
+                                                                 <td></td>
+                                                                 <td width="10"><img src="./img-menu-bottom-right.gif" width="15" height="12"></td>
+                                                               </tr>
+                                                    </tbody></table>
+                                                 </td>
+                                               </tr>
+                                             </tbody></table>
+                                            </td>
+                                            <td style="width:9px" class="ic-left-collapase" rowspan="2">
+                                                
+                                            </td>
+                            </tr>
+                            <tr>
+                                <td class="ic-left-panel" valign="top" style="padding-left:7px; padding-right:6px">
+                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                    <tbody><tr>
+                                        <td class="ic-left-panel-separator">&nbsp;
+                                        </td>
+                                    </tr>
+                                    </tbody></table>
+                                </td>
+                            </tr>
+                        </tbody></table>
+                        </td>
+                    </tr> 
+                </tbody></table>
+            
+        <div style="width:95%; padding-left:7px">
+            
+             <table class="ic-grid-border" cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+	<tbody><tr>
+		<td><table id="QuotationPanel_thePanel" class="ic-grid" cellspacing="0" cellpadding="0" align="Center" border="0" style="width:100%;border-collapse:collapse;">
+			<tbody><tr class="ic-grid-title-row">
+				<td><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+					<tbody><tr>
+						<td class="ic-grid-title-cell-left">&nbsp;</td><td class="ic-grid-title-cell" align="left" style="white-space:nowrap;">Información de contacto</td>
+					</tr>
+				</tbody></table></td>
+			</tr><tr>
+				<td align="center" style="padding:1px;"><div id="QuotationPanel" style="color:Black;border-color:DodgerBlue;font-family:verdana;font-size:10pt;width:100%;display:;">
+	
+            
+            <img src="./ContactoHB.jpg">
+        
+</div></td>
+			</tr>
+		</tbody></table></td>
+	</tr>
+</tbody></table>
+        </div>
+       
+    
+
+</td></tr></tbody></table></form></body></html>

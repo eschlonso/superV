@@ -1,0 +1,50 @@
+﻿.BarraMenu
+{
+    background-image: url(../appimg/back_tlb.jpg); height:38px;
+}
+    
+.mnuStatic
+{
+    color:White;
+    font-family: Lucida Sans;
+    font-weight: normal;
+    font-size: 9pt;
+    letter-spacing: normal;
+    text-transform: none;
+    word-spacing: normal;
+}
+    
+.mnuStaticHover
+{
+    /*background-image: url(appimg/monthView_header.jpg);*/
+	background-position:center;
+	/*border:solid 1px black; /*#5A5A5A;*/
+	color: rgb(189, 234, 53);
+}
+    
+.mnuDynamicItem
+{
+    color:Gray;
+    border-bottom: transparent 1px solid;
+    border-left: transparent 1px solid;
+    cursor:hand;
+    font-family: Lucida Sans;
+    font-weight: normal;
+    font-size: 9pt;
+    letter-spacing: normal;
+    /*padding-left:10px;*/
+    text-transform:none;
+    word-spacing:normal;
+	border:solid 1px Transparent;
+    background-color:#f0f0f0;
+}
+
+.mnuDynamic
+{
+	background-color:#f0f0f0!Important
+}    
+
+.mnuDynamicHover
+{
+	color:#1480a7;
+}

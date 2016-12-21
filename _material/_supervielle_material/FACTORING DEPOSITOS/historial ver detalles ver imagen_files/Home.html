@@ -1,0 +1,785 @@
+
+<!-- saved from url=(0063)http://10.1.75.104:9080/Pages/Factoring/FactoringHistorial.aspx -->
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><script src="./jquery-1.7.2.min.js.descarga" type="text/javascript"></script>
+<script src="./jquery-1.7.1.js.descarga" type="text/javascript"></script>
+<script src="./jquery-ui-1.8.19.custom.min.js.descarga" type="text/javascript"></script>
+<script src="./jquery.formatCurrency-1.4.0.js.descarga" type="text/javascript"></script>
+<script src="./idle-timer.js.descarga" type="text/javascript"></script>
+<script src="./idle-timer.min.js.descarga" type="text/javascript"></script>
+<script language="javascript" type="text/javascript">
+
+function Logout() {
+        if (confirm("¿ Desea salir del sistema ?") == true) {
+                    
+            window.location =  '/'+ "Logout.aspx";
+        }
+       
+    }
+    
+var focusedFormControl;    
+var dateFormat = 'dd/mm/aaaa';
+var applicationRoot = '/';      
+function OnRowClick(sender, args) {
+    if (sender.GetSelectedRowCount() == 0) {
+        sender.UnselectRowOnPage(args.visibleIndex);
+        SetPageLinkData("");
+    }
+    else {
+        _aspxClearSelection();
+        sender._selectAllRowsOnPage(false);
+        sender.SelectRow(args.visibleIndex, true);
+        SetPageLinkData(sender.GetRowKey(args.visibleIndex));
+    }
+}
+
+if (history.forward(1))
+{
+
+    location.replace(history.forward(1))
+} 
+
+function PrintPage() {
+
+    window.print();
+}
+
+function GoMyOption(select)
+{
+    var url = select.options[select.selectedIndex].value;
+    if( url != "")
+        window.location = url;
+}
+
+function GoFavourites(select)
+{
+
+    var url = select.options[select.selectedIndex].value;
+    if( url != "")
+        window.location = url;
+}
+
+function GoPrint()
+{
+
+window.print();
+}
+
+function addEvent(elm, evType, fn, useCapture)
+{
+
+  if (elm.addEventListener){
+    elm.addEventListener(evType, fn, useCapture);
+    return true;
+  } else if (elm.attachEvent){
+    var r = elm.attachEvent("on"+evType, fn);
+    return r;
+  } else {
+    alert("Handler could not be removed");
+  }
+} 
+
+function SetPageLinkData(data)
+{
+    pageLinkData = document.getElementById('PageLinkData');
+    pageLinkData.value = data;
+}
+
+function SetPageLinkUrl(url)
+{
+    pageLinkUrl = document.getElementById('PageLinkUrl');
+    pageLinkUrl.value = url;
+}
+
+function doPageLink(id)
+{
+    __doPostBack(id, 'PageLinkEvent');
+}
+
+function imprimirEstadoCuenta()
+{
+											
+    var ficha = document.getElementById('printDiv');		
+    var ventimp = window.open('', 'popimpr','height=450, width=550, scrollbars=1');																						
+    var fichaHTML = new String(ficha.innerHTML);
+    fichaHTML = fichaHTML.replace('Seleccione un período y oprima "Consultar".'," ");
+    //var i = document.getElementById('ctl00_MainHolder_panelDetalle_imgPlusMinus');
+    var html  = "<html>\n<head>\n<link rel=\"stylesheet\" type=\"text/css\" href=\"..\\..\\App_Themes\\Default\\Default.css \" />" 
+                + "</head><table width=\"100%\"><tr bgcolor=\"#FF0000\"><td><img src=\"..\\..\\App_Themes\\Default\\Images\\logoSantander.gif\" /></td></tr></table>" 
+                + fichaHTML 
+                + "</html>";
+    ventimp.document.write( html );
+    ventimp.document.close();
+    ventimp.print( );
+    ventimp.close();
+					
+}
+
+ function removeInvalidCharacters(control) {
+ 
+            !(/^[A-zÑñ0-9 ]*$/i).test(control.value) ? control.value = control.value.replace(/[^A-zÑñ0-9 ]/ig, '') : null
+        }
+        
+  function removeInvalidNumbers(control) {
+            !(/^[0-9,]*$/i).test(control.value) ? control.value = control.value.replace(/[^0-9,]/ig, '') : null
+        }
+function showLoading()
+{
+//debugger;
+    // aquí le pasamos la clase o id de nuestro div a centrar (en este caso "caja")
+    $('.ic-loading').css({
+       position:'absolute',
+       left: ($('#mainContainer').width()/2 - $('.ic-loading').outerWidth())/2,
+       //top: ($('#mainContainer').height()/2 - $('.ic-loading').outerHeight())/2
+       top: ($('#mainContainer').height()/2 - $('ic-loading').height()/2)
+    });
+    
+    $('#mainContainer').css('display','none');
+    $('#ic-loading').css('display','block');
+}
+//ModalDialog SessionTimeout
+var idleTime = (parseInt('1170') * 1000); // number of miliseconds until the user is considered idle
+var initialSessionTimeoutMessage = "La sesión finalizará en <span id='sessionTimeoutCountdown'></span> segundos. Para seguir operando seleccioná “Continuar”<br /><br />";
+var sessionTimeoutCountdownId = 'sessionTimeoutCountdown';
+var redirectAfter = (parseInt('30')) ; // number of seconds to wait before redirecting the user
+var redirectTo = '/' + "Logout.aspx"; // URL to relocate the user to once they have timed out
+var keepAliveURL = ''; // URL to call to keep the session alive
+var expiredMessage = ''; // message to show user when the countdown reaches 0
+var running = false; // var to check if the countdown is running 
+var timer; // reference to the setInterval timer so it can be stopped 
+var timerSB;  
+var timeout;  
+    $(document).ready(function() {     
+// create the warning window and set autoOpen to false  
+      var sessionTimeoutWarningDialog = $("#sessionTimeoutWarning"); 
+    $(sessionTimeoutWarningDialog).dialog({         
+        title: '',       
+        autoOpen: false,    // set this to false so we can manually open it         
+        closeOnEscape: false,         
+        draggable: false,         
+        width: 460,         
+        minHeight: 150,         
+        modal: true,           
+        beforeclose: function() { // bind to beforeclose so if the user clicks on the "X" or escape to close the dialog, it will work too             // stop the timer             
+            clearInterval(timer);               // stop countdown
+            running = false;               // ajax call to keep the server-side session alive    
+                  
+            $.ajax({               
+                url: keepAliveURL,               
+                async: false            
+            });         
+        },         
+        buttons: {      
+             'Continuar ': function() {                 
+                // close dialog 
+                window.location.reload();//BM24925: Se agrega esto para que el expired de una cookie se actualice y no se cierre la sesión luego de hacer click en continuar al terminar el timeout del webconfig. El valor del expired se pone en la tabla configuration en la clave SessionMaxMinutes.
+                //var valor = getCookie('ICBWebLogin'); //Esta función la dejo por las dudas, pero no la pude hacer andar poque el document.cookie no me trae las cookies del explorador.                
+                $(this).dialog('close');
+                clearInterval(timerSB);    
+                window.status = "";      
+                StatusBarCountDown();     
+            },
+            'Finalizar sesión': function() {                 
+                // close dialog                 
+                $(sessionTimeoutWarningDialog).html(expiredMessage);
+                $(sessionTimeoutWarningDialog).dialog('disable');                     
+                window.parent.location = redirectTo;           
+            }         
+        },         
+        resizable: false,         
+        open: function() {
+            $('body').css('overflow','auto');         
+        },         
+        close: function() {             
+            // reset overflow             
+            $('body').css('overflow','auto');         
+        }  
+           
+    }); // end of dialog  
+    jQuery("a.ui-dialog-titlebar-close").hide(); 
+          
+    // start the idle timer
+    $.idleTimer(idleTime);
+ 
+});
+
+// BM24925: Función para recuperar el valor de una cookie.
+// name - nombre de la cookie deseada
+// devuelve un string conteniendo el valor de la cookie especificada o null si la cookie no existe
+
+function getCookie(name){
+var micookie = (document.cookie.indexOf('ICBWebLogin=') === -1 ? '' : ("; " + document.cookie).split('; ICBWebLogin=')[1].split(';')[0]);
+
+  var cname = name + "=";               
+  var dc = document.cookie;             
+  if (dc.length > 0) {              
+    begin = dc.indexOf(cname);       
+    if (begin != -1) {           
+      begin += cname.length;       
+      end = dc.indexOf(";", begin);
+      if (end == -1) end = dc.length;
+        return unescape(dc.substring(begin, end));
+    } 
+  }
+  return null;
+}
+
+//Status Bar Countdown Script
+function StatusBarCountDown() 
+{
+    var redirectAfter = (parseInt('30'));
+    var timeout = '1200000';   
+    var redirectTo = '/' + "Logout.aspx"; // URL to relocate the user to once they have timed out   
+    timerSB = setInterval(function(){
+    timeout -= 1000;
+    if(timeout == redirectAfter * 1000)
+    {
+        window.focus();
+    }
+   if(timeout < redirectAfter * 1000)
+   {
+        $("#sessionTimeoutCountdown").html(timeout/1000);
+        $("#sessionTimeoutWarning").dialog('open'); 
+   }
+   if (timeout < 100)
+   {
+        $("#sessionTimeoutWarning").html(expiredMessage);
+        $("#sessionTimeoutWarning").dialog('disable');                     
+        window.parent.location = redirectTo;
+        clearInterval(timerSB);    
+        window.status = "";     
+   }
+        
+   window.status = "Su sesión expirará " + time(timeout) + " minutos";        
+    }, 1000);   
+         
+   function two(x)
+   {
+    return ((x > 9) ? "" : "0") + x
+   }   
+  
+   function time(ms)
+   {   
+       var t = '';   
+       var sec = Math.floor(ms / 1000);   
+       ms = ms % 1000   
+
+       var min = Math.floor(sec / 60);   
+       sec = sec % 60;   
+       t = two(sec);   
+
+       var hr = Math.floor(min / 60);   
+       min = min % 60;   
+       t = two(min) + ":" + t;   
+    return t;
+   }
+}
+
+StatusBarCountDown();
+
+
+
+</script>
+
+<link href="./Default.css" type="text/css" rel="stylesheet"><link href="./jquery-ui-1.8.19.custom.css" type="text/css" rel="stylesheet"><link href="./WebResource.axd" type="text/css" rel="stylesheet"><title>
+	Historial
+</title></head>
+<body>
+    <form name="aspnetForm" method="post" action="http://10.1.75.104:9080/Pages/Factoring/FactoringHistorial.aspx" id="aspnetForm">
+<div>
+<input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="">
+<input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="">
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUKMTkxOTg2OTQzOQ9kFgJmD2QWAgIBD2QWAgIBD2QWAmYPZBYEAgEPZBYEAgIPDxYCHgRUZXh0BQlIaXN0b3JpYWxkZAIHD2QWAgIBD2QWBmYPZBYEZg9kFgJmD2QWAgIBD2QWAmYPZBYCZg9kFhQCAw8QZGQWAWZkAgUPEGRkFgFmZAIJDw8WBB4LQ2hhcnNGaWx0ZXIFDl5bXjo7XDw+J1wiXSokHhJDaGFyc0ZpbHRlckVuYWJsZWRnFgIeCm9ua2V5cHJlc3MFOXJldHVybiB2YWxpZENoYXJhY3RlcnNPbmx5KHRoaXMsIGV2ZW50LCAiXlteOjtcPD4nXCJdKiQiKWQCDQ8PFgQfAQUOXlteOjtcPD4nXCJdKiQfAmcWAh8DBSZyZXR1cm4gbnVtYmVyc29ubHkodGhpcywgZXZlbnQsIGZhbHNlKWQCEQ8PFgQfAQUOXlteOjtcPD4nXCJdKiQfAmcWAh8DBSZyZXR1cm4gbnVtYmVyc29ubHkodGhpcywgZXZlbnQsIGZhbHNlKWQCFQ8PFgQeE1NlbGVjdGVkUmFkaW9CdXR0b24FFHJhZGlvQnV0dG9uTWVzQWN0dWFsHg1TZWxlY3RlZE1vbnRoZmQWAmYPZBYCZg9kFgICAQ9kFgJmD2QWAgIBD2QWCAILDxAPZBYCHgdvbmNsaWNrBQ92YWxpZGF0ZSh0aGlzKTsPFgxmAgECAgIDAgQCBQIGAgcCCAIJAgoCCxYMEAUFZW5lcm8FBWVuZXJvZxAFB2ZlYnJlcm8FB2ZlYnJlcm9nEAUFbWFyem8FBW1hcnpvZxAFBWFicmlsBQVhYnJpbGcQBQRtYXlvBQRtYXlvZxAFBWp1bmlvBQVqdW5pb2cQBQVqdWxpbwUFanVsaW9nEAUGYWdvc3RvBQZhZ29zdG9nEAUKc2VwdGllbWJyZQUKc2VwdGllbWJyZWcQBQdvY3R1YnJlBQdvY3R1YnJlZxAFCW5vdmllbWJyZQUJbm92aWVtYnJlZxAFCWRpY2llbWJyZQUJZGljaWVtYnJlZxYBZmQCDw8PFggfAQUOXlteOjtcPD4nXCJdKiQfAmceCU1heExlbmd0aGYfAAUKMDEvMDEvMjAxNhYEHwYFD3ZhbGlkYXRlKHRoaXMpOx8DBSNyZXR1cm4gZGF0ZU51bWJlcnNPbmx5KHRoaXMsIGV2ZW50KWQCFQ8WGh4WQ3VsdHVyZVRpbWVQbGFjZWhvbGRlcgUBOh4bQ3VsdHVyZVRob3VzYW5kc1BsYWNlaG9sZGVyBQEuHhFDdWx0dXJlRGF0ZUZvcm1hdAUDRE1ZHhZDdWx0dXJlRGF0ZVBsYWNlaG9sZGVyBQEvHgxEaXNwbGF5TW9uZXkLKYYBQWpheENvbnRyb2xUb29sa2l0Lk1hc2tlZEVkaXRTaG93U3ltYm9sLCBBamF4Q29udHJvbFRvb2xraXQsIFZlcnNpb249My4wLjIwMjI5LjIwODQzLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPTI4ZjAxYjBlODRiNmQ1M2UAHg5BY2NlcHROZWdhdGl2ZQsrBAAeE092ZXJyaWRlUGFnZUN1bHR1cmVoHhlDdWx0dXJlRGVjaW1hbFBsYWNlaG9sZGVyBQEsHhZDdWx0dXJlQU1QTVBsYWNlaG9sZGVyBQlhLm0uO3AubS4eIEN1bHR1cmVDdXJyZW5jeVN5bWJvbFBsYWNlaG9sZGVyBQIkVR4LQ3VsdHVyZU5hbWUFBWVzLVVZHg5JbnB1dERpcmVjdGlvbgspigFBamF4Q29udHJvbFRvb2xraXQuTWFza2VkRWRpdElucHV0RGlyZWN0aW9uLCBBamF4Q29udHJvbFRvb2xraXQsIFZlcnNpb249My4wLjIwMjI5LjIwODQzLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPTI4ZjAxYjBlODRiNmQ1M2UAHgpBY2NlcHRBbVBtaGQCGw9kFgQCAw8PFggfAQUOXlteOjtcPD4nXCJdKiQfAmcfB2YfAAUKMzAvMTEvMjAxNhYEHwYFD3ZhbGlkYXRlKHRoaXMpOx8DBSNyZXR1cm4gZGF0ZU51bWJlcnNPbmx5KHRoaXMsIGV2ZW50KWQCCQ8WGh8IBQE6HwkFAS4fCgUDRE1ZHwsFAS8fDAsrBAAfDQsrBAAfDmgfDwUBLB8QBQlhLm0uO3AubS4fEQUCJFUfEgUFZXMtVVkfEwsrBQAfFGhkAhkPEA8WBh4ORGF0YVZhbHVlRmllbGQFClZhbHVlRmllbGQeDURhdGFUZXh0RmllbGQFCVRleHRGaWVsZB4LXyFEYXRhQm91bmRnZBAVAgVUb2RvcwkxMDAtOTkwLTEVAgItMQQ3MjIwFCsDAmdnFgFmZAIdDxAPFgYfFQUKVmFsdWVGaWVsZB8WBQlUZXh0RmllbGQfF2dkEBUNBVRvZG9zHVBlbmRpZW50ZSBBcHJvYmFjacOzbiBFbXByZXNhCUNhbmNlbGFkbxRQZW5kaWVudGVMaXF1aWRhY2lvbgpDb25maXJtYWRhDEVuIGVDbGVhcmluZwlQZW5kaWVudGUfQ2FuY2VsYWRvIHBvciBmYWx0YSBkZSBGw61zaWNvcxpDYW5jZWxhZG8gZnVlcmEgZGUgSG9yYXJpbyVQZW5kaWVudGUgZGUgUmVjZXBjacOzbiBkZSBEb2N1bWVudG9zG1BlbmRpZW50ZSBBcHJvYmFjacOzbiBCYW5jbwpSZWNoYXphZG9zCUxpcXVpZGFkYRUNAi0xATECMTACMTECMTICMTMCMTQCMTUCMTYBMgEzATQBNhQrAw1nZ2dnZ2dnZ2dnZ2dnFgFmZAIfDxYCHgdWaXNpYmxlaGQCIQ8QDxYIHxUFClZhbHVlRmllbGQfFgUJVGV4dEZpZWxkHxdnHxhoZBAVCAVUb2RvcxJDcmlzdGlhbiBSb2RyaWd1ZXoVR2FzdG9uIE5pY29sYXMgV2FsdGVyDU1BUklBTk8gT1JUSVoKTWFyaW8gQ290bxBQYXRyaWNpYSBQYWxhenpvClBlZHJvIENvdG8NUkFVTCBNQVJUSU5FWhUIAi0xBDYyNjgENjIyOAQ2MDM2BDYyNzUENjIyNwQ2Mjc0BDYwMzUUKwMIZ2dnZ2dnZ2cWAWZkAgIPZBYCAgEPZBYCAgEPPCsAFgIADxYIHg9EYXRhU291cmNlQm91bmRnHhFDbGllbnRTdGF0ZUxvYWRlZGgeDUNhbGxiYWNrU3RhdGUF0DQvd0VXQkI0RVJHRjBZUVdVSmtGQlFVRkJTV05CUVVGQlFVRkJRVUZEWjBGQlFVRkJURUZCUVVGR2ExcG9XVE5TZG1OdGJIVmFNVTUyWWtkc2FtRllVakZhUjFaNlUxZFJWMUp0Um1wa1J6bDVZVmMxYmxVeU9YTmhWMDV3WkVoV2ExcFlUa3BhUVUxQlFVRTFSMXBYVG05WlZrNTJZa2RzYW1GWVVqRmFRVFZIV2xkT2IxbFdUblppUjJ4cVlWaFNNVnBCWjBGQlFrSkhXbGRPYjFsVmVIQmpXRlp3V2tkR2FtRlhPWFZGUlZwc1dUSm9hRlJIYkhoa1YyeHJXVmRPY0dJeU5FRjJaMFpVWlZoT01GcFhNSFZVYmxaellrZEdhV0pIVm1kTlZuUmlWVE5zZW1SSFZuUk1hMUpvWkVkV1ZXRlhNV3hNUTBKMFl6Sk9kbU50ZUhCWmFYZG5WbTFXZVdNeWJIWmlhakI1VEdwQmRVMUROSGRNUTBKRVpGZDRNR1JZU214UVZ6VnNaRmhTZVZsWGQzTkpSa0l4V1cxNGNGa3dkR3hsVmxKMllUSldkVkJYU1ROT01rVXhXWHBWTWsxVWEzcE9SMVYzVDBSc1pGaFRkMmRpV0U1cVlqTktjMkZYU1hOSlJscHNZMjVPY0dJeU5EbE5hVFIzVEdwQmRVMURkMmRSTTFaelpFaFdlVnBVTVhWYVdGWXdZMjFHYzB4RFFsRmtWMHB6WVZkT1RGcFliRlZpTW5Sc1ltb3hhVTU2WkdoT1YwMHhUbXBGTlUxNlVteE5SR2MxUVVGQldWWkhiSGRpTURsM1dsaEthRmt5YkhaaWExSnNZekpPZVdGWVFtcGhWemwxUjBaU2NHTkhPVkJqUjFaNVdWZE9jR0l5TlVWYVdFNXFZMjFzZDFreWJIWmlaMk5CUVZGd1JHUlhWblZrUjBaWFlWZFdNME5yVGpGYVZ6VXdXVlphY0ZwWVkwaEJRVUZOVkc1S2RsUXpRbXhqYlVacVlWYzVkVVJGTlhsaU1EbDNXbGhLYUZreWJIWmlaME0zUVZaT05XTXpVbXhpVXpWUFpGZDRjMWxYU25OYVYwRjRWekYwVkdWWVRqQmFWekIxVTFjMU1FMTZTWE5KUnpGNldUSTVlV0pIYkdsTVEwSlhXbGhLZW1GWE9YVlFWRWwxVFVNMGQweHFRWE5KUlU0eFlraFNNV050VlRsaWJWWXhaRWhLYUdKRGQyZFZTRlpwWWtkc2FsTXlWalZXUnpseVdsYzBPVmxxWXpOWlZGWnFUbFJaZUU5VVRUQmFWRUUwVDFZeFpFeERRblJqTWs1MlkyMTRjRmxwZDJkV2JWWjVZekpzZG1KcU1IbE1ha0YxVFVNMGQweERRa1JrVjNnd1pGaEtiRkJYTld4a1dGSjVXVmQzYzBsR1FqRlpiWGh3V1RCMGJHVldVblpoTWxaMVVGZEpNMDR5UlRGWmVsVXlUVlJyZWs1SFZYZFBSR3RCUVVKb1JGbFhOVEJoVjFKb1drVk9iMXBZUmpGYVdFNVVZako0Y0ZreWJEQmtWMUZaVVRKR2RXUkhiR3RaVjFKRVlVZFdlR1JYVm5wVk1qbHpZVmRPY0dSSVZtdEJkMEZCU2pCYWFGa3pVblpqYld4MVdqRk9kbUpIYkdwaFdGSXhXa2RXZWxKWVRqQlpWMUoyVWtkV2Vsa3pTbkJqUjA1d1lqSTFSMUpUWkVkWlYwNHdZak5LY0dKdFpGUmlNbmh3V1RKc01HUlhVbXhqTUZaNlpFZEdhMkl3VW14ak1rNTVZVmhDYW1GWE9YVlNhMVZJUVVGQlRsUnRPWFJaYmtwc1ZsaE9NVmxZU25CaWR6RlBZakl4YVdOdFZsWmpNMVpvWTIxc2RrSjNRVUZHVlRWMlVsY3hkMk50Vm5wWlZWSnNZbTA1ZEdGWE5XaFpNbXgyWW1oV1QySXdWblJqU0Vwc1l6SkdSVnBYTlhaaVYyeDFXVmRPY0dJeU5FaEJRVUZPVkcwNVJtSllRbmxhV0U1b1VURldTbFpCTVU5aU1GWjBZMGhLYkdNeVJrUldWV3hWUW5kQlFWbDNRVUZCUVRWUVkyMWthR0p0YkRaWldGSndZakkxU2xwQ1FsQmpiV1JvWW0xc05sbFlVbkJpTWpWRVZsVnNWVVZyT1hsYU1rWjFZVmh3YUdSSGJIWmlhelYyWWxkS2VWcFJNVlZoV0VKMlZETkNiR050Um1waFZ6bDFSbFZhYUZrelVuWmpiV3gxV2pGU2NHTkhPVVJpTWpVd1kyMUdNR0ozTlZWaFdFSjJVVEk1ZFdSSVNtaGtSemxLV2tGc1VXTnRPV3RrVjA0d1UxZFJSMUV6Vm14aWJsSm9SRlpPY0dKWFNuWmlSemxPWWpJMWJGcEhSVXhSTTFac1ltNVNhRkV5T1hsa1J6aE5VVE5XYkdKdVVtaFZNMngwV1cwNWMwVkZiSFJqUnpsNVpFZFdTbUp0V25aamJURm9Xa2M0VlZOWE1YZGlNMG93V2xWc2RWcHRPWGxpVjBacllqRmFjRnBZWTFwVFZ6RjNZak5LTUZwVmJIVmFiVGw1WWxkR2EySXdiSFZhTTBwc1l6SkdhMko0U2xOYVYwNXNZMGRPY0dJeU5WTmFWMFp6WVZod2FGcEhSVlpUVnpWdVkyMVdlbUl3VW1oa1J6bDZWVzFXYUdKSGJEWlpWMUoyUmpGYWJHTnRiRzFSTWpsMFdsaEthbUZYUm5OVmJWWm9Za2RzTmxsWFVtaEdWbHBzWTIxc2JWWkhWbXBpYld4cVdWWktiRmxYZUhCbGJVWnJXVkpzVkdSWVFteGpibHB3WXpKc2RtSnNXbXhqYld4dFZXMVdhR0pIYkRaWlYxSm9RbXhXZWxwWVNrcGFRbmhIV1ZkT01HSXpTbkJpYldSVVlqSjRjRmt5YkRCa1YxSnNZekJXZW1SSFJtdGlNR3hyUkdzeGRtSnVVblpWYlZacVlVZEdObGxYVW5aRVZURjJZbTVTZGxSdE9WVmlNakZvV2tjNFVWTlhNWGRpTTBvd1dsVk9hR0pIVGpGaVIwWnJZbmhzUkZsWE5UQmhWMUpvV2tWT2IxcFlSakZhV0U1VFdsZE9iMWxZY0doYVJ6bDZSakJPYUdKdVVuQmFSMFpyVVRKb2JHTllWbXhqTURWMlZrYzVkRmxYVW5aS01GcG9XVE5TZG1OdGJIVmFNVTUyWWtkc2FtRllVakZhUjFaNlVsaE9NRmxYVW5aU1IxWjZXVE5LY0dOSFRuQmlNalZEVkhoa1ZXRllRblpSTWpsMVpFaEthR1JIT1VWYVdFNXFZMjFzZDFreWJIWmlaekZWV1ZoT2FGSkhWbnBaTTFac1ltNVNka1ZyUm5kaVIyeHFXVlZPZG1KWGJIcGhWemwxVWpOV2NGbFNXbEZpTTBwcVdsYzFNRmxYY0d4Uk1qbDBZVmhPY0dJeU5VaGtWMnhvUlRCc2RHTkhPWGxrUjFaRVlqSXhjR015YkhaaWEyUXhZVmRGWVZGWVFuTmhWMDVvVVRJNWRHRllUbkJpTWpWWFdWZDRkbU5yUm5OUk1qbHBZMjA0WlZWSE9YbFpNbFoxWkVkR2NWcFZUblppVjJ4NllWYzVkVlp0Um5OaU0wcENZa1ZPZGxsdVNuWkZWVTUyWWxkc2VtRlhPWFZWUnpsNVVUSm9iR05ZVm14Qk1ERkdWVUZrU0dOdGJHdFVWVlpSUXpCT2IxcFlSakZhVlVaelVrZHNhRVF3WkhsaFYxSkVZVWRXZUdSWFZrSmlSVkp3V1ZJeFZHUlhUakZqYms1b1lrVnNhMVZ0Vm1wYVdFSnFZVmM1ZFZKSE9XcGtWekZzWW01U2RtTjNNVlZqYlVaMVl6SkdhbVJIYkhaaWEyeHJRakF4YkdOR1VteGxTRkZIVmxoT2JHTnJTbEJCTUU1RFZsRlNTR1JYYkdoRFZXeDFZek5TYUdKdFRuQlpVVnBPWWpJMWJGcEhSVk5UUjBaNlZUTlNhR1JIVms1aU1scHdXVEpHTUdGWE9YVkNWa0p6V1Zod2FFTnNVbkJhVnpWc1VsaEtlV0l6U1UxVVYxWjFZekpHY1ZwVlZubGpiVGw1UkVWYWJGa3lhR2hUVnpWdVkyMVdlbUozTVZCWmJrNXNZMjVhYUZreWJIWmliVlo2U2xWYWFGa3pVblpqYld4MVdqRk9kbUpIYkdwaFdGSXhXa2RXZWxKWVRqQlpWMUoyVWtkV2Vsa3pTbkJqUjA1d1lqSTBWbEpIVm5wWk0wcHdZMGhTY0dJeU5WUmtSMFl3WkZoT1NHTnRiR3RFVlVwVlZFZHNlR1JYYkd0WlYwNXdZakkwVVZKSFZubGhXRnBvWkVkc2RtSnNUakJaV0ZJeFkzYzFSVnBZU25Ca2JVWXdZVmM1ZFZaSWJIZGFVV2hSWTIxc2RtTnRiREJsVVhCTllqSkdhMVV6VW1oa1NGWjZSV3RHYzJKSE9XcFpXRkp3WWpJMVZHUkhSakJrV0U1S1drRjBVV050T1c1amJWWjZZekJTYkZwM2VFMWlNa1pyVlROU2FHUklWbnBUVjFGUVUwZEdlbFpIT1UxaU1rWnJVVmN4ZG1SWE5UQkVWV2hvWXpGU2RsUkhPV2hhUlZKb1pFZFZXRk5YTVhkaU0wb3dXbFZPYUdKSFRqRmlSMFpyWWpCT2MyRlhWblZrUjFWbFUxY3hkMkl6U2pCYVZVNW9Za2RPTVdKSFJtdGlNRTV2V2xoR01WcFZTbEJSVnpGMlpGYzFNRVZyVW5aa1YwcHpXbFY0ZGxsWFVsUmtSMFl3WkZoT1NscENSa3BpV0VKMlkyNVNiRkV5Um5OWk0xWnpXVmRTZGsxU1JrcGlXRUoyWTI1U2JGRXlSbk5aTTFaeldWZFNkazFuZUVWaFYxcHdXbGhLYkZKdFZtcGhSMFZSVWtkc2JXRlhWbmxhVlZwc1dUSm9hRlpIVmpSa1FrSkZXbGRhYkdOdVNteGFSVkpzWWtkc01scFlTalZFUlU1b1draFdhbUZZVWpWU1IwWXdXbEpDUkZsWFVqRlpNbXd3WlZWU2FHUkhWbFZhV0dnd1JFVk9hRnBJVm1waFdGSTFVa2RHTldONFpFVmFSMVp6WVZkS2JHTnViRVZhVjFwc1kyNUtiRnBHVGpCWldGSXhZM2hhUlZwWGVIQlpiVlo1WlZWU2JGcHRWbmxqYlZaclZUTlNhR1JJVm5wSlZWSnNZa2RXYVZwWVNqVlNSMVp0V2xoS2VWcFhVbFJrUjBZd1pGaE9SVnBZVG1wamJXeDNaRWRzZG1KbldrNWlNbEl4WWtkVlVWUXpRbXhqYlVZd1lWYzVkVkZYVG1waU0xWjFaRUpPVkdSWFNsQmpSMVo1V1ZoU2NHSXlOVUpaTWs1MlpGYzFNRVpHVWpWalIxWlFZMGRXZVZsWVVuQmlNalZDV1RKT2RtUlhOVEJFVlVwNVdWYzFhbUZGUm1wWk1qa3hZbTVSVVZKdFZtcGhSMFpHWlVkV2FtUllVbXhTUjBZd1dsSk9SR0l5TlRCaFZ6VnVXbGMxYW1WV1NteFpNbFp3WkcxV2EwWkZUblppYmxKd1ltMWtiR0p0VGpWU01sWjFXbGhLYUdSSFZtdEZSVXA1V1ZjMWFtRkZVbXhpUjJ4cFdsaEtOVk5YVVZOUmJrcG9ZbTFPYjFKSFZuTmhWMHBzWTI1c1ZWcFlhREJIUlU1b1ltNVNjRnBIUm10Uk1taHNZMWhXYkdNeFNteFpNbXhwWVZkU2RtTjRVa1ZhVjFwc1kyNUtiRnBGVW14aVIyd3lXbGhLTlZKSFJqQmFVMFpGV2xkNGNHUnRWbmxsVlZKc1dtMVdlV050Vm10Vk0xSm9aRWhXZWxKSFZucFpNMHB3WTBoU2NHSXlORkpWYlZaNFpGZFdlbVJHU25Cak1uUlRXbGhPTVdKSVVVMVZiV3g2WVRCT2RtSkhPWGxXV0VwelJEQnNlbFZ0Vm5oa1YxWjZaRVV4ZGxsdGJITmFVazVWWTIxR2RXTXlSbXBrUjJ4MllteE9NRmxZVWpGak1HeHJSa1ZrZVdGWFVrVmFWMXBzWTI1S2JGcEZVbXhpUjJ3eVdsaEtOVWRGV21oWk0xSjJZMjFzZFZveFNteGpXRlpzWXpOU1ZHUkhSakJrV0U1S1drRjRSR1JZU25sYVZ6VnFaVlUxYUdKWFZVaEJRV05CUW5kQlNFRkJZaTh2ZDAxR1UydEpVRUZCWjBOQ1NVRlRUSFUwY0VrNVRVbERVV05EUTFWYWFGa3pVblpqYld4MVduZGpRME41VVdkTlZFRjNURlJyTlUxRE1IaEJkMVZyYzBGRlFVRjNZME5DZDBsS1ZVZFdkVnBIYkd4aWJsSnNRbmRKVVZWSFJqQmpiV3hxWVZkRloxVkhSbk5aV0hBMlluZGpRMEZCWTBORGVVRm5TVU5CWjBsRFFXZEpRMEZuUW5kQlNFRkJZaTh2ZDAxR1V6QkpVRUZCWjBOQ1IwTnZaVGhCY1VrNVRVbERVV05EUTBWT01XTXpVblphUjJ4b1FuZEpURXBEUVhoTlJFRjBUMVJyZDB4VVJVUkNjMVZDUVhkalFrSjNTVXBWUjFaMVdrZHNiR0p1VW14Q2QwbFJWVWRHTUdOdGJHcGhWMFZuVlVkR2MxbFljRFppZDJORFFVRmpRME41UVdkSlEwRm5TVU5CWjBsRFFXZENkMEZJUVVGaUx5OTNUVVpVVlVsUVFVRm5RMEpEUTNGa1dVRnpTVGxOU1VOUlkwTkRWVkpzWTAxUGVtTXliREJpZDJORFEzbFJaMDFVUVhkTVZHczFUVU13ZUVGM1ZtNXdaMnRCUVhkalFrSjNTVXBSTWtaMVdUSldjMWxYVW5aQ2QwbFJWVWRHTUdOdGJHcGhWMFZuVlVkR2MxbFljRFppZDJORFFVRmpRME41UVdkSlEwRm5TVU5CWjBsRFFXZENkMEZJUVVGaUx5OTNUVVpsTUVsUVFVRm5RMEpHUVN0TE9HZFJiMDVOU1VOUlkwTkRWVkpzWTAxUGVtTXliREJpZDJORFEzbFJaMDFVUVhkTVZHczFUVU13ZUVOUlRVaEJaMk5EUTFWT2FHSnRUbXhpUjBaclluZGpRMFJXU2tKV1ZYZG5WRlZHVTFaRmJFOVNWbTlJUVdkQlNFRm5jMmRKUTBGblNVTkJaMGxEUVdkSlFXTkJRbmRCUnk4dk9FUkNXSGhEUkhkQlNVRm5VbEZrUW1FclJYRkVWRU5CYTBoQloyeEZXbGhFUkhNelRuQmtSemhJUVdkemEwbEVSWGROUXpBMVQxUkJkRTFSYTBSQ2QwbElRV2RzUkZsWE5XcGFWM2hvV2tjNFNFRm5NVk5SVmxaTlNVVXhRbFZzVWtwVWExWmhRbmRKUVVKM1NVeEpRMEZuU1VOQlowbERRV2RKUTBGSVFVRmpRVUoyTHk5QmQxWTVVV2M0UVVOQlNVVjNUSEJKTjNrclp6QjNaMHBDZDBsS1VrZFdkM2MzVG5waFdGSjJRbmRKVEVwRFFYaE5SRUYwVDFScmQweFVSVXBCZDJORFFuZEpTbEV5Um5WWk1sWnpXVmRTZGtKM1NVNVVWVVpUVTFWR1QxUjVRbEJWYkZKS1YyZGpRMEZCWTBORGVVRm5TVU5CWjBsRFFXZEpRMEZuUW5kQlNFRkJZaTh2ZDAxR1ptdEpVRUZCWjBOQ1RVRnVUVkpyZW05T1RVbERVV05EUTFWU2JHTk5UM3BqTW13d1luZGpRME41VVdkTlZFRjNURlJyTlUxRE1IaEJkMWRzY0dkclFVRjNZME5DZDBsS1VUSkdkVmt5Vm5OWlYxSjJRbmRKVGxWclJsWlVRMEpPVVZaS1ZWTlZOVVpYWjJORFFVRmpRME41UVdkSlEwRm5TVU5CWjBsRFFXZENkMEZJUVVGaUx5OTNUVVptTUVsUVFVRm5RMEpPUVVwclluZDZiMDVOU1VOUlkwTkRWVnBvV1ROU2RtTnRiSFZhZDJORFEzbFJaMDFVUVhkTVZHczFUVU13ZUVGM1dHVktkMnRCUVhkalEwSjNTVXBWUjFaMVdrZHNiR0p1VW14Q2QwbE9WV3RHVmxSRFFrNVJWa3BWVTFVMVJsZG5ZME5CUVdORFEzbEJaMGxEUVdkSlEwRm5TVU5CWjBKM1FVaEJRV0l2TDNkTlJtZEZTVkJCUVdkRFFraENXRlpYVVRCdlRrMUpRMUZqUTBORlRqRmpNMUoyV2tkc2FFSjNTVXhLUTBGNFRVUkJkRTlVYTNkTVZFVkVRbk00UWtGM1kwTkNkMGxLVlVkV2RWcEhiR3hpYmxKc1FuZEpUbFZyUmxaVVEwSk9VVlpLVlZOVk5VWlhaMk5EUVVGalEwTjVRV2RKUTBGblNVTkJaMGxEUVdkQ2QwRklRVUZpTHk5M1RVWm5NRWxRUVVGblEwSlFRV2xHTlZCUWNqbE5TVU5SWTBORFZWcG9XVE5TZG1OdGJIVmFkMk5EUTNsUlowMVVRWGRNVkdzMVRVTXdlRU5SVFVoQlVXTkRRMVZPYUdKdFRteGlSMFpyWW5kalEwVkdRbWhrU0Vwd1dUSnNhRWxHUW1oaVIwWTJaVzA0U0VGblFVaEJaM05uU1VOQlowbERRV2RKUTBGblNVRTlQUjRGVTNSaGRHVUZrQUZDZDNkSVFVRkpRa0ozUlVOQlVXTkRRV2RGU0VGM1NVSkNkMUZEUVZGalJrRm5SVWhDWjBsQ1FuZGpRMEZSWTBsQlowVklRMEZKUVVKM2IwTkJRV05LUVdkRlNFRkJZMEZDZDBGSVFVRkpRVUoyTHk5RFVVbFhVbTFHYW1SSE9YbGhWelZ1VlRJNWMyRlhUbkJrU0ZacldsaE9TbHBCYTBOQlFVbEJRWGRqUlVGblFVaEJRVWxDUW5kQlEwRlJZMEU9Hg5fIVVzZVZpZXdTdGF0ZWdkBg9kEBYMZgIBAgICAwIEAgUCBgIHAggCCQIKAgsWDDwrAAwBABYCHg9Db2xWaXNpYmxlSW5kZXhmPCsACwEAFggfHQIBHglTb3J0SW5kZXgC/////w8eCkdyb3VwSW5kZXgC/////w8eCVNvcnRPcmRlcgspeERldkV4cHJlc3MuRGF0YS5Db2x1bW5Tb3J0T3JkZXIsIERldkV4cHJlc3MuRGF0YS52OC4zLCBWZXJzaW9uPTguMy41LjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49Yjg4ZDE3NTRkNzAwZTQ5YQA8KwALAQAWCB8dAgIfHgL/////Dx8fAv////8PHyALKwYAPCsACwEAFggfHQIDHx4C/////w8fHwL/////Dx8gCysGADwrAAsBABYIHx0CBB8eAv////8PHx8C/////w8fIAsrBgA8KwALAQAWCB8dAgUfHgL/////Dx8fAv////8PHyALKwYAPCsACwEAFggfHQIGHx4C/////w8fHwL/////Dx8gCysGADwrAAsBABYIHx0CBx8eAv////8PHx8C/////w8fIAsrBgA8KwALAQAWCB8dAggfHgL/////Dx8fAv////8PHyALKwYAPCsACwEAFgYfIAsrBgAfHwL/////Dx8eAv////8PPCsACwEAFgYfIAsrBgAfHwL/////Dx8eAv////8PPCsACwEAFggfHQIJHx4C/////w8fHwL/////Dx8gCysGAA8WDAIBAgICAgICAgMCBAICAgICAgICAgICAhYEBZYBRGV2RXhwcmVzcy5XZWIuQVNQeEdyaWRWaWV3LkdyaWRWaWV3Q29tbWFuZENvbHVtbiwgRGV2RXhwcmVzcy5XZWIuQVNQeEdyaWRWaWV3LnY4LjMsIFZlcnNpb249OC4zLjUuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj1iODhkMTc1NGQ3MDBlNDlhBaABSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbi5DbGFzc2VzLkdyaWRWaWV3RGF0YVRleHRDb2x1bW5UZXh0LCBJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLCBWZXJzaW9uPTMuMC4xLjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49NzE4NjI4MDE3ZmZiOTY2ZQWgAUluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24uQ2xhc3Nlcy5HcmlkVmlld0RhdGFUZXh0Q29sdW1uRGF0ZSwgSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbiwgVmVyc2lvbj0zLjAuMS4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPTcxODYyODAxN2ZmYjk2NmUFpAFJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLkNsYXNzZXMuR3JpZFZpZXdEYXRhVGV4dENvbHVtbkRhdGVUaW1lLCBJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLCBWZXJzaW9uPTMuMC4xLjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49NzE4NjI4MDE3ZmZiOTY2ZWQCAQ9kFgQCAQ9kFgJmD2QWAgIBD2QWHAIBDxYCHwAFCEN1c3RvZGlhZAIDDxYCHwAFCjIyLzAxLzIwMTZkAgUPFgIfAAUBIGQCBw8WAh8ABS5Tb2xpY2l0dWQgZGUgQ3VzdG9kaWEgeSBBZG1pbmlzdHJhY2nDs24gZGUgQ1BEZAIJDxYCHwAFATFkAgsPFgIfAAULJCAxMDAtOTkwLTFkAg8PFgIfAAUHMTAwMDAxMWQCEQ8WAh8ABQM0NTNkAhMPFgIfAAUJUGVuZGllbnRlZAIVDxYCHwAFBiQgMCwwMGQCFw8WAh8ABQEwZAIZDxYCHwAFBiQgMCwwMGQCGw8WAh8ABQEwZAIdDxYCHwAFCiQgNS4wMDAsMDBkAgMPZBYCAgEPZBYCAgEPPCsAFgIADxYIHxlnHxpoHxsFzBwvd0VXQkI0RVJHRjBZUVdVRkVGQlFVRkJRVVZCUVVGQlFVRkJRVUZCVVVGQlFVRkJURUZCUVVGRmExcG9XVE5TZG1OdGJIVmFNRTV2V2xoR01WcFlUa3BhUWtwSFdWZE9NR0l6U25CaWJXUkVZVWRXZUdSWFZucFRWMUZFUVVGQlJsRnRSblZaTWpoR1VXMUdkVmt5T0VSQlFVRkpWVE5XYW1SWVNucFpWM2RKVlROV2FtUllTbnBaVjNkRVFVRkJUVlJ1Vm5SYVdFcDJVVEpvYkdOWVZteEVSVFV4WWxkV2VXSXdUbTlhV0VZeFdsRlJRVUZDVWtkYVYwNXZXVlphYkdKdFRuQmlWMnhzWW01U2RsWkhWalJrUWxKSFdsZE9iMWxXV214aWJVNXdZbGRzYkdKdVVuWldSMVkwWkVGalFVRlJaRVJaV0VKd1pFZEdjMEl3VG1oalIyd3dXVmQzUVhaUlJsUmxXRTR3V2xjd2RWUnVWbk5pUjBacFlrZFdaMDFXZEdKVk0yeDZaRWRXZEV4clVteFpNbXgwV1ZkM2MwbEhNWHBaTWpsNVlrZHNhVXhEUWxkYVdFcDZZVmM1ZFZCVVNYVk5RelIzVEdwQmMwbEZUakZpU0ZJeFkyMVZPV0p0VmpGa1NFcG9Za04zWjFWSVZtbGlSMnhxVXpKV05WWkhPWEphVnpRNVdXcGpNMWxVVm1wT1ZGbDRUMVJOTUZwVVFUUlBWakZrVEVOQ2RHTXlUblpqYlhod1dXbDNaMVp0Vm5sak1teDJZbW93ZVV4cVFYVk5RelIzVEVOQ1JHUlhlREJrV0Vwc1VGYzFiR1JZVW5sWlYzZHpTVVpDTVZsdGVIQlpNSFJzWlZaU2RtRXlWblZRVjBrelRqSkZNVmw2VlRKTlZHdDZUa2RWZDA5RWEwRkJRV2hIWVZoS2RGbFhOVEJhVVdoSFlWaEtkRmxYTlRCYVVXTkJRVUZrVTFwWFRqRmpiazUyUWpGS2JGa3pWbmxqTWpoSVFVRkJSMUpZVGpCWlYxSjJRbXRXZW1SSFJtdGlkMk5CUVVKR1RtSXpVbkJrYlRsRldsaE9hbU50YkhkWk1teDJZbWhHVG1JelVuQmtiVGxGV2xoT2FtTnRiSGRaTW14MlltZGpRVUZCTVZSaFZ6RnBZako0ZGxSWE9YVmFWMUpvUkZaT2NHSlhTblppUnpsT1lqSTFiRnBIUlVoQlFVSldRVUZCUVVacldtaFpNMUoyWTIxc2RWb3hUblppUjJ4cVlWaFNNVnBIVm5wVFYxRlJVbTFHYW1SSE9YbGhWelZ1VkVjNU1GcFlUa3BhUWtaSFdsZE9iMWxXUW5sYVdFNXNZbTVTYUZreWJIWmlaelZIV2xkT2IxbFdUblppUjJ4cVlWaFNNVnBCVWtSaVYwMHpRMVZLYUdKdFRuWldSMVkwWkVGc1VHTkhWbmxaVjA1d1lqSTBUbFpIYkhkaU1EbDNXbGhLYUZreWJIWmlhRkpRWTBkV2VWbFhUbkJpTWpWRldsaE9hbU50YkhkWk1teDJZbWRhUkdSWFZuVmtSMFZJVWtkc2JtRllVblpXYUVKSFdsZE9iMWxXV214aWJVNXdZbGRzYkdKdVVuWkdhMXBzV1RKb2FGWnRWblZaTW14MFlWZFdkV1JIT1VOVU1WSnNaVWhSVEZFeVJuZGhXRkpvWWtVNWRXSklhMGRVVnpsMVdsZFNhRVJGVG5aYVIyeHVZakF4ZG1KdFZtdFpVV1JOWVZkS2VWbFhVblpEUlVaTldWVTVlVnBIVm5WR1ZXeDFXak5LYkdNeU9VVlpXRkoyWXpGS2JGbFhlSEJsYlVaclluaGtWMXBZU25CYWEwNTJZbGRXZVZreWJHaGlSa3BzV1ZkNGNHVnRSbXRaVWxaWFdsaEtjRnBzVW14Wk1qVndXVEpHVTFwWFJuTmhXSEJvV2tkRldsVXpWbmRhV0VveVlWaE9jR0l5TlZkYVdFcHdXbXhLYkZsWGVIQmxiVVpyV1ZKb1IxbFhUakJpTTBwd1ltMWtSR0ZIVm5oa1YxWkdZek5TYUZwSE9YcFRWMUZOVkZjNU1HRllXblpSTWpscllWZGtka1F3TVhaa1Iyd3lZakZLYkZreWFHaGxiVGxLV2tKV1RtSXpVbkJrYlRsVFdsZE9iMWxZY0haU1Z6VXhZbFpTYkdWSVVVaFdXRTR4V1ZoS2NHSjRWa2RaVjA0d1lqTktjR0p0WkVSaFIxWjRaRmRXU21KWFJtNWFWelJOVVZWNGFGUXpTbXRhVnpWVldsaG9NRU5WYkhWYWJUbDVZbGRHYTJKM2FFOWpiVGxRWTIxU2JHSm9kRXBpYldSNVdsaE9hRnBIT1VWYVdFNTNaRmRXZWxKSFZsUmlNbmh3V1RKc01HUlhVVmxTV0U0d1dWZFNkbFZ0Vm1wYVdFSnFZVmM1ZFZKSE9XcGtWekZzWW01U2RrTXdUbTlhVjA1eVZUSnNibUp0Vm5sRFZVcFFVVEpHZDJGWVVtaGlRa0pEVkRCV05HTkhiSGxaV0ZKd1lqSTFSVmxZVW14RGEyUjVZVmRTVkdSSFJqQmtXRTFJVm0xc2VtRlhTbk5hVVhSRVdWaENjR1JIUm5OV1IxWTBaRUV4UTJJd1RtaGpSMnd3V1ZkNFZWcFlhREJFYTFwd1kyMHhhR0p1VW14VWJUbDBXVzVLYkVWRlduQmpiVEZvWW01U2JGRllRbXhpUjNod1drYzRUVkp0YkhsaVYwWjFaRWRXUkdSWGJEQkVNRnB3WTIweGFHSnVVbXhSVjJSc1ltMU9jRmxSTlVkaFdFcDBXVmMxTUZwVlRqRmFWelV3V1ZGd1IyRllTblJaVnpVd1dsVk9VVU5HU25aa01WSm9ZVEpXZFVOV1NuWmtNVkpvWVRKV2RVMW5lRk5pTTJSVldWZDBiR0pzVm5wYVdFbG1VVEk1ZEZwWVNtcGhWMFp6Vm0xV2VXRlhXbkJaTWtZd1lWYzVkVlZ0Vm5GYVYwNHdWbGhPYkdOb2FGVmFWMDUxWVZkT2FHSkdXbXhqYld4dFpWWktiR0Z0Vm1wa1JsWjZXbGhKVkZOWE5YZGtXRkpGV1ZoU2FGVnRWbkZhVjA0d1ZsaE9iR05uZUVkaFdFcDBXVmMxTUZwVlZuVlJiRkZHVkROS2ExcFhORVpWUjNob1pXMDRUMUV5T1hsamJWWnFaRWRzZG1KclVtaGtSMVZRVmpKc01HRkZVbkJhYlZwc1kyMVdkVmt5Vm5wRk1XUndaRWRvUldGWFdtMWFXRXBzWW0xT2JHTXhVbXhsU0ZGVVZqSnNNR0ZGVW1oa1IxWkZZVmRhYlZwWVNteGliVTVzWTNoV1dHRllVbTlSVnpGMlpGYzFNRkpIYkcxYWJWWjVXbGMxYWxwWVRVbFRWekYzWWpOS01GcFVSVWxUVnpGM1lqTktNRnBVU1VkU2JWWnFZVWRGZUVKcldteFpNbWhvVFdkc1JHSXpTbmxhVjA0d1dsZFJXRkp0Vm1waFIwWlhXbGMxYW1GWE1YQmFWelV3WWpCV2RXUklTbXhhTWtWWFVrZFdiVnBZU25sYVYxSkZXbGQ0Y0ZsdFZubGxWazR3V1ZoU01XTjNkRVZhV0U1cVkyMXNkMlJIYkhaaWFHaEZXbGRhYkdOdVNteGFSVkpzWWtkc2FWcFlTalZWTTFKb1pFaFdlbE5YVVU1UmJrcHdZbTFrVVdGSWJIcGhWMDVvWWtKc1IxcFhUbTlaVmxwc1ltMU9jR0pYYkd4aWJsSjJVbGMxTUdOdFZtNVpWMUoyUTBaQ2RtTXpVa1JpTWxKc1EydDRkbGxYVWtKaVZ6a3hZbTVSU1ZSSE9XaGFSVkpvWkVkVlIxUkhPV2hhUlU1UlJXdHNkVnB0T1hsaVYxWnJWa2M1UTFsWE5WVmlNMUpvWWtKU1JtTnVTblpqYkVwd1l6SjBSVnBZVG1wamJXeDNaRWRzZG1Kbk1WTmhXRTV5VVZoYWFHRlhlR2haYlhoc1JXeEtjR015ZEZWaU0xSm9Za1U1ZDFwWVNtaGtSMngyWW1oS1UyRllUbkpWYlZaNFpGZFdlbVJHVGpCWldGSnNVMWRSYWxKdFJtcGtSemw1WVZjMWJsRXlPWFZrU0VwMllrVjRjR0pYYkRCU01sWjFXbGhLYUdKR1RqQlpXRkpzVTFkUmJWSnRSbXBrUnpsNVlWYzFibEV5T1hWa1NFcDJZa1ZTZGxrelZuUmFWelV3VWpKV2RWcFlTbWhpUms0d1dWaFNiRk5YVVU1VmJWWnFXbGhDTUdGWE9YVlNSMFl3V2xGc1JHRkhWbXBoTUdob1l6Sm5VRkpIVm5OaFdGcHNZMjVzVVZwWE5XdGhWelZ1UW5kQlNFRkJZMEZDZDBGSEx5ODRSRUp1ZHpKQmQyTmlRWGRrYTBKQlYyVmFUazFFUW5kSldVMXFTWFpOUkVWMlRXcEJlRTVwUVhoTmFtOTNUVVJ2ZDAxRFFtaE1iVEIxUWxGaFNVVjNZME5EUXpSblVWVmtVRlpyVmxWRFVXTkRRMnRXZFZFelZucGtSemxyWVZkRlNrSjNTVVpLUTBGblNVTkJQUjRGVTNSaGRHVUZqQUZDZDNkSVFVRkpRa0ozUVVOQlFXTkNRV2RGU0VGblNVSkNkMDFEUVZGalJVRm5SVWhDVVVsQ1FuZFpRMEZSWTBoQlowVklRMEZKUWtKM2EwTkJVV05MUVdkRlNFRkJZMEZDZDBGSVFVRkpRVUoyTHk5RFVVbFRVbTFHYW1SSE9YbGhWelZ1VVRKb2JHTllWbXhqTUd4clExRkpRVUZuUVVSQ2QxRkRRVUZqUVVGblJVaEJRVWxDUW5kQlBRPT0fHGdkBg9kEBYMZgIBAgICAwIEAgUCBgIHAggCCQIKAgsWDDwrAAwBABYCHx1mPCsACwEAFgYfHgL/////Dx8fAv////8PHyALKwYAPCsACwEAFggfHQIBHx4C/////w8fHwL/////Dx8gCysGADwrAAsBABYIHx0CAh8eAv////8PHx8C/////w8fIAsrBgA8KwALAQAWCB8dAgMfHgL/////Dx8fAv////8PHyALKwYAPCsACwEAFggfHQIEHx4C/////w8fHwL/////Dx8gCysGADwrAAsBABYIHx0CBR8eAv////8PHx8C/////w8fIAsrBgA8KwALAQAWCB8dAgYfHgL/////Dx8fAv////8PHyALKwYAPCsACwEAFggfHQIHHx4C/////w8fHwL/////Dx8gCysGADwrAAsBABYIHx0CCB8eAv////8PHx8C/////w8fIAsrBgA8KwALAQAWCB8dAgkfHgL/////Dx8fAv////8PHyALKwYAPCsACwEAFgofHQIKHgpDb2xWaXNpYmxlZx8eAv////8PHx8C/////w8fIAsrBgAPFgwCAQICAgICAgICAgMCBAICAgICAgICAgIWBAWWAURldkV4cHJlc3MuV2ViLkFTUHhHcmlkVmlldy5HcmlkVmlld0NvbW1hbmRDb2x1bW4sIERldkV4cHJlc3MuV2ViLkFTUHhHcmlkVmlldy52OC4zLCBWZXJzaW9uPTguMy41LjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49Yjg4ZDE3NTRkNzAwZTQ5YQWgAUluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24uQ2xhc3Nlcy5HcmlkVmlld0RhdGFUZXh0Q29sdW1uVGV4dCwgSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbiwgVmVyc2lvbj0zLjAuMS4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPTcxODYyODAxN2ZmYjk2NmUFoAFJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLkNsYXNzZXMuR3JpZFZpZXdEYXRhVGV4dENvbHVtbkRhdGUsIEluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24sIFZlcnNpb249My4wLjEuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj03MTg2MjgwMTdmZmI5NjZlBaIBSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbi5DbGFzc2VzLkdyaWRWaWV3RGF0YVRleHRDb2x1bW5BbW91bnQsIEluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24sIFZlcnNpb249My4wLjEuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj03MTg2MjgwMTdmZmI5NjZlZAICD2QWBAIBD2QWAmYPZBYCAgEPZBYcAgEPFgIfAAUIQ3VzdG9kaWFkAgMPFgIfAAUKMjIvMDEvMjAxNmQCBQ8WAh8ABQEgZAIHDxYCHwAFLlNvbGljaXR1ZCBkZSBDdXN0b2RpYSB5IEFkbWluaXN0cmFjacOzbiBkZSBDUERkAgkPFgIfAAUBMWQCCw8WAh8ABQskIDEwMC05OTAtMWQCDw8WAh8ABQcxMDAwMDExZAIRDxYCHwAFAzQ1M2QCEw8WAh8ABQlQZW5kaWVudGVkAhUPFgIfAAUGJCAwLDAwZAIXDxYCHwAFATBkAhkPFgIfAAUGJCAwLDAwZAIbDxYCHwAFATBkAh0PFgIfAAUKJCA1LjAwMCwwMGQCAw9kFgICAQ88KwALAQAPFggeCERhdGFLZXlzFgAeC18hSXRlbUNvdW50AgEeCVBhZ2VDb3VudAIBHhVfIURhdGFTb3VyY2VJdGVtQ291bnQCAWQWAmYPZBYCAgEPZBYCZg9kFgICAQ9kFgJmDxUEcy4uLy4uL0ZsYXNoQ29udHJvbHMvVmlld2VyLnN3Zj9pbWFnZU5hbWU9aHR0cHM6Ly8xMC4xLjc1LjEwNC9QYWdlcy9Db21tb24vSW1hZ2VuQ2hlcXVlLmFzcHg/aWRJbWFnZW49MTM5NDglMjZmYWNlPTBzLi4vLi4vRmxhc2hDb250cm9scy9WaWV3ZXIuc3dmP2ltYWdlTmFtZT1odHRwczovLzEwLjEuNzUuMTA0L1BhZ2VzL0NvbW1vbi9JbWFnZW5DaGVxdWUuYXNweD9pZEltYWdlbj0xMzk0OCUyNmZhY2U9MHMuLi8uLi9GbGFzaENvbnRyb2xzL1ZpZXdlci5zd2Y/aW1hZ2VOYW1lPWh0dHBzOi8vMTAuMS43NS4xMDQvUGFnZXMvQ29tbW9uL0ltYWdlbkNoZXF1ZS5hc3B4P2lkSW1hZ2VuPTEzOTQ4JTI2ZmFjZT0xcy4uLy4uL0ZsYXNoQ29udHJvbHMvVmlld2VyLnN3Zj9pbWFnZU5hbWU9aHR0cHM6Ly8xMC4xLjc1LjEwNC9QYWdlcy9Db21tb24vSW1hZ2VuQ2hlcXVlLmFzcHg/aWRJbWFnZW49MTM5NDglMjZmYWNlPTFkAgIPFgIeBXN0eWxlBQ1kaXNwbGF5Om5vbmU7FgICBQ8WAh8YaBYEAgEPEBYGHxYFBVRpdGxlHxUFA1VyaR8XZxAVAQAVAQAUKwMBZxQrAQBkAgMPFgIfJgUNZGlzcGxheTpub25lOxYCZg9kFgICAQ8WAh8mBQ1kaXNwbGF5Om5vbmU7ZBgCBR5fX0NvbnRyb2xzUmVxdWlyZVBvc3RCYWNrS2V5X18WBgUoY3RsMDAkTWFpbkhvbGRlciRIaXN0b3J5RmlsdGVyJERhdGFQYW5lbAU7Y3RsMDAkTWFpbkhvbGRlciRBcHByb2JhbHNQZW5kaW5nJEZhY3RvcmluZ1JlcXVlc3RHcmlkUGFuZWwFNWN0bDAwJE1haW5Ib2xkZXIkQVBIZWFkZXIkcGFuZWxPcGVyYXRpb25SZXF1ZXN0SGVhZGVyBTljdGwwMCRNYWluSG9sZGVyJEFQRGV0YWxsZUdyaWxsYSRUcmFuc2FjdGlvbnNIaXN0b3J5UGFuZWwFPmN0bDAwJE1haW5Ib2xkZXIkQVBIZWFkZXJJbWFnZVZpZXckcGFuZWxPcGVyYXRpb25SZXF1ZXN0SGVhZGVyBRljdGwwMCRpbWFnZUJ1dHRvbkNvbGxhcHNlBRdjdGwwMCRNYWluSG9sZGVyJHZpc3Rhcw8PZAICZH4dj3quKtUWOq5bnHY+lahfXsfy">
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+var theForm = document.forms['aspnetForm'];
+if (!theForm) {
+    theForm = document.aspnetForm;
+}
+function __doPostBack(eventTarget, eventArgument) {
+    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+        theForm.__EVENTTARGET.value = eventTarget;
+        theForm.__EVENTARGUMENT.value = eventArgument;
+        theForm.submit();
+    }
+}
+//]]>
+</script>
+
+
+<script src="./WebResource(1).axd" type="text/javascript"></script>
+
+<script src="./DataEntry.js.descarga"></script><script src="./DataEntry.js.descarga"></script><script src="./date.js.descarga"></script><script src="./DataEntry.js.descarga"></script>
+						<style>							
+							P.PanelControlTitleStyle
+							{
+ 								font-family:verdana;
+ 								font-size: 12px;
+								font-weight : bold;
+								text-align: center;  								
+							}
+						</style>						
+						<script language="javascript">
+						function MinMaxPanelControl(cntrlId)
+						{
+						    var imgPath='/App_Themes/Default/Images/';	
+					
+							//Get state from hidden control.													
+							if ( document.getElementById(cntrlId).style.display == 'none' )
+							{
+								document.getElementById(cntrlId).style.display = '';						
+								document.getElementById(cntrlId+'_imgPlusMinus').src = imgPath + 'bot-grid-minus.gif';
+							}
+							else 
+							{
+								document.getElementById(cntrlId).style.display = 'none';								
+								document.getElementById(cntrlId+'_imgPlusMinus').src = imgPath + 'bot-grid-plus.gif';
+							}
+						}
+						</script>
+			
+<script type="text/javascript">
+//<![CDATA[
+var __cultureInfo = '{"name":"es-UY","numberFormat":{"CurrencyDecimalDigits":2,"CurrencyDecimalSeparator":",","IsReadOnly":false,"CurrencyGroupSizes":[3],"NumberGroupSizes":[3],"PercentGroupSizes":[3],"CurrencyGroupSeparator":".","CurrencySymbol":"$U","NaNSymbol":"NeuN","CurrencyNegativePattern":14,"NumberNegativePattern":1,"PercentPositivePattern":0,"PercentNegativePattern":0,"NegativeInfinitySymbol":"-Infinito","NegativeSign":"-","NumberDecimalDigits":2,"NumberDecimalSeparator":",","NumberGroupSeparator":".","CurrencyPositivePattern":2,"PositiveInfinitySymbol":"Infinito","PositiveSign":"+","PercentDecimalDigits":2,"PercentDecimalSeparator":",","PercentGroupSeparator":".","PercentSymbol":"%","PerMilleSymbol":"‰","NativeDigits":["0","1","2","3","4","5","6","7","8","9"],"DigitSubstitution":1},"dateTimeFormat":{"AMDesignator":"a.m.","Calendar":{"MinSupportedDateTime":"\/Date(-62135586000000)\/","MaxSupportedDateTime":"\/Date(253402300799999)\/","AlgorithmType":1,"CalendarType":1,"Eras":[1],"TwoDigitYearMax":2029,"IsReadOnly":false},"DateSeparator":"/","FirstDayOfWeek":1,"CalendarWeekRule":0,"FullDateTimePattern":"dddd, dd\u0027 de \u0027MMMM\u0027 de \u0027yyyy hh:mm:ss tt","LongDatePattern":"dddd, dd\u0027 de \u0027MMMM\u0027 de \u0027yyyy","LongTimePattern":"hh:mm:ss tt","MonthDayPattern":"dd MMMM","PMDesignator":"p.m.","RFC1123Pattern":"ddd, dd MMM yyyy HH\u0027:\u0027mm\u0027:\u0027ss \u0027GMT\u0027","ShortDatePattern":"dd/MM/yyyy","ShortTimePattern":"hh:mm tt","SortableDateTimePattern":"yyyy\u0027-\u0027MM\u0027-\u0027dd\u0027T\u0027HH\u0027:\u0027mm\u0027:\u0027ss","TimeSeparator":":","UniversalSortableDateTimePattern":"yyyy\u0027-\u0027MM\u0027-\u0027dd HH\u0027:\u0027mm\u0027:\u0027ss\u0027Z\u0027","YearMonthPattern":"MMMM\u0027 de \u0027yyyy","AbbreviatedDayNames":["dom","lun","mar","mié","jue","vie","sáb"],"ShortestDayNames":["do","lu","ma","mi","ju","vi","sá"],"DayNames":["domingo","lunes","martes","miércoles","jueves","viernes","sábado"],"AbbreviatedMonthNames":["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic",""],"MonthNames":["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre",""],"IsReadOnly":false,"NativeCalendarName":"calendario gregoriano","AbbreviatedMonthGenitiveNames":["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic",""],"MonthGenitiveNames":["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre",""]}}';//]]>
+</script>
+
+<script src="./ScriptResource.axd" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+if (typeof(Sys) === 'undefined') throw new Error('ASP.NET Ajax client-side framework failed to load.');
+//]]>
+</script>
+
+<script src="./ScriptResource(1).axd" type="text/javascript"></script>
+<div>
+
+	<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEWCAKN05LuBQLVzcLBCAKQrOfJCwLOn9DtDAKQyrTFCAL9tr3XCALRqszJDgKJt+C7AaFfbT9gilwWOehond7j34cCtCxq">
+</div>
+    <script type="text/javascript">
+//<![CDATA[
+Sys.WebForms.PageRequestManager._initialize('ctl00$scriptManager', document.getElementById('aspnetForm'));
+Sys.WebForms.PageRequestManager.getInstance()._updateControls([], [], [], 90);
+//]]>
+</script>
+
+    <input type="hidden" id="PageLinkData" name="PageLinkData" value="">
+    <input type="hidden" id="PageLinkUrl" name="PageLinkUrl" value="">
+    <input type="hidden" id="PageUrl" value="/Pages/Factoring/FactoringHistorial.aspx">
+    <table id="ctl00_tableContent" width="100%" border="0" cellpadding="0" cellspacing="0" class="ic-content">
+	<tbody><tr>
+		<td class="ic-content-left-aux">
+                <img src="./log-img-aux-left-bottom.gif" width="9" height="110">
+            </td>
+		<td style="width: 100%">
+                <table width="100%" border="0" cellpadding="0" cellspacing="0" class="ic-content-left">
+                    <tbody><tr>
+                        <td id="TdCPM" class="ic-content-space-top" valign="top">
+                            <table id="TablaCPM" width="100%" border="0" cellspacing="0" cellpadding="0">
+                                
+                                <tbody><tr>
+                                    <td>
+                                        <table id="ctl00_tableHeader" width="100%" border="0" cellspacing="0" cellpadding="0">
+			<tbody><tr>
+				<td class="ic-breadcrumb-container">
+                                                    
+                                                    &gt;
+                                                    <span id="ctl00_siteMapNavigator"><a href="http://10.1.75.104:9080/Pages/Factoring/FactoringHistorial.aspx#ctl00_siteMapNavigator_SkipLink"><img alt="Skip Navigation Links" height="0" width="0" src="./WebResource(2).axd" style="border-width:0px;"></a><span><a href="http://10.1.75.104:9080/Home.aspx">Posición Consolidada</a></span><span> &gt; </span><span><a>Factoring/Depósitos</a></span><span> &gt; </span><span>Historial</span><a id="ctl00_siteMapNavigator_SkipLink"></a></span>
+                                                    </td>
+				<td class="ic-toolbar-container">
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tbody><tr>
+                                                            <td width="16">
+                                                                <img src="./ico-print.gif" id="ctl00_Img4" width="16" height="16">
+                                                            </td>
+                                                            <td class="ic-links-toolbar">
+                                                                <a href="http://10.1.75.104:9080/Pages/Factoring/FactoringHistorial.aspx#" onclick="javascript: GoPrint();">
+                                                                    Imprimir página</a>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody></table>
+                                                </td>
+			</tr>
+		</tbody></table>
+		
+                                    </td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>
+                                        <span id="ctl00_labelTitle" class="ic-page-title">Historial</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td id="ctl00_cellRequiered" align="right">&nbsp;</td>
+		
+                                </tr>
+                                <tr>
+                                    <td width="95%" align="center">
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                            <tbody><tr>
+                                                <td align="right">
+                                                    
+                                                    
+                                                </td>
+                                            </tr>
+                                        </tbody></table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="100%" align="center">
+                                        <div id="ic-loading" class="ic-loading-bg" style="display: none;">
+                                            <div class="ic-loading">
+                                                <div id="message">
+                                                    <img src="./cargandoBAR.gif" id="ctl00_imgLoading"><br>
+                                                    <span id="ctl00_WaitingMessage">Procesando...</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="mainContainer">
+                                            
+
+    <script language="javascript" type="text/javascript">
+        function ValidateOneSelection() {
+            var hasSelection = false;
+
+            if (TransactionsASPxGridView._getSelectedRowCount() == 1) {
+                hasSelection = true;
+            }
+            else {
+                alert('Debe seleccionar un registro');
+            }
+
+            return hasSelection;
+        }
+        function ValidateAllSelection() {
+            var hasSelection = false;
+
+            if (TransactionsASPxGridView._getSelectedRowCount() > 0) {
+                hasSelection = true;
+            }
+            else {
+                alert('Debe seleccionar por lo menos un registro');
+            }
+
+            return hasSelection;
+        }
+        function NotImplemented() {
+            alert('Funcion no implementada');
+        }
+    </script>
+
+                          
+            <table class="ic-grid-border" cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+			<tbody><tr>
+				<td><table id="ctl00_MainHolder_APHeaderImageView_panelOperationRequestHeader_thePanel" class="ic-grid" cellspacing="0" cellpadding="0" align="Center" border="0" style="width:100%;border-collapse:collapse;">
+					<tbody><tr class="ic-grid-title-row">
+						<td><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+							<tbody><tr>
+								<td class="ic-grid-title-cell-left">&nbsp;</td><td class="ic-grid-title-cell" align="left" style="white-space:nowrap;">Consulta de Operaciones</td><td class="ic-gridB-title-cell-right"><img id="ctl00_MainHolder_APHeaderImageView_panelOperationRequestHeader_imgPlusMinus" onclick="javascript:MinMaxPanelControl(&#39;ctl00_MainHolder_APHeaderImageView_panelOperationRequestHeader&#39;)" src="./bot-grid-minus.gif" alt="Minimizar/Maximizar el panel" align="absmiddle" style="border-width:0px;cursor:hand;"></td>
+							</tr>
+						</tbody></table></td>
+					</tr><tr>
+						<td align="center"><div id="ctl00_MainHolder_APHeaderImageView_panelOperationRequestHeader" style="color:Black;border-color:DodgerBlue;font-family:verdana;font-size:10pt;width:100%;display:;">
+	
+    <div id="ctl00_MainHolder_APHeaderImageView_panelAccountData">
+		
+            </div><table style="width: 100%" border="0" cellpadding="0" cellspacing="0">
+        <tbody><tr class="ic-form-row">
+                <td class="ic-form-label" width="10%">
+                    Tipo de Operación:
+                </td>
+                <td class="ic-form-data" width="15%">
+                    Custodia
+                </td>
+                <td class="ic-form-label" width="20%">
+                    Fecha de Ingreso:
+                </td>
+                <td class="ic-form-data" width="10%">
+                    22/01/2016
+                </td>
+                <td class="ic-form-label" width="10%">
+                    F. Liquidación:
+                </td>
+                <td class="ic-form-data" width="20%">
+                     
+                </td>
+            </tr>
+            <tr class="ic-form-row">
+                <td class="ic-form-label" width="10%">
+                    Operación:
+                </td>
+                <td class="ic-form-data" width="15%">
+                    Solicitud de Custodia y Administración de CPD
+                </td>
+                <td class="ic-form-label" width="20%">
+                    Cantidad de Cheques:
+                </td>
+                <td class="ic-form-data" width="10%">
+                    1
+                </td>
+                 <td class="ic-form-label" width="10%">
+                    Cuenta
+                </td>
+                <td class="ic-form-data" width="20%">
+                    $ 100-990-1
+                </td>
+            </tr>
+            <tr class="ic-form-row">
+                <td class="ic-form-label" width="10%">
+                    Nro. Solicitud:
+                </td>
+                <td class="ic-form-data" width="15%">
+                    1000011
+                </td>
+                <td class="ic-form-label" width="20%">
+                    Nro de Operación:
+                </td>
+                <td class="ic-form-data" width="10%">
+                    453
+                </td>
+                  <td class="ic-form-label" width="10%">
+                    Estado
+                </td>
+                <td class="ic-form-data" width="20%">
+                    Pendiente
+                </td>
+            </tr>
+            <tr class="ic-form-row">
+                <td class="ic-form-label" width="15%">
+                    Monto Rechazado
+                </td>
+                <td class="ic-form-data" width="15%">
+                    $ 0,00
+                </td>
+                <td class="ic-form-label" width="20%">
+                    Cantidad de Cheques Rechazados
+                </td>
+                <td class="ic-form-data" width="10%">
+                    0
+                </td>
+                <td class="ic-form-label" width="10%">
+                     
+                </td>
+                <td class="ic-form-data" width="20%">
+                     
+                </td>
+            </tr>
+            <tr class="ic-form-row">
+                <td class="ic-form-label" width="15%">
+                    Monto No Tomados
+                </td>
+                <td class="ic-form-data" width="15%">
+                    $ 0,00
+                </td>
+                <td class="ic-form-label" width="20%">
+                    Cantidad de Cheques No Tomados
+                </td>
+                <td class="ic-form-data" width="10%">
+                    0
+                </td>
+                <td class="ic-form-label" width="10%">
+                    Importe
+                </td>
+                <td class="ic-form-data" width="20%">
+                    $ 5.000,00
+                </td>
+            </tr>                        
+        
+	
+    </tbody></table>
+<input name="ctl00$MainHolder$APHeaderImageView$ctl00$MainHolder$APHeaderImageView$panelOperationRequestHeader_hdnMinimizeState" type="text" value="False" id="ctl00_MainHolder_APHeaderImageView_ctl00_MainHolder_APHeaderImageView_panelOperationRequestHeader_hdnMinimizeState" class="ic-control-text" onkeypress="return validCharactersOnly(this, event, &quot;&quot;)" style="display:none">
+</div></td>
+					</tr>
+				</tbody></table></td>
+			</tr>
+		</tbody></table>
+
+            &nbsp;
+            <table>
+                <tbody><tr>
+                    <td>
+                        <div id="ctl00_MainHolder_IdImagenCheque">
+			
+                         <table cellspacing="0" rules="all" border="0" id="ctl00_MainHolder_dgCheques" style="border-width:0px;border-style:None;width:100%;border-collapse:collapse;">
+				<tbody><tr>
+					<td>&nbsp;</td>
+				</tr><tr>
+					<td class="ic-grid-cell-left">
+	                                    
+<script language="javascript" type="text/javascript">
+
+    function DarVueltaImagen() {        
+        if (window.document.getElementById('trReverso').style.display == 'none') {
+            window.document.getElementById('trReverso').style.display = 'inline';
+            window.document.getElementById('trAnverso').style.display = 'none';
+        }
+        else {
+            window.document.getElementById('trReverso').style.display = 'none';
+            window.document.getElementById('trAnverso').style.display = 'inline';
+        }
+    }
+    
+</script>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+    <tbody><tr id="trAnverso">
+        <td style="width:100%" valign="top">
+            <object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=7,0,0,0" width="1030" height="480" id="ViewerA" align="middle">
+            <param name="movie" value="../../FlashControls/Viewer.swf?imageName=https://10.1.75.104/Pages/Common/ImagenCheque.aspx?idImagen=13948%26face=0">
+            <param name="quality" value="high">
+            <param name="bgcolor" value="#ffffff">
+            <embed src="../../FlashControls/Viewer.swf?imageName=https://10.1.75.104/Pages/Common/ImagenCheque.aspx?idImagen=13948%26face=0" quality="high" bgcolor="#ffffff" width="1030" height="480" align="middle" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer">
+            </object>
+        </td>
+      </tr>
+      <tr id="trReverso" style="display:none">
+        <td style="width:100%" valign="top">
+            <object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=7,0,0,0" width="1030" height="480" id="ViewerB" align="middle">
+            <param name="movie" value="../../FlashControls/Viewer.swf?imageName=https://10.1.75.104/Pages/Common/ImagenCheque.aspx?idImagen=13948%26face=1">
+            <param name="quality" value="high">
+            <param name="bgcolor" value="#ffffff">
+            <embed src="../../FlashControls/Viewer.swf?imageName=https://10.1.75.104/Pages/Common/ImagenCheque.aspx?idImagen=13948%26face=1" quality="high" bgcolor="#ffffff" width="1030" height="480" align="middle" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer">
+            </object>
+        </td>
+      </tr>
+      <tr>  
+        <td valign="top" align="right">
+            <img id="ibReverso" alt="Reverso" src="./ic_icon_refresh.gif" onclick="DarVueltaImagen();">
+        </td>
+    </tr>
+</tbody></table>
+
+
+
+      
+                                </td>
+				</tr>
+			</tbody></table>	                                        
+                        
+		</div>
+                    </td>
+                </tr>
+            </tbody></table>                                           
+            <table width="100%">
+                <tbody><tr>
+                    <td style="width: 100%">
+                    </td>
+                    <td align="right" nowrap="nowrap">
+                        <a id="ctl00_MainHolder_lbBackToDetailView" class="ic-button-navigation" href="javascript:WebForm_DoPostBackWithOptions(new WebForm_PostBackOptions(&quot;ctl00$MainHolder$lbBackToDetailView&quot;, &quot;&quot;, true, &quot;&quot;, &quot;&quot;, false, true))">Volver</a>
+                    </td>                    
+                    <td align="right" nowrap="nowrap">
+                        <a id="ctl00_MainHolder_btImgAnterior" class="ic-button-navigation-large" href="javascript:WebForm_DoPostBackWithOptions(new WebForm_PostBackOptions(&quot;ctl00$MainHolder$btImgAnterior&quot;, &quot;&quot;, true, &quot;&quot;, &quot;&quot;, false, true))">Imagen Anterior</a>
+                    </td>
+                    <td align="right" nowrap="nowrap">
+                        <a id="ctl00_MainHolder_btImgSiguiente" class="ic-button-navigation-large" href="javascript:WebForm_DoPostBackWithOptions(new WebForm_PostBackOptions(&quot;ctl00$MainHolder$btImgSiguiente&quot;, &quot;&quot;, true, &quot;&quot;, &quot;&quot;, false, true))">Próxima imagen</a>
+                    </td>
+                    <td align="right" nowrap="nowrap">
+                        <a id="ctl00_MainHolder_btImprimir" class="ic-button-navigation-large" href="javascript:WebForm_DoPostBackWithOptions(new WebForm_PostBackOptions(&quot;ctl00$MainHolder$btImprimir&quot;, &quot;&quot;, true, &quot;&quot;, &quot;&quot;, false, true))">Imprimir</a>
+                    </td>
+                </tr>
+            </tbody></table>
+         
+
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="right">
+                                        <div id="ctl00_validationSummaryFooter" style="color:Red;font-size:10px;display:none;">
+
+		</div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="95%" align="center">
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                            <tbody><tr>
+                                                <td align="right">
+                                                    
+                                                    
+                                                </td>
+                                            </tr>
+                                        </tbody></table>
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="ic-content-footer">
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                <tbody><tr class="ic-content-footer-dottedline">
+                                    <td align="right" nowrap="nowrap" style="width: 90%">
+                                    </td>
+                                    <td align="right" nowrap="nowrap" style="width: 10%">
+                                        <a id="ctl00_LinkButtonTermsAndConditions" class="ic-grid-link" href="javascript:__doPostBack(&#39;ctl00$LinkButtonTermsAndConditions&#39;,&#39;&#39;)">Términos y Condiciones</a>
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                </tbody></table>
+            </td>
+		<td id="ctl00_cellContentRight" class="ic-content-space-top-right" valign="top" style="display:none;">
+                <table class="ic-content-right" border="0" cellspacing="0" cellpadding="0">
+                    <tbody><tr>
+                        <td>
+                            <img src="./pixel.gif" width="8" height="1">
+                        </td>
+                        <td class="ic-right-panel">
+                            <table border="0" cellpadding="0" cellspacing="0" class="ic-right-panel-content">
+                                <tbody><tr>
+                                    <td width="8" class="ic-right-panel-collapse">
+                                        <input type="image" name="ctl00$imageButtonCollapse" id="ctl00_imageButtonCollapse" src="./bot-right-collapse.gif" style="height:47px;width:9px;border-width:0px;">
+                                    </td>
+                                    
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                </tbody></table>
+            </td>
+	</tr>
+</tbody></table>
+
+    
+    
+<script type="text/javascript">
+//<![CDATA[
+var Page_ValidationSummaries =  new Array(document.getElementById("ctl00_validationSummaryFooter"));
+//]]>
+</script>
+
+<script type="text/javascript">
+//<![CDATA[
+var ctl00_validationSummaryFooter = document.all ? document.all["ctl00_validationSummaryFooter"] : document.getElementById("ctl00_validationSummaryFooter");
+ctl00_validationSummaryFooter.headertext = "Formulario inválido, por favor revise los datos ingresados:";
+ctl00_validationSummaryFooter.showsummary = "False";
+//]]>
+</script>
+
+
+<script type="text/javascript">
+//<![CDATA[
+
+document.getElementById('ctl00_validationSummaryFooter').dispose = function() {
+    Array.remove(Page_ValidationSummaries, document.getElementById('ctl00_validationSummaryFooter'));
+}
+Sys.Application.initialize();
+//]]>
+</script>
+</form>
+
+
+<div class="ui-dialog ui-widget ui-widget-content ui-corner-all" tabindex="-1" role="dialog" aria-labelledby="ui-dialog-title-sessionTimeoutWarning" style="display: none; z-index: 1000; outline: 0px;"><div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix"><span class="ui-dialog-title" id="ui-dialog-title-sessionTimeoutWarning">&nbsp;</span><a href="http://10.1.75.104:9080/Pages/Factoring/FactoringHistorial.aspx#" class="ui-dialog-titlebar-close ui-corner-all" role="button" style="display: none;"><span class="ui-icon ui-icon-closethick">close</span></a></div><div id="sessionTimeoutWarning" style="background-color: rgb(255, 255, 255); padding: 0px; height: 100%;" class="ui-dialog-content ui-widget-content">
+        <div id="sessionTimeoutWarningHeader">
+            <table width="100%">
+                 <tbody><tr>
+                    <td colspan="2" align="center" class="ic-form-data-modal">
+                        La sesión finalizará en <span id="sessionTimeoutCountdown"></span>&nbsp;segundos.
+                        Para seguir operando seleccioná “Continuar”
+                    </td>
+                </tr>
+            </tbody></table>
+        </div>
+    </div><div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix"><div class="ui-dialog-buttonset"><button type="button">Continuar </button><button type="button">Finalizar sesión</button></div></div></div></body></html>

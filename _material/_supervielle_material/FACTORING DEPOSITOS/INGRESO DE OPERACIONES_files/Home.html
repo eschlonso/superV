@@ -1,0 +1,1292 @@
+
+<!-- saved from url=(0063)http://10.1.75.104:9080/Pages/Factoring/IngresoOperaciones.aspx -->
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><script src="./jquery-1.7.2.min.js.descarga" type="text/javascript"></script>
+<script src="./jquery-1.7.1.js.descarga" type="text/javascript"></script>
+<script src="./jquery-ui-1.8.19.custom.min.js.descarga" type="text/javascript"></script>
+<script src="./jquery.formatCurrency-1.4.0.js.descarga" type="text/javascript"></script>
+<script src="./idle-timer.js.descarga" type="text/javascript"></script>
+<script src="./idle-timer.min.js.descarga" type="text/javascript"></script>
+<script language="javascript" type="text/javascript">
+
+function Logout() {
+        if (confirm("¿ Desea salir del sistema ?") == true) {
+                    
+            window.location =  '/'+ "Logout.aspx";
+        }
+       
+    }
+    
+var focusedFormControl;    
+var dateFormat = 'dd/mm/aaaa';
+var applicationRoot = '/';      
+function OnRowClick(sender, args) {
+    if (sender.GetSelectedRowCount() == 0) {
+        sender.UnselectRowOnPage(args.visibleIndex);
+        SetPageLinkData("");
+    }
+    else {
+        _aspxClearSelection();
+        sender._selectAllRowsOnPage(false);
+        sender.SelectRow(args.visibleIndex, true);
+        SetPageLinkData(sender.GetRowKey(args.visibleIndex));
+    }
+}
+
+if (history.forward(1))
+{
+
+    location.replace(history.forward(1))
+} 
+
+function PrintPage() {
+
+    window.print();
+}
+
+function GoMyOption(select)
+{
+    var url = select.options[select.selectedIndex].value;
+    if( url != "")
+        window.location = url;
+}
+
+function GoFavourites(select)
+{
+
+    var url = select.options[select.selectedIndex].value;
+    if( url != "")
+        window.location = url;
+}
+
+function GoPrint()
+{
+
+window.print();
+}
+
+function addEvent(elm, evType, fn, useCapture)
+{
+
+  if (elm.addEventListener){
+    elm.addEventListener(evType, fn, useCapture);
+    return true;
+  } else if (elm.attachEvent){
+    var r = elm.attachEvent("on"+evType, fn);
+    return r;
+  } else {
+    alert("Handler could not be removed");
+  }
+} 
+
+function SetPageLinkData(data)
+{
+    pageLinkData = document.getElementById('PageLinkData');
+    pageLinkData.value = data;
+}
+
+function SetPageLinkUrl(url)
+{
+    pageLinkUrl = document.getElementById('PageLinkUrl');
+    pageLinkUrl.value = url;
+}
+
+function doPageLink(id)
+{
+    __doPostBack(id, 'PageLinkEvent');
+}
+
+function imprimirEstadoCuenta()
+{
+											
+    var ficha = document.getElementById('printDiv');		
+    var ventimp = window.open('', 'popimpr','height=450, width=550, scrollbars=1');																						
+    var fichaHTML = new String(ficha.innerHTML);
+    fichaHTML = fichaHTML.replace('Seleccione un período y oprima "Consultar".'," ");
+    //var i = document.getElementById('ctl00_MainHolder_panelDetalle_imgPlusMinus');
+    var html  = "<html>\n<head>\n<link rel=\"stylesheet\" type=\"text/css\" href=\"..\\..\\App_Themes\\Default\\Default.css \" />" 
+                + "</head><table width=\"100%\"><tr bgcolor=\"#FF0000\"><td><img src=\"..\\..\\App_Themes\\Default\\Images\\logoSantander.gif\" /></td></tr></table>" 
+                + fichaHTML 
+                + "</html>";
+    ventimp.document.write( html );
+    ventimp.document.close();
+    ventimp.print( );
+    ventimp.close();
+					
+}
+
+ function removeInvalidCharacters(control) {
+ 
+            !(/^[A-zÑñ0-9 ]*$/i).test(control.value) ? control.value = control.value.replace(/[^A-zÑñ0-9 ]/ig, '') : null
+        }
+        
+  function removeInvalidNumbers(control) {
+            !(/^[0-9,]*$/i).test(control.value) ? control.value = control.value.replace(/[^0-9,]/ig, '') : null
+        }
+function showLoading()
+{
+//debugger;
+    // aquí le pasamos la clase o id de nuestro div a centrar (en este caso "caja")
+    $('.ic-loading').css({
+       position:'absolute',
+       left: ($('#mainContainer').width()/2 - $('.ic-loading').outerWidth())/2,
+       //top: ($('#mainContainer').height()/2 - $('.ic-loading').outerHeight())/2
+       top: ($('#mainContainer').height()/2 - $('ic-loading').height()/2)
+    });
+    
+    $('#mainContainer').css('display','none');
+    $('#ic-loading').css('display','block');
+}
+//ModalDialog SessionTimeout
+var idleTime = (parseInt('1170') * 1000); // number of miliseconds until the user is considered idle
+var initialSessionTimeoutMessage = "La sesión finalizará en <span id='sessionTimeoutCountdown'></span> segundos. Para seguir operando seleccioná “Continuar”<br /><br />";
+var sessionTimeoutCountdownId = 'sessionTimeoutCountdown';
+var redirectAfter = (parseInt('30')) ; // number of seconds to wait before redirecting the user
+var redirectTo = '/' + "Logout.aspx"; // URL to relocate the user to once they have timed out
+var keepAliveURL = ''; // URL to call to keep the session alive
+var expiredMessage = ''; // message to show user when the countdown reaches 0
+var running = false; // var to check if the countdown is running 
+var timer; // reference to the setInterval timer so it can be stopped 
+var timerSB;  
+var timeout;  
+    $(document).ready(function() {     
+// create the warning window and set autoOpen to false  
+      var sessionTimeoutWarningDialog = $("#sessionTimeoutWarning"); 
+    $(sessionTimeoutWarningDialog).dialog({         
+        title: '',       
+        autoOpen: false,    // set this to false so we can manually open it         
+        closeOnEscape: false,         
+        draggable: false,         
+        width: 460,         
+        minHeight: 150,         
+        modal: true,           
+        beforeclose: function() { // bind to beforeclose so if the user clicks on the "X" or escape to close the dialog, it will work too             // stop the timer             
+            clearInterval(timer);               // stop countdown
+            running = false;               // ajax call to keep the server-side session alive    
+                  
+            $.ajax({               
+                url: keepAliveURL,               
+                async: false            
+            });         
+        },         
+        buttons: {      
+             'Continuar ': function() {                 
+                // close dialog 
+                window.location.reload();//BM24925: Se agrega esto para que el expired de una cookie se actualice y no se cierre la sesión luego de hacer click en continuar al terminar el timeout del webconfig. El valor del expired se pone en la tabla configuration en la clave SessionMaxMinutes.
+                //var valor = getCookie('ICBWebLogin'); //Esta función la dejo por las dudas, pero no la pude hacer andar poque el document.cookie no me trae las cookies del explorador.                
+                $(this).dialog('close');
+                clearInterval(timerSB);    
+                window.status = "";      
+                StatusBarCountDown();     
+            },
+            'Finalizar sesión': function() {                 
+                // close dialog                 
+                $(sessionTimeoutWarningDialog).html(expiredMessage);
+                $(sessionTimeoutWarningDialog).dialog('disable');                     
+                window.parent.location = redirectTo;           
+            }         
+        },         
+        resizable: false,         
+        open: function() {
+            $('body').css('overflow','auto');         
+        },         
+        close: function() {             
+            // reset overflow             
+            $('body').css('overflow','auto');         
+        }  
+           
+    }); // end of dialog  
+    jQuery("a.ui-dialog-titlebar-close").hide(); 
+          
+    // start the idle timer
+    $.idleTimer(idleTime);
+ 
+});
+
+// BM24925: Función para recuperar el valor de una cookie.
+// name - nombre de la cookie deseada
+// devuelve un string conteniendo el valor de la cookie especificada o null si la cookie no existe
+
+function getCookie(name){
+var micookie = (document.cookie.indexOf('ICBWebLogin=') === -1 ? '' : ("; " + document.cookie).split('; ICBWebLogin=')[1].split(';')[0]);
+
+  var cname = name + "=";               
+  var dc = document.cookie;             
+  if (dc.length > 0) {              
+    begin = dc.indexOf(cname);       
+    if (begin != -1) {           
+      begin += cname.length;       
+      end = dc.indexOf(";", begin);
+      if (end == -1) end = dc.length;
+        return unescape(dc.substring(begin, end));
+    } 
+  }
+  return null;
+}
+
+//Status Bar Countdown Script
+function StatusBarCountDown() 
+{
+    var redirectAfter = (parseInt('30'));
+    var timeout = '1200000';   
+    var redirectTo = '/' + "Logout.aspx"; // URL to relocate the user to once they have timed out   
+    timerSB = setInterval(function(){
+    timeout -= 1000;
+    if(timeout == redirectAfter * 1000)
+    {
+        window.focus();
+    }
+   if(timeout < redirectAfter * 1000)
+   {
+        $("#sessionTimeoutCountdown").html(timeout/1000);
+        $("#sessionTimeoutWarning").dialog('open'); 
+   }
+   if (timeout < 100)
+   {
+        $("#sessionTimeoutWarning").html(expiredMessage);
+        $("#sessionTimeoutWarning").dialog('disable');                     
+        window.parent.location = redirectTo;
+        clearInterval(timerSB);    
+        window.status = "";     
+   }
+        
+   window.status = "Su sesión expirará " + time(timeout) + " minutos";        
+    }, 1000);   
+         
+   function two(x)
+   {
+    return ((x > 9) ? "" : "0") + x
+   }   
+  
+   function time(ms)
+   {   
+       var t = '';   
+       var sec = Math.floor(ms / 1000);   
+       ms = ms % 1000   
+
+       var min = Math.floor(sec / 60);   
+       sec = sec % 60;   
+       t = two(sec);   
+
+       var hr = Math.floor(min / 60);   
+       min = min % 60;   
+       t = two(min) + ":" + t;   
+    return t;
+   }
+}
+
+StatusBarCountDown();
+
+
+
+</script>
+
+<link rel="stylesheet" type="text/css" href="./WebResource.axd">
+<link rel="stylesheet" type="text/css" href="./WebResource(1).axd">
+<link href="./Default.css" type="text/css" rel="stylesheet"><link href="./jquery-ui-1.8.19.custom.css" type="text/css" rel="stylesheet"><link href="./WebResource(2).axd" type="text/css" rel="stylesheet"><title>Ingreso de Operaciones</title><script type="text/javascript">var head = document.getElementsByTagName('HEAD')[0];if (head) {var linkElement = document.createElement('link');linkElement.type = 'text/css';linkElement.rel = 'stylesheet';linkElement.href = '/WebResource.axd?d=c39Hlyh5YMBKJf-jrc-4CpepQpeLyiOL8DVCSUbI9hyvgoGBpRPXzfjxMdUQ05c7zJin-o0NT7aydaxvyI66Rg7sDwtCXF4ea5AkJvQsQkKvRil4BQIePtgYAjEFrHzJpo7y98Tnuv9QCqiRriCcF71aq5k1&t=636117930508922068';head.appendChild(linkElement);}</script></head>
+<body>
+    <form name="aspnetForm" method="post" action="http://10.1.75.104:9080/Pages/Factoring/IngresoOperaciones.aspx" onsubmit="javascript:return WebForm_OnSubmit();" id="aspnetForm" enctype="multipart/form-data">
+<div>
+
+
+
+
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+var theForm = document.forms['aspnetForm'];
+if (!theForm) {
+    theForm = document.aspnetForm;
+}
+function __doPostBack(eventTarget, eventArgument) {
+    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+        theForm.__EVENTTARGET.value = eventTarget;
+        theForm.__EVENTARGUMENT.value = eventArgument;
+        theForm.submit();
+    }
+}
+//]]>
+</script>
+
+
+<script src="./WebResource(3).axd" type="text/javascript"></script>
+
+<script src="./DataEntry.js.descarga"></script><script src="./DataEntry.js.descarga"></script><script src="./date.js.descarga"></script><script language="javascript" type="text/javascript">function ValidarRangoFecha(fechaSel, diaActual, mesActual, anioActual) {var diaSel = parseInt(fechaSel.value.substring(0, 2), 10);var mesSel = parseInt(fechaSel.value.substring(3, 5), 10);var anioSel = parseInt(fechaSel.value.substring(6, 10), 10);var dateSel = new Date(anioSel, mesSel, diaSel);var dateActual = new Date(anioActual, mesActual, diaActual);if (dateSel <= dateActual) {window.document.getElementById('ctl00_MainHolder_cIngresoOperacionesGridDeCaF_dsaFechaVto_dateTextBox').value = '';alert('No se puede seleccionar una fecha igual o menor a la del día.');}}</script><script src="./DataEntry.js.descarga"></script><script src="./DataEntry.js.descarga"></script>
+						<style>							
+							P.PanelControlTitleStyle
+							{
+ 								font-family:verdana;
+ 								font-size: 12px;
+								font-weight : bold;
+								text-align: center;  								
+							}
+						</style>						
+						<script language="javascript">
+						function MinMaxPanelControl(cntrlId)
+						{
+						    var imgPath='/App_Themes/Default/Images/';	
+					
+							//Get state from hidden control.													
+							if ( document.getElementById(cntrlId).style.display == 'none' )
+							{
+								document.getElementById(cntrlId).style.display = '';						
+								document.getElementById(cntrlId+'_imgPlusMinus').src = imgPath + 'bot-grid-minus.gif';
+							}
+							else 
+							{
+								document.getElementById(cntrlId).style.display = 'none';								
+								document.getElementById(cntrlId+'_imgPlusMinus').src = imgPath + 'bot-grid-plus.gif';
+							}
+						}
+						</script>
+			
+<script src="./ScriptResource.axd" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+var __cultureInfo = '{"name":"es-UY","numberFormat":{"CurrencyDecimalDigits":2,"CurrencyDecimalSeparator":",","IsReadOnly":false,"CurrencyGroupSizes":[3],"NumberGroupSizes":[3],"PercentGroupSizes":[3],"CurrencyGroupSeparator":".","CurrencySymbol":"$U","NaNSymbol":"NeuN","CurrencyNegativePattern":14,"NumberNegativePattern":1,"PercentPositivePattern":0,"PercentNegativePattern":0,"NegativeInfinitySymbol":"-Infinito","NegativeSign":"-","NumberDecimalDigits":2,"NumberDecimalSeparator":",","NumberGroupSeparator":".","CurrencyPositivePattern":2,"PositiveInfinitySymbol":"Infinito","PositiveSign":"+","PercentDecimalDigits":2,"PercentDecimalSeparator":",","PercentGroupSeparator":".","PercentSymbol":"%","PerMilleSymbol":"‰","NativeDigits":["0","1","2","3","4","5","6","7","8","9"],"DigitSubstitution":1},"dateTimeFormat":{"AMDesignator":"a.m.","Calendar":{"MinSupportedDateTime":"\/Date(-62135586000000)\/","MaxSupportedDateTime":"\/Date(253402300799999)\/","AlgorithmType":1,"CalendarType":1,"Eras":[1],"TwoDigitYearMax":2029,"IsReadOnly":false},"DateSeparator":"/","FirstDayOfWeek":1,"CalendarWeekRule":0,"FullDateTimePattern":"dddd, dd\u0027 de \u0027MMMM\u0027 de \u0027yyyy hh:mm:ss tt","LongDatePattern":"dddd, dd\u0027 de \u0027MMMM\u0027 de \u0027yyyy","LongTimePattern":"hh:mm:ss tt","MonthDayPattern":"dd MMMM","PMDesignator":"p.m.","RFC1123Pattern":"ddd, dd MMM yyyy HH\u0027:\u0027mm\u0027:\u0027ss \u0027GMT\u0027","ShortDatePattern":"dd/MM/yyyy","ShortTimePattern":"hh:mm tt","SortableDateTimePattern":"yyyy\u0027-\u0027MM\u0027-\u0027dd\u0027T\u0027HH\u0027:\u0027mm\u0027:\u0027ss","TimeSeparator":":","UniversalSortableDateTimePattern":"yyyy\u0027-\u0027MM\u0027-\u0027dd HH\u0027:\u0027mm\u0027:\u0027ss\u0027Z\u0027","YearMonthPattern":"MMMM\u0027 de \u0027yyyy","AbbreviatedDayNames":["dom","lun","mar","mié","jue","vie","sáb"],"ShortestDayNames":["do","lu","ma","mi","ju","vi","sá"],"DayNames":["domingo","lunes","martes","miércoles","jueves","viernes","sábado"],"AbbreviatedMonthNames":["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic",""],"MonthNames":["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre",""],"IsReadOnly":false,"NativeCalendarName":"calendario gregoriano","AbbreviatedMonthGenitiveNames":["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic",""],"MonthGenitiveNames":["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre",""]}}';//]]>
+</script>
+
+<script src="./ScriptResource(1).axd" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+if (typeof(Sys) === 'undefined') throw new Error('ASP.NET Ajax client-side framework failed to load.');
+//]]>
+</script>
+
+<script src="./ScriptResource(2).axd" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+function WebForm_OnSubmit() {
+if (typeof(ValidatorOnSubmit) == "function" && ValidatorOnSubmit() == false) return false;
+return true;
+}
+//]]>
+</script>
+
+<div>
+
+	
+</div>
+    <script type="text/javascript">
+//<![CDATA[
+Sys.WebForms.PageRequestManager._initialize('ctl00$scriptManager', document.getElementById('aspnetForm'));
+Sys.WebForms.PageRequestManager.getInstance()._updateControls(['tctl00$MainHolder$upCarga','tctl00$MainHolder$cIngresoOperacionesCarga$upTipoContratoFactoring','tctl00$MainHolder$cIngresoOperacionesCarga$upImporte','tctl00$MainHolder$upButConfirmarAndMsg','tctl00$MainHolder$upConfirmarDeCaF','tctl00$MainHolder$upIngresoOperacionesGrid','tctl00$MainHolder$upIngresoOperacionesGridDeCaF','tctl00$MainHolder$cIngresoOperacionesGridDeCaF$upIngresoOperacionesGridDeCaF','tctl00$MainHolder$upError'], [], ['ctl00$MainHolder$lnkConfirmar'], 90);
+//]]>
+</script>
+
+    <input type="hidden" id="PageLinkData" name="PageLinkData" value="">
+    <input type="hidden" id="PageLinkUrl" name="PageLinkUrl" value="">
+    <input type="hidden" id="PageUrl" value="/Pages/Factoring/IngresoOperaciones.aspx">
+    <table id="ctl00_tableContent" width="100%" border="0" cellpadding="0" cellspacing="0" class="ic-content">
+	<tbody><tr>
+		<td class="ic-content-left-aux">
+                <img src="./log-img-aux-left-bottom.gif" width="9" height="110">
+            </td>
+		<td style="width: 100%">
+                <table width="100%" border="0" cellpadding="0" cellspacing="0" class="ic-content-left">
+                    <tbody><tr>
+                        <td id="TdCPM" class="ic-content-space-top" valign="top">
+                            <table id="TablaCPM" width="100%" border="0" cellspacing="0" cellpadding="0">
+                                
+                                <tbody><tr>
+                                    <td>
+                                        <table id="ctl00_tableHeader" width="100%" border="0" cellspacing="0" cellpadding="0">
+			<tbody><tr>
+				<td class="ic-breadcrumb-container">
+                                                    
+                                                    &gt;
+                                                    <span id="ctl00_siteMapNavigator"><a href="http://10.1.75.104:9080/Pages/Factoring/IngresoOperaciones.aspx#ctl00_siteMapNavigator_SkipLink"><img alt="Skip Navigation Links" height="0" width="0" src="./WebResource(4).axd" style="border-width:0px;"></a><span><a href="http://10.1.75.104:9080/Home.aspx">Posición Consolidada</a></span><span> &gt; </span><span><a>Factoring/Depósitos</a></span><span> &gt; </span><span>Ingreso de Operaciones</span><a id="ctl00_siteMapNavigator_SkipLink"></a></span>
+                                                    </td>
+				<td class="ic-toolbar-container">
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tbody><tr>
+                                                            <td width="16">
+                                                                <img src="./ico-print.gif" id="ctl00_Img4" width="16" height="16">
+                                                            </td>
+                                                            <td class="ic-links-toolbar">
+                                                                <a href="http://10.1.75.104:9080/Pages/Factoring/IngresoOperaciones.aspx#" onclick="javascript: GoPrint();">
+                                                                    Imprimir página</a>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody></table>
+                                                </td>
+			</tr>
+		</tbody></table>
+		
+                                    </td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>
+                                        <span id="ctl00_labelTitle" class="ic-page-title">Ingreso de Operaciones</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td id="ctl00_cellRequiered" align="right">
+                                        <img src="./ic_img-data-required.gif" id="ctl00_Img5" border="0">
+                                        <span>
+                                            Campo requerido</span>
+                                    </td>
+		
+                                </tr>
+                                <tr>
+                                    <td width="95%" align="center">
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                            <tbody><tr>
+                                                <td align="right">
+                                                    
+                                                    
+                                                </td>
+                                            </tr>
+                                        </tbody></table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="100%" align="center">
+                                        <div id="ic-loading" class="ic-loading-bg" style="display: none;">
+                                            <div class="ic-loading">
+                                                <div id="message">
+                                                    <img src="./cargandoBAR.gif" id="ctl00_imgLoading"><br>
+                                                    <span id="ctl00_WaitingMessage">Procesando...</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="mainContainer">
+                                            
+
+<script language="javascript" type="text/javascript">
+        var IsBranchVisible;
+        function HabilitarDatosChangeTipoOperacion(controlValue) {
+            HabilitarDatosIngresoOperacionesCarga(controlValue);
+            HabilitarDatosIngresoOperaciones();
+        }
+        
+       function HabilitarDatosIngresoOperaciones() {
+            /* De Custodia a Factoring */
+            document.getElementById('ctl00_MainHolder_lnkConfirmarDeCaF').click();
+        }
+
+        function HabilitarSeleccionarArchivo() {
+            document.getElementById("archivo").style.display = 'inline';
+        }
+      
+       function HabilitarDatosIngresoOperacionesCarga(controlValue) {
+           /* Si está habilitada la vista vIngresoOperacionesGrid */
+           if (document.getElementById('ctl00_MainHolder_cIngresoOperacionesCarga_rblTipoOperacion') != null) {
+               if (controlValue == "1") {/* Custodia */
+                   document.getElementById('ctl00_MainHolder_cIngresoOperacionesCarga_lblTipoContrato').style.display = 'none';
+                   document.getElementById("dTipoContratoFactoring").style.display = 'none';
+                   trDeferedEnable.style.display = "none";                   
+                   document.getElementById("archivo").style.display = 'inline';
+                   if (IsBranchVisible != null && IsBranchVisible)
+                        document.getElementById("trBranch").style.display = 'inline';                   
+               }
+               else if (controlValue == "2") {/* Factoring */
+                   document.getElementById('ctl00_MainHolder_cIngresoOperacionesCarga_lblTipoContrato').style.display = 'inline';
+                   document.getElementById("dTipoContratoFactoring").style.display = 'inline';
+                   if (document.getElementById('ctl00_MainHolder_cIngresoOperacionesCarga_lbTdDeferedDeliberyText') != null) {
+                       trDeferedEnable.style.display = "";
+                   }
+                   if (IsBranchVisible != null && IsBranchVisible)
+                        document.getElementById("trBranch").style.display = 'inline';
+                   document.getElementById("archivo").style.display = 'inline';
+               }
+               else if (controlValue == "3") { /* De Custodia a Factoring */
+                   document.getElementById('ctl00_MainHolder_cIngresoOperacionesCarga_lblTipoContrato').style.display = 'inline';
+                   document.getElementById("dTipoContratoFactoring").style.display = 'inline';
+                   trDeferedEnable.style.display = "none";
+                   document.getElementById("archivo").style.display = 'none';
+                   document.getElementById("tButConfirmarAndMsg").style.display = 'none';
+                   if (IsBranchVisible != null && IsBranchVisible)
+                        document.getElementById("trBranch").style.display = 'none';                   
+                   if (document.getElementById('ctl00_MainHolder_tButIngresoOperacionesGrid') != null)
+                       document.getElementById('ctl00_MainHolder_tButIngresoOperacionesGrid').style.display = 'none';
+               }
+               else if (controlValue == "4") {/* Depósito On Line */
+                   document.getElementById('ctl00_MainHolder_cIngresoOperacionesCarga_lblTipoContrato').style.display = 'none';
+                   document.getElementById("dTipoContratoFactoring").style.display = 'none';
+                    //document.getElementById("lnkConfirmar").style.display = 'inline';                   
+                   document.getElementById("archivo").style.display = 'inline';                   
+                   if (IsBranchVisible != null && IsBranchVisible) {
+                       document.getElementById("trBranch").style.display = 'inline';
+                   }
+               }
+               else {
+                   document.getElementById('ctl00_MainHolder_cIngresoOperacionesCarga_lblTipoContrato').style.display = 'none';
+                   document.getElementById("dTipoContratoFactoring").style.display = 'none';                   
+                   document.getElementById("archivo").style.display = 'none';
+                   document.getElementById("tButConfirmarAndMsg").style.display = 'none';
+                   if (document.getElementById('ctl00_MainHolder_tButIngresoOperacionesGrid') != null)
+                       document.getElementById('ctl00_MainHolder_tButIngresoOperacionesGrid').style.display = 'none';
+                   if (IsBranchVisible != null && IsBranchVisible)
+                       document.getElementById("trBranch").style.display = 'inline';
+               }
+           }
+       }
+
+       function MakeDeliveryBranchVisible() {
+           if (document.getElementById("trBranch") != null) {
+               document.getElementById("trBranch").style.display = 'inline';
+               IsBranchVisible = true;
+           }
+       }
+       
+       function ValidateAllSelectionEliminarLote() {
+           var hasSelection = false;
+
+           if (agvIngresoOperaciones._getSelectedRowCount() > 0) {
+               hasSelection = true;
+           }
+           else {
+               alert('Debe seleccionar un archivo antes de presionar confirmar o eliminar lote.');
+           }
+
+           return hasSelection;
+       }
+
+       function ValidateAllSelection() {
+           var hasSelection = false;
+
+           if (agvIngresoOperaciones._getSelectedRowCount() > 0) {
+               hasSelection = true;
+           }
+           else {
+               alert('Debe marcar por lo menos un archivo para generar una solicitud.');
+           }
+
+           return hasSelection;
+       }
+
+       function ValidateAllSelectionCustodiaAFactoring() {
+           var hasSelection = false;
+
+           if (agvIngresoOperacionesDeCAF._getSelectedRowCount() > 0) {
+               hasSelection = true;
+           }
+           else {
+               alert('Debe seleccionar por lo menos un cheque.');
+           }
+
+           return hasSelection;
+       }
+
+       function ValidateSelectionArchivo() {
+           var hasSelection = false;
+
+           if (window.document.getElementById('ctl00_MainHolder_fuArchivo').value != '') {
+               hasSelection = true;
+           }
+           else {
+               alert('Debe seleccionar un archivo antes de presionar confirmar o eliminar lote.');
+           }
+
+           return hasSelection;
+       }
+    </script>
+
+    
+            <div id="ctl00_MainHolder_upCarga">
+			
+                <table class="ic-grid-border" cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+				<tbody><tr>
+					<td><table id="ctl00_MainHolder_pcDatos_thePanel" class="ic-grid" cellspacing="0" cellpadding="0" align="Center" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr class="ic-grid-title-row">
+							<td><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+								<tbody><tr>
+									<td class="ic-grid-title-cell-left">&nbsp;</td><td class="ic-grid-title-cell" align="left" style="white-space:nowrap;">Ingreso de Operaciones</td><td class="ic-gridB-title-cell-right"><img id="ctl00_MainHolder_pcDatos_imgPlusMinus" onclick="javascript:MinMaxPanelControl(&#39;ctl00_MainHolder_pcDatos&#39;)" src="./bot-grid-minus.gif" alt="Minimizar/Maximizar el panel" align="absmiddle" style="border-width:0px;cursor:hand;"></td>
+								</tr>
+							</tbody></table></td>
+						</tr><tr>
+							<td align="center"><div id="ctl00_MainHolder_pcDatos" style="color:Black;border-color:DodgerBlue;font-family:verdana;font-size:10pt;width:100%;display:;">
+	
+                    
+
+
+<table border="0" width="100%" cellpadding="0" cellspacing="0" id="cabeceraDeSolicitudes">
+    <tbody><tr>
+        <td id="tdLabelTipoOperacion" style="width:20%" class="ic-form-label">
+            <span id="ctl00_MainHolder_cIngresoOperacionesCarga_lblTipoOperacion">Tipo de Operación:</span>
+        </td>
+        <td id="tdRadioButtonTipoOperacion" style="width:20%" class="ic-form-data">
+            <table id="ctl00_MainHolder_cIngresoOperacionesCarga_rblTipoOperacion" border="0">
+		<tbody><tr>
+			<td><span style="background-color:White;font-family:Verdana, Arial, Helvetica, sans-serif;font-size:10px;"><input id="ctl00_MainHolder_cIngresoOperacionesCarga_rblTipoOperacion_0" type="radio" name="ctl00$MainHolder$cIngresoOperacionesCarga$rblTipoOperacion" value="4" onclick="HabilitarDatosChangeTipoOperacion(&#39;4&#39;);"><label for="ctl00_MainHolder_cIngresoOperacionesCarga_rblTipoOperacion_0">Depósito On Line</label></span></td>
+		</tr><tr>
+			<td><span style="background-color:White;font-family:Verdana, Arial, Helvetica, sans-serif;font-size:10px;"><input id="ctl00_MainHolder_cIngresoOperacionesCarga_rblTipoOperacion_1" type="radio" name="ctl00$MainHolder$cIngresoOperacionesCarga$rblTipoOperacion" value="1" onclick="HabilitarDatosChangeTipoOperacion(&#39;1&#39;);"><label for="ctl00_MainHolder_cIngresoOperacionesCarga_rblTipoOperacion_1">Custodia</label></span></td>
+		</tr><tr>
+			<td><span style="background-color:White;font-family:Verdana, Arial, Helvetica, sans-serif;font-size:10px;"><input id="ctl00_MainHolder_cIngresoOperacionesCarga_rblTipoOperacion_2" type="radio" name="ctl00$MainHolder$cIngresoOperacionesCarga$rblTipoOperacion" value="2" onclick="HabilitarDatosChangeTipoOperacion(&#39;2&#39;);"><label for="ctl00_MainHolder_cIngresoOperacionesCarga_rblTipoOperacion_2">Factoring</label></span></td>
+		</tr><tr>
+			<td><span style="background-color:White;font-family:Verdana, Arial, Helvetica, sans-serif;font-size:10px;"><input id="ctl00_MainHolder_cIngresoOperacionesCarga_rblTipoOperacion_3" type="radio" name="ctl00$MainHolder$cIngresoOperacionesCarga$rblTipoOperacion" value="3" onclick="HabilitarDatosChangeTipoOperacion(&#39;3&#39;);"><label for="ctl00_MainHolder_cIngresoOperacionesCarga_rblTipoOperacion_3">De Custodia a Factoring</label></span></td>
+		</tr>
+	</tbody></table>
+            <span id="ctl00_MainHolder_cIngresoOperacionesCarga_rfvTipoOperacion" title="Campo requerido" style="color:Red;display:none;">Campo requerido</span>  
+        </td>
+        <td id="tdLabelTipoContrato" style="width:20%" class="ic-form-label">
+            <span id="ctl00_MainHolder_cIngresoOperacionesCarga_lblTipoContrato" style="display: none;">Tipo de Contrato:</span>
+        </td>
+        <td id="tdRadioButtonTipoContrato" style="width:40%" class="ic-form-data">
+            
+            <div id="dTipoContratoFactoring" style="display: none;">
+                <div id="ctl00_MainHolder_cIngresoOperacionesCarga_upTipoContratoFactoring">
+                    <table id="ctl00_MainHolder_cIngresoOperacionesCarga_rblTipoContratoFactoring" border="0">
+	<tbody><tr>
+		<td><span style="background-color:White;font-family:Verdana, Arial, Helvetica, sans-serif;font-size:10px;"><input id="ctl00_MainHolder_cIngresoOperacionesCarga_rblTipoContratoFactoring_0" type="radio" name="ctl00$MainHolder$cIngresoOperacionesCarga$rblTipoContratoFactoring" value="3" checked="checked"><label for="ctl00_MainHolder_cIngresoOperacionesCarga_rblTipoContratoFactoring_0">Contrato con Recurso</label></span></td>
+	</tr><tr>
+		<td><span style="background-color:White;font-family:Verdana, Arial, Helvetica, sans-serif;font-size:10px;"><input id="ctl00_MainHolder_cIngresoOperacionesCarga_rblTipoContratoFactoring_1" type="radio" name="ctl00$MainHolder$cIngresoOperacionesCarga$rblTipoContratoFactoring" value="4"><label for="ctl00_MainHolder_cIngresoOperacionesCarga_rblTipoContratoFactoring_1">Contrato sin Recurso</label></span></td>
+	</tr><tr>
+		<td><span style="background-color:White;font-family:Verdana, Arial, Helvetica, sans-serif;font-size:10px;"><input id="ctl00_MainHolder_cIngresoOperacionesCarga_rblTipoContratoFactoring_2" type="radio" name="ctl00$MainHolder$cIngresoOperacionesCarga$rblTipoContratoFactoring" value="5"><label for="ctl00_MainHolder_cIngresoOperacionesCarga_rblTipoContratoFactoring_2">Contrato sin Recurso con pérdida parcial</label></span></td>
+	</tr><tr>
+		<td><span style="background-color:White;font-family:Verdana, Arial, Helvetica, sans-serif;font-size:10px;"><input id="ctl00_MainHolder_cIngresoOperacionesCarga_rblTipoContratoFactoring_3" type="radio" name="ctl00$MainHolder$cIngresoOperacionesCarga$rblTipoContratoFactoring" value="12"><label for="ctl00_MainHolder_cIngresoOperacionesCarga_rblTipoContratoFactoring_3">LIP con Recurso</label></span></td>
+	</tr><tr>
+		<td><span style="background-color:White;font-family:Verdana, Arial, Helvetica, sans-serif;font-size:10px;"><input id="ctl00_MainHolder_cIngresoOperacionesCarga_rblTipoContratoFactoring_4" type="radio" name="ctl00$MainHolder$cIngresoOperacionesCarga$rblTipoContratoFactoring" value="13"><label for="ctl00_MainHolder_cIngresoOperacionesCarga_rblTipoContratoFactoring_4">LIP Com. 2729</label></span></td>
+	</tr>
+</tbody></table>
+                </div>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td id="lblCuenta" style="width:20%" class="ic-form-label" valign="top">
+            <span id="ctl00_MainHolder_cIngresoOperacionesCarga_lblCuenta">Cuenta:</span>
+        </td>
+        <td id="txtCuenta" valign="top" class="ic-form-data">
+            <select name="ctl00$MainHolder$cIngresoOperacionesCarga$ddlCuenta" id="ctl00_MainHolder_cIngresoOperacionesCarga_ddlCuenta" class="ic-control-select">
+		<option value="1-100-20-80-0-990-0-1-4">$ 100-990-1</option>
+
+	</select>
+            <span id="ctl00_MainHolder_cIngresoOperacionesCarga_rfvCuenta" title="Campo requerido" style="color:Red;display:none;">Campo requerido</span>
+        </td>
+        <td style="width:20%" class="ic-form-label">
+            <span id="ctl00_MainHolder_cIngresoOperacionesCarga_lblImporte">Importe:</span>
+        </td>
+        <td style="width:40%" class="ic-form-data" valign="top">
+            <div id="ctl00_MainHolder_cIngresoOperacionesCarga_upImporte">
+                <input name="ctl00$MainHolder$cIngresoOperacionesCarga$txtImporte" type="text" value="1,00" maxlength="28" onchange="javascript:setTimeout(&#39;__doPostBack(\&#39;ctl00$MainHolder$cIngresoOperacionesCarga$txtImporte\&#39;,\&#39;\&#39;)&#39;, 0)" onkeypress="if (WebForm_TextBoxKeyHandler(event) == false) return false;return numbersonly(this, event, true, &#39;,&#39;)" id="ctl00_MainHolder_cIngresoOperacionesCarga_txtImporte" class="ic-control-text" style="width:30%;">    
+            </div>
+            <span id="ctl00_MainHolder_cIngresoOperacionesCarga_rfvImporte" title="Campo requerido" style="color:Red;display:none;">Campo requerido</span>
+            <span id="ctl00_MainHolder_cIngresoOperacionesCarga_revImporte" style="color:Red;display:none;">Formato incorrecto</span>
+        </td>        
+    </tr>
+    <tr id="trBranch" style="display: inline;">        
+        <td class="ic-form-label" style="width:20%" valign="top">
+            <span id="ctl00_MainHolder_cIngresoOperacionesCarga_lbBranch">Sucursal De Entrega</span>            
+        </td>
+        <td class="ic-form-data" id="tdComboBranch" valign="top">
+            <select name="ctl00$MainHolder$cIngresoOperacionesCarga$ddlBranchSelection" id="ctl00_MainHolder_cIngresoOperacionesCarga_ddlBranchSelection" class="ic-control-select">
+		<option value="1">1 - AGENCIA  BARRIO NORTE</option>
+		<option value="2">2 - AGENCIA  ALTOS DE PALERMO</option>
+		<option value="3">3 - AGENCIA  HAEDO</option>
+		<option value="4">4 - AGENCIA  BOULOGNE</option>
+		<option value="5">5 - AGENCIA  TRIBUNALES</option>
+		<option value="6">6 - AGENCIA  PLAZA FRANCIA</option>
+		<option value="7">7 - AGENCIA  CONGRESO</option>
+		<option value="8">8 - AGENCIA  BELGRANO</option>
+		<option value="9">9 - AGENCIA  PLAZA SAN MARTIN</option>
+		<option value="10">10 - AGENCIA  RECOLETA</option>
+		<option value="11">11 - AGENCIA  RAMOS MEJIA</option>
+		<option value="12">12 - AGENCIA  CABALLITO</option>
+		<option value="13">13 - AGENCIA  VILLA ADELINA</option>
+		<option value="14">14 - AGENCIA  SAN MARTIN</option>
+		<option value="15">15 - AGENCIA  LOMAS DE ZAMORA</option>
+		<option value="16">16 - AGENCIA  QUILMES</option>
+		<option value="17">17 - AGENCIA  PILAR</option>
+		<option value="18">18 - AGENCIA  LANUS</option>
+		<option value="19">19 - AGENCIA  CORDOBA</option>
+		<option value="20">20 - AGENCIA  MARTINEZ</option>
+		<option value="21">21 - AGENCIA  BOEDO</option>
+		<option value="22">22 - AGENCIA  LINIERS</option>
+		<option value="23">23 - AGENCIA  VICENTE LOPEZ</option>
+		<option value="24">24 - AGENCIA  ADROGUE</option>
+		<option value="25">25 - AGENCIA  BOTANICO</option>
+		<option value="26">26 - AGENCIA  COLEGIALES</option>
+		<option value="27">27 - AGENCIA  VILLA URQUIZA</option>
+		<option value="28">28 - AGENCIA  LOMAS DE SAN ISIDRO</option>
+		<option value="29">29 - AGENCIA  LA LUCILA</option>
+		<option value="30">30 - AGENCIA  VILLA DEVOTO</option>
+		<option value="31">31 - AGENCIA  ESCOBAR</option>
+		<option value="32">32 - AGENCIA  PEDRO GOYENA</option>
+		<option value="33">33 - AGENCIA  BAJO ALEM</option>
+		<option value="34">34 - AGENCIA  MENDOZA</option>
+		<option value="35">35 - AGENCIA  VILLA ALLENDE</option>
+		<option value="36">36 - AGENCIA  MICROCENTRO</option>
+		<option value="39">39 - AGENCIA  MAR DEL PLATA</option>
+		<option value="41">41 - AGENCIA  CORDOBA-PLAZA COLON</option>
+		<option value="42">42 - AGENCIA  PALMARES</option>
+		<option value="43">43 - AGENCIA  ROSARIO</option>
+		<option value="44">44 - AGENCIA  SAAVEDRA</option>
+		<option value="45">45 - AGENCIA  BELGRANO  R</option>
+		<option value="47">47 - AGENCIA  LUJAN</option>
+		<option value="48">48 - AGENCIA  MONTSERRAT</option>
+		<option value="50">50 - AGENCIA  FLORES</option>
+		<option value="51">51 - AGENCIA  BARRACAS</option>
+		<option value="52">52 - AGENCIA  IMPRENTA</option>
+		<option value="53">53 - AGENCIA  LA PLATA</option>
+		<option value="54">54 - AGENCIA  CASTELAR</option>
+		<option value="55">55 - AGENCIA  OLIVOS</option>
+		<option value="56">56 - AGENCIA  PLAZA GUEMES</option>
+		<option value="57">57 - AGENCIA  PLAZA VTE. LOPEZ</option>
+		<option value="58">58 - AGENCIA  VILLA CRESPO</option>
+		<option value="60">60 - AGENCIA  PARQUE RIVADAVIA</option>
+		<option value="61">61 - AGENCIA  LIBERTADOR</option>
+		<option value="62">62 - AGENCIA  MONTE GRANDE</option>
+		<option value="63">63 - AGENCIA  LA PLATA CATEDRAL</option>
+		<option value="64">64 - AGENCIA  MZA. - BARRIO CIVICO</option>
+		<option value="65">65 - AGENCIA SAN MIGUEL DE TUCUMAN</option>
+		<option value="66">66 - SUCURSAL MICROCENTRO MENDOZA</option>
+		<option value="67">67 - SUCURSAL SAN JOSE</option>
+		<option value="68">68 - SUCURSAL GUTIERREZ</option>
+		<option value="69">69 - SUCURSAL BALCARCE - MENDOZA</option>
+		<option value="70">70 - AGENCIA SAN LUIS - SAN LUIS</option>
+		<option value="71">71 - AGENCIA VILLA MERCEDES</option>
+		<option value="72">72 - AGENCIA MERLO - SAN LUIS</option>
+		<option value="73">73 - SUCURSAL TUPUNGATO</option>
+		<option value="74">74 - SUCURSAL TUNUYAN</option>
+		<option value="75">75 - SUCURSAL SHOPPING</option>
+		<option value="76">76 - SUCURSAL GENERAL ALVEAR</option>
+		<option value="77">77 - SUCURSAL LAS HERAS</option>
+		<option value="78">78 - SUCURSAL BOULEVARD BELGRANO</option>
+		<option value="79">79 - SUCURSAL RODEO DE LA CRUZ</option>
+		<option value="80">80 - SUCURSAL MALARGÜE</option>
+		<option value="81">81 - SUCURSAL RUTA PANAMERICANA</option>
+		<option value="82">82 - SUCURSAL BUENOS AIRES</option>
+		<option value="83">83 - SUCURSAL CORDOBA</option>
+		<option value="84">84 - SUCURSAL MENDOZA</option>
+		<option value="85">85 - SUCURSAL ROSARIO</option>
+		<option value="86">86 - SUCURSAL MAR DEL PLATA</option>
+		<option value="87">87 - SUCURSAL VENDIMIA</option>
+		<option value="88">88 - SUCURSAL COLON - SAN LUIS</option>
+		<option value="89">89 - SUCURSAL AV. MITRE-V. MERCEDES</option>
+		<option value="90">90 - SUCURSAL CIUDAD AUTÓNOMA BS AS</option>
+		<option value="91">91 - SUCURSAL SAN JUAN</option>
+		<option value="92">92 - SUCURSAL RIO CUARTO III</option>
+		<option value="93">93 - SUCURSAL CAÑON DEL ATUEL</option>
+		<option value="94">94 - SUCURSAL LUJAN DE CUYO</option>
+		<option value="95">95 - SUCURSAL PLAZA GODOY CRUZ</option>
+		<option value="96">96 - SUCURSAL SAN CARLOS</option>
+		<option selected="selected" value="100">100 - SUCURSAL CENTRAL</option>
+		<option value="101">101 - SUCURSAL SAN LUIS - CAPITAL</option>
+		<option value="102">102 - SUCURSAL VILLA MERCEDES</option>
+		<option value="103">103 - SUCURSAL SANTA ROSA</option>
+		<option value="104">104 - SUCURSAL QUINES</option>
+		<option value="105">105 - SUCURSAL LA TOMA</option>
+		<option value="106">106 - SUCURSAL JUSTO DARACT</option>
+		<option value="107">107 - SUCURSAL NUEVA GALIA</option>
+		<option value="108">108 - SUCURSAL CONCARAN</option>
+		<option value="109">109 - SUCURSAL SAN FRANCISCO</option>
+		<option value="110">110 - SUCURSAL MERLO</option>
+		<option value="111">111 - SUCURSAL BUENA ESPERANZA</option>
+		<option value="112">112 - SUCURSAL ARIZONA</option>
+		<option value="114">114 - SUCURSAL UNION</option>
+		<option value="115">115 - SUCURSAL NASCHEL</option>
+		<option value="116">116 - SUCURSAL TILISARAO</option>
+		<option value="119">119 - SUCURSAL CANDELARIA</option>
+		<option value="121">121 - SUCURSAL BARRIO LA ESTACION (V</option>
+		<option value="122">122 - C.S. MARIANO MORENO (V.M.)</option>
+		<option value="131">131 - SUCURSAL VILLA MARIA</option>
+		<option value="141">141 - C.S. 9 DE JULIO BS.AS</option>
+		<option value="144">144 - C.S. CHACABUCO- (PCIA.BSAS)</option>
+		<option value="145">145 - C.S. MAR DEL PLATA PUERTO</option>
+		<option value="147">147 - C.S. GONZALEZ CATAN</option>
+		<option value="148">148 - C.S. HAEDO- PCIA.BS.AS</option>
+		<option value="150">150 - C.S. TEMPERLEY</option>
+		<option value="151">151 - C.S. VILLA BOSCH</option>
+		<option value="152">152 - C.S. SAN ANTONIO DE PADUA</option>
+		<option value="153">153 - C.S. REMEDIOS DE ESCALADA</option>
+		<option value="154">154 - C.S.VILLA LUGANO</option>
+		<option value="160">160 - C.S. POLVORINES (SPB)</option>
+		<option value="161">161 - C.S. PZA.ITALIA (LA PLATA)</option>
+		<option value="162">162 - C.S. LANUS SUR</option>
+		<option value="163">163 - C.S. SAN JERONIMO</option>
+		<option value="164">164 - C.S. RIO CUARTO II</option>
+		<option value="165">165 - C.S. RIO IV</option>
+		<option value="166">166 - C.S. SAN JUSTO</option>
+		<option value="167">167 - C.S. TUCUMAN</option>
+		<option value="170">170 - C.S. LOMAS DE ZAMORA CENTRO</option>
+		<option value="172">172 - C.S. PALERMO NORTE</option>
+		<option value="174">174 - C.S. PEDRO MOLINA</option>
+		<option value="175">175 - C.S. ATUEL</option>
+		<option value="176">176 - CS MAR DEL PLATA</option>
+		<option value="177">177 - C.S. GODOY CRUZ  (MENDOZA)</option>
+		<option value="178">178 - C.S. CATEDRAL - CORDOBA</option>
+		<option value="179">179 - C.S. PALERMO</option>
+		<option value="180">180 - C.S. LOMAS DEL MIRADOR</option>
+		<option value="184">184 - C.S. QUILMES ESTE</option>
+		<option value="185">185 - C.S. CONSTITUCION</option>
+		<option value="187">187 - C.S. FLORENCIO VARELA</option>
+		<option value="188">188 - C.S. PACHECO</option>
+		<option value="189">189 - C.S. QUILMES OESTE</option>
+		<option value="190">190 - C.S. PERGAMINO</option>
+		<option value="191">191 - C.S. LANUS OESTE</option>
+		<option value="192">192 - C.S. MONTE GRANDE</option>
+		<option value="193">193 - C.S. LA PLATA</option>
+		<option value="194">194 - C.S. MORENO</option>
+		<option value="195">195 - C.S. MUNRO</option>
+		<option value="197">197 - C.S. SAN RAFAEL</option>
+		<option value="199">199 - C.S. ALTA CORDOBA</option>
+		<option value="201">201 - C.S. LOMAS DE ZAMORA (CPB)</option>
+		<option value="202">202 - C.S. FLORES (CPB)</option>
+		<option value="203">203 - C.S. MORON (CPB)</option>
+		<option value="204">204 - C.S. SAN MIGUEL (CPB)</option>
+		<option value="205">205 - C.S. CABALLITO (CPB)</option>
+		<option value="206">206 - C.S. BERAZATEGUI (CPB)</option>
+		<option value="207">207 - C.S.ALMAGRO (CPB)</option>
+		<option value="208">208 - C.S. ADROGUE (CPB)</option>
+		<option value="209">209 - C.S. LANUS ESTE</option>
+		<option value="212">212 - C.S. ROSARIO CENTRO</option>
+		<option value="213">213 - C.S. MONTES DE OCA</option>
+		<option value="214">214 - C.S. BALVANERA</option>
+		<option value="215">215 - C.S. SAN LUIS CAPITAL</option>
+		<option value="216">216 - CS FLORENCIO VARELA NORTE</option>
+		<option value="217">217 - CS Benavidez</option>
+		<option value="218">218 - CS TIGRE</option>
+		<option value="219">219 - CS Neuquen</option>
+		<option value="220">220 - CS CUYO</option>
+		<option value="221">221 - CS C.P.C.E. SAN MARTÍN</option>
+		<option value="222">222 - C.S. ATOMO</option>
+		<option value="223">223 - C.S. C.P.C.E. MENDOZA</option>
+		<option value="224">224 - C.S. HIPER LIBERTAD</option>
+		<option value="225">225 - C.S. MUNICIPALIDAD GUAYMALLEN</option>
+		<option value="226">226 - C.S. REGISTRO DEL AUTOMOTOR</option>
+		<option value="228">228 - C.S. UNIVERSIDAD DEL ACONCAGUA</option>
+		<option value="229">229 - C.S. VALLE DE LAS LEÑAS</option>
+		<option value="230">230 - C.S. JUMBO</option>
+		<option value="231">231 - C.S. CARREFOUR</option>
+		<option value="232">232 - C.S. RENTAS GODOY CRUZ</option>
+		<option value="233">233 - C.S. C.P.C.E. SAN RAFAEL</option>
+		<option value="234">234 - C.S. MUNICIPALIDAD DE MENDOZA</option>
+		<option value="245">245 - C.S. 25 DE MAYO-VILLA MERCEDES</option>
+		<option value="246">246 - C.S. GARIN</option>
+		<option value="247">247 - C.S. CAU I MUNIC. GODOY CRUZ</option>
+		<option value="248">248 - C.S. CAU II MUNIC. GODOY CRUZ</option>
+		<option value="300">300 - TESORERIA GENERAL</option>
+		<option value="301">301 - TESORERIA REGIONAL DE MENDOZA</option>
+		<option value="400">400 - Titulos y Operaciones Exterior</option>
+		<option value="681">681 - No va</option>
+		<option value="702">702 - RECAUDACIONES RENTAS SAN LUIS</option>
+		<option value="704">704 - RECAUDACIONES RENTAS V.MERCEDE</option>
+		<option value="706">706 - RECAUDACIONES JUANA KOSLAY</option>
+		<option value="707">707 - RECAUDACIONES CLUB JUVENTUD</option>
+		<option value="708">708 - MONOPUESTO CDAD DE LA PUNTA</option>
+
+	</select>
+        </td>
+    </tr>
+    <tr id="trDeferedEnable" style="display:none">
+        <td class="ic-form-label">&nbsp;</td>
+        <td id="TdDeferedDeliberyText" style="width:20%" class="ic-form-label" valign="top" colspan="2">
+            
+        </td>
+        <td id="TdDeferedDeliberyCheck" valign="top" class="ic-form-data">
+            
+        </td>
+    </tr>
+</tbody></table>
+
+                <input name="ctl00$MainHolder$ctl00$MainHolder$pcDatos_hdnMinimizeState" type="text" value="False" id="ctl00_MainHolder_ctl00_MainHolder_pcDatos_hdnMinimizeState" class="ic-control-text" onkeypress="return validCharactersOnly(this, event, &quot;^[^:;\&lt;&gt;&#39;\&quot;]*$&quot;)" style="display:none">
+</div></td>
+						</tr>
+					</tbody></table></td>
+				</tr>
+			</tbody></table>
+          
+                
+                <div id="archivo" style="display: inline;">
+                <table class="ic-grid-border" cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+				<tbody><tr>
+					<td><table id="ctl00_MainHolder_pcArchivo_thePanel" class="ic-grid" cellspacing="0" cellpadding="0" align="Center" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr class="ic-grid-title-row">
+							<td><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+								<tbody><tr>
+									<td class="ic-grid-title-cell-left">&nbsp;</td><td class="ic-grid-title-cell" align="left" style="white-space:nowrap;">Selección de archivo</td>
+								</tr>
+							</tbody></table></td>
+						</tr><tr>
+							<td align="center"><div id="ctl00_MainHolder_pcArchivo" style="color:Black;border-color:DodgerBlue;font-family:verdana;font-size:10pt;width:100%;display:;">
+	
+                    <table border="0" width="100%" cellpadding="0" cellspacing="0">
+                        <tbody><tr>
+                            <td style="width:40%" class="ic-form-label">
+                                <span id="ctl00_MainHolder_lblArchivo">Archivo a importar:</span>
+                            </td>
+                            <td class="ic-form-data-required" style="width:60%">
+                                <input type="file" name="ctl00$MainHolder$fuArchivo" id="ctl00_MainHolder_fuArchivo" class="ic-button-navigation" style="width:50%;">
+                                &nbsp;
+                            </td>
+                        </tr>
+                    </tbody></table>
+                
+</div></td>
+						</tr>
+					</tbody></table></td>
+				</tr>
+			</tbody></table>
+                </div>
+                
+                <div id="ctl00_MainHolder_upButConfirmarAndMsg">
+                    <table id="tButConfirmarAndMsg" width="100%">
+                        <tbody><tr>
+                            <td align="left" nowrap="nowrap" width="100%">
+                                <span id="ctl00_MainHolder_lblMensaje" class="ic-message">Revise la información ingresada y presione "Confirmar".</span> 
+                            </td>
+                            <td align="right" nowrap="nowrap">
+                                <a onclick="return ValidateSelectionArchivo();" id="ctl00_MainHolder_lnkConfirmar" class="ic-button-navigation" href="javascript:WebForm_DoPostBackWithOptions(new WebForm_PostBackOptions(&quot;ctl00$MainHolder$lnkConfirmar&quot;, &quot;&quot;, true, &quot;ValidateFileUpload&quot;, &quot;&quot;, false, true))">Confirmar</a>
+                                <span id="ctl00_MainHolder_upConfirmarDeCaF">
+                                        <a id="ctl00_MainHolder_lnkConfirmarDeCaF" class="ic-button-navigation" href="javascript:__doPostBack(&#39;ctl00$MainHolder$lnkConfirmarDeCaF&#39;,&#39;&#39;)" style="display:none;"></a>   
+                                    </span>
+                            </td>
+                        </tr>
+                    </tbody></table>
+                </div>
+                
+                
+                <div id="ctl00_MainHolder_upIngresoOperacionesGrid">
+                    
+
+                    
+                </div>
+                
+                
+                <div id="ctl00_MainHolder_upIngresoOperacionesGridDeCaF">
+                    <div id="ctl00_MainHolder_cIngresoOperacionesGridDeCaF_upIngresoOperacionesGridDeCaF">
+	
+<script type="text/javascript">
+    function SumarATotal(importe) {
+        if (importe != null && !isNaN(importe)) {
+            var total = parseFloat(document.getElementById('ctl00_MainHolder_cIngresoOperacionesCarga_txtImporte').value.replace(',', '.'));
+
+            total = Math.round((total + parseFloat(importe)) * 100) / 100;
+
+            document.getElementById('ctl00_MainHolder_cIngresoOperacionesCarga_txtImporte').value = total.toFixed(2).replace('.', ',');
+            document.getElementById('ctl00_MainHolder_cIngresoOperacionesGridDeCaF_txtImporteSel').value = total.toString().replace('.', ',');
+        }
+    }
+
+    function RestarATotal(importe) {
+        if (importe != null && !isNaN(importe)) {
+            var total = parseFloat(document.getElementById('ctl00_MainHolder_cIngresoOperacionesCarga_txtImporte').value.replace(',', '.'));
+
+            total = Math.round((total - parseFloat(importe)) * 100) / 100;
+
+            document.getElementById('ctl00_MainHolder_cIngresoOperacionesCarga_txtImporte').value = total.toFixed(2).replace('.', ',');
+            document.getElementById('ctl00_MainHolder_cIngresoOperacionesGridDeCaF_txtImporteSel').value = total.toString().replace('.', ',');
+        }
+    }
+</script>
+
+
+
+<input type="hidden"><script id="dxss_1241175972" type="text/javascript">
+<!--
+window.__aspxServerFormID = 'aspnetForm';
+window.__aspxEmptyImageUrl = '/WebResource.axd?d=r8sGQK9x2VC5LfrAIP6hMW5Of0BQVx_5pcDtr_NzGA4Mft0ncv4hE1i-zBmnc8mg561Q33dXnVDmopWX_iwnWZgBELnuoLpA0P4EazLGo0XHyr4FYJEcfil8vQPDw-wMFdsFLo8AfLVBnlRoJ_At_JUEG241&t=636117930523139822';
+//-->
+</script>
+
+	<script id="dxis_136246879" src="./WebResource(5).axd" type="text/javascript"></script>
+	<script id="dxis_73471454" src="./WebResource(6).axd" type="text/javascript"></script>
+	
+
+<table class="dxgvControl" cellspacing="0" cellpadding="0" id="ctl00_MainHolder_cIngresoOperacionesGridDeCaF_agvIngresoOperacionesDeCAF" border="0" style="width:100%;border-collapse:collapse;border-collapse:separate;display:none;">
+		<tbody><tr>
+			<td><table id="ctl00_MainHolder_cIngresoOperacionesGridDeCaF_agvIngresoOperacionesDeCAF_DXMainTable" class="dxgvTable" cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;empty-cells:show;">
+				<tbody><tr id="ctl00_MainHolder_cIngresoOperacionesGridDeCaF_agvIngresoOperacionesDeCAF_DXHeadersRow">
+					<td id="ctl00_MainHolder_cIngresoOperacionesGridDeCaF_agvIngresoOperacionesDeCAF_DXTDcol0" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_cIngresoOperacionesGridDeCaF_agvIngresoOperacionesDeCAF&#39;, this, event);" style="color:#B20000;background-color:#F4F4F4;border-style:None;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10px;font-weight:bold;width:5%;cursor:pointer;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="color:#B20000;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10px;font-weight:bold;width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td> </td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_cIngresoOperacionesGridDeCaF_agvIngresoOperacionesDeCAF_DXTDGScol1" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_cIngresoOperacionesGridDeCaF_agvIngresoOperacionesDeCAF&#39;, this, event);" style="color:#B20000;background-color:#F4F4F4;border-style:None;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10px;font-weight:bold;width:7%;cursor:pointer;text-align:Right;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="color:#B20000;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10px;font-weight:bold;width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Right;">Suc de Guarda</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_cIngresoOperacionesGridDeCaF_agvIngresoOperacionesDeCAF_DXTDGScol2" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_cIngresoOperacionesGridDeCaF_agvIngresoOperacionesDeCAF&#39;, this, event);" style="color:#B20000;background-color:#F4F4F4;border-style:None;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10px;font-weight:bold;width:7%;cursor:pointer;text-align:Right;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="color:#B20000;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10px;font-weight:bold;width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Right;">Nro. Op.</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_cIngresoOperacionesGridDeCaF_agvIngresoOperacionesDeCAF_DXTDGScol3" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_cIngresoOperacionesGridDeCaF_agvIngresoOperacionesDeCAF&#39;, this, event);" style="color:#B20000;background-color:#F4F4F4;border-style:None;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10px;font-weight:bold;width:7%;cursor:pointer;text-align:Center;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="color:#B20000;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10px;font-weight:bold;width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Center;">C. Bco.</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_cIngresoOperacionesGridDeCaF_agvIngresoOperacionesDeCAF_DXTDGScol4" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_cIngresoOperacionesGridDeCaF_agvIngresoOperacionesDeCAF&#39;, this, event);" style="color:#B20000;background-color:#F4F4F4;border-style:None;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10px;font-weight:bold;width:7%;cursor:pointer;text-align:Center;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="color:#B20000;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10px;font-weight:bold;width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Center;">C. Suc.</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_cIngresoOperacionesGridDeCaF_agvIngresoOperacionesDeCAF_DXTDGScol5" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_cIngresoOperacionesGridDeCaF_agvIngresoOperacionesDeCAF&#39;, this, event);" style="color:#B20000;background-color:#F4F4F4;border-style:None;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10px;font-weight:bold;width:10%;cursor:pointer;text-align:Right;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="color:#B20000;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10px;font-weight:bold;width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Right;">Nro. Cheque</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_cIngresoOperacionesGridDeCaF_agvIngresoOperacionesDeCAF_DXTDGScol6" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_cIngresoOperacionesGridDeCaF_agvIngresoOperacionesDeCAF&#39;, this, event);" style="color:#B20000;background-color:#F4F4F4;border-style:None;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10px;font-weight:bold;width:14%;cursor:pointer;text-align:Center;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="color:#B20000;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10px;font-weight:bold;width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Center;">Fecha Vto.</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_cIngresoOperacionesGridDeCaF_agvIngresoOperacionesDeCAF_DXTDGScol7" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_cIngresoOperacionesGridDeCaF_agvIngresoOperacionesDeCAF&#39;, this, event);" style="color:#B20000;background-color:#F4F4F4;border-style:None;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10px;font-weight:bold;width:5%;cursor:pointer;text-align:Center;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="color:#B20000;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10px;font-weight:bold;width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Center;">Moneda</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_cIngresoOperacionesGridDeCaF_agvIngresoOperacionesDeCAF_DXTDGScol8" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_cIngresoOperacionesGridDeCaF_agvIngresoOperacionesDeCAF&#39;, this, event);" style="color:#B20000;background-color:#F4F4F4;border-style:None;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10px;font-weight:bold;width:10%;cursor:pointer;text-align:Right;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="color:#B20000;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10px;font-weight:bold;width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Right;">Capital</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_cIngresoOperacionesGridDeCaF_agvIngresoOperacionesDeCAF_DXTDGScol9" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_cIngresoOperacionesGridDeCaF_agvIngresoOperacionesDeCAF&#39;, this, event);" style="color:#B20000;background-color:#F4F4F4;border-style:None;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10px;font-weight:bold;width:22%;cursor:pointer;text-align:Justify;border-left-width:0px;border-top-width:0px;border-right-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="color:#B20000;font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10px;font-weight:bold;width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Justify;">Firmante</td>
+						</tr>
+					</tbody></table></td>
+				</tr><tr class="dxgvEmptyDataRow">
+					<td class="dxgv" colspan="10" style="border-bottom-width:0px;"><div>
+						Sin datos
+					</div></td>
+				</tr>
+			</tbody></table><img id="ctl00_MainHolder_cIngresoOperacionesGridDeCaF_agvIngresoOperacionesDeCAF_IADD" src="./WebResource(7).axd" alt="|" style="border-width:0px;position:absolute;visibility:hidden;"><img id="ctl00_MainHolder_cIngresoOperacionesGridDeCaF_agvIngresoOperacionesDeCAF_IADU" src="./WebResource(8).axd" alt="|" style="border-width:0px;position:absolute;visibility:hidden;"><img id="ctl00_MainHolder_cIngresoOperacionesGridDeCaF_agvIngresoOperacionesDeCAF_IDHF" src="./WebResource(9).axd" alt="Hide" style="border-width:0px;position:absolute;visibility:hidden;"><table id="ctl00_MainHolder_cIngresoOperacionesGridDeCaF_agvIngresoOperacionesDeCAF_LP" class="dxgvLoadingPanel" cellspacing="0" cellpadding="0" border="0" style="border-collapse:collapse;left:0px;top:0px;z-index:30000;display:none;">
+				<tbody><tr>
+					<td class="dx"><img src="./WebResource(10).axd" alt="" align="middle" style="border-width:0px;"></td><td class="dx" style="padding-left:0px;">Cargando…</td>
+				</tr>
+			</tbody></table><div id="ctl00_MainHolder_cIngresoOperacionesGridDeCaF_agvIngresoOperacionesDeCAF_LD" class="dxgvLoadingDiv" style="display:none;z-index:29999;position:absolute;">
+
+			</div><input type="hidden" name="ctl00$MainHolder$cIngresoOperacionesGridDeCaF$agvIngresoOperacionesDeCAF$DXSelInput" id="ctl00_MainHolder_cIngresoOperacionesGridDeCaF_agvIngresoOperacionesDeCAF_DXSelInput"><table id="ctl00_MainHolder_cIngresoOperacionesGridDeCaF_agvIngresoOperacionesDeCAF_DXStyleTable" border="0" style="display:none;">
+				<tbody><tr>
+					<td></td>
+				</tr><tr class="dxgvEditingErrorRow">
+					<td class="dxgv" colspan="10" style="border-right-width:0px;"></td>
+				</tr><tr class="dxgvSelectedRow" style="font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10px;">
+					<td></td>
+				</tr><tr class="dxgvFocusedRow" style="font-family:Verdana,Arial,Helvetica,sans-serif;font-size:10px;">
+					<td></td>
+				</tr><tr class="dxgvFocusedGroupRow">
+					<td></td>
+				</tr>
+			</tbody></table><input type="hidden" name="ctl00$MainHolder$cIngresoOperacionesGridDeCaF$agvIngresoOperacionesDeCAF$CallbackState" id="ctl00_MainHolder_cIngresoOperacionesGridDeCaF_agvIngresoOperacionesDeCAF_CallbackState" value="/wEWBB4ERGF0YQUoQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQWNBQndBPR4FU3RhdGUFcEJ3c0hBQUlCQndFQ0FRY0NBZ0VIQXdJQkJ3UUNBUWNGQWdFSEJnSUJCd2NDQVFjSUFnRUhDUUlCQnhRQ0FBY0FCd0FIQUFjQUFnQUcvLzhKQWdKSlJBa0NBQUlBQXdjRUFnQUhBQUlCQndBQ0FRY0E="></td>
+		</tr>
+	</tbody></table><script id="dxss_492298571" type="text/javascript">
+<!--
+
+var dxo = new ASPxClientGridView('ctl00_MainHolder_cIngresoOperacionesGridDeCaF_agvIngresoOperacionesDeCAF');
+window['agvIngresoOperacionesDeCAF'] = dxo;
+dxo.callBack = function(arg) { WebForm_DoCallback('ctl00$MainHolder$cIngresoOperacionesGridDeCaF$agvIngresoOperacionesDeCAF',arg,aspxCallback,'ctl00_MainHolder_cIngresoOperacionesGridDeCaF_agvIngresoOperacionesDeCAF',aspxCallbackError,true); };
+dxo.uniqueID = 'ctl00$MainHolder$cIngresoOperacionesGridDeCaF$agvIngresoOperacionesDeCAF';
+dxo.clientVisible = false;dxo.SelectionChanged.AddHandler(function(s, e) {
+                                                            if(e.isSelected)
+                                                            {
+                                                                agvIngresoOperacionesDeCAF.GetRowValues(e.visibleIndex, 'Capital', SumarATotal);
+                                                            }
+                                                            else
+                                                            {
+                                                                agvIngresoOperacionesDeCAF.GetRowValues(e.visibleIndex, 'Capital', RestarATotal);
+                                                            }
+                                                        });
+dxo.callBacksEnabled=true;
+dxo.pageRowCount=0;
+dxo.selectedWithoutPageRowCount=0;
+dxo.visibleStartIndex=0;
+dxo.focusedRowIndex=-1;
+dxo.allowFocusedRow=false;
+dxo.allowMultiSelection=false;
+dxo.isColumnsResizable=false;
+dxo.isVerticalScrolling=false;
+dxo.isMainControlResizable=false;
+dxo.callbackOnFocusedRowChanged=false;
+dxo.callbackOnSelectionChanged=false;
+dxo.autoFilterDelay='1200';
+dxo.ClearColumns();
+dxo.CreateColumn('',0,null,1);
+dxo.CreateColumn('',1,'BranchLiquidation',1);
+dxo.CreateColumn('',2,'Operacion',1);
+dxo.CreateColumn('',3,'BancoCodigo',1);
+dxo.CreateColumn('',4,'SucursalCodigo',1);
+dxo.CreateColumn('',5,'Cheque',1);
+dxo.CreateColumn('',6,'FechaVencimiento',1);
+dxo.CreateColumn('',7,'Moneda.Symbol',1);
+dxo.CreateColumn('',8,'Capital',1);
+dxo.CreateColumn('',9,'Firmante',1);
+dxo.CreateColumn('StateColor:4',10,'StateColor',0);
+dxo.InlineInitialize();
+
+//-->
+</script>
+
+
+</div>
+
+                
+                    
+               </div>
+            
+		</div> 
+        
+
+    <table width="100%">
+        <tbody><tr>
+            <td align="left" style="width: 100%">
+                <div id="ctl00_MainHolder_upError">
+                     
+                </div>
+            </td>
+        </tr>
+    </tbody></table>
+
+
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="right">
+                                        <div id="ctl00_validationSummaryFooter" style="color:Red;font-size:10px;display:none;">
+
+		</div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="95%" align="center">
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                            <tbody><tr>
+                                                <td align="right">
+                                                    
+                                                    
+                                                </td>
+                                            </tr>
+                                        </tbody></table>
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="ic-content-footer">
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                <tbody><tr class="ic-content-footer-dottedline">
+                                    <td align="right" nowrap="nowrap" style="width: 90%">
+                                    </td>
+                                    <td align="right" nowrap="nowrap" style="width: 10%">
+                                        <a id="ctl00_LinkButtonTermsAndConditions" class="ic-grid-link" href="javascript:__doPostBack(&#39;ctl00$LinkButtonTermsAndConditions&#39;,&#39;&#39;)">Términos y Condiciones</a>
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                </tbody></table>
+            </td>
+		<td id="ctl00_cellContentRight" class="ic-content-space-top-right" valign="top" style="display:none;">
+                <table class="ic-content-right" border="0" cellspacing="0" cellpadding="0">
+                    <tbody><tr>
+                        <td>
+                            <img src="./pixel.gif" width="8" height="1">
+                        </td>
+                        <td class="ic-right-panel">
+                            <table border="0" cellpadding="0" cellspacing="0" class="ic-right-panel-content">
+                                <tbody><tr>
+                                    <td width="8" class="ic-right-panel-collapse">
+                                        <input type="image" name="ctl00$imageButtonCollapse" id="ctl00_imageButtonCollapse" src="./bot-right-collapse.gif" style="height:47px;width:9px;border-width:0px;">
+                                    </td>
+                                    
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                </tbody></table>
+            </td>
+	</tr>
+</tbody></table>
+
+    
+    
+<script type="text/javascript">
+//<![CDATA[
+var Page_ValidationSummaries =  new Array(document.getElementById("ctl00_validationSummaryFooter"));
+var Page_Validators =  new Array(document.getElementById("ctl00_MainHolder_cIngresoOperacionesCarga_rfvTipoOperacion"), document.getElementById("ctl00_MainHolder_cIngresoOperacionesCarga_rfvCuenta"), document.getElementById("ctl00_MainHolder_cIngresoOperacionesCarga_rfvImporte"), document.getElementById("ctl00_MainHolder_cIngresoOperacionesCarga_revImporte"));
+//]]>
+</script>
+
+<script type="text/javascript">
+//<![CDATA[
+var ctl00_MainHolder_cIngresoOperacionesCarga_rfvTipoOperacion = document.all ? document.all["ctl00_MainHolder_cIngresoOperacionesCarga_rfvTipoOperacion"] : document.getElementById("ctl00_MainHolder_cIngresoOperacionesCarga_rfvTipoOperacion");
+ctl00_MainHolder_cIngresoOperacionesCarga_rfvTipoOperacion.controltovalidate = "ctl00_MainHolder_cIngresoOperacionesCarga_rblTipoOperacion";
+ctl00_MainHolder_cIngresoOperacionesCarga_rfvTipoOperacion.focusOnError = "t";
+ctl00_MainHolder_cIngresoOperacionesCarga_rfvTipoOperacion.errormessage = "Campo requerido";
+ctl00_MainHolder_cIngresoOperacionesCarga_rfvTipoOperacion.display = "Dynamic";
+ctl00_MainHolder_cIngresoOperacionesCarga_rfvTipoOperacion.validationGroup = "ValidateSolicitud";
+ctl00_MainHolder_cIngresoOperacionesCarga_rfvTipoOperacion.evaluationfunction = "RequiredFieldValidatorEvaluateIsValid";
+ctl00_MainHolder_cIngresoOperacionesCarga_rfvTipoOperacion.initialvalue = "";
+var ctl00_MainHolder_cIngresoOperacionesCarga_rfvCuenta = document.all ? document.all["ctl00_MainHolder_cIngresoOperacionesCarga_rfvCuenta"] : document.getElementById("ctl00_MainHolder_cIngresoOperacionesCarga_rfvCuenta");
+ctl00_MainHolder_cIngresoOperacionesCarga_rfvCuenta.controltovalidate = "ctl00_MainHolder_cIngresoOperacionesCarga_ddlCuenta";
+ctl00_MainHolder_cIngresoOperacionesCarga_rfvCuenta.focusOnError = "t";
+ctl00_MainHolder_cIngresoOperacionesCarga_rfvCuenta.errormessage = "Campo requerido";
+ctl00_MainHolder_cIngresoOperacionesCarga_rfvCuenta.display = "Dynamic";
+ctl00_MainHolder_cIngresoOperacionesCarga_rfvCuenta.validationGroup = "ValidateSolicitud";
+ctl00_MainHolder_cIngresoOperacionesCarga_rfvCuenta.evaluationfunction = "RequiredFieldValidatorEvaluateIsValid";
+ctl00_MainHolder_cIngresoOperacionesCarga_rfvCuenta.initialvalue = "";
+var ctl00_MainHolder_cIngresoOperacionesCarga_rfvImporte = document.all ? document.all["ctl00_MainHolder_cIngresoOperacionesCarga_rfvImporte"] : document.getElementById("ctl00_MainHolder_cIngresoOperacionesCarga_rfvImporte");
+ctl00_MainHolder_cIngresoOperacionesCarga_rfvImporte.controltovalidate = "ctl00_MainHolder_cIngresoOperacionesCarga_txtImporte";
+ctl00_MainHolder_cIngresoOperacionesCarga_rfvImporte.focusOnError = "t";
+ctl00_MainHolder_cIngresoOperacionesCarga_rfvImporte.errormessage = "Campo requerido";
+ctl00_MainHolder_cIngresoOperacionesCarga_rfvImporte.display = "Dynamic";
+ctl00_MainHolder_cIngresoOperacionesCarga_rfvImporte.validationGroup = "ValidateSolicitud";
+ctl00_MainHolder_cIngresoOperacionesCarga_rfvImporte.evaluationfunction = "RequiredFieldValidatorEvaluateIsValid";
+ctl00_MainHolder_cIngresoOperacionesCarga_rfvImporte.initialvalue = "";
+var ctl00_MainHolder_cIngresoOperacionesCarga_revImporte = document.all ? document.all["ctl00_MainHolder_cIngresoOperacionesCarga_revImporte"] : document.getElementById("ctl00_MainHolder_cIngresoOperacionesCarga_revImporte");
+ctl00_MainHolder_cIngresoOperacionesCarga_revImporte.controltovalidate = "ctl00_MainHolder_cIngresoOperacionesCarga_txtImporte";
+ctl00_MainHolder_cIngresoOperacionesCarga_revImporte.errormessage = "Formato incorrecto";
+ctl00_MainHolder_cIngresoOperacionesCarga_revImporte.display = "Dynamic";
+ctl00_MainHolder_cIngresoOperacionesCarga_revImporte.validationGroup = "ValidateSolicitud";
+ctl00_MainHolder_cIngresoOperacionesCarga_revImporte.evaluationfunction = "RegularExpressionValidatorEvaluateIsValid";
+ctl00_MainHolder_cIngresoOperacionesCarga_revImporte.validationexpression = "\\d{0,12}\\,?\\d{1,2}";
+var ctl00_validationSummaryFooter = document.all ? document.all["ctl00_validationSummaryFooter"] : document.getElementById("ctl00_validationSummaryFooter");
+ctl00_validationSummaryFooter.headertext = "Formulario inválido, por favor revise los datos ingresados:";
+ctl00_validationSummaryFooter.showsummary = "False";
+//]]>
+</script>
+
+<script> MakeDeliveryBranchVisible();</script><script> HabilitarDatosIngresoOperacionesCarga('');</script>
+<script type="text/javascript">
+//<![CDATA[
+
+var Page_ValidationActive = false;
+if (typeof(ValidatorOnLoad) == "function") {
+    ValidatorOnLoad();
+}
+
+function ValidatorOnSubmit() {
+    if (Page_ValidationActive) {
+        return ValidatorCommonOnSubmit();
+    }
+    else {
+        return true;
+    }
+}
+        
+WebForm_InitCallback();
+document.getElementById('ctl00_validationSummaryFooter').dispose = function() {
+    Array.remove(Page_ValidationSummaries, document.getElementById('ctl00_validationSummaryFooter'));
+}
+Sys.Application.initialize();
+
+document.getElementById('ctl00_MainHolder_cIngresoOperacionesCarga_rfvTipoOperacion').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_cIngresoOperacionesCarga_rfvTipoOperacion'));
+}
+
+document.getElementById('ctl00_MainHolder_cIngresoOperacionesCarga_rfvCuenta').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_cIngresoOperacionesCarga_rfvCuenta'));
+}
+
+document.getElementById('ctl00_MainHolder_cIngresoOperacionesCarga_rfvImporte').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_cIngresoOperacionesCarga_rfvImporte'));
+}
+
+document.getElementById('ctl00_MainHolder_cIngresoOperacionesCarga_revImporte').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_cIngresoOperacionesCarga_revImporte'));
+}
+//]]>
+</script>
+<span style="display: none !important;"><input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value=""></span><span style="display: none !important;"><input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value=""></span><span style="display: none !important;"><input type="hidden" name="__LASTFOCUS" id="__LASTFOCUS" value=""></span><span style="display: none !important;"><input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUKLTM0OTk4MDQ3OA9kFgJmD2QWAgIBDxYCHgdlbmN0eXBlBRNtdWx0aXBhcnQvZm9ybS1kYXRhFgICAQ9kFgJmD2QWBAIBD2QWBAICDw8WAh4EVGV4dAUWSW5ncmVzbyBkZSBPcGVyYWNpb25lc2RkAgcPZBYCZg9kFghmD2QWAgIBD2QWAmYPZBYKAgEPZBYCAgEPZBYWAgEPDxYCHwEFE1RpcG8gZGUgT3BlcmFjacOzbjpkZAIDDxBkDxYEZgIBAgICAxYEEGRkZxBkZGcQZGRnEGRkZ2RkAgcPDxYCHwEFEVRpcG8gZGUgQ29udHJhdG86ZGQCCQ9kFgJmD2QWAgIBDxBkDxYCAgMCBBYCEGRkZxBkZGdkZAILDw8WAh8BBQdDdWVudGE6ZGQCDQ8QDxYGHg5EYXRhVmFsdWVGaWVsZAUKVmFsdWVGaWVsZB4NRGF0YVRleHRGaWVsZAUJVGV4dEZpZWxkHgtfIURhdGFCb3VuZGdkEBUBCyQgMTAwLTk5MC0xFQEXMS0xMDAtMjAtODAtMC05OTAtMC0xLTQUKwMBZ2RkAhEPDxYCHwEFCEltcG9ydGU6ZGQCEw9kFgJmD2QWAgIBDw8WCB8BBQQxLDAwHgtDaGFyc0ZpbHRlcgUOXlteOjtcPD4nXCJdKiQeEkNoYXJzRmlsdGVyRW5hYmxlZGceCU1heExlbmd0aAIcFgIeCm9ua2V5cHJlc3MFKnJldHVybiBudW1iZXJzb25seSh0aGlzLCBldmVudCwgdHJ1ZSwgJywnKWQCGw8QDxYGHwIFCEJyYW5jaElkHwMFCFRvU3RyaW5nHwRnZBAVwgEZMSAtIEFHRU5DSUEgIEJBUlJJTyBOT1JURR0yIC0gQUdFTkNJQSAgQUxUT1MgREUgUEFMRVJNTxIzIC0gQUdFTkNJQSAgSEFFRE8VNCAtIEFHRU5DSUEgIEJPVUxPR05FFzUgLSBBR0VOQ0lBICBUUklCVU5BTEVTGjYgLSBBR0VOQ0lBICBQTEFaQSBGUkFOQ0lBFTcgLSBBR0VOQ0lBICBDT05HUkVTTxU4IC0gQUdFTkNJQSAgQkVMR1JBTk8dOSAtIEFHRU5DSUEgIFBMQVpBIFNBTiBNQVJUSU4WMTAgLSBBR0VOQ0lBICBSRUNPTEVUQRkxMSAtIEFHRU5DSUEgIFJBTU9TIE1FSklBFzEyIC0gQUdFTkNJQSAgQ0FCQUxMSVRPGzEzIC0gQUdFTkNJQSAgVklMTEEgQURFTElOQRgxNCAtIEFHRU5DSUEgIFNBTiBNQVJUSU4dMTUgLSBBR0VOQ0lBICBMT01BUyBERSBaQU1PUkEVMTYgLSBBR0VOQ0lBICBRVUlMTUVTEzE3IC0gQUdFTkNJQSAgUElMQVITMTggLSBBR0VOQ0lBICBMQU5VUxUxOSAtIEFHRU5DSUEgIENPUkRPQkEWMjAgLSBBR0VOQ0lBICBNQVJUSU5FWhMyMSAtIEFHRU5DSUEgIEJPRURPFTIyIC0gQUdFTkNJQSAgTElOSUVSUxsyMyAtIEFHRU5DSUEgIFZJQ0VOVEUgTE9QRVoVMjQgLSBBR0VOQ0lBICBBRFJPR1VFFjI1IC0gQUdFTkNJQSAgQk9UQU5JQ08YMjYgLSBBR0VOQ0lBICBDT0xFR0lBTEVTGzI3IC0gQUdFTkNJQSAgVklMTEEgVVJRVUlaQSEyOCAtIEFHRU5DSUEgIExPTUFTIERFIFNBTiBJU0lEUk8XMjkgLSBBR0VOQ0lBICBMQSBMVUNJTEEaMzAgLSBBR0VOQ0lBICBWSUxMQSBERVZPVE8VMzEgLSBBR0VOQ0lBICBFU0NPQkFSGjMyIC0gQUdFTkNJQSAgUEVEUk8gR09ZRU5BFzMzIC0gQUdFTkNJQSAgQkFKTyBBTEVNFTM0IC0gQUdFTkNJQSAgTUVORE9aQRszNSAtIEFHRU5DSUEgIFZJTExBIEFMTEVOREUZMzYgLSBBR0VOQ0lBICBNSUNST0NFTlRSTxszOSAtIEFHRU5DSUEgIE1BUiBERUwgUExBVEEhNDEgLSBBR0VOQ0lBICBDT1JET0JBLVBMQVpBIENPTE9OFjQyIC0gQUdFTkNJQSAgUEFMTUFSRVMVNDMgLSBBR0VOQ0lBICBST1NBUklPFjQ0IC0gQUdFTkNJQSAgU0FBVkVEUkEZNDUgLSBBR0VOQ0lBICBCRUxHUkFOTyAgUhM0NyAtIEFHRU5DSUEgIExVSkFOGDQ4IC0gQUdFTkNJQSAgTU9OVFNFUlJBVBQ1MCAtIEFHRU5DSUEgIEZMT1JFUxY1MSAtIEFHRU5DSUEgIEJBUlJBQ0FTFjUyIC0gQUdFTkNJQSAgSU1QUkVOVEEWNTMgLSBBR0VOQ0lBICBMQSBQTEFUQRY1NCAtIEFHRU5DSUEgIENBU1RFTEFSFDU1IC0gQUdFTkNJQSAgT0xJVk9TGjU2IC0gQUdFTkNJQSAgUExBWkEgR1VFTUVTHjU3IC0gQUdFTkNJQSAgUExBWkEgVlRFLiBMT1BFWho1OCAtIEFHRU5DSUEgIFZJTExBIENSRVNQTx42MCAtIEFHRU5DSUEgIFBBUlFVRSBSSVZBREFWSUEYNjEgLSBBR0VOQ0lBICBMSUJFUlRBRE9SGjYyIC0gQUdFTkNJQSAgTU9OVEUgR1JBTkRFHzYzIC0gQUdFTkNJQSAgTEEgUExBVEEgQ0FURURSQUwiNjQgLSBBR0VOQ0lBICBNWkEuIC0gQkFSUklPIENJVklDTyI2NSAtIEFHRU5DSUEgU0FOIE1JR1VFTCBERSBUVUNVTUFOITY2IC0gU1VDVVJTQUwgTUlDUk9DRU5UUk8gTUVORE9aQRY2NyAtIFNVQ1VSU0FMIFNBTiBKT1NFFzY4IC0gU1VDVVJTQUwgR1VUSUVSUkVaIDY5IC0gU1VDVVJTQUwgQkFMQ0FSQ0UgLSBNRU5ET1pBIDcwIC0gQUdFTkNJQSBTQU4gTFVJUyAtIFNBTiBMVUlTGzcxIC0gQUdFTkNJQSBWSUxMQSBNRVJDRURFUx03MiAtIEFHRU5DSUEgTUVSTE8gLSBTQU4gTFVJUxc3MyAtIFNVQ1VSU0FMIFRVUFVOR0FUTxU3NCAtIFNVQ1VSU0FMIFRVTlVZQU4WNzUgLSBTVUNVUlNBTCBTSE9QUElORxw3NiAtIFNVQ1VSU0FMIEdFTkVSQUwgQUxWRUFSFzc3IC0gU1VDVVJTQUwgTEFTIEhFUkFTIDc4IC0gU1VDVVJTQUwgQk9VTEVWQVJEIEJFTEdSQU5PHjc5IC0gU1VDVVJTQUwgUk9ERU8gREUgTEEgQ1JVWhc4MCAtIFNVQ1VSU0FMIE1BTEFSR8OcRR84MSAtIFNVQ1VSU0FMIFJVVEEgUEFOQU1FUklDQU5BGjgyIC0gU1VDVVJTQUwgQlVFTk9TIEFJUkVTFTgzIC0gU1VDVVJTQUwgQ09SRE9CQRU4NCAtIFNVQ1VSU0FMIE1FTkRPWkEVODUgLSBTVUNVUlNBTCBST1NBUklPGzg2IC0gU1VDVVJTQUwgTUFSIERFTCBQTEFUQRY4NyAtIFNVQ1VSU0FMIFZFTkRJTUlBHjg4IC0gU1VDVVJTQUwgQ09MT04gLSBTQU4gTFVJUyM4OSAtIFNVQ1VSU0FMIEFWLiBNSVRSRS1WLiBNRVJDRURFUyQ5MCAtIFNVQ1VSU0FMIENJVURBRCBBVVTDk05PTUEgQlMgQVMWOTEgLSBTVUNVUlNBTCBTQU4gSlVBThw5MiAtIFNVQ1VSU0FMIFJJTyBDVUFSVE8gSUlJHjkzIC0gU1VDVVJTQUwgQ0HDkU9OIERFTCBBVFVFTBs5NCAtIFNVQ1VSU0FMIExVSkFOIERFIENVWU8eOTUgLSBTVUNVUlNBTCBQTEFaQSBHT0RPWSBDUlVaGDk2IC0gU1VDVVJTQUwgU0FOIENBUkxPUxYxMDAgLSBTVUNVUlNBTCBDRU5UUkFMITEwMSAtIFNVQ1VSU0FMIFNBTiBMVUlTIC0gQ0FQSVRBTB0xMDIgLSBTVUNVUlNBTCBWSUxMQSBNRVJDRURFUxkxMDMgLSBTVUNVUlNBTCBTQU5UQSBST1NBFTEwNCAtIFNVQ1VSU0FMIFFVSU5FUxYxMDUgLSBTVUNVUlNBTCBMQSBUT01BGzEwNiAtIFNVQ1VSU0FMIEpVU1RPIERBUkFDVBoxMDcgLSBTVUNVUlNBTCBOVUVWQSBHQUxJQRcxMDggLSBTVUNVUlNBTCBDT05DQVJBThwxMDkgLSBTVUNVUlNBTCBTQU4gRlJBTkNJU0NPFDExMCAtIFNVQ1VSU0FMIE1FUkxPHjExMSAtIFNVQ1VSU0FMIEJVRU5BIEVTUEVSQU5aQRYxMTIgLSBTVUNVUlNBTCBBUklaT05BFDExNCAtIFNVQ1VSU0FMIFVOSU9OFjExNSAtIFNVQ1VSU0FMIE5BU0NIRUwYMTE2IC0gU1VDVVJTQUwgVElMSVNBUkFPGTExOSAtIFNVQ1VSU0FMIENBTkRFTEFSSUEkMTIxIC0gU1VDVVJTQUwgQkFSUklPIExBIEVTVEFDSU9OIChWIDEyMiAtIEMuUy4gTUFSSUFOTyBNT1JFTk8gKFYuTS4pGjEzMSAtIFNVQ1VSU0FMIFZJTExBIE1BUklBGzE0MSAtIEMuUy4gOSBERSBKVUxJTyBCUy5BUyExNDQgLSBDLlMuIENIQUNBQlVDTy0gKFBDSUEuQlNBUykfMTQ1IC0gQy5TLiBNQVIgREVMIFBMQVRBIFBVRVJUTxkxNDcgLSBDLlMuIEdPTlpBTEVaIENBVEFOHDE0OCAtIEMuUy4gSEFFRE8tIFBDSUEuQlMuQVMUMTUwIC0gQy5TLiBURU1QRVJMRVkWMTUxIC0gQy5TLiBWSUxMQSBCT1NDSB8xNTIgLSBDLlMuIFNBTiBBTlRPTklPIERFIFBBRFVBHzE1MyAtIEMuUy4gUkVNRURJT1MgREUgRVNDQUxBREEWMTU0IC0gQy5TLlZJTExBIExVR0FOTxsxNjAgLSBDLlMuIFBPTFZPUklORVMgKFNQQikgMTYxIC0gQy5TLiBQWkEuSVRBTElBIChMQSBQTEFUQSkUMTYyIC0gQy5TLiBMQU5VUyBTVVIXMTYzIC0gQy5TLiBTQU4gSkVST05JTU8YMTY0IC0gQy5TLiBSSU8gQ1VBUlRPIElJETE2NSAtIEMuUy4gUklPIElWFDE2NiAtIEMuUy4gU0FOIEpVU1RPEjE2NyAtIEMuUy4gVFVDVU1BTiExNzAgLSBDLlMuIExPTUFTIERFIFpBTU9SQSBDRU5UUk8YMTcyIC0gQy5TLiBQQUxFUk1PIE5PUlRFFzE3NCAtIEMuUy4gUEVEUk8gTU9MSU5BEDE3NSAtIEMuUy4gQVRVRUwWMTc2IC0gQ1MgTUFSIERFTCBQTEFUQSAxNzcgLSBDLlMuIEdPRE9ZIENSVVogIChNRU5ET1pBKR0xNzggLSBDLlMuIENBVEVEUkFMIC0gQ09SRE9CQRIxNzkgLSBDLlMuIFBBTEVSTU8cMTgwIC0gQy5TLiBMT01BUyBERUwgTUlSQURPUhcxODQgLSBDLlMuIFFVSUxNRVMgRVNURRcxODUgLSBDLlMuIENPTlNUSVRVQ0lPThsxODcgLSBDLlMuIEZMT1JFTkNJTyBWQVJFTEESMTg4IC0gQy5TLiBQQUNIRUNPGDE4OSAtIEMuUy4gUVVJTE1FUyBPRVNURRQxOTAgLSBDLlMuIFBFUkdBTUlOTxYxOTEgLSBDLlMuIExBTlVTIE9FU1RFFzE5MiAtIEMuUy4gTU9OVEUgR1JBTkRFEzE5MyAtIEMuUy4gTEEgUExBVEERMTk0IC0gQy5TLiBNT1JFTk8QMTk1IC0gQy5TLiBNVU5STxUxOTcgLSBDLlMuIFNBTiBSQUZBRUwXMTk5IC0gQy5TLiBBTFRBIENPUkRPQkEgMjAxIC0gQy5TLiBMT01BUyBERSBaQU1PUkEgKENQQikXMjAyIC0gQy5TLiBGTE9SRVMgKENQQikWMjAzIC0gQy5TLiBNT1JPTiAoQ1BCKRsyMDQgLSBDLlMuIFNBTiBNSUdVRUwgKENQQikaMjA1IC0gQy5TLiBDQUJBTExJVE8gKENQQikcMjA2IC0gQy5TLiBCRVJBWkFURUdVSSAoQ1BCKRcyMDcgLSBDLlMuQUxNQUdSTyAoQ1BCKRgyMDggLSBDLlMuIEFEUk9HVUUgKENQQikVMjA5IC0gQy5TLiBMQU5VUyBFU1RFGTIxMiAtIEMuUy4gUk9TQVJJTyBDRU5UUk8YMjEzIC0gQy5TLiBNT05URVMgREUgT0NBFDIxNCAtIEMuUy4gQkFMVkFORVJBGzIxNSAtIEMuUy4gU0FOIExVSVMgQ0FQSVRBTB8yMTYgLSBDUyBGTE9SRU5DSU8gVkFSRUxBIE5PUlRFEjIxNyAtIENTIEJlbmF2aWRleg4yMTggLSBDUyBUSUdSRRAyMTkgLSBDUyBOZXVxdWVuDTIyMCAtIENTIENVWU8dMjIxIC0gQ1MgQy5QLkMuRS4gU0FOIE1BUlTDjU4QMjIyIC0gQy5TLiBBVE9NTxsyMjMgLSBDLlMuIEMuUC5DLkUuIE1FTkRPWkEZMjI0IC0gQy5TLiBISVBFUiBMSUJFUlRBRCMyMjUgLSBDLlMuIE1VTklDSVBBTElEQUQgR1VBWU1BTExFTiEyMjYgLSBDLlMuIFJFR0lTVFJPIERFTCBBVVRPTU9UT1IkMjI4IC0gQy5TLiBVTklWRVJTSURBRCBERUwgQUNPTkNBR1VBHjIyOSAtIEMuUy4gVkFMTEUgREUgTEFTIExFw5FBUxAyMzAgLSBDLlMuIEpVTUJPFDIzMSAtIEMuUy4gQ0FSUkVGT1VSHDIzMiAtIEMuUy4gUkVOVEFTIEdPRE9ZIENSVVoeMjMzIC0gQy5TLiBDLlAuQy5FLiBTQU4gUkFGQUVMIzIzNCAtIEMuUy4gTVVOSUNJUEFMSURBRCBERSBNRU5ET1pBJDI0NSAtIEMuUy4gMjUgREUgTUFZTy1WSUxMQSBNRVJDRURFUxAyNDYgLSBDLlMuIEdBUklOIjI0NyAtIEMuUy4gQ0FVIEkgTVVOSUMuIEdPRE9ZIENSVVojMjQ4IC0gQy5TLiBDQVUgSUkgTVVOSUMuIEdPRE9ZIENSVVoXMzAwIC0gVEVTT1JFUklBIEdFTkVSQUwjMzAxIC0gVEVTT1JFUklBIFJFR0lPTkFMIERFIE1FTkRPWkEkNDAwIC0gVGl0dWxvcyB5IE9wZXJhY2lvbmVzIEV4dGVyaW9yCzY4MSAtIE5vIHZhIzcwMiAtIFJFQ0FVREFDSU9ORVMgUkVOVEFTIFNBTiBMVUlTJDcwNCAtIFJFQ0FVREFDSU9ORVMgUkVOVEFTIFYuTUVSQ0VERSA3MDYgLSBSRUNBVURBQ0lPTkVTIEpVQU5BIEtPU0xBWSE3MDcgLSBSRUNBVURBQ0lPTkVTIENMVUIgSlVWRU5UVUQhNzA4IC0gTU9OT1BVRVNUTyBDREFEIERFIExBIFBVTlRBFcIBATEBMgEzATQBNQE2ATcBOAE5AjEwAjExAjEyAjEzAjE0AjE1AjE2AjE3AjE4AjE5AjIwAjIxAjIyAjIzAjI0AjI1AjI2AjI3AjI4AjI5AjMwAjMxAjMyAjMzAjM0AjM1AjM2AjM5AjQxAjQyAjQzAjQ0AjQ1AjQ3AjQ4AjUwAjUxAjUyAjUzAjU0AjU1AjU2AjU3AjU4AjYwAjYxAjYyAjYzAjY0AjY1AjY2AjY3AjY4AjY5AjcwAjcxAjcyAjczAjc0Ajc1Ajc2Ajc3Ajc4Ajc5AjgwAjgxAjgyAjgzAjg0Ajg1Ajg2Ajg3Ajg4Ajg5AjkwAjkxAjkyAjkzAjk0Ajk1Ajk2AzEwMAMxMDEDMTAyAzEwMwMxMDQDMTA1AzEwNgMxMDcDMTA4AzEwOQMxMTADMTExAzExMgMxMTQDMTE1AzExNgMxMTkDMTIxAzEyMgMxMzEDMTQxAzE0NAMxNDUDMTQ3AzE0OAMxNTADMTUxAzE1MgMxNTMDMTU0AzE2MAMxNjEDMTYyAzE2MwMxNjQDMTY1AzE2NgMxNjcDMTcwAzE3MgMxNzQDMTc1AzE3NgMxNzcDMTc4AzE3OQMxODADMTg0AzE4NQMxODcDMTg4AzE4OQMxOTADMTkxAzE5MgMxOTMDMTk0AzE5NQMxOTcDMTk5AzIwMQMyMDIDMjAzAzIwNAMyMDUDMjA2AzIwNwMyMDgDMjA5AzIxMgMyMTMDMjE0AzIxNQMyMTYDMjE3AzIxOAMyMTkDMjIwAzIyMQMyMjIDMjIzAzIyNAMyMjUDMjI2AzIyOAMyMjkDMjMwAzIzMQMyMzIDMjMzAzIzNAMyNDUDMjQ2AzI0NwMyNDgDMzAwAzMwMQM0MDADNjgxAzcwMgM3MDQDNzA2AzcwNwM3MDgUKwPCAWdnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZGQCHQ8PFgQfAQUpRW50cmVnYSBEb2N1bWVudG9zIEx1ZWdvIGRlIExpcXVpZGFjacOzbjoeB1Zpc2libGVoZGQCHw8QDxYEHgdDaGVja2VkZx8JaGRkZGQCAw9kFgICAQ8PFgIfAQUTQXJjaGl2byBhIGltcG9ydGFyOmRkAgUPZBYCZg9kFgICBQ9kFgJmD2QWAgIBDw9kFgIeBXN0eWxlBQ1kaXNwbGF5Om5vbmU7ZAIHD2QWAmYPZBYEAgEPZBYCZg8PFgIfCWhkFgICAQ88KwAWAgAPFgoeD0RhdGFTb3VyY2VCb3VuZGceDl8hVXNlVmlld1N0YXRlZx4RQ2xpZW50U3RhdGVMb2FkZWRoHhVDbGllbnRWaXNpYmxlSW50ZXJuYWxoHg1DYWxsYmFja1N0YXRlZWQGD2QQFgQCAgIDAgQCBRYEPCsADAEAFgIeD0NvbFZpc2libGVJbmRleGY8KwALAQAWAh8RAgE8KwALAQAWAh8RAgI8KwALAQAWAh8RAgMPFgQCAQICAgICAhYCBZYBRGV2RXhwcmVzcy5XZWIuQVNQeEdyaWRWaWV3LkdyaWRWaWV3Q29tbWFuZENvbHVtbiwgRGV2RXhwcmVzcy5XZWIuQVNQeEdyaWRWaWV3LnY4LjMsIFZlcnNpb249OC4zLjUuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj1iODhkMTc1NGQ3MDBlNDlhBaABSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbi5DbGFzc2VzLkdyaWRWaWV3RGF0YVRleHRDb2x1bW5UZXh0LCBJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLCBWZXJzaW9uPTMuMC4xLjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49NzE4NjI4MDE3ZmZiOTY2ZWQCAw8WAh8JaGQCCQ9kFgJmD2QWBAIBD2QWAmYPZBYCZg9kFgRmDw8WAh8JaGQWEgIDDw8WBB8FBQ5eW146O1w8PidcIl0qJB8GZxYCHwgFJnJldHVybiBudW1iZXJzb25seSh0aGlzLCBldmVudCwgZmFsc2UpZAIFDw8WBB8FBQ5eW146O1w8PidcIl0qJB8GZxYCHwgFJnJldHVybiBudW1iZXJzb25seSh0aGlzLCBldmVudCwgZmFsc2UpZAIHDw8WBh8FBQ5eW146O1w8PidcIl0qJB8GZx8HAgsWAh8IBSZyZXR1cm4gbnVtYmVyc29ubHkodGhpcywgZXZlbnQsIGZhbHNlKWQCCQ8PFgYfBQUOXlteOjtcPD4nXCJdKiQfBmcfBwILFgIfCAUmcmV0dXJuIG51bWJlcnNvbmx5KHRoaXMsIGV2ZW50LCBmYWxzZSlkAgsPDxYEHwUFDl5bXjo7XDw+J1wiXSokHwZnFgIfCAUmcmV0dXJuIG51bWJlcnNvbmx5KHRoaXMsIGV2ZW50LCBmYWxzZSlkAg0PZBYCZg9kFgJmD2QWAmYPZBYCAgEPDxYGHwUFDl5bXjo7XDw+J1wiXSokHwZnHwdmFgQeCG9uY2hhbmdlBSVWYWxpZGFyUmFuZ29GZWNoYSh0aGlzLCA4LCAxMSwgMjAxNik7HwgFI3JldHVybiBkYXRlTnVtYmVyc09ubHkodGhpcywgZXZlbnQpZAIPDxAPFgYfAgUKVmFsdWVGaWVsZB8DBQlUZXh0RmllbGQfBGdkEBUEAAUkICAgIAVCUkwgIAVVJFMgIBUEATADMDgwAzAxMgMwMDIUKwMEZ2dnZxYBZmQCEQ8PFgYfBQUOXlteOjtcPD4nXCJdKiQfBmcfBwIcFgIfCAUqcmV0dXJuIG51bWJlcnNvbmx5KHRoaXMsIGV2ZW50LCB0cnVlLCAnLCcpZAITDw8WBB8FBQ5eW146O1w8PidcIl0qJB8GZxYCHwgFOXJldHVybiB2YWxpZENoYXJhY3RlcnNPbmx5KHRoaXMsIGV2ZW50LCAiXlteOjtcPD4nXCJdKiQiKWQCAQ88KwAWAgAPFgofDGcfDWcfDmcfD2gfEGRkBg9kEBYLZgIBAgICAwIEAgUCBgIHAggCCQIKFgs8KwAMAQAWAh8RZjwrAAsBABYIHxECAR4JU29ydEluZGV4Av////8PHgpHcm91cEluZGV4Av////8PHglTb3J0T3JkZXILKXhEZXZFeHByZXNzLkRhdGEuQ29sdW1uU29ydE9yZGVyLCBEZXZFeHByZXNzLkRhdGEudjguMywgVmVyc2lvbj04LjMuNS4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWI4OGQxNzU0ZDcwMGU0OWEAPCsACwEAFggfEQICHxMC/////w8fFAL/////Dx8VCysEADwrAAsBABYIHxECAx8TAv////8PHxQC/////w8fFQsrBAA8KwALAQAWCB8RAgQfEwL/////Dx8UAv////8PHxULKwQAPCsACwEAFggfEQIFHxMC/////w8fFAL/////Dx8VCysEADwrAAsBABYIHxECBh8TAv////8PHxQC/////w8fFQsrBAA8KwALAQAWCB8RAgcfEwL/////Dx8UAv////8PHxULKwQAPCsACwEAFggfEQIIHxMC/////w8fFAL/////Dx8VCysEADwrAAsBABYIHxECCR8TAv////8PHxQC/////w8fFQsrBAA8KwAKAQAWBh8VCysEAB8UAv////8PHxMC/////w8PFgsCAQICAgICAgICAgICAwICAgQCAgIFFgUFlgFEZXZFeHByZXNzLldlYi5BU1B4R3JpZFZpZXcuR3JpZFZpZXdDb21tYW5kQ29sdW1uLCBEZXZFeHByZXNzLldlYi5BU1B4R3JpZFZpZXcudjguMywgVmVyc2lvbj04LjMuNS4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWI4OGQxNzU0ZDcwMGU0OWEFoAFJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLkNsYXNzZXMuR3JpZFZpZXdEYXRhVGV4dENvbHVtblRleHQsIEluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24sIFZlcnNpb249My4wLjEuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj03MTg2MjgwMTdmZmI5NjZlBaABSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbi5DbGFzc2VzLkdyaWRWaWV3RGF0YVRleHRDb2x1bW5EYXRlLCBJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLCBWZXJzaW9uPTMuMC4xLjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49NzE4NjI4MDE3ZmZiOTY2ZQWiAUluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24uQ2xhc3Nlcy5HcmlkVmlld0RhdGFUZXh0Q29sdW1uQW1vdW50LCBJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLCBWZXJzaW9uPTMuMC4xLjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49NzE4NjI4MDE3ZmZiOTY2ZQWTAURldkV4cHJlc3MuV2ViLkFTUHhHcmlkVmlldy5HcmlkVmlld0RhdGFDb2x1bW4sIERldkV4cHJlc3MuV2ViLkFTUHhHcmlkVmlldy52OC4zLCBWZXJzaW9uPTguMy41LjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49Yjg4ZDE3NTRkNzAwZTQ5YWQCAw8WAh8JaGQCAQ9kFgICAQ9kFgRmD2QWCAIBDw8WAh8BBRNUaXBvIGRlIE9wZXJhY2nDs246ZGQCBQ8PFgIfAQURVGlwbyBkZSBDb250cmF0bzpkZAIJDw8WAh8BBQdDdWVudGE6ZGQCDQ8PFgIfAQUISW1wb3J0ZTpkZAICD2QWBAIBD2QWAgIBD2QWAgIBD2QWAmYPZBYCZg9kFgICAQ88KwAWAwAPFgYfDWcfDmgfEGVkBDwrAEMCBzwrAAwBABYMHglGb3JlQ29sb3IJEBy8/x4EXyFTQgKkHB4JRm9udF9Cb2xkZx4KRm9udF9OYW1lcxUBB1ZlcmRhbmEeCUZvbnRfU2l6ZSgqIlN5c3RlbS5XZWIuVUkuV2ViQ29udHJvbHMuRm9udFVuaXQDN3B0HgtCb3JkZXJXaWR0aBsAAAAAAAAAAAEAAAATPCsADAEAFggfGxsAAAAAAAAAAAEAAAAfGigrBQM3cHQfGRUBB1ZlcmRhbmEfFwKgDAYPZBAWCGYCAQICAgMCBAIFAgYCBxYIPCsACwEAFgIfEWY8KwALAQAWAh8RAgE8KwALAQAWAh8RAgI8KwALAQAWAh8RAgM8KwALAQAWAh8RAgQ8KwALAQAWAh8RAgU8KwALAQAWAh8RAgY8KwALAQAWAh8RAgcPFggCAQIBAgECAQICAgECAwIBFgMFoAFJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLkNsYXNzZXMuR3JpZFZpZXdEYXRhVGV4dENvbHVtblRleHQsIEluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24sIFZlcnNpb249My4wLjEuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj03MTg2MjgwMTdmZmI5NjZlBaABSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbi5DbGFzc2VzLkdyaWRWaWV3RGF0YVRleHRDb2x1bW5EYXRlLCBJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLCBWZXJzaW9uPTMuMC4xLjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49NzE4NjI4MDE3ZmZiOTY2ZQWiAUluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24uQ2xhc3Nlcy5HcmlkVmlld0RhdGFUZXh0Q29sdW1uQW1vdW50LCBJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLCBWZXJzaW9uPTMuMC4xLjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49NzE4NjI4MDE3ZmZiOTY2ZWQCAg9kFgICAw9kFgICAQ9kFgICAQ9kFgJmD2QWAgIBDzwrABYDAA8WBh8OaB8QZR8NZ2QEPCsAQwIHPCsADAEAFgwfGxsAAAAAAAAAAAEAAAAfGRUBB1ZlcmRhbmEfGigrBQM3cHQfGGcfFgkQHLz/HxcCpBwTPCsADAEAFggfGxsAAAAAAAAAAAEAAAAfGigrBQM3cHQfGRUBB1ZlcmRhbmEfFwKgDAYPZBAWCmYCAgIDAgQCBQIGAgcCCAIJAgoWCjwrAAwBABYCHxFmPCsACwEAFgIfEQIBPCsACwEAFgIfEQICPCsACwEAFgIfEQIDPCsACwEAFgIfEQIEPCsACwEAFgIfEQIFPCsACwEAFgIfEQIGPCsACwEAFgIfEQIHPCsACwEAFgIfEQIIPCsACgEAFgIfEQIJDxYKAgECAgICAgICAgIDAgQCAgICAgUWBQWWAURldkV4cHJlc3MuV2ViLkFTUHhHcmlkVmlldy5HcmlkVmlld0NvbW1hbmRDb2x1bW4sIERldkV4cHJlc3MuV2ViLkFTUHhHcmlkVmlldy52OC4zLCBWZXJzaW9uPTguMy41LjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49Yjg4ZDE3NTRkNzAwZTQ5YQWgAUluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24uQ2xhc3Nlcy5HcmlkVmlld0RhdGFUZXh0Q29sdW1uVGV4dCwgSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbiwgVmVyc2lvbj0zLjAuMS4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPTcxODYyODAxN2ZmYjk2NmUFogFJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLkNsYXNzZXMuR3JpZFZpZXdEYXRhVGV4dENvbHVtbkFtb3VudCwgSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbiwgVmVyc2lvbj0zLjAuMS4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPTcxODYyODAxN2ZmYjk2NmUFoAFJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLkNsYXNzZXMuR3JpZFZpZXdEYXRhVGV4dENvbHVtbkRhdGUsIEluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24sIFZlcnNpb249My4wLjEuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj03MTg2MjgwMTdmZmI5NjZlBZMBRGV2RXhwcmVzcy5XZWIuQVNQeEdyaWRWaWV3LkdyaWRWaWV3RGF0YUNvbHVtbiwgRGV2RXhwcmVzcy5XZWIuQVNQeEdyaWRWaWV3LnY4LjMsIFZlcnNpb249OC4zLjUuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj1iODhkMTc1NGQ3MDBlNDlhZAICD2QWAgIBD2QWBGYPZBYIAgEPDxYCHwEFE1RpcG8gZGUgT3BlcmFjacOzbjpkZAIFDw8WAh8BBRFUaXBvIGRlIENvbnRyYXRvOmRkAgkPDxYCHwEFB0N1ZW50YTpkZAINDw8WAh8BBQhJbXBvcnRlOmRkAgIPZBYEAgEPZBYCAgEPZBYCAgEPZBYCZg9kFgJmD2QWAgIBDzwrABYDAA8WBh8NZx8OaB8QZWQEPCsAQwIHPCsADAEAFgwfFgkQHLz/HxcCpBwfGGcfGRUBB1ZlcmRhbmEfGigrBQM3cHQfGxsAAAAAAAAAAAEAAAATPCsADAEAFggfGxsAAAAAAAAAAAEAAAAfGigrBQM3cHQfGRUBB1ZlcmRhbmEfFwKgDAYPZBAWCGYCAQICAgMCBAIFAgYCBxYIPCsACwEAFgIfEWY8KwALAQAWAh8RAgE8KwALAQAWAh8RAgI8KwALAQAWAh8RAgM8KwALAQAWAh8RAgQ8KwALAQAWAh8RAgU8KwALAQAWAh8RAgY8KwALAQAWAh8RAgcPFggCAQIBAgECAQICAgECAwIBFgMFoAFJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLkNsYXNzZXMuR3JpZFZpZXdEYXRhVGV4dENvbHVtblRleHQsIEluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24sIFZlcnNpb249My4wLjEuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj03MTg2MjgwMTdmZmI5NjZlBaABSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbi5DbGFzc2VzLkdyaWRWaWV3RGF0YVRleHRDb2x1bW5EYXRlLCBJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLCBWZXJzaW9uPTMuMC4xLjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49NzE4NjI4MDE3ZmZiOTY2ZQWiAUluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24uQ2xhc3Nlcy5HcmlkVmlld0RhdGFUZXh0Q29sdW1uQW1vdW50LCBJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLCBWZXJzaW9uPTMuMC4xLjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49NzE4NjI4MDE3ZmZiOTY2ZWQCAg9kFgICAw9kFgICAQ9kFgICAQ9kFgJmD2QWAgIBDzwrABYDAA8WBh8OaB8QZR8NZ2QEPCsAQwIHPCsADAEAFgwfGxsAAAAAAAAAAAEAAAAfGRUBB1ZlcmRhbmEfGigrBQM3cHQfGGcfFgkQHLz/HxcCpBwTPCsADAEAFggfGxsAAAAAAAAAAAEAAAAfGigrBQM3cHQfGRUBB1ZlcmRhbmEfFwKgDAYPZBAWCmYCAgIDAgQCBQIGAgcCCAIJAgoWCjwrAAwBABYCHxFmPCsACwEAFgIfEQIBPCsACwEAFgIfEQICPCsACwEAFgIfEQIDPCsACwEAFgIfEQIEPCsACwEAFgIfEQIFPCsACwEAFgIfEQIGPCsACwEAFgIfEQIHPCsACwEAFgIfEQIIPCsACgEAFgIfEQIJDxYKAgECAgICAgICAgIDAgQCAgICAgUWBQWWAURldkV4cHJlc3MuV2ViLkFTUHhHcmlkVmlldy5HcmlkVmlld0NvbW1hbmRDb2x1bW4sIERldkV4cHJlc3MuV2ViLkFTUHhHcmlkVmlldy52OC4zLCBWZXJzaW9uPTguMy41LjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49Yjg4ZDE3NTRkNzAwZTQ5YQWgAUluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24uQ2xhc3Nlcy5HcmlkVmlld0RhdGFUZXh0Q29sdW1uVGV4dCwgSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbiwgVmVyc2lvbj0zLjAuMS4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPTcxODYyODAxN2ZmYjk2NmUFogFJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLkNsYXNzZXMuR3JpZFZpZXdEYXRhVGV4dENvbHVtbkFtb3VudCwgSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbiwgVmVyc2lvbj0zLjAuMS4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPTcxODYyODAxN2ZmYjk2NmUFoAFJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLkNsYXNzZXMuR3JpZFZpZXdEYXRhVGV4dENvbHVtbkRhdGUsIEluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24sIFZlcnNpb249My4wLjEuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj03MTg2MjgwMTdmZmI5NjZlBZMBRGV2RXhwcmVzcy5XZWIuQVNQeEdyaWRWaWV3LkdyaWRWaWV3RGF0YUNvbHVtbiwgRGV2RXhwcmVzcy5XZWIuQVNQeEdyaWRWaWV3LnY4LjMsIFZlcnNpb249OC4zLjUuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj1iODhkMTc1NGQ3MDBlNDlhZAIDD2QWAgIBD2QWAmYPZBYEZg9kFgICAQ9kFggCAw8PFgQfBQUOXlteOjtcPD4nXCJdKiQfBmcWAh8IBTlyZXR1cm4gdmFsaWRDaGFyYWN0ZXJzT25seSh0aGlzLCBldmVudCwgIl5bXjo7XDw+J1wiXSokIilkAgUPDxYCHgdFbmFibGVkaGRkAgcPDxYCHxxoZGQCCQ8PFgIfHGhkZAIBD2QWAgIBD2QWAgIDD2QWAmYPZBYCAgEPDxYEHwUFDl5bXjo7XDw+J1wiXSokHwZnFgIfCAU5cmV0dXJuIHZhbGlkQ2hhcmFjdGVyc09ubHkodGhpcywgZXZlbnQsICJeW146O1w8PidcIl0qJCIpZAICDxYCHwsFDWRpc3BsYXk6bm9uZTsWAgIFDxYCHwloFgQCAQ8QFgYfAwUFVGl0bGUfAgUDVXJpHwRnEBUBABUBABQrAwFnFCsBAGQCAw8WAh8LBQ1kaXNwbGF5Om5vbmU7FgJmD2QWAgIBDxYCHwsFDWRpc3BsYXk6bm9uZTtkGAMFHl9fQ29udHJvbHNSZXF1aXJlUG9zdEJhY2tLZXlfXxYSBRhjdGwwMCRNYWluSG9sZGVyJHBjRGF0b3MFGmN0bDAwJE1haW5Ib2xkZXIkcGNBcmNoaXZvBUFjdGwwMCRNYWluSG9sZGVyJGNJbmdyZXNvT3BlcmFjaW9uZXNHcmlkJHBjSW5ncmVzb09wZXJhY2lvbmVzR3JpZAVGY3RsMDAkTWFpbkhvbGRlciRjSW5ncmVzb09wZXJhY2lvbmVzR3JpZERlQ2FGJHBjSW5ncmVzb09wZXJhY2lvbmVzR3JpZAVHY3RsMDAkTWFpbkhvbGRlciRjSW5ncmVzb09wZXJhY2lvbmVzRGV0YWlsJHBjSW5ncmVzb09wZXJhY2lvbmVzQ2FiZWNlcmEFRmN0bDAwJE1haW5Ib2xkZXIkY0luZ3Jlc29PcGVyYWNpb25lc0RldGFpbCRwY0luZ3Jlc29PcGVyYWNpb25lc0RldGFsbGUFSmN0bDAwJE1haW5Ib2xkZXIkY0luZ3Jlc29PcGVyYWNpb25lc0RldGFpbCRwY0luZ3Jlc29PcGVyYWNpb25lc0RldGFpbERlQ2FGBTpjdGwwMCRNYWluSG9sZGVyJGNJbmdyZXNvT3BlcmFjaW9uZXNEZXRhaWwkcGNSaXNrTGltaXRMaW5lBT1jdGwwMCRNYWluSG9sZGVyJGNJbmdyZXNvT3BlcmFjaW9uZXNEZXRhaWwkcGNJbmdPcGVEZXRhaWxSaXNrBTtjdGwwMCRNYWluSG9sZGVyJGNFbGltaW5hckxvdGUkcGNJbmdyZXNvT3BlcmFjaW9uZXNDYWJlY2VyYQU6Y3RsMDAkTWFpbkhvbGRlciRjRWxpbWluYXJMb3RlJHBjSW5ncmVzb09wZXJhY2lvbmVzRGV0YWxsZQU+Y3RsMDAkTWFpbkhvbGRlciRjRWxpbWluYXJMb3RlJHBjSW5ncmVzb09wZXJhY2lvbmVzRGV0YWlsRGVDYUYFLmN0bDAwJE1haW5Ib2xkZXIkY0VsaW1pbmFyTG90ZSRwY1Jpc2tMaW1pdExpbmUFMWN0bDAwJE1haW5Ib2xkZXIkY0VsaW1pbmFyTG90ZSRwY0luZ09wZURldGFpbFJpc2sFKGN0bDAwJE1haW5Ib2xkZXIkVG9rZW5Tb2xpY2l0YXRpb24kcGNNQUMFKmN0bDAwJE1haW5Ib2xkZXIkVG9rZW5Tb2xpY2l0YXRpb24kcGNUb2tlbgVIY3RsMDAkTWFpbkhvbGRlciRjSW5ncmVzb09wZXJhY2lvbmVzR3JpZERlQ2FGJGFndkluZ3Jlc29PcGVyYWNpb25lc0RlQ0FGBRljdGwwMCRpbWFnZUJ1dHRvbkNvbGxhcHNlBShjdGwwMCRNYWluSG9sZGVyJG11bHRpSW5ncmVzb09wZXJhY2lvbmVzDw9kZmQFKmN0bDAwJE1haW5Ib2xkZXIkVG9rZW5Tb2xpY2l0YXRpb24kbXZUb2tlbg8PZGZkRO0CsreRPAZGJidh5K/83aq/F6o="></span><span style="display: none !important;"><input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEW1gECn++QxQgCv6OBCgK+o4EKArmjgQoCvaPJCQK9o/UJArLMq+QMAs7/5mAC3ue1ogUC8OCeiwUCwK3ikQkCx6Ck1wECxKCk1wECxaCk1wECxqCk1wECy8+OuQ0Cov+UqAcCs4aP1wkCsoaP1wkCsYaP1wkCsIaP1wkCt4aP1wkCtoaP1wkCtYaP1wkCpIaP1wkCq4aP1wkCs4bP1AkCs4bD1AkCs4bH1AkCs4b71AkCs4b/1AkCs4bz1AkCs4b31AkCs4br1AkCs4av1wkCs4aj1wkCsobP1AkCsobD1AkCsobH1AkCsob71AkCsob/1AkCsobz1AkCsob31AkCsobr1AkCsoav1wkCsoaj1wkCsYbP1AkCsYbD1AkCsYbH1AkCsYb71AkCsYb/1AkCsYbz1AkCsYb31AkCsYaj1wkCsIbD1AkCsIbH1AkCsIb71AkCsIb/1AkCsIbz1AkCsIbr1AkCsIav1wkCt4bP1AkCt4bD1AkCt4bH1AkCt4b71AkCt4b/1AkCt4bz1AkCt4b31AkCt4br1AkCt4av1wkCtobP1AkCtobD1AkCtobH1AkCtob71AkCtob/1AkCtobz1AkCtob31AkCtobr1AkCtoav1wkCtoaj1wkCtYbP1AkCtYbD1AkCtYbH1AkCtYb71AkCtYb/1AkCtYbz1AkCtYb31AkCtYbr1AkCtYav1wkCtYaj1wkCpIbP1AkCpIbD1AkCpIbH1AkCpIb71AkCpIb/1AkCpIbz1AkCpIb31AkCpIbr1AkCpIav1wkCpIaj1wkCq4bP1AkCq4bD1AkCq4bH1AkCq4b71AkCq4b/1AkCq4bz1AkCq4b31AkClceogw4C+P6OdgLj6ezdCgLGgMPADAKpuqG2AQKM1YedCwL3zOWADQLa5/v3BwLtjbupDwLQpJmcAQKVx6yDDgL4/oJ2AuPp4N0KAqm6pbYBAozVu50LAvfMmYANAtCknZwBAvj+hnYC4+nk3QoC+P66dgL4/r52Aqm60bcBAozVt50LAtrn6/cHAu2Nq6kPApXH3IAOAvj+snYC4+mQ3QoCxoD3wAwCqbrVtwEClcfQgA4C+P62dgLj6ZTdCgLGgOvADAKpusm3AQKM1a+dCwL3zI2ADQLa5+P3BwKVx9SADgLj6YjdCgKpus23AQKM1aOdCwL3zIGADQLa5+f3BwLtjaepDwLQpIWcAQKVx4iDDgKpuoG2AQKM1eedCwLa59v3BwLtjZupDwLQpPmcAQKVx4yDDgL4/uJ2AuPpwN0KAsaAp8MMAqm6hbYBAozVm50LAtrn3/cHAtCk/ZwBAv/+jnYC4uns3QoCxYDDwAwCqLqhtgECk9WHnQsC9szlgA0C2ef79wcC7I27qQ8C16SZnAEC4ung3QoCxYDHwAwCqLqltgECk9W7nQsC9syZgA0C2ef/9wcC7I2/qQ8C16SdnAEClMeggw4C//6GdgLi6eTdCgLFgPvADAKoutm3AQKT1b+dCwL2zJ2ADQLsjbOpDwLXpJGcAQKUx6SDDgL//rp2AuLpmN0KAsWA/8AMAqi63bcBApPVt50LAvbMlYANAtnn6/cHAuyNq6kPApvHqIMOAv7+jnYCmseogw4Cg/7udgLl6ezdCgKzuqG2AQL5zOWADQLc5/v3BwL3jbupDwLIrYvMBgLRqszJDgKJt+C7AboTzv9ANz5mSK7rNHAPNT233Odn"></span><span style="display: none !important;"><input type="hidden" name="__AjaxControlToolkitCalendarCssLoaded" id="__AjaxControlToolkitCalendarCssLoaded" value=""></span></form>
+
+
+<div class="ui-dialog ui-widget ui-widget-content ui-corner-all" tabindex="-1" role="dialog" aria-labelledby="ui-dialog-title-sessionTimeoutWarning" style="display: none; z-index: 1000; outline: 0px;"><div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix"><span class="ui-dialog-title" id="ui-dialog-title-sessionTimeoutWarning">&nbsp;</span><a href="http://10.1.75.104:9080/Pages/Factoring/IngresoOperaciones.aspx#" class="ui-dialog-titlebar-close ui-corner-all" role="button" style="display: none;"><span class="ui-icon ui-icon-closethick">close</span></a></div><div id="sessionTimeoutWarning" style="background-color: rgb(255, 255, 255); padding: 0px; height: 100%;" class="ui-dialog-content ui-widget-content">
+        <div id="sessionTimeoutWarningHeader">
+            <table width="100%">
+                 <tbody><tr>
+                    <td colspan="2" align="center" class="ic-form-data-modal">
+                        La sesión finalizará en <span id="sessionTimeoutCountdown"></span>&nbsp;segundos.
+                        Para seguir operando seleccioná “Continuar”
+                    </td>
+                </tr>
+            </tbody></table>
+        </div>
+    </div><div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix"><div class="ui-dialog-buttonset"><button type="button">Continuar </button><button type="button">Finalizar sesión</button></div></div></div></body></html>

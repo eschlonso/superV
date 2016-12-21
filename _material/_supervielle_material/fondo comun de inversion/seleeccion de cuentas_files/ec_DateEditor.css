@@ -1,0 +1,68 @@
+﻿/* ::::: CODIGO AUTOGENERADO POR AJAX CONTROL TOOLKIT ::::: */
+
+.dateEditor .ajax__calendar_container {
+	TEXT-ALIGN: center; PADDING: 4px; WIDTH: 170px; font:normal 10px/11px 'Lucida sans'; CURSOR: default;
+	background-color:#fff;border:solid 1px #ececec;
+}
+.dateEditor .ajax__calendar_body {
+	POSITION: relative; text-align:left; MARGIN: auto; WIDTH: 170px; HEIGHT: 120px; OVERFLOW: hidden
+}
+.dateEditor .ajax__calendar_days, .dateEditor .ajax__calendar_months, .dateEditor .ajax__calendar_years {
+	POSITION: absolute;  MARGIN: auto; WIDTH: 170px; HEIGHT: 120px; 
+}
+.dateEditor .ajax__calendar_container TABLE, .dateEditor .ajax__calendar_container TD{
+	 FONT-SIZE: 11px;WIDTH: 170px;
+}
+.dateEditor .ajax__calendar_header{
+	WIDTH: 170px; HEIGHT: 20px;
+	color:#fff;font:bold 12px/13px 'Lucida sans';background-color:#8696b2;
+}
+.dateEditor .ajax__calendar_prev {
+	BACKGROUND-IMAGE: url(Images/DateEditor_left.gif); WIDTH: 15px; BACKGROUND-REPEAT: no-repeat; BACKGROUND-POSITION: 50% 50%; FLOAT: left; HEIGHT: 15px; CURSOR: pointer
+}
+.dateEditor .ajax__calendar_next {
+	BACKGROUND-IMAGE: url(Images/DateEditor_right.gif); WIDTH: 15px; BACKGROUND-REPEAT: no-repeat; BACKGROUND-POSITION: 50% 50%; FLOAT: right; HEIGHT: 15px; CURSOR: pointer
+}
+.dateEditor .ajax__calendar_title {
+	MARGIN-LEFT: 15px; CURSOR: pointer; FONT-WEIGHT: bold; MARGIN-RIGHT: 15px;
+	/*padding:3px 0;*/
+}
+.dateEditor .ajax__calendar .ajax__calendar_footer, .dateEditor .ajax__calendar_footer {
+	display:none;
+}
+.dateEditor .ajax__calendar_today {
+	CURSOR: pointer; PADDING-TOP: 3px
+}
+.dateEditor .ajax__calendar_dayname {
+	TEXT-ALIGN: right; PADDING: 0px 2px; WIDTH: 17px; HEIGHT: 17px;
+}
+.dateEditor .ajax__calendar_day, .dateEditor .ajax__calendar_hover TD {
+	TEXT-ALIGN: right; PADDING: 2px 0px; WIDTH: 18px; HEIGHT: 12px; CURSOR: pointer;
+}
+.dateEditor .ajax__calendar_month, .dateEditor .ajax__calendar_year {
+	TEXT-ALIGN: center; WIDTH: 40px; HEIGHT: 44px; OVERFLOW: hidden; CURSOR: pointer
+}
+.dateEditor .ajax__calendar .ajax__calendar_container {
+    BACKGROUND-COLOR: #fff; COLOR: #000;  BORDER: #646464 1px solid
+}
+.dateEditor .ajax__calendar .ajax__calendar_dayname {
+	BORDER-BOTTOM: #f5f5f5 1px solid;
+}
+.dateEditor .ajax__calendar .ajax__calendar_day, .dateEditor .ajax__calendar .ajax__calendar_month, .dateEditor .ajax__calendar .ajax__calendar_year, .dateEditor .ajax__calendar .ajax__calendar_active .ajax__calendar_year {
+	BORDER: #fff 1px solid
+}
+.dateEditor .ajax__calendar .ajax__calendar_active .ajax__calendar_day, .dateEditor .ajax__calendar .ajax__calendar_active .ajax__calendar_month{
+	BORDER-COLOR: #06c; BACKGROUND-COLOR: #ababab; COLOR: #fff; 
+}
+.dateEditor .ajax__calendar_other, .dateEditor .ajax__calendar .ajax__calendar_other .ajax__calendar_day, .dateEditor .ajax__calendar .ajax__calendar_other .ajax__calendar_year {
+	BORDER-COLOR: #fff; BACKGROUND-COLOR: #fff; COLOR: #ababab; 
+}
+.dateEditor .ajax__calendar_hover, .dateEditor .ajax__calendar .ajax__calendar_hover .ajax__calendar_day, .dateEditor .ajax__calendar .ajax__calendar_hover .ajax__calendar_month, .dateEditor .ajax__calendar .ajax__calendar_hover .ajax__calendar_year {
+	BORDER-COLOR: #daf2fc; BACKGROUND-COLOR: #8696b2; COLOR: #fff; 
+}
+.dateEditor .ajax__calendar_hover .ajax__calendar_title, .dateEditor .ajax__calendar .ajax__calendar_hover .ajax__calendar_title, .dateEditor .ajax__calendar .ajax__calendar_hover .ajax__calendar_today{
+	COLOR: #06c
+}
+/*{color:#ccc;}*/
+.dateEditor .ajax__calendar_days thead, .dateEditor .ajax__calendar_months thead, .dateEditor .ajax__calendar_years thead{background-color:#8696b2;color:#fff;}
+.ajax__calendar_active{background-color:#f1b260;}

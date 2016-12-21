@@ -1,0 +1,56 @@
+﻿function showBlockUI(pMensaje, pTitle, pTpMensaje, showClose, callback) {
+    /// <summary>Muestra el BlockUI con los parámetros indicados.</summary>
+    /// <param name="pMensaje" type="String">Mensaje a mostrar en la ventana</param>
+    /// <param name="pTitle" type="String">Título que se mostrará en la ventana. Si no se setea no se muestra nada.</param>
+    /// <param name="pTpMensaje" type="String">Puede ser, ok, error, warning, loader o vacío.</param>
+    /// <param name="showClose" type="Boolean/String">Indica si muestra o no el botón de cerrar. Si se le pasa auto, se cierra automáticamente.</param>
+    /// <returns type="Number">Returns a number that represents the area.</returns>
+    hideBlockUI();
+    $.blockUI.defaults.css = {};
+    if (!pTpMensaje)
+        pTpMensaje = '';
+
+    switch (pTpMensaje) {
+        case 'ok':
+            pMensaje = '<img src="appimg/icon_right.gif" />' + pMensaje;
+            break;
+        case 'error':
+            pMensaje = '<img src="appimg/icon_wrong.gif" alt="Error" />' + pMensaje;
+            break;
+        case 'warning':
+            pMensaje = '<img src="appimg/icon_warning.png" alt="Advertencia" />' + pMensaje;
+            break;
+    }
+    if (callback && callback.indexOf("(") == -1)
+        callback += "()";
+    pMensaje = '<div class="bodyMessage">' + pMensaje + '</div>';
+
+    if (pTitle)
+        pMensaje = '<h5>' + pTitle + '</h5>' + pMensaje;
+
+    if (showClose == 'auto') {
+        $(document).ready(function () { jQuery.blockUI({ message: pMensaje, timeout: 2500 }); });
+        if (callback)
+            setTimeout(callback + ";", 2500);
+    }
+    else if (showClose == 'autoclose') {
+        $(document).ready(function () { jQuery.blockUI({ message: pMensaje, timeout: 2500 }); });
+        setTimeout("if((window.opener) && !(window.opener.closed)) {window.opener.location=window.opener.location.href;} self.close();", 2500);
+    }
+    else if (showClose)
+    //$.blockUI({ message: pMensaje + '<input id="btnCloseBlockUI" type="button" value="Cerrar" title="Cerrar" onclick="hideBlockUI();" />' });
+    {
+        if (!callback)
+            $(document).ready(function () { jQuery.blockUI({ message: pMensaje + '<input id="btnCloseBlockUI" type="button" value="Cerrar" title="Cerrar" onclick="hideBlockUI();" />' }); });
+        else
+            $(document).ready(function () { jQuery.blockUI({ message: pMensaje + '<input id="btnCloseBlockUI" type="button" value="Cerrar" title="Cerrar" onclick="' + callback + ';hideBlockUI();" />' }); });
+    }
+    else
+        $(document).ready(function () { jQuery.blockUI({ message: pMensaje }); });
+}
+
+
+function hideBlockUI() {
+    //setTimeout("if((window.opener) && !(window.opener.closed)) {window.opener.location=window.opener.location.href;} self.close();", 10);
+    $.unblockUI();
+}

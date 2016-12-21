@@ -1,0 +1,50 @@
+﻿#BodyDFGrid{background-color:#fff;}
+#ctl00_ContentPlaceHolder_DFGrid_tblcontainer {width:100% !Important}
+#ctl00_ContentPlaceHolder_DFGrid_divcontainer {text-align:center}
+
+.et_DFGrid_DataGrid{z-index:101;height:100%;width:100%}
+.et_DFGrid_CodEntidad{z-index:101;left:16px;position:absolute;top:56px;width:168px;height:24px;}
+
+.tabla{border-collapse:collapse;border:none;font:normal 10px Verdana, Arial, Helvetica, sans-serif;}
+/*.tabla thead th{border-width:1px;}*/
+.tabla th p, .tabla td p{overflow:hidden;}
+.tabla td{border-right:solid 1px #fff;overflow:hidden;}
+.tabla tr{cursor:default;}
+.tabla td{padding:2px 4px;height:20px;}
+.tabla th{background-color:rgb(244, 244, 244); color:#b20000; height:20px; padding-right:2px; padding-left:2px ;font-weight:bold;}
+.tabla .anulado{color:#c00; text-decoration:line-through;}
+.tabla .alter{background:RGB(237,237,235);}
+.tabla .select{background:#C0C3C0;}
+.tabla .over{background:#d8d8d8;}
+.columnaVertical{vertical-align:top;}
+.tabla .cortes{background-color:RGB(127,127,127);color:White;}
+.tabla .SaldoAnterior{background-color:RGB(241,241,241);}
+.tabla .pieCorte td{border-top:solid 1px #333;background-color:RGB(216,216,216);color:black;font-weight:bold;}
+/*:::::::::::WebCheckList::::::::::::::*/
+table.listado{padding:0;margin:0;color:#006;font:normal 11px/13px Tahoma;}
+tr.encabezado{background-color:RGB(225,225,225);padding:5px 5px 0 5px;font-weight:bold;}
+tr.alternateRow{background:#f3fbff;}
+/*:::::::::::::::::::::::::*/
+
+#MultiCheck{display:none;width:0px;}
+
+span.Check{background:url(../appimg/select.gif) no-repeat;width:18px;height:18px;}
+span.noCheck{background:url(../appimg/no_select.gif) no-repeat;width:18px;height:18px;}
+
+div.mensaje{width:100%;height:200px;text-align:center; font-size:7pt}
+div.mensaje label{color:#f00;font:bold;}
+
+.tablapos{border-collapse:collapse;border:none;font:normal 8pt Lucida;width:100%;color:rgb(0, 136, 204);}
+.tablapos td{height:18px;}
+.tablapos th, .tablapos td{border: solid 2px #fff;overflow:hidden;white-space:nowrap;}
+
+.tablaposdet{border-collapse:collapse;background-color:rgb(246,246,246);border:1px solid rgb(0, 136, 204);font:normal 11px/13px Lucida;width:100%;}
+.tablaposdet th, .tablaposdet td{overflow:hidden;white-space:nowrap;border:none;}
+.tdimporte{color:Black;}
+.tddetmov{padding-left:20px;}
+
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+     #ctl00_ContentPlaceHolder_DFGrid_tblcontainer tr {height:18px}
+}
+
+

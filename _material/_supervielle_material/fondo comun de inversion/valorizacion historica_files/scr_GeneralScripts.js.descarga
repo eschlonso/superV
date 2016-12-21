@@ -1,0 +1,65 @@
+﻿//scr_GeneralScripts.js
+
+//Devuelve el valor seleccionado en un combo
+//ComboID: ClientId del combo
+//CodItem: Codigo del item buscado (Ej:CodTpOperacion)
+//Devuelve null si no encuentra el item buscado
+function ValorCombo(ComboID, CodItem) {
+    var prResultado = null;
+
+    if (getParametroCbo(ComboID, CodItem) != '')
+        return getParametroCbo(ComboID, CodItem);
+    else {
+        var prItems = GetNonCodOutValue(ComboID).split('@@');
+        for (prItem in prItems) {
+            var prCodigoItem = prItems[prItem].split('==')[0];
+            if (prCodigoItem == CodItem) {
+                prResultado = prItems[prItem].split('==')[1];
+                break;
+            }
+        }
+        return prResultado;
+    }
+}
+
+//Oculta el BlockUI cuando está visible
+function unBlockUI() { $.unblockUI(); return false; }
+
+function ResizeDivFLT() {
+    /*var tableHeight = $('#tablaPrincipal').height();
+    var windowHeight = $(window).height();
+    var margin = 10;
+
+    if ($.browser.webkit)
+    margin = -7;
+
+    if (tableHeight < windowHeight) {
+    var controlHeight;
+    if ($('#divFiltros').is(':visible')) {
+    controlHeight = $('#divFiltros').height() + margin;
+    $('#divFiltros').height(controlHeight + (windowHeight - tableHeight));
+    } else if ($('#tblFiltros').is(':visible')) {
+    controlHeight = $('#tblFiltros').height() + margin;
+    $('#tblFiltros').height(controlHeight + (windowHeight - tableHeight));
+    }
+    }*/
+    ResizeDivGeneral();
+}
+
+function ResizeDivGeneral() {
+    $('#divWrapper').height(0);
+    var tableHeight = $('#tablaPrincipal').height();
+    var windowHeight = $(window).height();
+    var margin = 15;
+
+    if ($.browser.webkit || $.browser.mozilla)
+        margin = -16;
+
+    if (tableHeight < windowHeight) {
+        //var controlHeight;
+        //if ($('#divWrapper').is(':visible')) {
+        //controlHeight = $('#divWrapper').height() ;
+        $('#divWrapper').height((windowHeight - tableHeight) + margin);
+        //}
+    }
+}

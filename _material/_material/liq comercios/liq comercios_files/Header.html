@@ -1,0 +1,131 @@
+
+<!-- saved from url=(0035)http://10.1.75.104:9080/Header.aspx -->
+<html xmlns="http://www.w3.org/1999/xhtml"><head id="Head1"><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <script language="javascript" type="text/javascript">
+        function Logout() {
+            if (confirm("¿ Desea salir del sistema ?") == true) {
+                window.parent.location = "Logout.aspx";
+            }
+        }
+        function GotoHelp() {
+            var url = '';
+            var pageUrlElement = window.parent.frames['mainFrame'].document.getElementById('PageUrl');
+
+            if (pageUrlElement != null)
+                url = pageUrlElement.value;
+
+            window.parent.frames['mainFrame'].location = "Help.aspx?PageUrl=" + url;
+        }
+
+        function RefreshMain() {
+            window.parent.frames['leftFrame'].location = "Menu.aspx";
+            window.parent.frames['mainFrame'].location = "Home.aspx";
+        }
+        
+    </script>
+
+<link href="./Header.css" type="text/css" rel="stylesheet"><title>
+	Ayuda
+</title></head>
+<body>
+    <form name="form1" method="post" action="http://10.1.75.104:9080/Header.aspx" id="form1">
+<div>
+<input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="">
+<input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="">
+<input type="hidden" name="__LASTFOCUS" id="__LASTFOCUS" value="">
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUKMTI5NjA4NTAyOGRk2fbYegomE5+MurFrI7wkve9bZCM=">
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+var theForm = document.forms['form1'];
+if (!theForm) {
+    theForm = document.form1;
+}
+function __doPostBack(eventTarget, eventArgument) {
+    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+        theForm.__EVENTTARGET.value = eventTarget;
+        theForm.__EVENTARGUMENT.value = eventArgument;
+        theForm.submit();
+    }
+}
+//]]>
+</script>
+
+
+<div>
+
+	<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEWBQLHn6WtBwLnpZjWDAKN2eXJBwKM2eXJBwKH2eXJB947BC0GhKBo5R/iYXM5e6vCo6ev">
+</div>
+    <table border="0" cellspacing="0" cellpadding="0" style="height: 17px; width: 100%">
+        <tbody><tr valign="top">
+            <td class="ic-header-logo-content" style="padding: 0">
+                <a href="http://10.1.75.104:9080/Home.aspx" id="logoLink" target="mainFrame" title="Haga clic aquí para ir a la Página principal.">
+                   <img id="Image1" src="./img-logo.png" style="height:67px;width:202px;border-width:0px;border: 0px; padding: 0px">
+                </a>
+            </td>
+            <td style="padding: 0">
+                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tbody><tr>
+                        <td class="ic-header-center-top">
+                            &nbsp;
+                        </td>                            
+                            
+                    </tr>
+                    <tr>
+                        <td class="ic-header-center-bottom" colspan="2">
+                            <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                <tbody><tr>
+                                    <td class="ic-header-user" nowrap="nowrap" style="width:55%">
+                                        <span id="labelName">Jose Rios</span>&nbsp;&nbsp;&nbsp;
+                                    </td>
+                                    <td class="ic-header-date" nowrap="nowrap" align="right">
+                                        <span id="labelDate">lunes, 24 de octubre de 2016</span>
+                                    </td>
+                                    <td class="ic-header-organization" nowrap="nowrap" align="right">
+                                        <span id="labelOrganization">Empresa:</span>
+                                    </td>
+                                    <td>
+                                        <select name="UserOrganizations" onchange="javascript:setTimeout(&#39;__doPostBack(\&#39;UserOrganizations\&#39;,\&#39;\&#39;)&#39;, 0)" id="UserOrganizations" class="ic-header-dropdownlist">
+	<option selected="selected" value="33136">Wal Mart Argentina SRL</option>
+	<option value="33137">Corporación Rio Lujan SA</option>
+	<option value="33138">Farmacia Magistral</option>
+
+</select>
+                                        
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                </tbody></table>
+            </td>
+            <td class="ic-header-toolbar-content">
+                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tbody><tr>
+                        <td>
+                            <a href="http://10.1.75.104:9080/Header.aspx#" target="mainFrame" onclick="GotoHelp(); return false;">
+                                <img id="Image2" src="./icon_help2.png" alt="Ayuda" style="border-width:0px;height:49px;"></a>
+                        </td>
+                        <td>
+                            <a href="http://10.1.75.104:9080/Pages/Services/Contact.aspx" target="mainFrame">
+                                <img id="Image3" src="./icon_contact2.png" alt="Contáctenos" style="border-width:0px;height:49px;width:50px;"></a>
+                        </td>
+                        <td>
+                            <a href="http://10.1.75.104:9080/Pages/Common/ChangePassword.aspx" target="mainFrame">
+                                <img id="Image4" src="./icon_key2.png" alt="Cambiar clave de acceso" style="border-width:0px;height:49px;width:50px;"></a>
+                        </td>
+                        <td>
+                            <a href="http://10.1.75.104:9080/Logout.aspx" target="mainFrame" onclick="Logout(); return false;">
+                                <img id="Image5" src="./icon_logout2.png" alt="Salir del sistema" style="border-width:0px;height:49px;width:50px;"></a>
+                        </td>
+                    </tr>
+                </tbody></table>
+            </td>
+        </tr>
+    </tbody></table>
+    </form>
+
+
+</body></html>

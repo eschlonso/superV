@@ -1,0 +1,191 @@
+
+<!-- saved from url=(0168)https://empresas.supervielle.com.ar/eComexWEB/consultaSolicitudes.action?numeroSolicitud=&sigla=&sucursal=&nroOperacion=&estado=&action%3AresultadoSolicitudes=Consultar -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252"><link rel="stylesheet" href="./styles.css" type="text/css">
+<script src="./utils.js.descarga" type="text/javascript"></script>
+	<title>Consulta de Solicitudes</title>
+	<link rel="stylesheet" type="text/css" href="./eComex.css">
+	<link rel="stylesheet" type="text/css" href="./displayStyle.css">
+	<link rel="stylesheet" type="text/css" href="./jquery.ui.all.css">
+	</head><body>
+		
+		<div class="wrapper">
+			<div id="mainbody">
+				<div class="inside" align="center">
+					
+
+
+
+
+<script language="javascript" type="text/javascript" src="./jquery-1.8.2.min.js.descarga"></script>
+<form id="consultaSolicitudes" name="solicitudesForm" action="https://empresas.supervielle.com.ar/eComexWEB/consultaSolicitudes.action" method="get">
+	
+	
+	
+	<table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+		<tbody>
+			<tr>
+				<td class="ic-grid-title-cell-left">&nbsp;</td><td class="ic-grid-title-cell" style="white-space:nowrap;">Datos a Consultar</td>
+			</tr>
+		</tbody>
+	</table>
+	<table class="ic-grid" style="width:100%;border-collapse:collapse;">
+		<tbody><tr>
+			<td class="ic-form-label">Nº Solicitud:</td>
+			<td class="ic-form-data"><input type="text" name="numeroSolicitud" value="" id="consultaSolicitudes_numeroSolicitud" class="ic-control-text"> </td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+		<tr>
+			<td class="ic-form-label">Nº Operación:</td>
+			<td class="ic-form-data">
+				<select name="sigla" id="consultaSolicitudes_sigla" class="ic-control-select">
+    <option value="" selected="selected">[Seleccionar]</option>
+    <option value="CEX">Carta de Crédito de Exportación - CEX</option>
+    <option value="CIM">Carta de Crédito de Importación - CIM</option>
+    <option value="CHE">Cheque Comprado al Exterior - CHE</option>
+    <option value="CTE">Cierre Tecnico - CTE</option>
+    <option value="CAE">Cobranza de Exportación - CAE</option>
+    <option value="CDE">Cobranza de Importación - CDE</option>
+    <option value="CFI">Factoring Internacional de Importación - CFI</option>
+    <option value="ANA">Garantía ante Aduana Dólares - ANA</option>
+    <option value="ANS">Garantía ante Aduana Pesos - ANS</option>
+    <option value="GTI">Garantía Internacional Otorgada - GTI</option>
+    <option value="TRE">Ordenes de Pago Recibida - TRE</option>
+    <option value="TTE">Transferencia al Exterior - TTE</option>
+    <option value="VCE">Valor al Cobro del Exterior - VCE</option>
+
+
+</select>
+ 
+				<input type="text" name="sucursal" size="3" maxlength="20" value="" id="consultaSolicitudes_sucursal" class="ic-control-text"> 
+				<input type="text" name="nroOperacion" size="8" maxlength="20" value="" id="consultaSolicitudes_nroOperacion" class="ic-control-text"></td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+		<tr>
+			<td class="ic-form-label">Estado Solicitud:</td>
+			<td class="ic-form-data">
+				<select name="estado" id="consultaSolicitudes_estado" class="ic-control-select">
+    <option value="" selected="selected">[Seleccionar]</option>
+    <option value="RS">Rechazo Salvable</option>
+    <option value="PA">Pendiente Autorización</option>
+    <option value="RD">Rechazada</option>
+    <option value="FI">Ejecutada</option>
+    <option value="EA">En Análisis Banco</option>
+    <option value="AN">Anulada</option>
+    <option value="EC">Ingresada</option>
+
+
+</select>
+
+			</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+	</tbody></table>
+	<table width="100%">
+        <tbody>
+        	<tr>
+	            <td nowrap="nowrap" width="100%" style="text-align: left;">
+	                <span class="ic-message">Seleccione los datos y oprima "Consultar".</span> 
+	            </td>
+	            <td align="right" nowrap="nowrap">
+	                <input type="submit" id="consultaSolicitudes_resultadoSolicitudes" name="action:resultadoSolicitudes" value="Consultar" class="ic-button-navigation">
+
+	            </td>
+	        </tr>
+    	</tbody>
+    </table>
+</form>
+
+
+
+
+
+<form id="cargaFormulario" name="solicitudesForm" action="https://empresas.supervielle.com.ar/eComexWEB/cargaFormulario.action" method="post">
+	<input type="hidden" id="cargaFormularioReturnUrl" name="returnUrl" value="/resultadoSolicitudes.action?numeroSolicitud=&amp;sigla=&amp;sucursal=&amp;nroOperacion=&amp;estado=&amp;action%3AresultadoSolicitudes=Consultar">
+	<input type="hidden" id="cargaFormularioNumeroSolicitud" name="numeroSolicitud">
+</form>
+
+
+
+
+
+
+	<table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+		<tbody><tr>
+			<td class="ic-grid-title-cell-left">&nbsp;</td>
+			<td class="ic-grid-title-cell" align="left" style="white-space:nowrap;">Detalle de la Consulta</td>
+		</tr>
+	</tbody></table>
+	
+<table style="width:100%;" class="ic-grid" id="sol">
+<thead>
+<tr>
+<th class="dxgvHeader">Nº Solicitud</th>
+<th class="dxgvHeader">Nº Operación</th>
+<th class="dxgvHeader">Tipo Solicitud</th>
+<th class="dxgvHeader">Fecha Origen</th>
+<th class="dxgvHeader">Divisa</th>
+<th class="dxgvHeader">Importe</th>
+<th class="dxgvHeader">Usuario</th>
+<th class="dxgvHeader">Estado</th></tr></thead>
+<tbody>
+<tr class="rowimpar">
+<td style="text-align:center">
+			<a href="javascript:void(0);" onclick="$(&#39;#cargaFormularioNumeroSolicitud&#39;).val(33131);$(&#39;#cargaFormulario&#39;).submit();return false;">33131</a>
+		</td>
+<td>
+			TTE
+		</td>
+<td>
+			Pago de Importacion 
+		</td>
+<td style="text-align:center">09-08-2016</td>
+<td style="text-align:center">USD</td>
+<td style="text-align:right">1,00</td>
+<td style="text-align:right">Curcio, Sebastian  </td>
+<td>
+			En Análisis Banco 
+		</td></tr>
+<tr class="rowpar">
+<td style="text-align:center">
+			<a href="javascript:void(0);" onclick="$(&#39;#cargaFormularioNumeroSolicitud&#39;).val(34421);$(&#39;#cargaFormulario&#39;).submit();return false;">34421</a>
+		</td>
+<td>
+			TTE
+		</td>
+<td>
+			PAGO DE IMPORTACION 
+		</td>
+<td style="text-align:center">02-09-2016</td>
+<td style="text-align:center">ARS</td>
+<td style="text-align:right">1,00</td>
+<td style="text-align:right">Curcio, Sebastian  </td>
+<td>
+			Rechazada 
+		</td></tr>
+<tr class="rowimpar">
+<td style="text-align:center">
+			<a href="javascript:void(0);" onclick="$(&#39;#cargaFormularioNumeroSolicitud&#39;).val(37675);$(&#39;#cargaFormulario&#39;).submit();return false;">37675</a>
+		</td>
+<td>
+			TTE
+		</td>
+<td>
+			PAGO DE IMPORTACION 
+		</td>
+<td style="text-align:center">24-10-2016</td>
+<td style="text-align:center">USD</td>
+<td style="text-align:right">1,00</td>
+<td style="text-align:right"></td>
+<td>
+			Pendiente Autorización 
+		</td></tr></tbody></table><div class="paginadoText" id="textHeader">Página 1 de 1 (3 items)</div>
+
+				</div>
+			</div>
+		</div>
+	
+
+</body></html>

@@ -1,0 +1,1054 @@
+
+<!-- saved from url=(0063)http://10.1.75.104:9080/Pages/CreditCards/TradeSettlements.aspx -->
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><script src="./jquery-1.7.2.min.js.descarga" type="text/javascript"></script>
+<script src="./jquery-1.7.1.js.descarga" type="text/javascript"></script>
+<script src="./jquery-ui-1.8.19.custom.min.js.descarga" type="text/javascript"></script>
+<script src="./jquery.formatCurrency-1.4.0.js.descarga" type="text/javascript"></script>
+<script src="./idle-timer.js.descarga" type="text/javascript"></script>
+<script src="./idle-timer.min.js.descarga" type="text/javascript"></script>
+<script language="javascript" type="text/javascript">
+
+function Logout() {
+        if (confirm("¿ Desea salir del sistema ?") == true) {
+                    
+            window.location =  '/'+ "Logout.aspx";
+        }
+       
+    }
+    
+var focusedFormControl;    
+var dateFormat = 'dd/mm/aaaa';
+var applicationRoot = '/';      
+function OnRowClick(sender, args) {
+    if (sender.GetSelectedRowCount() == 0) {
+        sender.UnselectRowOnPage(args.visibleIndex);
+        SetPageLinkData("");
+    }
+    else {
+        _aspxClearSelection();
+        sender._selectAllRowsOnPage(false);
+        sender.SelectRow(args.visibleIndex, true);
+        SetPageLinkData(sender.GetRowKey(args.visibleIndex));
+    }
+}
+
+if (history.forward(1))
+{
+
+    location.replace(history.forward(1))
+} 
+
+function PrintPage() {
+
+    window.print();
+}
+
+function GoMyOption(select)
+{
+    var url = select.options[select.selectedIndex].value;
+    if( url != "")
+        window.location = url;
+}
+
+function GoFavourites(select)
+{
+
+    var url = select.options[select.selectedIndex].value;
+    if( url != "")
+        window.location = url;
+}
+
+function GoPrint()
+{
+
+window.print();
+}
+
+function addEvent(elm, evType, fn, useCapture)
+{
+
+  if (elm.addEventListener){
+    elm.addEventListener(evType, fn, useCapture);
+    return true;
+  } else if (elm.attachEvent){
+    var r = elm.attachEvent("on"+evType, fn);
+    return r;
+  } else {
+    alert("Handler could not be removed");
+  }
+} 
+
+function SetPageLinkData(data)
+{
+    pageLinkData = document.getElementById('PageLinkData');
+    pageLinkData.value = data;
+}
+
+function SetPageLinkUrl(url)
+{
+    pageLinkUrl = document.getElementById('PageLinkUrl');
+    pageLinkUrl.value = url;
+}
+
+function doPageLink(id)
+{
+    __doPostBack(id, 'PageLinkEvent');
+}
+
+function imprimirEstadoCuenta()
+{
+											
+    var ficha = document.getElementById('printDiv');		
+    var ventimp = window.open('', 'popimpr','height=450, width=550, scrollbars=1');																						
+    var fichaHTML = new String(ficha.innerHTML);
+    fichaHTML = fichaHTML.replace('Seleccione un período y oprima "Consultar".'," ");
+    //var i = document.getElementById('ctl00_MainHolder_panelDetalle_imgPlusMinus');
+    var html  = "<html>\n<head>\n<link rel=\"stylesheet\" type=\"text/css\" href=\"..\\..\\App_Themes\\Default\\Default.css \" />" 
+                + "</head><table width=\"100%\"><tr bgcolor=\"#FF0000\"><td><img src=\"..\\..\\App_Themes\\Default\\Images\\logoSantander.gif\" /></td></tr></table>" 
+                + fichaHTML 
+                + "</html>";
+    ventimp.document.write( html );
+    ventimp.document.close();
+    ventimp.print( );
+    ventimp.close();
+					
+}
+
+ function removeInvalidCharacters(control) {
+ 
+            !(/^[A-zÑñ0-9 ]*$/i).test(control.value) ? control.value = control.value.replace(/[^A-zÑñ0-9 ]/ig, '') : null
+        }
+        
+  function removeInvalidNumbers(control) {
+            !(/^[0-9,]*$/i).test(control.value) ? control.value = control.value.replace(/[^0-9,]/ig, '') : null
+        }
+function showLoading()
+{
+//debugger;
+    // aquí le pasamos la clase o id de nuestro div a centrar (en este caso "caja")
+    $('.ic-loading').css({
+       position:'absolute',
+       left: ($('#mainContainer').width()/2 - $('.ic-loading').outerWidth())/2,
+       //top: ($('#mainContainer').height()/2 - $('.ic-loading').outerHeight())/2
+       top: ($('#mainContainer').height()/2 - $('ic-loading').height()/2)
+    });
+    
+    $('#mainContainer').css('display','none');
+    $('#ic-loading').css('display','block');
+}
+//ModalDialog SessionTimeout
+var idleTime = (parseInt('1170') * 1000); // number of miliseconds until the user is considered idle
+var initialSessionTimeoutMessage = "La sesión finalizará en <span id='sessionTimeoutCountdown'></span> segundos. Para seguir operando seleccioná “Continuar”<br /><br />";
+var sessionTimeoutCountdownId = 'sessionTimeoutCountdown';
+var redirectAfter = (parseInt('30')) ; // number of seconds to wait before redirecting the user
+var redirectTo = '/' + "Logout.aspx"; // URL to relocate the user to once they have timed out
+var keepAliveURL = ''; // URL to call to keep the session alive
+var expiredMessage = ''; // message to show user when the countdown reaches 0
+var running = false; // var to check if the countdown is running 
+var timer; // reference to the setInterval timer so it can be stopped 
+var timerSB;  
+var timeout;  
+    $(document).ready(function() {     
+// create the warning window and set autoOpen to false  
+      var sessionTimeoutWarningDialog = $("#sessionTimeoutWarning"); 
+    $(sessionTimeoutWarningDialog).dialog({         
+        title: '',       
+        autoOpen: false,    // set this to false so we can manually open it         
+        closeOnEscape: false,         
+        draggable: false,         
+        width: 460,         
+        minHeight: 150,         
+        modal: true,           
+        beforeclose: function() { // bind to beforeclose so if the user clicks on the "X" or escape to close the dialog, it will work too             // stop the timer             
+            clearInterval(timer);               // stop countdown
+            running = false;               // ajax call to keep the server-side session alive    
+                  
+            $.ajax({               
+                url: keepAliveURL,               
+                async: false            
+            });         
+        },         
+        buttons: {      
+             'Continuar ': function() {                 
+                // close dialog 
+                window.location.reload();//BM24925: Se agrega esto para que el expired de una cookie se actualice y no se cierre la sesión luego de hacer click en continuar al terminar el timeout del webconfig. El valor del expired se pone en la tabla configuration en la clave SessionMaxMinutes.
+                //var valor = getCookie('ICBWebLogin'); //Esta función la dejo por las dudas, pero no la pude hacer andar poque el document.cookie no me trae las cookies del explorador.                
+                $(this).dialog('close');
+                clearInterval(timerSB);    
+                window.status = "";      
+                StatusBarCountDown();     
+            },
+            'Finalizar sesión': function() {                 
+                // close dialog                 
+                $(sessionTimeoutWarningDialog).html(expiredMessage);
+                $(sessionTimeoutWarningDialog).dialog('disable');                     
+                window.parent.location = redirectTo;           
+            }         
+        },         
+        resizable: false,         
+        open: function() {
+            $('body').css('overflow','auto');         
+        },         
+        close: function() {             
+            // reset overflow             
+            $('body').css('overflow','auto');         
+        }  
+           
+    }); // end of dialog  
+    jQuery("a.ui-dialog-titlebar-close").hide(); 
+          
+    // start the idle timer
+    $.idleTimer(idleTime);
+ 
+});
+
+// BM24925: Función para recuperar el valor de una cookie.
+// name - nombre de la cookie deseada
+// devuelve un string conteniendo el valor de la cookie especificada o null si la cookie no existe
+
+function getCookie(name){
+var micookie = (document.cookie.indexOf('ICBWebLogin=') === -1 ? '' : ("; " + document.cookie).split('; ICBWebLogin=')[1].split(';')[0]);
+
+  var cname = name + "=";               
+  var dc = document.cookie;             
+  if (dc.length > 0) {              
+    begin = dc.indexOf(cname);       
+    if (begin != -1) {           
+      begin += cname.length;       
+      end = dc.indexOf(";", begin);
+      if (end == -1) end = dc.length;
+        return unescape(dc.substring(begin, end));
+    } 
+  }
+  return null;
+}
+
+//Status Bar Countdown Script
+function StatusBarCountDown() 
+{
+    var redirectAfter = (parseInt('30'));
+    var timeout = '1200000';   
+    var redirectTo = '/' + "Logout.aspx"; // URL to relocate the user to once they have timed out   
+    timerSB = setInterval(function(){
+    timeout -= 1000;
+    if(timeout == redirectAfter * 1000)
+    {
+        window.focus();
+    }
+   if(timeout < redirectAfter * 1000)
+   {
+        $("#sessionTimeoutCountdown").html(timeout/1000);
+        $("#sessionTimeoutWarning").dialog('open'); 
+   }
+   if (timeout < 100)
+   {
+        $("#sessionTimeoutWarning").html(expiredMessage);
+        $("#sessionTimeoutWarning").dialog('disable');                     
+        window.parent.location = redirectTo;
+        clearInterval(timerSB);    
+        window.status = "";     
+   }
+        
+   window.status = "Su sesión expirará " + time(timeout) + " minutos";        
+    }, 1000);   
+         
+   function two(x)
+   {
+    return ((x > 9) ? "" : "0") + x
+   }   
+  
+   function time(ms)
+   {   
+       var t = '';   
+       var sec = Math.floor(ms / 1000);   
+       ms = ms % 1000   
+
+       var min = Math.floor(sec / 60);   
+       sec = sec % 60;   
+       t = two(sec);   
+
+       var hr = Math.floor(min / 60);   
+       min = min % 60;   
+       t = two(min) + ":" + t;   
+    return t;
+   }
+}
+
+StatusBarCountDown();
+
+
+
+</script>
+
+<link rel="stylesheet" type="text/css" href="./WebResource.axd">
+<link rel="stylesheet" type="text/css" href="./WebResource(1).axd">
+<link href="./Default.css" type="text/css" rel="stylesheet"><link href="./jquery-ui-1.8.19.custom.css" type="text/css" rel="stylesheet"><title>
+	Liquidaciones de Comercio
+</title><script type="text/javascript">Sys.WebForms.PageRequestManager._addArrayElement('Page_Validators', document.getElementById("ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator1"));
+Sys.WebForms.PageRequestManager._addArrayElement('Page_Validators', document.getElementById("ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator2"));
+Sys.WebForms.PageRequestManager._addArrayElement('Page_Validators', document.getElementById("ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator3"));
+Sys.WebForms.PageRequestManager._addArrayElement('Page_Validators', document.getElementById("ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator4"));
+Sys.WebForms.PageRequestManager._addArrayElement('Page_Validators', document.getElementById("ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator5"));
+</script><script type="text/javascript">document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator1')['controltovalidate'] = "ctl00_MainHolder_cTradeSettlementsFilter_ddlBrand"
+document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator1')['validationGroup'] = "Validate"
+document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator1')['evaluationfunction'] = "CustomValidatorEvaluateIsValid"
+document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator2')['controltovalidate'] = "ctl00_MainHolder_cTradeSettlementsFilter_ddlLiquidationType"
+document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator2')['validationGroup'] = "Validate"
+document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator2')['evaluationfunction'] = "CustomValidatorEvaluateIsValid"
+document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator3')['controltovalidate'] = "ctl00_MainHolder_cTradeSettlementsFilter_ddlEstablishmentNumber"
+document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator3')['validationGroup'] = "Validate"
+document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator3')['evaluationfunction'] = "CustomValidatorEvaluateIsValid"
+document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator4')['controltovalidate'] = "ctl00_MainHolder_cTradeSettlementsFilter_ddlFromMonth"
+document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator4')['validationGroup'] = "Validate"
+document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator4')['evaluationfunction'] = "CustomValidatorEvaluateIsValid"
+document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator5')['controltovalidate'] = "ctl00_MainHolder_cTradeSettlementsFilter_ddlToMonth"
+document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator5')['validationGroup'] = "Validate"
+document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator5')['evaluationfunction'] = "CustomValidatorEvaluateIsValid"
+</script><script type="text/javascript">
+var Page_ValidationActive = false;
+if (typeof(ValidatorOnLoad) == "function") {
+    ValidatorOnLoad();
+}
+
+function ValidatorOnSubmit() {
+    if (Page_ValidationActive) {
+        return ValidatorCommonOnSubmit();
+    }
+    else {
+        return true;
+    }
+}
+        </script><script type="text/javascript">
+document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator1').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator1'));
+}
+</script><script type="text/javascript">
+document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator2').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator2'));
+}
+</script><script type="text/javascript">
+document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator3').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator3'));
+}
+</script><script type="text/javascript">
+document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator4').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator4'));
+}
+</script><script type="text/javascript">
+document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator5').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator5'));
+}
+</script><script type="text/javascript">Array.add(Sys.WebForms.PageRequestManager.getInstance()._onSubmitStatements, function() {
+if (typeof(ValidatorOnSubmit) == "function" && ValidatorOnSubmit() == false) return false;
+
+return true;
+});
+</script><script type="text/javascript">Sys.WebForms.PageRequestManager._addArrayElement('Page_Validators', document.getElementById("ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator1"));
+Sys.WebForms.PageRequestManager._addArrayElement('Page_Validators', document.getElementById("ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator2"));
+Sys.WebForms.PageRequestManager._addArrayElement('Page_Validators', document.getElementById("ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator3"));
+Sys.WebForms.PageRequestManager._addArrayElement('Page_Validators', document.getElementById("ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator4"));
+Sys.WebForms.PageRequestManager._addArrayElement('Page_Validators', document.getElementById("ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator5"));
+</script><script type="text/javascript">document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator1')['controltovalidate'] = "ctl00_MainHolder_cTradeSettlementsFilter_ddlBrand"
+document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator1')['validationGroup'] = "Validate"
+document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator1')['evaluationfunction'] = "CustomValidatorEvaluateIsValid"
+document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator2')['controltovalidate'] = "ctl00_MainHolder_cTradeSettlementsFilter_ddlLiquidationType"
+document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator2')['validationGroup'] = "Validate"
+document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator2')['evaluationfunction'] = "CustomValidatorEvaluateIsValid"
+document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator3')['controltovalidate'] = "ctl00_MainHolder_cTradeSettlementsFilter_ddlEstablishmentNumber"
+document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator3')['validationGroup'] = "Validate"
+document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator3')['evaluationfunction'] = "CustomValidatorEvaluateIsValid"
+document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator4')['controltovalidate'] = "ctl00_MainHolder_cTradeSettlementsFilter_ddlFromMonth"
+document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator4')['validationGroup'] = "Validate"
+document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator4')['evaluationfunction'] = "CustomValidatorEvaluateIsValid"
+document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator5')['controltovalidate'] = "ctl00_MainHolder_cTradeSettlementsFilter_ddlToMonth"
+document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator5')['validationGroup'] = "Validate"
+document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator5')['evaluationfunction'] = "CustomValidatorEvaluateIsValid"
+</script><script type="text/javascript">
+var Page_ValidationActive = false;
+if (typeof(ValidatorOnLoad) == "function") {
+    ValidatorOnLoad();
+}
+
+function ValidatorOnSubmit() {
+    if (Page_ValidationActive) {
+        return ValidatorCommonOnSubmit();
+    }
+    else {
+        return true;
+    }
+}
+        </script><script type="text/javascript">
+document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator1').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator1'));
+}
+</script><script type="text/javascript">
+document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator2').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator2'));
+}
+</script><script type="text/javascript">
+document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator3').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator3'));
+}
+</script><script type="text/javascript">
+document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator4').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator4'));
+}
+</script><script type="text/javascript">
+document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator5').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator5'));
+}
+</script><script type="text/javascript">Array.add(Sys.WebForms.PageRequestManager.getInstance()._onSubmitStatements, function() {
+if (typeof(ValidatorOnSubmit) == "function" && ValidatorOnSubmit() == false) return false;
+
+return true;
+});
+</script></head>
+<body>
+    <form name="aspnetForm" method="post" action="http://10.1.75.104:9080/Pages/CreditCards/TradeSettlements.aspx" onsubmit="javascript:return WebForm_OnSubmit();" id="aspnetForm">
+<div>
+
+
+
+
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+var theForm = document.forms['aspnetForm'];
+if (!theForm) {
+    theForm = document.aspnetForm;
+}
+function __doPostBack(eventTarget, eventArgument) {
+    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+        theForm.__EVENTTARGET.value = eventTarget;
+        theForm.__EVENTARGUMENT.value = eventArgument;
+        theForm.submit();
+    }
+}
+//]]>
+</script>
+
+
+<script src="./WebResource(2).axd" type="text/javascript"></script>
+
+
+						<style>							
+							P.PanelControlTitleStyle
+							{
+ 								font-family:verdana;
+ 								font-size: 12px;
+								font-weight : bold;
+								text-align: center;  								
+							}
+						</style>						
+						<script language="javascript">
+						function MinMaxPanelControl(cntrlId)
+						{
+						    var imgPath='/App_Themes/Default/Images/';	
+					
+							//Get state from hidden control.													
+							if ( document.getElementById(cntrlId).style.display == 'none' )
+							{
+								document.getElementById(cntrlId).style.display = '';						
+								document.getElementById(cntrlId+'_imgPlusMinus').src = imgPath + 'bot-grid-minus.gif';
+							}
+							else 
+							{
+								document.getElementById(cntrlId).style.display = 'none';								
+								document.getElementById(cntrlId+'_imgPlusMinus').src = imgPath + 'bot-grid-plus.gif';
+							}
+						}
+						</script>
+			
+<script src="./ScriptResource.axd" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+var __cultureInfo = '{"name":"es-UY","numberFormat":{"CurrencyDecimalDigits":2,"CurrencyDecimalSeparator":",","IsReadOnly":false,"CurrencyGroupSizes":[3],"NumberGroupSizes":[3],"PercentGroupSizes":[3],"CurrencyGroupSeparator":".","CurrencySymbol":"$U","NaNSymbol":"NeuN","CurrencyNegativePattern":14,"NumberNegativePattern":1,"PercentPositivePattern":0,"PercentNegativePattern":0,"NegativeInfinitySymbol":"-Infinito","NegativeSign":"-","NumberDecimalDigits":2,"NumberDecimalSeparator":",","NumberGroupSeparator":".","CurrencyPositivePattern":2,"PositiveInfinitySymbol":"Infinito","PositiveSign":"+","PercentDecimalDigits":2,"PercentDecimalSeparator":",","PercentGroupSeparator":".","PercentSymbol":"%","PerMilleSymbol":"‰","NativeDigits":["0","1","2","3","4","5","6","7","8","9"],"DigitSubstitution":1},"dateTimeFormat":{"AMDesignator":"a.m.","Calendar":{"MinSupportedDateTime":"\/Date(-62135586000000)\/","MaxSupportedDateTime":"\/Date(253402300799999)\/","AlgorithmType":1,"CalendarType":1,"Eras":[1],"TwoDigitYearMax":2029,"IsReadOnly":false},"DateSeparator":"/","FirstDayOfWeek":1,"CalendarWeekRule":0,"FullDateTimePattern":"dddd, dd\u0027 de \u0027MMMM\u0027 de \u0027yyyy hh:mm:ss tt","LongDatePattern":"dddd, dd\u0027 de \u0027MMMM\u0027 de \u0027yyyy","LongTimePattern":"hh:mm:ss tt","MonthDayPattern":"dd MMMM","PMDesignator":"p.m.","RFC1123Pattern":"ddd, dd MMM yyyy HH\u0027:\u0027mm\u0027:\u0027ss \u0027GMT\u0027","ShortDatePattern":"dd/MM/yyyy","ShortTimePattern":"hh:mm tt","SortableDateTimePattern":"yyyy\u0027-\u0027MM\u0027-\u0027dd\u0027T\u0027HH\u0027:\u0027mm\u0027:\u0027ss","TimeSeparator":":","UniversalSortableDateTimePattern":"yyyy\u0027-\u0027MM\u0027-\u0027dd HH\u0027:\u0027mm\u0027:\u0027ss\u0027Z\u0027","YearMonthPattern":"MMMM\u0027 de \u0027yyyy","AbbreviatedDayNames":["dom","lun","mar","mié","jue","vie","sáb"],"ShortestDayNames":["do","lu","ma","mi","ju","vi","sá"],"DayNames":["domingo","lunes","martes","miércoles","jueves","viernes","sábado"],"AbbreviatedMonthNames":["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic",""],"MonthNames":["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre",""],"IsReadOnly":false,"NativeCalendarName":"calendario gregoriano","AbbreviatedMonthGenitiveNames":["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic",""],"MonthGenitiveNames":["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre",""]}}';//]]>
+</script>
+
+<script src="./ScriptResource(1).axd" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+if (typeof(Sys) === 'undefined') throw new Error('ASP.NET Ajax client-side framework failed to load.');
+//]]>
+</script>
+
+<script src="./ScriptResource(2).axd" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+function WebForm_OnSubmit() {
+if (typeof(ValidatorOnSubmit) == "function" && ValidatorOnSubmit() == false) return false;
+return true;
+}
+//]]>
+</script>
+
+<div>
+
+	
+</div>
+    <script type="text/javascript">
+//<![CDATA[
+Sys.WebForms.PageRequestManager._initialize('ctl00$scriptManager', document.getElementById('aspnetForm'));
+Sys.WebForms.PageRequestManager.getInstance()._updateControls(['tctl00$MainHolder$cTradeSettlementsFilter$updpFilter','tctl00$MainHolder$updpnlConsult','tctl00$MainHolder$updpnlLiqGrid'], [], [], 90);
+//]]>
+</script>
+
+    <input type="hidden" id="PageLinkData" name="PageLinkData" value="">
+    <input type="hidden" id="PageLinkUrl" name="PageLinkUrl" value="">
+    <input type="hidden" id="PageUrl" value="/Pages/CreditCards/TradeSettlements.aspx">
+    <table id="ctl00_tableContent" width="100%" border="0" cellpadding="0" cellspacing="0" class="ic-content">
+	<tbody><tr>
+		<td class="ic-content-left-aux">
+                <img src="./log-img-aux-left-bottom.gif" width="9" height="110">
+            </td>
+		<td style="width: 100%">
+                <table width="100%" border="0" cellpadding="0" cellspacing="0" class="ic-content-left">
+                    <tbody><tr>
+                        <td id="TdCPM" class="ic-content-space-top" valign="top">
+                            <table id="TablaCPM" width="100%" border="0" cellspacing="0" cellpadding="0">
+                                
+                                <tbody><tr>
+                                    <td>
+                                        <table id="ctl00_tableHeader" width="100%" border="0" cellspacing="0" cellpadding="0">
+			<tbody><tr>
+				<td class="ic-breadcrumb-container">
+                                                    
+                                                    &gt;
+                                                    <span id="ctl00_siteMapNavigator"><a href="http://10.1.75.104:9080/Pages/CreditCards/TradeSettlements.aspx#ctl00_siteMapNavigator_SkipLink"><img alt="Skip Navigation Links" height="0" width="0" src="./WebResource(3).axd" style="border-width:0px;"></a><span><a href="http://10.1.75.104:9080/Home.aspx">Posición Consolidada</a></span><span> &gt; </span><span>Liquidaciones de Comercio</span><a id="ctl00_siteMapNavigator_SkipLink"></a></span>
+                                                    </td>
+				<td class="ic-toolbar-container">
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tbody><tr>
+                                                            <td width="16">
+                                                                <img src="./ico-print.gif" id="ctl00_Img4" width="16" height="16">
+                                                            </td>
+                                                            <td class="ic-links-toolbar">
+                                                                <a href="http://10.1.75.104:9080/Pages/CreditCards/TradeSettlements.aspx#" onclick="javascript: GoPrint();">
+                                                                    Imprimir página</a>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody></table>
+                                                </td>
+			</tr>
+		</tbody></table>
+		
+                                    </td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>
+                                        <span id="ctl00_labelTitle" class="ic-page-title">Liquidaciones de Comercio</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td id="ctl00_cellRequiered" align="right">&nbsp;</td>
+		
+                                </tr>
+                                <tr>
+                                    <td width="95%" align="center">
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                            <tbody><tr>
+                                                <td align="right">
+                                                    
+                                                    
+                                                </td>
+                                            </tr>
+                                        </tbody></table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="100%" align="center">
+                                        <div id="ic-loading" class="ic-loading-bg" style="display: none;">
+                                            <div class="ic-loading">
+                                                <div id="message">
+                                                    <img src="./cargandoBAR.gif" id="ctl00_imgLoading"><br>
+                                                    <span id="ctl00_WaitingMessage">Procesando...</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="mainContainer">
+                                            
+
+        <table class="ic-grid-border" cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+			<tbody><tr>
+				<td><table id="ctl00_MainHolder_pcFilter_thePanel" class="ic-grid" cellspacing="0" cellpadding="0" align="Center" border="0" style="width:100%;border-collapse:collapse;">
+					<tbody><tr class="ic-grid-title-row">
+						<td><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+							<tbody><tr>
+								<td class="ic-grid-title-cell-left">&nbsp;</td><td class="ic-grid-title-cell" align="left" style="white-space:nowrap;">Liquidaciones de Comercio</td><td class="ic-gridB-title-cell-right"><img id="ctl00_MainHolder_pcFilter_imgPlusMinus" onclick="javascript:MinMaxPanelControl(&#39;ctl00_MainHolder_pcFilter&#39;)" src="./bot-grid-minus.gif" alt="Minimizar/Maximizar el panel" align="absmiddle" style="border-width:0px;cursor:hand;"></td>
+							</tr>
+						</tbody></table></td>
+					</tr><tr>
+						<td align="center"><div id="ctl00_MainHolder_pcFilter" style="color:Black;border-color:DodgerBlue;font-family:verdana;font-size:10pt;width:100%;display:;">
+	
+            <div id="ctl00_MainHolder_cTradeSettlementsFilter_updpFilter">
+        <table id="ctl00_MainHolder_cTradeSettlementsFilter_tFilter" width="100%" cellpadding="0" cellspacing="0">
+	<tbody><tr>
+		<td class="ic-form-label">
+                    <span id="ctl00_MainHolder_cTradeSettlementsFilter_labelBrand" style="color:DimGray;">Marca</span>
+                </td>
+		<td class="ic-form-data-required" colspan="5">
+                    <select name="ctl00$MainHolder$cTradeSettlementsFilter$ddlBrand" onchange="javascript:setTimeout(&#39;__doPostBack(\&#39;ctl00$MainHolder$cTradeSettlementsFilter$ddlBrand\&#39;,\&#39;\&#39;)&#39;, 0)" id="ctl00_MainHolder_cTradeSettlementsFilter_ddlBrand" class="ic-control-select">
+			<option value="-1">[Seleccionar]</option>
+			<option selected="selected" value="1">Visa</option>
+			<option value="2">Mastercard</option>
+
+		</select>
+                    <span id="ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator1" style="color:Red;visibility:hidden;"></span>
+                </td>
+		<td class="ic-form-data">
+                    &nbsp;
+                </td>
+	</tr>
+	<tr>
+		<td class="ic-form-label">
+                    <span id="ctl00_MainHolder_cTradeSettlementsFilter_labelLiquidationType" style="color:DimGray;">Tipo de Liquidación</span>
+                </td>
+		<td class="ic-form-data-required" colspan="5">
+                    <select name="ctl00$MainHolder$cTradeSettlementsFilter$ddlLiquidationType" onchange="javascript:setTimeout(&#39;__doPostBack(\&#39;ctl00$MainHolder$cTradeSettlementsFilter$ddlLiquidationType\&#39;,\&#39;\&#39;)&#39;, 0)" id="ctl00_MainHolder_cTradeSettlementsFilter_ddlLiquidationType" class="ic-control-select">
+			<option value="-1">[Seleccionar]</option>
+			<option selected="selected" value="1">Mensual</option>
+
+		</select>
+                    <span id="ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator2" style="color:Red;visibility:hidden;"></span>
+                </td>
+		<td class="ic-form-data">
+                    &nbsp;
+                </td>
+	</tr>
+	<tr>
+		<td class="ic-form-label">
+                    <span id="ctl00_MainHolder_cTradeSettlementsFilter_labelEstablishmentNumber" style="color:DimGray;">N° Establecimiento</span>
+                </td>
+		<td class="ic-form-data-required" colspan="5">
+                    <select name="ctl00$MainHolder$cTradeSettlementsFilter$ddlEstablishmentNumber" onchange="javascript:setTimeout(&#39;__doPostBack(\&#39;ctl00$MainHolder$cTradeSettlementsFilter$ddlEstablishmentNumber\&#39;,\&#39;\&#39;)&#39;, 0)" id="ctl00_MainHolder_cTradeSettlementsFilter_ddlEstablishmentNumber" class="ic-control-select">
+			<option selected="selected" value="-1">No existen resultados para la búsqueda</option>
+
+		</select>
+                    <span id="ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator3" style="color:Red;visibility:hidden;"></span>
+                </td>
+		<td class="ic-form-data">
+                    &nbsp;
+                </td>
+	</tr>
+	<tr>
+		<td class="ic-form-label" width="30%">
+                    <span id="ctl00_MainHolder_cTradeSettlementsFilter_LabelLiquidationPeriod" style="color:DimGray;">Periodo Liquidación</span>
+                </td>
+		<td class="ic-form-data-required" width="2%">
+                    <span id="ctl00_MainHolder_cTradeSettlementsFilter_LabelFrom" style="color:DimGray;font-weight:bold;">desde</span>
+                </td>
+		<td class="ic-form-data" width="20%">
+                    <select name="ctl00$MainHolder$cTradeSettlementsFilter$ddlFromMonth" onchange="javascript:setTimeout(&#39;__doPostBack(\&#39;ctl00$MainHolder$cTradeSettlementsFilter$ddlFromMonth\&#39;,\&#39;\&#39;)&#39;, 0)" id="ctl00_MainHolder_cTradeSettlementsFilter_ddlFromMonth" disabled="disabled" class="ic-control-select" style="width:90%;">
+			<option selected="selected" value="-1">[Seleccionar]</option>
+			<option value="1">Octubre 2016</option>
+			<option value="2">Septiembre 2016</option>
+			<option value="3">Agosto 2016</option>
+			<option value="4">Julio 2016</option>
+			<option value="5">Junio 2016</option>
+			<option value="6">Mayo 2016</option>
+			<option value="7">Abril 2016</option>
+			<option value="8">Marzo 2016</option>
+			<option value="9">Febrero 2016</option>
+			<option value="10">Enero 2016</option>
+			<option value="11">Diciembre 2015</option>
+			<option value="12">Noviembre 2015</option>
+
+		</select>
+                    <span id="ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator4" style="color:Red;visibility:hidden;"></span>
+                </td>
+		<td class="ic-form-data" width="2%"> 
+                    <span id="ctl00_MainHolder_cTradeSettlementsFilter_LabelTo" style="color:DimGray;font-weight:bold;">hasta</span>
+                </td>
+		<td class="ic-form-data" width="20%">
+                    <select name="ctl00$MainHolder$cTradeSettlementsFilter$ddlToMonth" onchange="javascript:setTimeout(&#39;__doPostBack(\&#39;ctl00$MainHolder$cTradeSettlementsFilter$ddlToMonth\&#39;,\&#39;\&#39;)&#39;, 0)" id="ctl00_MainHolder_cTradeSettlementsFilter_ddlToMonth" disabled="disabled" class="ic-control-select" style="width:90%;">
+			<option selected="selected" value="-1">[Seleccionar]</option>
+			<option value="1">Octubre 2016</option>
+			<option value="2">Septiembre 2016</option>
+			<option value="3">Agosto 2016</option>
+			<option value="4">Julio 2016</option>
+			<option value="5">Junio 2016</option>
+			<option value="6">Mayo 2016</option>
+			<option value="7">Abril 2016</option>
+			<option value="8">Marzo 2016</option>
+			<option value="9">Febrero 2016</option>
+			<option value="10">Enero 2016</option>
+			<option value="11">Diciembre 2015</option>
+			<option value="12">Noviembre 2015</option>
+
+		</select>
+                    <span id="ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator5" style="color:Red;visibility:hidden;"></span>
+                </td>
+		<td class="ic-form-data">
+                    &nbsp;
+                </td>
+	</tr>
+</tbody></table>
+
+    </div>
+<div id="ctl00_MainHolder_cTradeSettlementsFilter_UpdateProgress1" style="display: none;">
+		
+     <div id="ic-loading">
+         <div class="ic-loading">
+             <div id="message">
+                <img src="./cargandoBAR.gif" id="ctl00_MainHolder_cTradeSettlementsFilter_imgLoading"><br>
+                <span id="ctl00_MainHolder_cTradeSettlementsFilter_WaitingMessage">Procesando...</span>
+            </div>
+        </div>
+    </div>
+
+	</div>
+
+        <input name="ctl00$MainHolder$ctl00$MainHolder$pcFilter_hdnMinimizeState" type="text" value="False" id="ctl00_MainHolder_ctl00_MainHolder_pcFilter_hdnMinimizeState" class="ic-control-text" onkeypress="return validCharactersOnly(this, event, &quot;^[^:;\&lt;&gt;&#39;\&quot;]*$&quot;)" style="display:none">
+</div></td>
+					</tr>
+				</tbody></table></td>
+			</tr>
+		</tbody></table>
+        <table width="100%">
+            <tbody><tr>
+                <td class="ic-message" width="100%" align="left">
+                    <span id="ctl00_MainHolder_informationLabel">Seleccione los criterios de su búsqueda y oprima "Consultar".</span>
+                </td>
+                <td>
+                <div id="ctl00_MainHolder_updpnlConsult">
+                        <a id="ctl00_MainHolder_lnkConsult" disabled="disabled" class="ic-button-navigation">Consultar</a>
+                    </div>
+                </td>
+            </tr>
+        </tbody></table>  
+        <div id="ctl00_MainHolder_updpnlLiqGrid">            
+                
+
+<script language="javascript" type="text/javascript">
+ function OnRowClick2(sender, args) {
+        //Clear the text selection
+        // DetailNotes.SetVisible(true);  
+        sender._selectAllRowsOnPage(false);
+        //Select the row
+        sender.SelectRow(args.visibleIndex, true);
+        SetPageLinkData(sender.GetRowKey(args.visibleIndex));
+    }
+   
+</script>
+
+        <table class="ic-grid-border" cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+	<tbody><tr>
+		<td><table id="ctl00_MainHolder_cTradeSettlementLiquidationGrid1_LiquidationPanel_thePanel" class="ic-grid" cellspacing="0" cellpadding="0" align="Center" border="0" style="width:100%;border-collapse:collapse;">
+			<tbody><tr class="ic-grid-title-row">
+				<td><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+					<tbody><tr>
+						<td class="ic-grid-title-cell-left">&nbsp;</td><td class="ic-grid-title-cell" align="left" style="white-space:nowrap;">Resultados de la Consulta</td><td class="ic-gridB-title-cell-right"><img id="ctl00_MainHolder_cTradeSettlementLiquidationGrid1_LiquidationPanel_imgPlusMinus" onclick="javascript:MinMaxPanelControl(&#39;ctl00_MainHolder_cTradeSettlementLiquidationGrid1_LiquidationPanel&#39;)" src="./bot-grid-minus.gif" alt="Minimizar/Maximizar el panel" align="absmiddle" style="border-width:0px;cursor:hand;"></td>
+					</tr>
+				</tbody></table></td>
+			</tr><tr>
+				<td align="center"><div id="ctl00_MainHolder_cTradeSettlementLiquidationGrid1_LiquidationPanel" style="color:Black;border-color:DodgerBlue;font-family:verdana;font-size:10pt;width:100%;display:;">
+	
+            <table width="100%">  
+                <tbody><tr>
+                    <td>                    
+                        <input type="hidden"><script id="dxss_1241175972" type="text/javascript">
+<!--
+window.__aspxServerFormID = 'aspnetForm';
+window.__aspxEmptyImageUrl = '/WebResource.axd?d=r8sGQK9x2VC5LfrAIP6hMW5Of0BQVx_5pcDtr_NzGA4Mft0ncv4hE1i-zBmnc8mg561Q33dXnVDmopWX_iwnWZgBELnuoLpA0P4EazLGo0XHyr4FYJEcfil8vQPDw-wMFdsFLo8AfLVBnlRoJ_At_JUEG241&t=636117930523139822';
+//-->
+</script>
+
+	<script id="dxis_136246879" src="./WebResource(4).axd" type="text/javascript"></script>
+	<script id="dxis_73471454" src="./WebResource(5).axd" type="text/javascript"></script>
+	
+
+<table class="dxgvControl" cellspacing="0" cellpadding="0" id="ctl00_MainHolder_cTradeSettlementLiquidationGrid1_GridViewLiquidation" border="0" style="border-style:None;width:100%;border-collapse:collapse;border-collapse:separate;">
+		<tbody><tr>
+			<td><table id="ctl00_MainHolder_cTradeSettlementLiquidationGrid1_GridViewLiquidation_DXMainTable" class="dxgvTable" cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;empty-cells:show;">
+	<tbody><tr id="ctl00_MainHolder_cTradeSettlementLiquidationGrid1_GridViewLiquidation_DXHeadersRow">
+		<td id="ctl00_MainHolder_cTradeSettlementLiquidationGrid1_GridViewLiquidation_DXTDGScol1" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_cTradeSettlementLiquidationGrid1_GridViewLiquidation&#39;, this, event);" style="color:#BC1C10;background-color:#FFFFFF;border-width:0px;font-family:Verdana;font-size:7pt;font-weight:bold;width:6%;text-align:Left;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="color:#BC1C10;font-family:Verdana;font-size:7pt;font-weight:bold;width:100%;border-collapse:collapse;">
+			<tbody><tr>
+				<td style="text-align:Left;">Fecha</td>
+			</tr>
+		</tbody></table></td><td id="ctl00_MainHolder_cTradeSettlementLiquidationGrid1_GridViewLiquidation_DXTDGScol2" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_cTradeSettlementLiquidationGrid1_GridViewLiquidation&#39;, this, event);" style="color:#BC1C10;background-color:#FFFFFF;border-width:0px;font-family:Verdana;font-size:7pt;font-weight:bold;width:11%;text-align:Left;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="color:#BC1C10;font-family:Verdana;font-size:7pt;font-weight:bold;width:100%;border-collapse:collapse;">
+			<tbody><tr>
+				<td style="text-align:Left;">Razón Social</td>
+			</tr>
+		</tbody></table></td><td id="ctl00_MainHolder_cTradeSettlementLiquidationGrid1_GridViewLiquidation_DXTDGScol3" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_cTradeSettlementLiquidationGrid1_GridViewLiquidation&#39;, this, event);" style="color:#BC1C10;background-color:#FFFFFF;border-width:0px;font-family:Verdana;font-size:7pt;font-weight:bold;width:9%;text-align:Center;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="color:#BC1C10;font-family:Verdana;font-size:7pt;font-weight:bold;width:100%;border-collapse:collapse;">
+			<tbody><tr>
+				<td style="width:100%;text-align:Center;border-right-width:0px;padding-right:5px;">N° Establecimiento</td><td style="border-left-width:0px;padding-left:5px;"><img src="./WebResource(6).axd" alt="(Ascending)" style="border-width:0px;"></td>
+			</tr>
+		</tbody></table></td><td id="ctl00_MainHolder_cTradeSettlementLiquidationGrid1_GridViewLiquidation_DXTDGScol4" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_cTradeSettlementLiquidationGrid1_GridViewLiquidation&#39;, this, event);" style="color:#BC1C10;background-color:#FFFFFF;border-width:0px;font-family:Verdana;font-size:7pt;font-weight:bold;width:10%;text-align:Center;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="color:#BC1C10;font-family:Verdana;font-size:7pt;font-weight:bold;width:100%;border-collapse:collapse;">
+			<tbody><tr>
+				<td style="text-align:Center;">CUIT</td>
+			</tr>
+		</tbody></table></td><td id="ctl00_MainHolder_cTradeSettlementLiquidationGrid1_GridViewLiquidation_DXTDGScol5" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_cTradeSettlementLiquidationGrid1_GridViewLiquidation&#39;, this, event);" style="color:#BC1C10;background-color:#FFFFFF;border-width:0px;font-family:Verdana;font-size:7pt;font-weight:bold;width:8%;text-align:Center;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="color:#BC1C10;font-family:Verdana;font-size:7pt;font-weight:bold;width:100%;border-collapse:collapse;">
+			<tbody><tr>
+				<td style="text-align:Center;">Cr-Db</td>
+			</tr>
+		</tbody></table></td><td id="ctl00_MainHolder_cTradeSettlementLiquidationGrid1_GridViewLiquidation_DXTDcol6" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_cTradeSettlementLiquidationGrid1_GridViewLiquidation&#39;, this, event);" style="color:#BC1C10;background-color:#FFFFFF;border-width:0px;font-family:Verdana;font-size:7pt;font-weight:bold;width:6%;border-left-width:0px;border-top-width:0px;border-right-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="color:#BC1C10;font-family:Verdana;font-size:7pt;font-weight:bold;width:100%;border-collapse:collapse;">
+			<tbody><tr>
+				<td>VER</td>
+			</tr>
+		</tbody></table></td>
+	</tr><tr class="dxgvEmptyDataRow">
+		<td class="dxgv" colspan="6" style="border-bottom-width:0px;"><div>
+			Sin datos
+		</div></td>
+	</tr>
+</tbody></table><img id="ctl00_MainHolder_cTradeSettlementLiquidationGrid1_GridViewLiquidation_IADD" src="./WebResource(7).axd" alt="|" style="border-width:0px;position:absolute;visibility:hidden;"><img id="ctl00_MainHolder_cTradeSettlementLiquidationGrid1_GridViewLiquidation_IADU" src="./WebResource(8).axd" alt="|" style="border-width:0px;position:absolute;visibility:hidden;"><img id="ctl00_MainHolder_cTradeSettlementLiquidationGrid1_GridViewLiquidation_IDHF" src="./WebResource(9).axd" alt="Hide" style="border-width:0px;position:absolute;visibility:hidden;"><table id="ctl00_MainHolder_cTradeSettlementLiquidationGrid1_GridViewLiquidation_LP" class="dxgvLoadingPanel" cellspacing="0" cellpadding="0" border="0" style="border-collapse:collapse;left:0px;top:0px;z-index:30000;display:none;">
+	<tbody><tr>
+		<td class="dx"><img src="./WebResource(10).axd" alt="" align="middle" style="border-width:0px;"></td><td class="dx" style="padding-left:0px;">Cargando…</td>
+	</tr>
+</tbody></table><div id="ctl00_MainHolder_cTradeSettlementLiquidationGrid1_GridViewLiquidation_LD" class="dxgvLoadingDiv" style="display:none;z-index:29999;position:absolute;">
+
+</div><input type="hidden" name="ctl00$MainHolder$cTradeSettlementLiquidationGrid1$GridViewLiquidation$DXSelInput" id="ctl00_MainHolder_cTradeSettlementLiquidationGrid1_GridViewLiquidation_DXSelInput"><table id="ctl00_MainHolder_cTradeSettlementLiquidationGrid1_GridViewLiquidation_DXStyleTable" border="0" style="display:none;">
+	<tbody><tr>
+		<td></td>
+	</tr><tr class="dxgvEditingErrorRow">
+		<td class="dxgv" colspan="6" style="border-right-width:0px;"></td>
+	</tr><tr class="dxgvSelectedRow ic-grid-row01">
+		<td></td>
+	</tr><tr class="dxgvFocusedRow ic-grid-row01">
+		<td></td>
+	</tr><tr class="dxgvFocusedGroupRow">
+		<td></td>
+	</tr>
+</tbody></table><input type="hidden" name="ctl00$MainHolder$cTradeSettlementLiquidationGrid1$GridViewLiquidation$CallbackState" id="ctl00_MainHolder_cTradeSettlementLiquidationGrid1_GridViewLiquidation_CallbackState" value="/wEWBh4ERGF0YQW0AkFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBR0FBQUFBa2xrQWtsa0F3QUFCbEJsY21sdlpBWlFaWEpwYjJRSEFBQVFUM0puWVc1cGVtRjBhVzl1VG1GdFpSQlBjbWRoYm1sNllYUnBiMjVPWVcxbEJ3QUFFMFZ6ZEdGaWJHbHphRzFsYm5ST2RXMWlaWElUUlhOMFlXSnNhWE5vYldWdWRFNTFiV0psY2djQUFBUkRkV2wwQkVOMWFYUUhBQUFFUTNKRVlnUkRja1JpQndBQUJnQUFBQkZGYzNSaFlteE9kVzFmYjNKblRtRnRaUVJFWVhSbENWTmxjblpwWTJWSlpBdFRaWEoyYVdObFRtRnRaUXRUWlhKMmFXTmxVR0ZuWlF4VFpYSjJhVXhwY1ZSNWNHVUhBQWNBHgVTdGF0ZQVkQndjSEFRSUFCd0FDQVFjQkFnRUhBZ0lCQndNQ0FRY0VBZ0VIQlFJQkJ3QUhBQWNCQndBSEF3Y0JCd0FDQUFiLy93a0NBa2xrQ1FJQUFnQURCd1FDQUFjQUFnRUhBQUlCQndBPR4QRmlsdGVyRXhwcmVzc2lvbmU=">
+<script id="dxss_94539879" type="text/javascript">
+<!--
+ctl00_MainHolder_cTradeSettlementLiquidationGrid1_GridViewLiquidation.callBacksEnabled=true;
+ctl00_MainHolder_cTradeSettlementLiquidationGrid1_GridViewLiquidation.pageRowCount=0;
+ctl00_MainHolder_cTradeSettlementLiquidationGrid1_GridViewLiquidation.selectedWithoutPageRowCount=0;
+ctl00_MainHolder_cTradeSettlementLiquidationGrid1_GridViewLiquidation.visibleStartIndex=0;
+ctl00_MainHolder_cTradeSettlementLiquidationGrid1_GridViewLiquidation.focusedRowIndex=-1;
+ctl00_MainHolder_cTradeSettlementLiquidationGrid1_GridViewLiquidation.allowFocusedRow=false;
+ctl00_MainHolder_cTradeSettlementLiquidationGrid1_GridViewLiquidation.allowMultiSelection=false;
+ctl00_MainHolder_cTradeSettlementLiquidationGrid1_GridViewLiquidation.isColumnsResizable=false;
+ctl00_MainHolder_cTradeSettlementLiquidationGrid1_GridViewLiquidation.isVerticalScrolling=false;
+ctl00_MainHolder_cTradeSettlementLiquidationGrid1_GridViewLiquidation.isMainControlResizable=false;
+ctl00_MainHolder_cTradeSettlementLiquidationGrid1_GridViewLiquidation.callbackOnFocusedRowChanged=true;
+ctl00_MainHolder_cTradeSettlementLiquidationGrid1_GridViewLiquidation.callbackOnSelectionChanged=false;
+ctl00_MainHolder_cTradeSettlementLiquidationGrid1_GridViewLiquidation.autoFilterDelay='1200';
+ctl00_MainHolder_cTradeSettlementLiquidationGrid1_GridViewLiquidation.ClearColumns();
+ctl00_MainHolder_cTradeSettlementLiquidationGrid1_GridViewLiquidation.CreateColumn('Id:0',0,'Id',0);
+ctl00_MainHolder_cTradeSettlementLiquidationGrid1_GridViewLiquidation.CreateColumn('Period:0',1,'Period',1);
+ctl00_MainHolder_cTradeSettlementLiquidationGrid1_GridViewLiquidation.CreateColumn('OrganizationName:0',2,'OrganizationName',1);
+ctl00_MainHolder_cTradeSettlementLiquidationGrid1_GridViewLiquidation.CreateColumn('EstablishmentNumber:0',3,'EstablishmentNumber',1);
+ctl00_MainHolder_cTradeSettlementLiquidationGrid1_GridViewLiquidation.CreateColumn('Cuit:0',4,'Cuit',1);
+ctl00_MainHolder_cTradeSettlementLiquidationGrid1_GridViewLiquidation.CreateColumn('CrDb:0',5,'CrDb',1);
+ctl00_MainHolder_cTradeSettlementLiquidationGrid1_GridViewLiquidation.CreateColumn('PDFColumn',6,null,1);
+ctl00_MainHolder_cTradeSettlementLiquidationGrid1_GridViewLiquidation.keys=[];
+
+//-->
+</script>
+</td>
+		</tr>
+	</tbody></table><script id="dxss_1955818707" type="text/javascript">
+<!--
+
+var dxo = new ASPxClientGridView('ctl00_MainHolder_cTradeSettlementLiquidationGrid1_GridViewLiquidation');
+window['ctl00_MainHolder_cTradeSettlementLiquidationGrid1_GridViewLiquidation'] = dxo;
+dxo.callBack = function(arg) { WebForm_DoCallback('ctl00$MainHolder$cTradeSettlementLiquidationGrid1$GridViewLiquidation',arg,aspxCallback,'ctl00_MainHolder_cTradeSettlementLiquidationGrid1_GridViewLiquidation',aspxCallbackError,true); };
+dxo.uniqueID = 'ctl00$MainHolder$cTradeSettlementLiquidationGrid1$GridViewLiquidation';
+dxo.callBacksEnabled=true;
+dxo.pageRowCount=0;
+dxo.selectedWithoutPageRowCount=0;
+dxo.visibleStartIndex=0;
+dxo.focusedRowIndex=-1;
+dxo.allowFocusedRow=false;
+dxo.allowMultiSelection=false;
+dxo.isColumnsResizable=false;
+dxo.isVerticalScrolling=false;
+dxo.isMainControlResizable=false;
+dxo.callbackOnFocusedRowChanged=true;
+dxo.callbackOnSelectionChanged=false;
+dxo.autoFilterDelay='1200';
+dxo.ClearColumns();
+dxo.CreateColumn('Id:0',0,'Id',0);
+dxo.CreateColumn('Period:0',1,'Period',1);
+dxo.CreateColumn('OrganizationName:0',2,'OrganizationName',1);
+dxo.CreateColumn('EstablishmentNumber:0',3,'EstablishmentNumber',1);
+dxo.CreateColumn('Cuit:0',4,'Cuit',1);
+dxo.CreateColumn('CrDb:0',5,'CrDb',1);
+dxo.CreateColumn('PDFColumn',6,null,1);
+dxo.keys=[];
+dxo.InlineInitialize();
+
+//-->
+</script>
+
+                    </td>
+                </tr>
+            </tbody></table>           
+            
+        <input name="ctl00$MainHolder$cTradeSettlementLiquidationGrid1$ctl00$MainHolder$cTradeSettlementLiquidationGrid1$LiquidationPanel_hdnMinimizeState" type="text" value="False" id="ctl00_MainHolder_cTradeSettlementLiquidationGrid1_ctl00_MainHolder_cTradeSettlementLiquidationGrid1_LiquidationPanel_hdnMinimizeState" class="ic-control-text" onkeypress="return validCharactersOnly(this, event, &quot;&quot;)" style="display:none">
+</div></td>
+			</tr>
+		</tbody></table></td>
+	</tr>
+</tbody></table>
+   
+
+          </div>                 
+    
+
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="right">
+                                        <div id="ctl00_validationSummaryFooter" style="color:Red;font-size:10px;display:none;">
+
+		</div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="95%" align="center">
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                            <tbody><tr>
+                                                <td align="right">
+                                                    
+                                                    
+                                                </td>
+                                            </tr>
+                                        </tbody></table>
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="ic-content-footer">
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                <tbody><tr class="ic-content-footer-dottedline">
+                                    <td align="right" nowrap="nowrap" style="width: 90%">
+                                    </td>
+                                    <td align="right" nowrap="nowrap" style="width: 10%">
+                                        <a id="ctl00_LinkButtonTermsAndConditions" class="ic-grid-link" href="javascript:__doPostBack(&#39;ctl00$LinkButtonTermsAndConditions&#39;,&#39;&#39;)">Términos y Condiciones</a>
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                </tbody></table>
+            </td>
+		<td id="ctl00_cellContentRight" class="ic-content-space-top-right" valign="top" style="display:none;">
+                <table class="ic-content-right" border="0" cellspacing="0" cellpadding="0">
+                    <tbody><tr>
+                        <td>
+                            <img src="./pixel.gif" width="8" height="1">
+                        </td>
+                        <td class="ic-right-panel">
+                            <table border="0" cellpadding="0" cellspacing="0" class="ic-right-panel-content">
+                                <tbody><tr>
+                                    <td width="8" class="ic-right-panel-collapse">
+                                        <input type="image" name="ctl00$imageButtonCollapse" id="ctl00_imageButtonCollapse" src="./bot-right-collapse.gif" style="height:47px;width:9px;border-width:0px;">
+                                    </td>
+                                    
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                </tbody></table>
+            </td>
+	</tr>
+</tbody></table>
+
+    
+    
+<script type="text/javascript">
+//<![CDATA[
+var Page_ValidationSummaries =  new Array(document.getElementById("ctl00_validationSummaryFooter"));
+var Page_Validators =  new Array(document.getElementById("ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator1"), document.getElementById("ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator2"), document.getElementById("ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator3"), document.getElementById("ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator4"), document.getElementById("ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator5"));
+//]]>
+</script>
+
+<script type="text/javascript">
+//<![CDATA[
+var ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator1 = document.all ? document.all["ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator1"] : document.getElementById("ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator1");
+ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator1.controltovalidate = "ctl00_MainHolder_cTradeSettlementsFilter_ddlBrand";
+ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator1.validationGroup = "Validate";
+ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator1.evaluationfunction = "CustomValidatorEvaluateIsValid";
+var ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator2 = document.all ? document.all["ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator2"] : document.getElementById("ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator2");
+ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator2.controltovalidate = "ctl00_MainHolder_cTradeSettlementsFilter_ddlLiquidationType";
+ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator2.validationGroup = "Validate";
+ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator2.evaluationfunction = "CustomValidatorEvaluateIsValid";
+var ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator3 = document.all ? document.all["ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator3"] : document.getElementById("ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator3");
+ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator3.controltovalidate = "ctl00_MainHolder_cTradeSettlementsFilter_ddlEstablishmentNumber";
+ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator3.validationGroup = "Validate";
+ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator3.evaluationfunction = "CustomValidatorEvaluateIsValid";
+var ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator4 = document.all ? document.all["ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator4"] : document.getElementById("ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator4");
+ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator4.controltovalidate = "ctl00_MainHolder_cTradeSettlementsFilter_ddlFromMonth";
+ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator4.validationGroup = "Validate";
+ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator4.evaluationfunction = "CustomValidatorEvaluateIsValid";
+var ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator5 = document.all ? document.all["ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator5"] : document.getElementById("ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator5");
+ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator5.controltovalidate = "ctl00_MainHolder_cTradeSettlementsFilter_ddlToMonth";
+ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator5.validationGroup = "Validate";
+ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator5.evaluationfunction = "CustomValidatorEvaluateIsValid";
+var ctl00_validationSummaryFooter = document.all ? document.all["ctl00_validationSummaryFooter"] : document.getElementById("ctl00_validationSummaryFooter");
+ctl00_validationSummaryFooter.headertext = "Formulario inválido, por favor revise los datos ingresados:";
+ctl00_validationSummaryFooter.showsummary = "False";
+//]]>
+</script>
+
+
+<script type="text/javascript">
+//<![CDATA[
+
+var Page_ValidationActive = false;
+if (typeof(ValidatorOnLoad) == "function") {
+    ValidatorOnLoad();
+}
+
+function ValidatorOnSubmit() {
+    if (Page_ValidationActive) {
+        return ValidatorCommonOnSubmit();
+    }
+    else {
+        return true;
+    }
+}
+        
+WebForm_InitCallback();
+document.getElementById('ctl00_validationSummaryFooter').dispose = function() {
+    Array.remove(Page_ValidationSummaries, document.getElementById('ctl00_validationSummaryFooter'));
+}
+Sys.Application.initialize();
+
+document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator1').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator1'));
+}
+
+document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator2').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator2'));
+}
+
+document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator3').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator3'));
+}
+
+document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator4').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator4'));
+}
+
+document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator5').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_cTradeSettlementsFilter_CustomValidator5'));
+}
+Sys.Application.add_init(function() {
+    $create(Sys.UI._UpdateProgress, {"associatedUpdatePanelId":"ctl00_MainHolder_cTradeSettlementsFilter_updpFilter","displayAfter":500,"dynamicLayout":true}, null, null, $get("ctl00_MainHolder_cTradeSettlementsFilter_UpdateProgress1"));
+});
+//]]>
+</script>
+<span style="display: none !important;"><input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value=""></span><span style="display: none !important;"><input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value=""></span><span style="display: none !important;"><input type="hidden" name="__LASTFOCUS" id="__LASTFOCUS" value=""></span><span style="display: none !important;"><input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwULLTE5OTcwNzM4NDYPZBYCZg9kFgICAQ9kFgICAQ9kFgJmD2QWBAIBD2QWBAICDw8WAh4EVGV4dAUZTGlxdWlkYWNpb25lcyBkZSBDb21lcmNpb2RkAgcPZBYCAgEPZBYCZg9kFgYCAQ9kFgICAQ9kFgJmD2QWAmYPZBYCAgEPZBYIZg9kFgRmD2QWAgIBDw8WBh8ABQVNYXJjYR4JRm9yZUNvbG9yCkQeBF8hU0ICBGRkAgEPZBYCAgEPEA8WBh4ORGF0YVZhbHVlRmllbGQFClZhbHVlRmllbGQeDURhdGFUZXh0RmllbGQFCVRleHRGaWVsZB4LXyFEYXRhQm91bmRnZBAVAw1bU2VsZWNjaW9uYXJdBFZpc2EKTWFzdGVyY2FyZBUDAi0xATEBMhQrAwNnZ2cWAQIBZAIBD2QWBGYPZBYCAgEPDxYGHwAFFFRpcG8gZGUgTGlxdWlkYWNpw7NuHwEKRB8CAgRkZAIBD2QWAgIBDxAPFgYfAwUKVmFsdWVGaWVsZB8EBQlUZXh0RmllbGQfBWdkEBUCDVtTZWxlY2Npb25hcl0HTWVuc3VhbBUCAi0xATEUKwMCZ2cWAQIBZAICD2QWBGYPZBYCAgEPDxYGHwAFE07CsCBFc3RhYmxlY2ltaWVudG8fAQpEHwICBGRkAgEPZBYCAgEPEA8WCB8DBQpWYWx1ZUZpZWxkHwQFCVRleHRGaWVsZB8FZx4HRW5hYmxlZGdkEBUBJ05vIGV4aXN0ZW4gcmVzdWx0YWRvcyBwYXJhIGxhIGLDunNxdWVkYRUBAi0xFCsDAWcWAWZkAgMPZBYGZg9kFgICAQ8PFgYfAAUUUGVyaW9kbyBMaXF1aWRhY2nDs24fAQpEHwICBGRkAgIPZBYCAgEPEA8WBh8DBQpWYWx1ZUZpZWxkHwQFCVRleHRGaWVsZB8FZ2QQFQ0NW1NlbGVjY2lvbmFyXQxPY3R1YnJlIDIwMTYPU2VwdGllbWJyZSAyMDE2C0Fnb3N0byAyMDE2Ckp1bGlvIDIwMTYKSnVuaW8gMjAxNglNYXlvIDIwMTYKQWJyaWwgMjAxNgpNYXJ6byAyMDE2DEZlYnJlcm8gMjAxNgpFbmVybyAyMDE2DkRpY2llbWJyZSAyMDE1Dk5vdmllbWJyZSAyMDE1FQ0CLTEBMQEyATMBNAE1ATYBNwE4ATkCMTACMTECMTIUKwMNZ2dnZ2dnZ2dnZ2dnZxYBZmQCBA9kFgICAQ8QDxYGHwMFClZhbHVlRmllbGQfBAUJVGV4dEZpZWxkHwVnZBAVDQ1bU2VsZWNjaW9uYXJdDE9jdHVicmUgMjAxNg9TZXB0aWVtYnJlIDIwMTYLQWdvc3RvIDIwMTYKSnVsaW8gMjAxNgpKdW5pbyAyMDE2CU1heW8gMjAxNgpBYnJpbCAyMDE2Ck1hcnpvIDIwMTYMRmVicmVybyAyMDE2CkVuZXJvIDIwMTYORGljaWVtYnJlIDIwMTUOTm92aWVtYnJlIDIwMTUVDQItMQExATIBMwE0ATUBNgE3ATgBOQIxMAIxMQIxMhQrAw1nZ2dnZ2dnZ2dnZ2dnFgFmZAIFD2QWAmYPZBYCAgEPDxYEHwAFCUNvbnN1bHRhch8GaGRkAgcPZBYCZg9kFgICAQ9kFgICAQ9kFgICAQ88KwAWBQAPFggeDl8hVXNlVmlld1N0YXRlZx4PRGF0YVNvdXJjZUJvdW5kZx4RQ2xpZW50U3RhdGVMb2FkZWRnHg1DYWxsYmFja1N0YXRlZGQBPCsADAEAFgQeC0JvcmRlclN0eWxlCyolU3lzdGVtLldlYi5VSS5XZWJDb250cm9scy5Cb3JkZXJTdHlsZQEfAgJABDwrAEMEBzwrAAwBABYOHgtCb3JkZXJXaWR0aBsAAAAAAAAAAAEAAAAeCkZvbnRfTmFtZXMVAQdWZXJkYW5hHglGb250X1NpemUoKiJTeXN0ZW0uV2ViLlVJLldlYkNvbnRyb2xzLkZvbnRVbml0AzdwdB4JRm9udF9Cb2xkZx8BCRAcvP8eCUJhY2tDb2xvcgn/////HwICrBwMPCsADAEAFgQfAQkQHLz/HwICBBM8KwAMAQAWCB8MGwAAAAAAAAAAAQAAAB8OKCsFAzdwdB8NFQEHVmVyZGFuYR8CAqAMGjwrAAwBABYEHwEJEBy8/x8CAgQGD2QQFgdmAgECAgIDAgQCBQIGFgc8KwALAQAWBh4JU29ydE9yZGVyCyl4RGV2RXhwcmVzcy5EYXRhLkNvbHVtblNvcnRPcmRlciwgRGV2RXhwcmVzcy5EYXRhLnY4LjMsIFZlcnNpb249OC4zLjUuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj1iODhkMTc1NGQ3MDBlNDlhAB4JU29ydEluZGV4Av////8PHgpHcm91cEluZGV4Av////8PPCsACwEAFggfEQsrBgAfEwL/////Dx4PQ29sVmlzaWJsZUluZGV4Zh8SAv////8PPCsACwEAFggfEQsrBgAfEwL/////Dx8UAgEfEgL/////DzwrAAsBABYIHxELKwYAHxMC/////w8fFAICHxIC/////w88KwALAQAWCB8RCysGAB8TAv////8PHxQCAx8SAv////8PPCsACwEAFggfEQsrBgAfEwL/////Dx8UAgQfEgL/////DzwrAAwBABYCHxQCBQ8WBwIBAgECAQIBAgECAQICFgIFoAFJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLkNsYXNzZXMuR3JpZFZpZXdEYXRhVGV4dENvbHVtblRleHQsIEluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24sIFZlcnNpb249My4wLjEuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj03MTg2MjgwMTdmZmI5NjZlBZYBRGV2RXhwcmVzcy5XZWIuQVNQeEdyaWRWaWV3LkdyaWRWaWV3Q29tbWFuZENvbHVtbiwgRGV2RXhwcmVzcy5XZWIuQVNQeEdyaWRWaWV3LnY4LjMsIFZlcnNpb249OC4zLjUuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj1iODhkMTc1NGQ3MDBlNDlhDBQrAAEWAh4gUHJvY2Vzc0ZvY3VzZWRSb3dDaGFuZ2VkT25TZXJ2ZXJnZAICDxYCHgVzdHlsZQUNZGlzcGxheTpub25lOxYCAgUPFgIeB1Zpc2libGVoFgQCAQ8QFgYfBAUFVGl0bGUfAwUDVXJpHwVnEBUBABUBABQrAwFnFCsBAGQCAw8WAh8WBQ1kaXNwbGF5Om5vbmU7FgJmD2QWAgIBDxYCHxYFDWRpc3BsYXk6bm9uZTtkGAIFHl9fQ29udHJvbHNSZXF1aXJlUG9zdEJhY2tLZXlfXxYEBRljdGwwMCRNYWluSG9sZGVyJHBjRmlsdGVyBUJjdGwwMCRNYWluSG9sZGVyJGNUcmFkZVNldHRsZW1lbnRMaXF1aWRhdGlvbkdyaWQxJExpcXVpZGF0aW9uUGFuZWwFRWN0bDAwJE1haW5Ib2xkZXIkY1RyYWRlU2V0dGxlbWVudExpcXVpZGF0aW9uR3JpZDEkR3JpZFZpZXdMaXF1aWRhdGlvbgUZY3RsMDAkaW1hZ2VCdXR0b25Db2xsYXBzZQUmY3RsMDAkTWFpbkhvbGRlciRtdWx0aVRyYWRlU2V0dGxlbWVudHMPD2RmZAdJxvEQS9pkwK1w1cSkHdn2SnOs"></span><span style="display: none !important;"><input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEWKwKDvMynDQL6vafvDAL50sECAvXSjQEC9NKNAQKmlZr+DwKl+vyTAwKp+rCQAwKsqdDfCgKvxrayBgLNkNnXCALO/7+6BALC//O5BALD//O5BALA//O5BALB//O5BALG//O5BALH//O5BALE//O5BALV//O5BALa//O5BALC/7O6BALC/7+6BALC/7u6BAKDyMnnDwKAp6+KAwKMp+OJAwKNp+OJAwKOp+OJAwKPp+OJAwKIp+OJAwKJp+OJAwKKp+OJAwKbp+OJAwKUp+OJAwKMp6OKAwKMp6+KAwKMp6uKAwKsl8nWDQKIhsncCAKYsu6yBALRqszJDgKJt+C7AQ4CgVsTNaL3g3/v0Q93JPl5Dxxk"></span></form>
+
+
+<div class="ui-dialog ui-widget ui-widget-content ui-corner-all" tabindex="-1" role="dialog" aria-labelledby="ui-dialog-title-sessionTimeoutWarning" style="display: none; z-index: 1000; outline: 0px;"><div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix"><span class="ui-dialog-title" id="ui-dialog-title-sessionTimeoutWarning">&nbsp;</span><a href="http://10.1.75.104:9080/Pages/CreditCards/TradeSettlements.aspx#" class="ui-dialog-titlebar-close ui-corner-all" role="button" style="display: none;"><span class="ui-icon ui-icon-closethick">close</span></a></div><div id="sessionTimeoutWarning" style="background-color: rgb(255, 255, 255); padding: 0px; height: 100%;" class="ui-dialog-content ui-widget-content">
+        <div id="sessionTimeoutWarningHeader">
+            <table width="100%">
+                 <tbody><tr>
+                    <td colspan="2" align="center" class="ic-form-data-modal">
+                        La sesión finalizará en <span id="sessionTimeoutCountdown"></span>&nbsp;segundos.
+                        Para seguir operando seleccioná “Continuar”
+                    </td>
+                </tr>
+            </tbody></table>
+        </div>
+    </div><div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix"><div class="ui-dialog-buttonset"><button type="button">Continuar </button><button type="button">Finalizar sesión</button></div></div></div></body></html>

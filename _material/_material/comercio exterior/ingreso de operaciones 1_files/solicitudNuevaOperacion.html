@@ -1,0 +1,126 @@
+
+<!-- saved from url=(0147)https://empresas.supervielle.com.ar/eComexWEB/solicitudNuevaOperacion.action?token=5vgFDSDhrFwXRR986brewrLDwM9t9a7eEXumWQTslt3HKoBu0RUfZFXUpz9ap7t0 -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252"><link rel="stylesheet" href="./styles.css" type="text/css">
+<script src="./utils.js.descarga" type="text/javascript"></script>
+	<title>Solicitud Nueva Operacion</title>
+	<link rel="stylesheet" type="text/css" href="./eComex.css">
+	<link rel="stylesheet" type="text/css" href="./displayStyle.css">
+	<link rel="stylesheet" type="text/css" href="./jquery.ui.all.css">
+	</head><body>
+		
+		<div class="wrapper">
+			<div id="mainbody">
+				<div class="inside" align="center">
+					
+
+
+<script language="javascript" type="text/javascript" src="./jquery-1.8.2.min.js.descarga"></script>
+<script language="javascript" type="text/javascript" src="./dynamicSelect.js.descarga"></script>
+<form id="cargaFormulario" name="solicitudForm" action="https://empresas.supervielle.com.ar/eComexWEB/cargaFormulario.action" method="post" onsubmit="return checkform();">
+	
+	
+	
+	<input type="hidden" id="cargaFormularioReturnUrl" name="returnUrl" value="/solicitudNuevaOperacion.action?token=5vgFDSDhrFwXRR986brewrLDwM9t9a7eEXumWQTslt3HKoBu0RUfZFXUpz9ap7t0">
+	<table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+		<tbody>
+			<tr>
+				<td class="ic-grid-title-cell-left">&nbsp;</td><td class="ic-grid-title-cell" style="text-align:left;white-space:nowrap;">Seleccione</td>
+			</tr>
+		</tbody>
+	</table>
+	<table class="ic-grid" style="width:100%;border-collapse:collapse;">
+		<tbody><tr>
+			<td class="ic-form-label">Tipo de Operación:</td>
+			<td>&nbsp;</td>
+			<td class="ic-form-data">
+				
+				<select name="subTipoOperacion" id="cargaFormulario_subTipoOperacion" class="ic-control-select" style="width:200px">
+    <option value="">[Seleccionar]</option>
+    <option value="104">Transferencia al Exterior</option>
+    <option value="105">Carta de Crédito de Importación</option>
+
+
+</select>
+
+			</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+		<tr>
+			<td class="ic-form-label">Tipo de Solicitud:</td>
+			<td>&nbsp;</td>
+			<td class="ic-form-data">
+				<select id="cargaFormulario_tipoFormulario" class="ic-control-select" name="tipoFormulario" headervalue="[Seleccionar]">
+				
+				  <option class="sub_104" value="20101">PAGO DE IMPORTACION</option>
+				
+				  <option class="sub_104" value="20102">PAGO DE SERVICIOS</option>
+				
+				  <option class="sub_104" value="20103">PAGO DE RENTAS</option>
+				
+				  <option class="sub_104" value="20104">PAGO DE CAPITAL _ FINANCIEROS</option>
+				
+				  <option class="sub_104" value="20105">PAGO DE OTROS</option>
+				
+				  <option class="sub_105" value="30001">Apertura de Carta de Credito de Importacion</option>
+				
+				</select>
+			</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+	</tbody></table>
+	<table width="100%">
+        <tbody>
+        	<tr>
+	            <td nowrap="nowrap" style="width:100%;text-align:left;">
+	                <span class="ic-message">Seleccione los datos y oprima "Confirmar".</span> 
+	            </td>
+	            <td align="right" nowrap="nowrap">
+	                <input type="submit" id="cargaFormulario_0" value="Confirmar" class="ic-button-navigation">
+
+	            </td>
+	        </tr>
+    	</tbody>
+    </table>
+</form>
+
+
+
+
+<script type="text/javascript">
+	
+	history.navigationMode = 'compatible';
+	
+	function makeSublist(parent,child,isSubselectOptional) {
+		$("body").append("<select style='display:none' id='"+parent+child+"'></select>");
+		$('#'+parent+child).html($("#"+child+" option"));
+		$('#'+child).html("<option> </option>");
+		$('#'+parent).change(
+			function()	{
+				var parentValue = $('#'+parent).attr('value');
+				$('#'+child).html($("#"+parent+child+" .sub_"+parentValue).clone());
+				if(isSubselectOptional) $('#'+child).prepend("<option> - Seleccionar - </option>");
+			}
+		);
+	}
+
+	$(document).ready(function() {
+		$('#cargaFormulario_subTipoOperacion').prop('selectedIndex',0);
+		makeSublist('cargaFormulario_subTipoOperacion','cargaFormulario_tipoFormulario', false);
+	});
+  
+	function checkform() {
+		if ($('#cargaFormulario_tipoFormulario').val() === '' || $('#cargaFormulario_tipoFormulario').val() === null) {
+			alert('Por favor, seleccione un tipo de operación.');
+			return false;
+		}
+		return true;
+	}
+</script>
+				</div>
+			</div>
+		</div>
+	
+
+</body></html>

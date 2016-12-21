@@ -1,0 +1,759 @@
+
+<!-- saved from url=(0051)http://10.1.75.104:9080/Pages/Accounts/Resumen.aspx -->
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><script src="./jquery-1.7.2.min.js.descarga" type="text/javascript"></script>
+<script src="./jquery-1.7.1.js.descarga" type="text/javascript"></script>
+<script src="./jquery-ui-1.8.19.custom.min.js.descarga" type="text/javascript"></script>
+<script src="./jquery.formatCurrency-1.4.0.js.descarga" type="text/javascript"></script>
+<script src="./idle-timer.js.descarga" type="text/javascript"></script>
+<script src="./idle-timer.min.js.descarga" type="text/javascript"></script>
+<script language="javascript" type="text/javascript">
+
+function Logout() {
+        if (confirm("¿ Desea salir del sistema ?") == true) {
+                    
+            window.location =  '/'+ "Logout.aspx";
+        }
+       
+    }
+    
+var focusedFormControl;    
+var dateFormat = 'dd/mm/aaaa';
+var applicationRoot = '/';      
+function OnRowClick(sender, args) {
+    if (sender.GetSelectedRowCount() == 0) {
+        sender.UnselectRowOnPage(args.visibleIndex);
+        SetPageLinkData("");
+    }
+    else {
+        _aspxClearSelection();
+        sender._selectAllRowsOnPage(false);
+        sender.SelectRow(args.visibleIndex, true);
+        SetPageLinkData(sender.GetRowKey(args.visibleIndex));
+    }
+}
+
+if (history.forward(1))
+{
+
+    location.replace(history.forward(1))
+} 
+
+function PrintPage() {
+
+    window.print();
+}
+
+function GoMyOption(select)
+{
+    var url = select.options[select.selectedIndex].value;
+    if( url != "")
+        window.location = url;
+}
+
+function GoFavourites(select)
+{
+
+    var url = select.options[select.selectedIndex].value;
+    if( url != "")
+        window.location = url;
+}
+
+function GoPrint()
+{
+
+window.print();
+}
+
+function addEvent(elm, evType, fn, useCapture)
+{
+
+  if (elm.addEventListener){
+    elm.addEventListener(evType, fn, useCapture);
+    return true;
+  } else if (elm.attachEvent){
+    var r = elm.attachEvent("on"+evType, fn);
+    return r;
+  } else {
+    alert("Handler could not be removed");
+  }
+} 
+
+function SetPageLinkData(data)
+{
+    pageLinkData = document.getElementById('PageLinkData');
+    pageLinkData.value = data;
+}
+
+function SetPageLinkUrl(url)
+{
+    pageLinkUrl = document.getElementById('PageLinkUrl');
+    pageLinkUrl.value = url;
+}
+
+function doPageLink(id)
+{
+    __doPostBack(id, 'PageLinkEvent');
+}
+
+function imprimirEstadoCuenta()
+{
+											
+    var ficha = document.getElementById('printDiv');		
+    var ventimp = window.open('', 'popimpr','height=450, width=550, scrollbars=1');																						
+    var fichaHTML = new String(ficha.innerHTML);
+    fichaHTML = fichaHTML.replace('Seleccione un período y oprima "Consultar".'," ");
+    //var i = document.getElementById('ctl00_MainHolder_panelDetalle_imgPlusMinus');
+    var html  = "<html>\n<head>\n<link rel=\"stylesheet\" type=\"text/css\" href=\"..\\..\\App_Themes\\Default\\Default.css \" />" 
+                + "</head><table width=\"100%\"><tr bgcolor=\"#FF0000\"><td><img src=\"..\\..\\App_Themes\\Default\\Images\\logoSantander.gif\" /></td></tr></table>" 
+                + fichaHTML 
+                + "</html>";
+    ventimp.document.write( html );
+    ventimp.document.close();
+    ventimp.print( );
+    ventimp.close();
+					
+}
+
+ function removeInvalidCharacters(control) {
+ 
+            !(/^[A-zÑñ0-9 ]*$/i).test(control.value) ? control.value = control.value.replace(/[^A-zÑñ0-9 ]/ig, '') : null
+        }
+        
+  function removeInvalidNumbers(control) {
+            !(/^[0-9,]*$/i).test(control.value) ? control.value = control.value.replace(/[^0-9,]/ig, '') : null
+        }
+function showLoading()
+{
+//debugger;
+    // aquí le pasamos la clase o id de nuestro div a centrar (en este caso "caja")
+    $('.ic-loading').css({
+       position:'absolute',
+       left: ($('#mainContainer').width()/2 - $('.ic-loading').outerWidth())/2,
+       //top: ($('#mainContainer').height()/2 - $('.ic-loading').outerHeight())/2
+       top: ($('#mainContainer').height()/2 - $('ic-loading').height()/2)
+    });
+    
+    $('#mainContainer').css('display','none');
+    $('#ic-loading').css('display','block');
+}
+//ModalDialog SessionTimeout
+var idleTime = (parseInt('1170') * 1000); // number of miliseconds until the user is considered idle
+var initialSessionTimeoutMessage = "La sesión finalizará en <span id='sessionTimeoutCountdown'></span> segundos. Para seguir operando seleccioná “Continuar”<br /><br />";
+var sessionTimeoutCountdownId = 'sessionTimeoutCountdown';
+var redirectAfter = (parseInt('30')) ; // number of seconds to wait before redirecting the user
+var redirectTo = '/' + "Logout.aspx"; // URL to relocate the user to once they have timed out
+var keepAliveURL = ''; // URL to call to keep the session alive
+var expiredMessage = ''; // message to show user when the countdown reaches 0
+var running = false; // var to check if the countdown is running 
+var timer; // reference to the setInterval timer so it can be stopped 
+var timerSB;  
+var timeout;  
+    $(document).ready(function() {     
+// create the warning window and set autoOpen to false  
+      var sessionTimeoutWarningDialog = $("#sessionTimeoutWarning"); 
+    $(sessionTimeoutWarningDialog).dialog({         
+        title: '',       
+        autoOpen: false,    // set this to false so we can manually open it         
+        closeOnEscape: false,         
+        draggable: false,         
+        width: 460,         
+        minHeight: 150,         
+        modal: true,           
+        beforeclose: function() { // bind to beforeclose so if the user clicks on the "X" or escape to close the dialog, it will work too             // stop the timer             
+            clearInterval(timer);               // stop countdown
+            running = false;               // ajax call to keep the server-side session alive    
+                  
+            $.ajax({               
+                url: keepAliveURL,               
+                async: false            
+            });         
+        },         
+        buttons: {      
+             'Continuar ': function() {                 
+                // close dialog 
+                window.location.reload();//BM24925: Se agrega esto para que el expired de una cookie se actualice y no se cierre la sesión luego de hacer click en continuar al terminar el timeout del webconfig. El valor del expired se pone en la tabla configuration en la clave SessionMaxMinutes.
+                //var valor = getCookie('ICBWebLogin'); //Esta función la dejo por las dudas, pero no la pude hacer andar poque el document.cookie no me trae las cookies del explorador.                
+                $(this).dialog('close');
+                clearInterval(timerSB);    
+                window.status = "";      
+                StatusBarCountDown();     
+            },
+            'Finalizar sesión': function() {                 
+                // close dialog                 
+                $(sessionTimeoutWarningDialog).html(expiredMessage);
+                $(sessionTimeoutWarningDialog).dialog('disable');                     
+                window.parent.location = redirectTo;           
+            }         
+        },         
+        resizable: false,         
+        open: function() {
+            $('body').css('overflow','auto');         
+        },         
+        close: function() {             
+            // reset overflow             
+            $('body').css('overflow','auto');         
+        }  
+           
+    }); // end of dialog  
+    jQuery("a.ui-dialog-titlebar-close").hide(); 
+          
+    // start the idle timer
+    $.idleTimer(idleTime);
+ 
+});
+
+// BM24925: Función para recuperar el valor de una cookie.
+// name - nombre de la cookie deseada
+// devuelve un string conteniendo el valor de la cookie especificada o null si la cookie no existe
+
+function getCookie(name){
+var micookie = (document.cookie.indexOf('ICBWebLogin=') === -1 ? '' : ("; " + document.cookie).split('; ICBWebLogin=')[1].split(';')[0]);
+
+  var cname = name + "=";               
+  var dc = document.cookie;             
+  if (dc.length > 0) {              
+    begin = dc.indexOf(cname);       
+    if (begin != -1) {           
+      begin += cname.length;       
+      end = dc.indexOf(";", begin);
+      if (end == -1) end = dc.length;
+        return unescape(dc.substring(begin, end));
+    } 
+  }
+  return null;
+}
+
+//Status Bar Countdown Script
+function StatusBarCountDown() 
+{
+    var redirectAfter = (parseInt('30'));
+    var timeout = '1200000';   
+    var redirectTo = '/' + "Logout.aspx"; // URL to relocate the user to once they have timed out   
+    timerSB = setInterval(function(){
+    timeout -= 1000;
+    if(timeout == redirectAfter * 1000)
+    {
+        window.focus();
+    }
+   if(timeout < redirectAfter * 1000)
+   {
+        $("#sessionTimeoutCountdown").html(timeout/1000);
+        $("#sessionTimeoutWarning").dialog('open'); 
+   }
+   if (timeout < 100)
+   {
+        $("#sessionTimeoutWarning").html(expiredMessage);
+        $("#sessionTimeoutWarning").dialog('disable');                     
+        window.parent.location = redirectTo;
+        clearInterval(timerSB);    
+        window.status = "";     
+   }
+        
+   window.status = "Su sesión expirará " + time(timeout) + " minutos";        
+    }, 1000);   
+         
+   function two(x)
+   {
+    return ((x > 9) ? "" : "0") + x
+   }   
+  
+   function time(ms)
+   {   
+       var t = '';   
+       var sec = Math.floor(ms / 1000);   
+       ms = ms % 1000   
+
+       var min = Math.floor(sec / 60);   
+       sec = sec % 60;   
+       t = two(sec);   
+
+       var hr = Math.floor(min / 60);   
+       min = min % 60;   
+       t = two(min) + ":" + t;   
+    return t;
+   }
+}
+
+StatusBarCountDown();
+
+
+
+</script>
+
+<link href="./Default.css" type="text/css" rel="stylesheet"><link href="./jquery-ui-1.8.19.custom.css" type="text/css" rel="stylesheet"><title>
+	Resumen digital
+</title></head>
+<body>
+    <form name="aspnetForm" method="post" action="http://10.1.75.104:9080/Pages/Accounts/Resumen.aspx" id="aspnetForm">
+<div>
+<input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="">
+<input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="">
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUKMjEzODg1MDU2OA8WAh4NYWNjb3VudG51bWJlcgUEMTI3NRYCZg9kFgICAQ9kFgICAQ9kFgJmD2QWBAIBD2QWBAICDw8WAh4EVGV4dAUPUmVzdW1lbiBkaWdpdGFsZGQCBw9kFgJmD2QWBGYPZBYCAgEPZBYCAgEPZBYCAgEPZBYCZg88KwAWAgAPFggeD0RhdGFTb3VyY2VCb3VuZGceEUNsaWVudFN0YXRlTG9hZGVkaB4NQ2FsbGJhY2tTdGF0ZQWwFC93RVdCQjRFUkdGMFlRV2tEa0ZCUVVGQlFVbEJRVUZCUVVGQlFVRkJaMEZCUVVGQlNFRkJRVUZDVlVaellWZEdla0pWUm5OaFYwWjZRbmRCUVVWRlJqSlpWMnh6V1ZkS2MxcFZTbWhpUjBaMVdUSlZVVkZZV21oaFYzaG9XVzE0YkZGdFJuTlpWelZxV2xGVlFVRkJNVUpaTWs1MlpGYzFNRlJ1Vm5SWmJWWjVSRlZHYWxreU9URmlibEpQWkZjeGFWcFlTVWhCUVVGTVVWZE9hbUl6Vm5Wa1JsSTFZMGRWVEZGWFRtcGlNMVoxWkVaU05XTkhWVWhCUVVGR1ZUTlNhR1JIVlVaVk0xSm9aRWRWU0VGQlFVMVNWelZxWTI1c2QyUkhWbXRUTWxZMVJFVldkVmt6U2pWalNGSnNXa1YwYkdWUlkwRkJVVFZFWkZoS2VWcFhOV3BsVms0MVlsZEtkbUpCTlVSa1dFcDVXbGMxYW1WV1RqVmlWMHAyWWtGalFVRkVZMEZCUVVGSlVUTldlV050Vm5WWk0ydEhWa2hzZDFwVmJHdEZSVTUyWWtkNGJGa3pVbXhhUlVwb1lrZEdkVmt5VlVaVU0yUjFXbGhKUjFGdVNtaGliVTV2UTBWS2VWbFhOV3BoUld4clFrVk9jR1JJYTAxVmJWWjZaRWhLY0ZrelVuQmlNalY2UlZWNGRtSnRaRUpaTWs1MlpGYzFNRlJ1Vm5SWmJWWjVTREI0ZG1KdFpFSlpNazUyWkZjMU1GUnVWblJaYlZaNVZGYzVhMlJYZUd4Uk0xWjVZMjFXZFZremExcFVSemwxV2pCR2Fsa3lPVEZpYmxKUFpGY3hhVnBZU2tSa1dFcDVXbGMxYW1WUmRFaGpiV3hyVVZkT2FtSXpWblZrUWs1V1ltMXNlR1JYVmtKWk1rNTJaRmMxTUZSdVZuUlpiVlo1UkRCa2VXRlhVbFZsV0VKc1VWZE9hbUl6Vm5Wa1FteE5ZakkxYmxGWFRtcGlNMVoxWkVVMU1XSlhTbXhqYkZKNVdWYzFlbHB0Vm5sQ1JVcG9ZbTF6VDFGdGVIWlpNblJzV2tWS2FHSkhSblZaTWxWS1ZETmFiR050VW5sWlYxb3dRakJPZG1KWVFtaGlibXROVWtjNWFtUlhNV3hpYmxKVlpWaENiRVJyVW5aWk0xWjBXbGMxTUZSdVZuUlpiVlo1UW1zeGRscElWbk5hVVZaUldWaENiR05uT1ZCalIxWjVXVmhTY0dJeU5VOWtWekZwV2xoSlUxVXpWbWxVTTBKc1kyMUdNR0ZYT1hWVWJsWjBXVzFXZVVSVk9YZGFXRXBvWkVkc2RtSnNValZqUjFWVVVUTldlV050Vm5WWk0yeEZXbGhPYW1OdGJIZGtSMngyWW1oR1RtSXlVakZpUjFaRldsaE9hbU50Ykhka1IyeDJZbWQwUTFsWGVHaGliVTVzVWtkR01GcFJUa1JSYkZWVlVsaG9NR050Um1wa1JWcDVXbGhHTVZwWE5XcGxWVTUyV2tkVllsSllhREJqYlVacVpFVmFlVnBZUmpGYVZ6VnFaVlZTYkdNeVRubGhXRUl3WVZjNWRVUXdWalJrU0Vwb1dUTlNWV1ZZUW14Uk1qbHJXbEphUm1WSVVubFpWMDR3Vmtoc2QxcFZVbXhqTWs1NVlWaENNR0ZYT1hWRE1GSm9aVmhPVUdSdFZubGFTRlpzUTJ4Q2VXSXpXbkJpYlU1c1UxZFJWVk5ZVGxSa1dFSnNZMjVhY0ZwWGVITmFWVVpxV1RJNU1XSnVVVTFVTWtwNldsaEtNbGxZVW5CaU1qVjZRMnhPYUdKWFZrbGlNbmhyV2xoSlNWVXpVbWhrU0ZaNlUxZFJUbEpZYUd4Wk0xWXdZVmhhYkZFeU9XdGFVVEZHWlVkV2FtUllVbkJrYlZaUFdWY3hiRVJWVmpSaFdFNHdZekJzZFZSSE9XcFpWM2RZVWtjNWFtUlhNV3hpYmxKVlpWaENiRkpIVm5wWk0wcHdZMGhTY0dJeU5GVlJiVVoxV2xkNGFtSXdSbXBaTWpreFltNVNUMlJYTVdsYVdFbFNWVWhLYkZGWVFuZGpiVGt5V2xkU1ExUXdOV2hpVjFWR1VsY3hhR0ZYZDBWVWJVWjBXbEZ3UWxreVRuWmtWelV3VkROa2RVRXhVbXhaVWxaUFdsaGtWRnBZU2pKaFYwNXNVakpXTUZWSVNuWmFTRlpxWkVoTlIxVXpVbWhrU0ZaNlJFVkdhMkZIVm5waFZ6bDFWa2hzZDFwUmJGRmpiVGxyWkZkT01GTlhVVXhWU0VwMldraFdhbVJGVG5aYVIxVklRVUZqUVVKM1FVaEJRV0l2TDNkalEwVkZVa3BSVTBKQ1ZXdGtSbFJzVWtwVWEwVm5WVEJGUmtFMFVVOTJaMmRCUVVGQlFVRkJRVUZCUVVGQlFXZEJTRUZuVVhoTmFtTXhRbmRKVVZFelZteGlibEpvU1VWT2RtTnVTbkJhVnpVd1dsRmpRMEpyTlZCVmF6RkNWRUZqUTJKSVVtdFNNa1pIVkVaS1ZtTjZaRkJPYkZKclZVVjBVbGxXUm5OVWExcENZa2hXYjFScGMzaGlXRlYzWlZSbk1GcFZiRTlWVm14VVdURnJNR0ZGU2xwaFZrNUNZMGMxTTJKNU9XMWpNbFpHWlVWMFUwMHdXbGRSVjJoTFlXdFdWRk5XV201aE0wcG9VakJTTkUweVduRmlSelExVFZka00wMXVhREJUV0dSMFRVTnpkbFpGTVhKUmEzQkpVbms0TkZCUlkwTkJVMUZJUVVGalFVSjJMeTlDZDBsUlVrVnNRa2xGUmxOU01GWlBWa1ZzVDFGVFFsUlJVVlZFZUdRd2MwRkJRVUZCUVVGQlFVRkJRVUZCUVVOQlFXTkRRa1JGZVU1NlZVaEJhRUpFWkZkV2RXUkhSV2RSTWpsNVkyMXNiR0p1VW14Q2QwbEhWR3M1VTFSVlJrMUNkMHB6WkVkU1NGbFZXazFWYkZaNlRqQTRNbFpIVWxGVE1VWm9WVmQ0VDFJd2VHcFNXRXBEWkc1Q1QxSnFiRlJWUXprelpHMUdjRTVXVlhsTU1HeEVZMjFrVDJOcVRUVkxNMUowWkZVNWVsUXpTbmhpTUhSVlZWVTBNVTFYVVRCVGFsa3hZMjB4UmxVeVdtdFJNalV4WlVkVmRsTkdVbGxhTWtwVVRtMVZOVkZWU25kTmEyY3laREpHVjFGdFozcFVSbXM1UW5kSlFrcEJQVDBlQlZOMFlYUmxCV2hDZDJOSVFVRkpRa0ozUlVOQlVXTkRRV2RGU0VGM1NVSkNkMUZEUVZGalJrRm5SVWhDWjBsQ1FuZEJTRUZCWTBGQ2QwRkRRVUZpTHk5M2EwTkVSVloxV1ROS05XTklVbXhhUlhSc1pWRnJRMEZCU1VGQmQyTkZRV2RCU0VGQlNVSkNkMEZEUVZGalFRPT0eDl8hVXNlVmlld1N0YXRlZ2QGD2QQFgdmAgECAgIDAgQCBQIGFgc8KwAMAQAWAh4PQ29sVmlzaWJsZUluZGV4ZjwrAAsBABYIHwYCAR4JU29ydEluZGV4Av////8PHgpHcm91cEluZGV4Av////8PHglTb3J0T3JkZXILKXhEZXZFeHByZXNzLkRhdGEuQ29sdW1uU29ydE9yZGVyLCBEZXZFeHByZXNzLkRhdGEudjguMywgVmVyc2lvbj04LjMuNS4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWI4OGQxNzU0ZDcwMGU0OWEAPCsACwEAFggfBgICHwcC/////w8fCAL/////Dx8JCysEADwrAAsBABYIHwYCAx8HAv////8PHwgC/////w8fCQsrBAA8KwALAQAWCB8GAgQfBwL/////Dx8IAv////8PHwkLKwQAPCsACwEAFggfBgIFHwcC/////w8fCAL/////Dx8JCysEADwrAAsBABYIHwYCBh8HAv////8PHwgC/////w8fCQsrBAAPFgcCAQICAgICAgICAgICAxYDBZYBRGV2RXhwcmVzcy5XZWIuQVNQeEdyaWRWaWV3LkdyaWRWaWV3Q29tbWFuZENvbHVtbiwgRGV2RXhwcmVzcy5XZWIuQVNQeEdyaWRWaWV3LnY4LjMsIFZlcnNpb249OC4zLjUuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj1iODhkMTc1NGQ3MDBlNDlhBaABSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbi5DbGFzc2VzLkdyaWRWaWV3RGF0YVRleHRDb2x1bW5UZXh0LCBJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLCBWZXJzaW9uPTMuMC4xLjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49NzE4NjI4MDE3ZmZiOTY2ZQWiAUluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24uQ2xhc3Nlcy5HcmlkVmlld0RhdGFUZXh0Q29sdW1uQW1vdW50LCBJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLCBWZXJzaW9uPTMuMC4xLjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49NzE4NjI4MDE3ZmZiOTY2ZWQCAQ9kFgQCAQ9kFgJmD2QWAgIBD2QWHmYPFgIfAQUEMTI3NWQCAQ8WAh8BBQExZAICDxYCHwEFEERJQSBBUkdFTlRJTkEgU0FkAgMPFgIfAQUQRElBIEFSR0VOVElOQSBTQWQCBQ8WAh8BBQQwLDAwZAIGDxYCHwEFBDAsMDBkAgcPFgIfAQUMMS40NjYuNzMyLDg0ZAIIDxYCHwEFEEN1ZW50YSBDb3JyaWVudGVkAgkPFgIfAQUFJCAgICBkAgoPFgIfAQUQU1VDVVJTQUwgQ0VOVFJBTGQCCw8WAh8BBRYwMjcwMTAwMDEwMDAwMDEyNzUwMDE5ZAIMDxYCHwEFBlJFVElSQWQCDQ8WAh8BBQwxLjQ2Ni43MzIsODRkAg4PFgIfAQUHTUVOU1VBTGQCDw8WAh8BBQEwZAIDD2QWBgIDDw8WAh8BBSVObyBzZSByZWdpc3RyYW4gcmVzw7ptZW5lcyBhIGxhIGZlY2hhZGQCBQ8PFgIeB1Zpc2libGVoZGQCCQ8QZBAVAQtTZWxlY2Npb25hchUBC1NlbGVjY2lvbmFyFCsDAWdkZAICDxYCHgVzdHlsZQUNZGlzcGxheTpub25lOxYCAgUPFgIfCmgWBAIBDxAWBh4NRGF0YVRleHRGaWVsZAUFVGl0bGUeDkRhdGFWYWx1ZUZpZWxkBQNVcmkeC18hRGF0YUJvdW5kZxAVAQAVAQAUKwMBZxQrAQBkAgMPFgIfCwUNZGlzcGxheTpub25lOxYCZg9kFgICAQ8WAh8LBQ1kaXNwbGF5Om5vbmU7ZBgCBR5fX0NvbnRyb2xzUmVxdWlyZVBvc3RCYWNrS2V5X18WBQUdY3RsMDAkTWFpbkhvbGRlciRBY2NvdW50UGFuZWwFGmN0bDAwJE1haW5Ib2xkZXIkSW5mb1BhbmVsBUBjdGwwMCRNYWluSG9sZGVyJGFjY291bnRIZWFkZXJTZWxlY3RlZEFjY291bnQkcGFuZWxBY2NvdW50SGVhZGVyBR5jdGwwMCRNYWluSG9sZGVyJFBhbmVsQ29udHJvbDEFGWN0bDAwJGltYWdlQnV0dG9uQ29sbGFwc2UFGmN0bDAwJE1haW5Ib2xkZXIkbXVsdGlWaWV3Dw9kAgFk2QjOrVRUWK+Fc0iYhBw1LqaQ4vs=">
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+var theForm = document.forms['aspnetForm'];
+if (!theForm) {
+    theForm = document.aspnetForm;
+}
+function __doPostBack(eventTarget, eventArgument) {
+    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+        theForm.__EVENTTARGET.value = eventTarget;
+        theForm.__EVENTARGUMENT.value = eventArgument;
+        theForm.submit();
+    }
+}
+//]]>
+</script>
+
+
+<script src="./WebResource.axd" type="text/javascript"></script>
+
+
+						<style>							
+							P.PanelControlTitleStyle
+							{
+ 								font-family:verdana;
+ 								font-size: 12px;
+								font-weight : bold;
+								text-align: center;  								
+							}
+						</style>						
+						<script language="javascript">
+						function MinMaxPanelControl(cntrlId)
+						{
+						    var imgPath='/App_Themes/Default/Images/';	
+					
+							//Get state from hidden control.													
+							if ( document.getElementById(cntrlId).style.display == 'none' )
+							{
+								document.getElementById(cntrlId).style.display = '';						
+								document.getElementById(cntrlId+'_imgPlusMinus').src = imgPath + 'bot-grid-minus.gif';
+							}
+							else 
+							{
+								document.getElementById(cntrlId).style.display = 'none';								
+								document.getElementById(cntrlId+'_imgPlusMinus').src = imgPath + 'bot-grid-plus.gif';
+							}
+						}
+						</script>
+			
+<script type="text/javascript">
+//<![CDATA[
+var __cultureInfo = '{"name":"es-UY","numberFormat":{"CurrencyDecimalDigits":2,"CurrencyDecimalSeparator":",","IsReadOnly":false,"CurrencyGroupSizes":[3],"NumberGroupSizes":[3],"PercentGroupSizes":[3],"CurrencyGroupSeparator":".","CurrencySymbol":"$U","NaNSymbol":"NeuN","CurrencyNegativePattern":14,"NumberNegativePattern":1,"PercentPositivePattern":0,"PercentNegativePattern":0,"NegativeInfinitySymbol":"-Infinito","NegativeSign":"-","NumberDecimalDigits":2,"NumberDecimalSeparator":",","NumberGroupSeparator":".","CurrencyPositivePattern":2,"PositiveInfinitySymbol":"Infinito","PositiveSign":"+","PercentDecimalDigits":2,"PercentDecimalSeparator":",","PercentGroupSeparator":".","PercentSymbol":"%","PerMilleSymbol":"‰","NativeDigits":["0","1","2","3","4","5","6","7","8","9"],"DigitSubstitution":1},"dateTimeFormat":{"AMDesignator":"a.m.","Calendar":{"MinSupportedDateTime":"\/Date(-62135586000000)\/","MaxSupportedDateTime":"\/Date(253402300799999)\/","AlgorithmType":1,"CalendarType":1,"Eras":[1],"TwoDigitYearMax":2029,"IsReadOnly":false},"DateSeparator":"/","FirstDayOfWeek":1,"CalendarWeekRule":0,"FullDateTimePattern":"dddd, dd\u0027 de \u0027MMMM\u0027 de \u0027yyyy hh:mm:ss tt","LongDatePattern":"dddd, dd\u0027 de \u0027MMMM\u0027 de \u0027yyyy","LongTimePattern":"hh:mm:ss tt","MonthDayPattern":"dd MMMM","PMDesignator":"p.m.","RFC1123Pattern":"ddd, dd MMM yyyy HH\u0027:\u0027mm\u0027:\u0027ss \u0027GMT\u0027","ShortDatePattern":"dd/MM/yyyy","ShortTimePattern":"hh:mm tt","SortableDateTimePattern":"yyyy\u0027-\u0027MM\u0027-\u0027dd\u0027T\u0027HH\u0027:\u0027mm\u0027:\u0027ss","TimeSeparator":":","UniversalSortableDateTimePattern":"yyyy\u0027-\u0027MM\u0027-\u0027dd HH\u0027:\u0027mm\u0027:\u0027ss\u0027Z\u0027","YearMonthPattern":"MMMM\u0027 de \u0027yyyy","AbbreviatedDayNames":["dom","lun","mar","mié","jue","vie","sáb"],"ShortestDayNames":["do","lu","ma","mi","ju","vi","sá"],"DayNames":["domingo","lunes","martes","miércoles","jueves","viernes","sábado"],"AbbreviatedMonthNames":["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic",""],"MonthNames":["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre",""],"IsReadOnly":false,"NativeCalendarName":"calendario gregoriano","AbbreviatedMonthGenitiveNames":["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic",""],"MonthGenitiveNames":["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre",""]}}';//]]>
+</script>
+
+<script src="./ScriptResource.axd" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+if (typeof(Sys) === 'undefined') throw new Error('ASP.NET Ajax client-side framework failed to load.');
+//]]>
+</script>
+
+<script src="./ScriptResource(1).axd" type="text/javascript"></script>
+<div>
+
+	<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEWCAL1nKTXCQLwmMPjDgLNkPeEBQLgkY2yAwK9lIGXAQKUj5GrDALRqszJDgKJt+C7ATCmabEiwhmaU30u8bB/De8BuhPx">
+</div>
+    <script type="text/javascript">
+//<![CDATA[
+Sys.WebForms.PageRequestManager._initialize('ctl00$scriptManager', document.getElementById('aspnetForm'));
+Sys.WebForms.PageRequestManager.getInstance()._updateControls([], [], [], 90);
+//]]>
+</script>
+
+    <input type="hidden" id="PageLinkData" name="PageLinkData" value="">
+    <input type="hidden" id="PageLinkUrl" name="PageLinkUrl" value="">
+    <input type="hidden" id="PageUrl" value="/Pages/Accounts/Resumen.aspx">
+    <table id="ctl00_tableContent" width="100%" border="0" cellpadding="0" cellspacing="0" class="ic-content">
+	<tbody><tr>
+		<td class="ic-content-left-aux">
+                <img src="./log-img-aux-left-bottom.gif" width="9" height="110">
+            </td>
+		<td style="width: 100%">
+                <table width="100%" border="0" cellpadding="0" cellspacing="0" class="ic-content-left">
+                    <tbody><tr>
+                        <td id="TdCPM" class="ic-content-space-top" valign="top">
+                            <table id="TablaCPM" width="100%" border="0" cellspacing="0" cellpadding="0">
+                                
+                                <tbody><tr>
+                                    <td>
+                                        <table id="ctl00_tableHeader" width="100%" border="0" cellspacing="0" cellpadding="0">
+			<tbody><tr>
+				<td class="ic-breadcrumb-container">
+                                                    
+                                                    &gt;
+                                                    <span id="ctl00_siteMapNavigator"><a href="http://10.1.75.104:9080/Pages/Accounts/Resumen.aspx#ctl00_siteMapNavigator_SkipLink"><img alt="Skip Navigation Links" height="0" width="0" src="./WebResource(1).axd" style="border-width:0px;"></a><span><a href="http://10.1.75.104:9080/Home.aspx">Posición Consolidada</a></span><span> &gt; </span><span><a>Cuentas</a></span><span> &gt; </span><span>Resumen digital</span><a id="ctl00_siteMapNavigator_SkipLink"></a></span>
+                                                    </td>
+				<td class="ic-toolbar-container">
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tbody><tr>
+                                                            <td width="16">
+                                                                <img src="./ico-print.gif" id="ctl00_Img4" width="16" height="16">
+                                                            </td>
+                                                            <td class="ic-links-toolbar">
+                                                                <a href="http://10.1.75.104:9080/Pages/Accounts/Resumen.aspx#" onclick="javascript: GoPrint();">
+                                                                    Imprimir página</a>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody></table>
+                                                </td>
+			</tr>
+		</tbody></table>
+		
+                                    </td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>
+                                        <span id="ctl00_labelTitle" class="ic-page-title">Resumen digital</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td id="ctl00_cellRequiered" align="right">&nbsp;</td>
+		
+                                </tr>
+                                <tr>
+                                    <td width="95%" align="center">
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                            <tbody><tr>
+                                                <td align="right">
+                                                    
+                                                    
+                                                </td>
+                                            </tr>
+                                        </tbody></table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="100%" align="center">
+                                        <div id="ic-loading" class="ic-loading-bg" style="display: none;">
+                                            <div class="ic-loading">
+                                                <div id="message">
+                                                    <img src="./cargandoBAR.gif" id="ctl00_imgLoading"><br>
+                                                    <span id="ctl00_WaitingMessage">Procesando...</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="mainContainer">
+                                            
+
+    <script language="javascript" type="text/javascript">
+
+        function ValidateSelection() {
+            var hasSelection = false;
+            if (AccountASPxGridView._getSelectedRowCount()) {
+                hasSelection = true;
+            }
+            else {
+                alert('Debe seleccionar una cuenta.');
+            }
+            return hasSelection;
+        }
+
+    </script>
+
+    
+           <table class="ic-grid-border" cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+			<tbody><tr>
+				<td><table id="ctl00_MainHolder_accountHeaderSelectedAccount_panelAccountHeader_thePanel" class="ic-grid" cellspacing="0" cellpadding="0" align="Center" border="0" style="width:100%;border-collapse:collapse;">
+					<tbody><tr class="ic-grid-title-row">
+						<td><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+							<tbody><tr>
+								<td class="ic-grid-title-cell-left">&nbsp;</td><td class="ic-grid-title-cell" align="left" style="white-space:nowrap;">Saldos y estado de cuenta</td><td class="ic-gridB-title-cell-right"><img id="ctl00_MainHolder_accountHeaderSelectedAccount_panelAccountHeader_imgPlusMinus" onclick="javascript:MinMaxPanelControl(&#39;ctl00_MainHolder_accountHeaderSelectedAccount_panelAccountHeader&#39;)" src="./bot-grid-minus.gif" alt="Minimizar/Maximizar el panel" align="absmiddle" style="border-width:0px;cursor:hand;"></td>
+							</tr>
+						</tbody></table></td>
+					</tr><tr>
+						<td align="center"><div id="ctl00_MainHolder_accountHeaderSelectedAccount_panelAccountHeader" style="color:Black;border-color:DodgerBlue;font-family:verdana;font-size:10pt;width:100%;display:;">
+	
+    <div id="ctl00_MainHolder_accountHeaderSelectedAccount_panelAccountData">
+		
+            </div><table style="width: 100%" border="0" cellpadding="0" cellspacing="0">
+        <tbody><tr class="ic-form-row">
+                <td class="ic-form-label" width="20%">
+                    Número de cuenta:
+                </td>
+                <td class="ic-form-data" width="30%">
+                    1275
+                </td>
+                <td class="ic-form-label" width="20%">
+                    Sub:
+                </td>
+                <td class="ic-form-data" width="30%">
+                    1
+                </td>
+            </tr>
+            <tr class="ic-form-row">
+                <td class="ic-form-label" width="20%">
+                    Nombre de la cuenta:
+                </td>
+                <td class="ic-form-data" width="30%">
+                    DIA ARGENTINA SA
+                </td>
+                <td class="ic-form-label" width="20%">
+                    Titular:
+                </td>
+                <td class="ic-form-data" width="30%">
+                    DIA ARGENTINA SA
+                </td>
+            </tr>
+            <tr class="ic-form-row">
+                <td class="ic-form-label" width="20%">
+                    Sobregiro
+                </td>
+                <td class="ic-form-data" width="30%">
+                    0,00
+                </td>
+                <td class="ic-form-label" width="20%">
+                    Saldo bloqueado:
+                </td>
+                <td class="ic-form-data" width="30%">
+                    0,00
+                </td>
+            </tr>
+            <tr class="ic-form-row">
+                <td class="ic-form-label" width="20%">
+                    Saldo contable:
+                </td>
+                <td class="ic-form-data">
+                    1.466.732,84
+                </td>
+                <td class="ic-form-label" width="20%">
+                    Tipo de cuenta:
+                </td>
+                <td class="ic-form-data">
+                    Cuenta Corriente
+                </td>
+            </tr>
+            <tr class="ic-form-row">
+                <td class="ic-form-label" width="20%">
+                    Moneda:
+                </td>
+                <td class="ic-form-data">
+                    $    
+                </td>
+                <td class="ic-form-label" width="20%">
+                    Sucursal:
+                </td>
+                <td class="ic-form-data">
+                    SUCURSAL CENTRAL
+                </td>
+            </tr>
+            <tr class="ic-form-row">
+                <td class="ic-form-label" width="20%">
+                    CBU:
+                </td>
+                <td class="ic-form-data">
+                    0270100010000012750019
+                </td>
+                <td class="ic-form-label" width="20%">
+                    Tipo extracto:
+                </td>
+                <td class="ic-form-data">
+                    RETIRA
+                </td>
+            </tr>
+            <tr class="ic-form-row">
+                <td class="ic-form-label" width="20%">
+                    Saldo:
+                </td>
+                <td class="ic-form-data">
+                    1.466.732,84
+                </td>
+                <td class="ic-form-label" width="20%">
+                    Frecuencia:
+                </td>
+                <td class="ic-form-data">
+                    MENSUAL
+                </td>
+            </tr>
+            <tr class="ic-form-row">
+                <td class="ic-form-label" width="20%">
+                    Dias atraso:
+                </td>
+                <td class="ic-form-data">
+                    0
+                </td>
+                
+            </tr>
+        
+	
+    </tbody></table>
+<input name="ctl00$MainHolder$accountHeaderSelectedAccount$ctl00$MainHolder$accountHeaderSelectedAccount$panelAccountHeader_hdnMinimizeState" type="text" value="False" id="ctl00_MainHolder_accountHeaderSelectedAccount_ctl00_MainHolder_accountHeaderSelectedAccount_panelAccountHeader_hdnMinimizeState" class="ic-control-text" onkeypress="return validCharactersOnly(this, event, &quot;&quot;)" style="display:none">
+</div></td>
+					</tr>
+				</tbody></table></td>
+			</tr>
+		</tbody></table>
+
+            &nbsp;            
+             <table class="ic-grid-border" cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+			<tbody><tr>
+				<td><table id="ctl00_MainHolder_PanelControl1_thePanel" class="ic-grid" cellspacing="0" cellpadding="0" align="Center" border="0" style="width:100%;border-collapse:collapse;">
+					<tbody><tr class="ic-grid-title-row">
+						<td><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+							<tbody><tr>
+								<td class="ic-grid-title-cell-left">&nbsp;</td><td class="ic-grid-title-cell" align="left" style="white-space:nowrap;">Seleccione el resumen</td><td class="ic-gridB-title-cell-right"><img id="ctl00_MainHolder_PanelControl1_imgPlusMinus" onclick="javascript:MinMaxPanelControl(&#39;ctl00_MainHolder_PanelControl1&#39;)" src="./bot-grid-minus.gif" alt="Minimizar/Maximizar el panel" align="absmiddle" style="border-width:0px;cursor:hand;"></td>
+							</tr>
+						</tbody></table></td>
+					</tr><tr>
+						<td align="center"><div id="ctl00_MainHolder_PanelControl1" style="color:Black;border-color:DodgerBlue;font-family:verdana;font-size:10pt;width:100%;display:;">
+	
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                        <tbody><tr class="ic-form-row">
+                            <td class="ic-form-label" width="30%">
+                                <span id="ctl00_MainHolder_Label2">Último Disponible</span>
+                            </td>
+                            <td class="ic-form-data" width="23%" valign="baseline">
+                               <span id="ctl00_MainHolder_LastSummaryTxt">No se registran resúmenes a la fecha</span>
+                            </td>
+                            <td width="10%">
+                            
+                            
+                            </td>
+                            <td width="70%">
+                                &nbsp;
+                            </td>
+                        </tr>
+                        <tr class="ic-form-row">
+                            <td class="ic-form-label" width="30%">
+                                <span id="ctl00_MainHolder_Label3">Anteriores</span>
+                            </td>
+                            <td class="ic-form-data" width="23%" valign="baseline">
+                                <div style="position: relative; float: left">
+                                    <select name="ctl00$MainHolder$ddlExtractos" id="ctl00_MainHolder_ddlExtractos" class="ic-control-select" style="margin-bottom: 5px">
+		<option value="Seleccionar">Seleccionar</option>
+
+	</select>
+                                    &nbsp;&nbsp;
+                                </div>
+                            </td>
+                            <td width="10%"> 
+                            <a id="ctl00_MainHolder_LinkButtonImagenAnterior" class="ic-button-navigation-small" href="javascript:__doPostBack(&#39;ctl00$MainHolder$LinkButtonImagenAnterior&#39;,&#39;&#39;)"></a>                                                                                                                            
+                            </td>
+                            <td width="70%">
+                                &nbsp;
+                            </td>
+                        </tr>
+                        
+                    </tbody></table>
+             <input name="ctl00$MainHolder$ctl00$MainHolder$PanelControl1_hdnMinimizeState" type="text" value="False" id="ctl00_MainHolder_ctl00_MainHolder_PanelControl1_hdnMinimizeState" class="ic-control-text" onkeypress="return validCharactersOnly(this, event, &quot;&quot;)" style="display:none">
+</div></td>
+					</tr>
+				</tbody></table></td>
+			</tr>
+		</tbody></table>    
+             <table width="100%">
+                <tbody><tr>
+                    <td style="width: 100%">&nbsp;</td>
+                    <td align="right" nowrap="nowrap">
+                        <a onclick="showLoading();" id="ctl00_MainHolder_btnVolver" class="ic-button-navigation" href="javascript:__doPostBack(&#39;ctl00$MainHolder$btnVolver&#39;,&#39;&#39;)">Volver</a>
+                    </td>
+                </tr>
+             </tbody></table>        
+        
+
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="right">
+                                        <div id="ctl00_validationSummaryFooter" style="color:Red;font-size:10px;display:none;">
+
+		</div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="95%" align="center">
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                            <tbody><tr>
+                                                <td align="right">
+                                                    
+                                                    
+                                                </td>
+                                            </tr>
+                                        </tbody></table>
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="ic-content-footer">
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                <tbody><tr class="ic-content-footer-dottedline">
+                                    <td align="right" nowrap="nowrap" style="width: 90%">
+                                    </td>
+                                    <td align="right" nowrap="nowrap" style="width: 10%">
+                                        <a id="ctl00_LinkButtonTermsAndConditions" class="ic-grid-link" href="javascript:__doPostBack(&#39;ctl00$LinkButtonTermsAndConditions&#39;,&#39;&#39;)">Términos y Condiciones</a>
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                </tbody></table>
+            </td>
+		<td id="ctl00_cellContentRight" class="ic-content-space-top-right" valign="top" style="display:none;">
+                <table class="ic-content-right" border="0" cellspacing="0" cellpadding="0">
+                    <tbody><tr>
+                        <td>
+                            <img src="./pixel.gif" width="8" height="1">
+                        </td>
+                        <td class="ic-right-panel">
+                            <table border="0" cellpadding="0" cellspacing="0" class="ic-right-panel-content">
+                                <tbody><tr>
+                                    <td width="8" class="ic-right-panel-collapse">
+                                        <input type="image" name="ctl00$imageButtonCollapse" id="ctl00_imageButtonCollapse" src="./bot-right-collapse.gif" style="height:47px;width:9px;border-width:0px;">
+                                    </td>
+                                    
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                </tbody></table>
+            </td>
+	</tr>
+</tbody></table>
+
+    
+    
+<script type="text/javascript">
+//<![CDATA[
+var Page_ValidationSummaries =  new Array(document.getElementById("ctl00_validationSummaryFooter"));
+//]]>
+</script>
+
+<script type="text/javascript">
+//<![CDATA[
+var ctl00_validationSummaryFooter = document.all ? document.all["ctl00_validationSummaryFooter"] : document.getElementById("ctl00_validationSummaryFooter");
+ctl00_validationSummaryFooter.headertext = "Formulario inválido, por favor revise los datos ingresados:";
+ctl00_validationSummaryFooter.showsummary = "False";
+//]]>
+</script>
+
+
+<script type="text/javascript">
+//<![CDATA[
+
+document.getElementById('ctl00_validationSummaryFooter').dispose = function() {
+    Array.remove(Page_ValidationSummaries, document.getElementById('ctl00_validationSummaryFooter'));
+}
+Sys.Application.initialize();
+//]]>
+</script>
+</form>
+
+
+<div class="ui-dialog ui-widget ui-widget-content ui-corner-all" tabindex="-1" role="dialog" aria-labelledby="ui-dialog-title-sessionTimeoutWarning" style="display: none; z-index: 1000; outline: 0px;"><div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix"><span class="ui-dialog-title" id="ui-dialog-title-sessionTimeoutWarning">&nbsp;</span><a href="http://10.1.75.104:9080/Pages/Accounts/Resumen.aspx#" class="ui-dialog-titlebar-close ui-corner-all" role="button" style="display: none;"><span class="ui-icon ui-icon-closethick">close</span></a></div><div id="sessionTimeoutWarning" style="background-color: rgb(255, 255, 255); padding: 0px; height: 100%;" class="ui-dialog-content ui-widget-content">
+        <div id="sessionTimeoutWarningHeader">
+            <table width="100%">
+                 <tbody><tr>
+                    <td colspan="2" align="center" class="ic-form-data-modal">
+                        La sesión finalizará en <span id="sessionTimeoutCountdown"></span>&nbsp;segundos.
+                        Para seguir operando seleccioná “Continuar”
+                    </td>
+                </tr>
+            </tbody></table>
+        </div>
+    </div><div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix"><div class="ui-dialog-buttonset"><button type="button">Continuar </button><button type="button">Finalizar sesión</button></div></div></div></body></html>

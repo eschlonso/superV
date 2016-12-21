@@ -1,0 +1,1011 @@
+
+<!-- saved from url=(0062)http://10.1.75.104:9080/Pages/Transfers/ExtraBankTransfer.aspx -->
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><script src="./jquery-1.7.2.min.js.descarga" type="text/javascript"></script>
+<script src="./jquery-1.7.1.js.descarga" type="text/javascript"></script>
+<script src="./jquery-ui-1.8.19.custom.min.js.descarga" type="text/javascript"></script>
+<script src="./jquery.formatCurrency-1.4.0.js.descarga" type="text/javascript"></script>
+<script src="./idle-timer.js.descarga" type="text/javascript"></script>
+<script src="./idle-timer.min.js.descarga" type="text/javascript"></script>
+<script language="javascript" type="text/javascript">
+
+function Logout() {
+        if (confirm("¿ Desea salir del sistema ?") == true) {
+                    
+            window.location =  '/'+ "Logout.aspx";
+        }
+       
+    }
+    
+var focusedFormControl;    
+var dateFormat = 'dd/mm/aaaa';
+var applicationRoot = '/';      
+function OnRowClick(sender, args) {
+    if (sender.GetSelectedRowCount() == 0) {
+        sender.UnselectRowOnPage(args.visibleIndex);
+        SetPageLinkData("");
+    }
+    else {
+        _aspxClearSelection();
+        sender._selectAllRowsOnPage(false);
+        sender.SelectRow(args.visibleIndex, true);
+        SetPageLinkData(sender.GetRowKey(args.visibleIndex));
+    }
+}
+
+if (history.forward(1))
+{
+
+    location.replace(history.forward(1))
+} 
+
+function PrintPage() {
+
+    window.print();
+}
+
+function GoMyOption(select)
+{
+    var url = select.options[select.selectedIndex].value;
+    if( url != "")
+        window.location = url;
+}
+
+function GoFavourites(select)
+{
+
+    var url = select.options[select.selectedIndex].value;
+    if( url != "")
+        window.location = url;
+}
+
+function GoPrint()
+{
+
+window.print();
+}
+
+function addEvent(elm, evType, fn, useCapture)
+{
+
+  if (elm.addEventListener){
+    elm.addEventListener(evType, fn, useCapture);
+    return true;
+  } else if (elm.attachEvent){
+    var r = elm.attachEvent("on"+evType, fn);
+    return r;
+  } else {
+    alert("Handler could not be removed");
+  }
+} 
+
+function SetPageLinkData(data)
+{
+    pageLinkData = document.getElementById('PageLinkData');
+    pageLinkData.value = data;
+}
+
+function SetPageLinkUrl(url)
+{
+    pageLinkUrl = document.getElementById('PageLinkUrl');
+    pageLinkUrl.value = url;
+}
+
+function doPageLink(id)
+{
+    __doPostBack(id, 'PageLinkEvent');
+}
+
+function imprimirEstadoCuenta()
+{
+											
+    var ficha = document.getElementById('printDiv');		
+    var ventimp = window.open('', 'popimpr','height=450, width=550, scrollbars=1');																						
+    var fichaHTML = new String(ficha.innerHTML);
+    fichaHTML = fichaHTML.replace('Seleccione un período y oprima "Consultar".'," ");
+    //var i = document.getElementById('ctl00_MainHolder_panelDetalle_imgPlusMinus');
+    var html  = "<html>\n<head>\n<link rel=\"stylesheet\" type=\"text/css\" href=\"..\\..\\App_Themes\\Default\\Default.css \" />" 
+                + "</head><table width=\"100%\"><tr bgcolor=\"#FF0000\"><td><img src=\"..\\..\\App_Themes\\Default\\Images\\logoSantander.gif\" /></td></tr></table>" 
+                + fichaHTML 
+                + "</html>";
+    ventimp.document.write( html );
+    ventimp.document.close();
+    ventimp.print( );
+    ventimp.close();
+					
+}
+
+ function removeInvalidCharacters(control) {
+ 
+            !(/^[A-zÑñ0-9 ]*$/i).test(control.value) ? control.value = control.value.replace(/[^A-zÑñ0-9 ]/ig, '') : null
+        }
+        
+  function removeInvalidNumbers(control) {
+            !(/^[0-9,]*$/i).test(control.value) ? control.value = control.value.replace(/[^0-9,]/ig, '') : null
+        }
+function showLoading()
+{
+//debugger;
+    // aquí le pasamos la clase o id de nuestro div a centrar (en este caso "caja")
+    $('.ic-loading').css({
+       position:'absolute',
+       left: ($('#mainContainer').width()/2 - $('.ic-loading').outerWidth())/2,
+       //top: ($('#mainContainer').height()/2 - $('.ic-loading').outerHeight())/2
+       top: ($('#mainContainer').height()/2 - $('ic-loading').height()/2)
+    });
+    
+    $('#mainContainer').css('display','none');
+    $('#ic-loading').css('display','block');
+}
+//ModalDialog SessionTimeout
+var idleTime = (parseInt('1170') * 1000); // number of miliseconds until the user is considered idle
+var initialSessionTimeoutMessage = "La sesión finalizará en <span id='sessionTimeoutCountdown'></span> segundos. Para seguir operando seleccioná “Continuar”<br /><br />";
+var sessionTimeoutCountdownId = 'sessionTimeoutCountdown';
+var redirectAfter = (parseInt('30')) ; // number of seconds to wait before redirecting the user
+var redirectTo = '/' + "Logout.aspx"; // URL to relocate the user to once they have timed out
+var keepAliveURL = ''; // URL to call to keep the session alive
+var expiredMessage = ''; // message to show user when the countdown reaches 0
+var running = false; // var to check if the countdown is running 
+var timer; // reference to the setInterval timer so it can be stopped 
+var timerSB;  
+var timeout;  
+    $(document).ready(function() {     
+// create the warning window and set autoOpen to false  
+      var sessionTimeoutWarningDialog = $("#sessionTimeoutWarning"); 
+    $(sessionTimeoutWarningDialog).dialog({         
+        title: '',       
+        autoOpen: false,    // set this to false so we can manually open it         
+        closeOnEscape: false,         
+        draggable: false,         
+        width: 460,         
+        minHeight: 150,         
+        modal: true,           
+        beforeclose: function() { // bind to beforeclose so if the user clicks on the "X" or escape to close the dialog, it will work too             // stop the timer             
+            clearInterval(timer);               // stop countdown
+            running = false;               // ajax call to keep the server-side session alive    
+                  
+            $.ajax({               
+                url: keepAliveURL,               
+                async: false            
+            });         
+        },         
+        buttons: {      
+             'Continuar ': function() {                 
+                // close dialog 
+                window.location.reload();//BM24925: Se agrega esto para que el expired de una cookie se actualice y no se cierre la sesión luego de hacer click en continuar al terminar el timeout del webconfig. El valor del expired se pone en la tabla configuration en la clave SessionMaxMinutes.
+                //var valor = getCookie('ICBWebLogin'); //Esta función la dejo por las dudas, pero no la pude hacer andar poque el document.cookie no me trae las cookies del explorador.                
+                $(this).dialog('close');
+                clearInterval(timerSB);    
+                window.status = "";      
+                StatusBarCountDown();     
+            },
+            'Finalizar sesión': function() {                 
+                // close dialog                 
+                $(sessionTimeoutWarningDialog).html(expiredMessage);
+                $(sessionTimeoutWarningDialog).dialog('disable');                     
+                window.parent.location = redirectTo;           
+            }         
+        },         
+        resizable: false,         
+        open: function() {
+            $('body').css('overflow','auto');         
+        },         
+        close: function() {             
+            // reset overflow             
+            $('body').css('overflow','auto');         
+        }  
+           
+    }); // end of dialog  
+    jQuery("a.ui-dialog-titlebar-close").hide(); 
+          
+    // start the idle timer
+    $.idleTimer(idleTime);
+ 
+});
+
+// BM24925: Función para recuperar el valor de una cookie.
+// name - nombre de la cookie deseada
+// devuelve un string conteniendo el valor de la cookie especificada o null si la cookie no existe
+
+function getCookie(name){
+var micookie = (document.cookie.indexOf('ICBWebLogin=') === -1 ? '' : ("; " + document.cookie).split('; ICBWebLogin=')[1].split(';')[0]);
+
+  var cname = name + "=";               
+  var dc = document.cookie;             
+  if (dc.length > 0) {              
+    begin = dc.indexOf(cname);       
+    if (begin != -1) {           
+      begin += cname.length;       
+      end = dc.indexOf(";", begin);
+      if (end == -1) end = dc.length;
+        return unescape(dc.substring(begin, end));
+    } 
+  }
+  return null;
+}
+
+//Status Bar Countdown Script
+function StatusBarCountDown() 
+{
+    var redirectAfter = (parseInt('30'));
+    var timeout = '1200000';   
+    var redirectTo = '/' + "Logout.aspx"; // URL to relocate the user to once they have timed out   
+    timerSB = setInterval(function(){
+    timeout -= 1000;
+    if(timeout == redirectAfter * 1000)
+    {
+        window.focus();
+    }
+   if(timeout < redirectAfter * 1000)
+   {
+        $("#sessionTimeoutCountdown").html(timeout/1000);
+        $("#sessionTimeoutWarning").dialog('open'); 
+   }
+   if (timeout < 100)
+   {
+        $("#sessionTimeoutWarning").html(expiredMessage);
+        $("#sessionTimeoutWarning").dialog('disable');                     
+        window.parent.location = redirectTo;
+        clearInterval(timerSB);    
+        window.status = "";     
+   }
+        
+   window.status = "Su sesión expirará " + time(timeout) + " minutos";        
+    }, 1000);   
+         
+   function two(x)
+   {
+    return ((x > 9) ? "" : "0") + x
+   }   
+  
+   function time(ms)
+   {   
+       var t = '';   
+       var sec = Math.floor(ms / 1000);   
+       ms = ms % 1000   
+
+       var min = Math.floor(sec / 60);   
+       sec = sec % 60;   
+       t = two(sec);   
+
+       var hr = Math.floor(min / 60);   
+       min = min % 60;   
+       t = two(min) + ":" + t;   
+    return t;
+   }
+}
+
+StatusBarCountDown();
+
+
+
+</script>
+
+<link rel="stylesheet" type="text/css" href="./WebResource.axd">
+<link rel="stylesheet" type="text/css" href="./WebResource(1).axd">
+<link href="./Default.css" type="text/css" rel="stylesheet"><link href="./jquery-ui-1.8.19.custom.css" type="text/css" rel="stylesheet"><title>
+	Untitled Page
+</title></head>
+<body>
+    <form name="aspnetForm" method="post" action="http://10.1.75.104:9080/Pages/Transfers/ExtraBankTransfer.aspx" onsubmit="javascript:return WebForm_OnSubmit();" id="aspnetForm">
+<div>
+<input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="">
+<input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="">
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUKMjA3OTgzODc5Ng9kFgJmD2QWAgIBD2QWAgIBD2QWAmYPZBYEAgEPZBYEAgIPDxYCHgRUZXh0BSdUcmFuc2ZlcmVuY2lhIGEgY3VlbnRhcyBlbiBvdHJvcyBiYW5jb3NkZAIHD2QWAmYPZBYGZg9kFgICAw9kFgQCAQ9kFgZmD2QWAgIBDzwrABYCAA8WCB4PRGF0YVNvdXJjZUJvdW5kZx4RQ2xpZW50U3RhdGVMb2FkZWRnHg1DYWxsYmFja1N0YXRlZB4OXyFVc2VWaWV3U3RhdGVnZAYPZBAWCWYCAQICAgMCBAIFAgYCBwIIFgk8KwAMAQAWAh4PQ29sVmlzaWJsZUluZGV4ZjwrAAsBABYIHwUCAR4JU29ydEluZGV4Av////8PHgpHcm91cEluZGV4Av////8PHglTb3J0T3JkZXILKXhEZXZFeHByZXNzLkRhdGEuQ29sdW1uU29ydE9yZGVyLCBEZXZFeHByZXNzLkRhdGEudjguMywgVmVyc2lvbj04LjMuNS4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWI4OGQxNzU0ZDcwMGU0OWEAPCsACwEAFggfBQICHwYC/////w8fBwL/////Dx8ICysEADwrAAsBABYIHwUCAx8GAv////8PHwcC/////w8fCAsrBAA8KwALAQAWCB8FAgQfBgL/////Dx8HAv////8PHwgLKwQAPCsACwEAFggfBQIFHwYC/////w8fBwL/////Dx8ICysEADwrAAsBABYIHwUCBh8GAv////8PHwcC/////w8fCAsrBAA8KwALAQAWBh8GAv////8PHwcC/////w8fCAsrBAA8KwALAQAWBh8GAv////8PHwcC/////w8fCAsrBAAPFgkCAQICAgICAgICAgICAwICAgIWAwWWAURldkV4cHJlc3MuV2ViLkFTUHhHcmlkVmlldy5HcmlkVmlld0NvbW1hbmRDb2x1bW4sIERldkV4cHJlc3MuV2ViLkFTUHhHcmlkVmlldy52OC4zLCBWZXJzaW9uPTguMy41LjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49Yjg4ZDE3NTRkNzAwZTQ5YQWgAUluZm9jb3JwLklDQmFua2luZy5XZWJDb21tb24uQ2xhc3Nlcy5HcmlkVmlld0RhdGFUZXh0Q29sdW1uVGV4dCwgSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbiwgVmVyc2lvbj0zLjAuMS4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPTcxODYyODAxN2ZmYjk2NmUFogFJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLkNsYXNzZXMuR3JpZFZpZXdEYXRhVGV4dENvbHVtbkFtb3VudCwgSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbiwgVmVyc2lvbj0zLjAuMS4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPTcxODYyODAxN2ZmYjk2NmVkAgIPZBYGZg8PFgYeC0NoYXJzRmlsdGVyBQ5eW146O1w8PidcIl0qJB4SQ2hhcnNGaWx0ZXJFbmFibGVkZx8ABQExFgIeCm9ua2V5cHJlc3MFKnJldHVybiBudW1iZXJzb25seSh0aGlzLCBldmVudCwgdHJ1ZSwgJywnKWQCBA8QDxYGHg5EYXRhVmFsdWVGaWVsZAUDS2V5Hg1EYXRhVGV4dEZpZWxkBQVWYWx1ZR4LXyFEYXRhQm91bmRnZBAVCgdTdWVsZG9zCkFscXVpbGVyZXMFQ3VvdGEIRXhwZW5zYXMHRmFjdHVyYQlQcsOpc3RhbW8GU2VndXJvCkhvbm9yYXJpb3MGVmFyaW9zDVtTZWxlY2Npb25hcl0VCgNTVUUDQUxRA0NVTwNFWFADRkFDA1BSRQNTRUcDSE9OA1ZBUg1bU2VsZWNjaW9uYXJdFCsDCmdnZ2dnZ2dnZ2dkZAIHDw8WBB8JBQ5eW146O1w8PidcIl0qJB8KZxYCHwsFOXJldHVybiB2YWxpZENoYXJhY3RlcnNPbmx5KHRoaXMsIGV2ZW50LCAiXlteOjtcPD4nXCJdKiQiKWQCBA9kFgICAQ88KwAWAgAPFggfAWcfAmcfA2QfBGdkBg9kEBYMZgIBAgICAwIEAgUCBgIHAggCCQIKAgsWDDwrAAwBABYCHwVmPCsACwEAFggfBQIBHwYC/////w8fBwL/////Dx8ICysEADwrAAsBABYIHwUCAh8GAv////8PHwcC/////w8fCAsrBAA8KwALAQAWBh8GAv////8PHwcC/////w8fCAsrBAA8KwALAQAWCB8FAgMfBgL/////Dx8HAv////8PHwgLKwQAPCsACwEAFggfBQIEHwYC/////w8fBwL/////Dx8ICysEADwrAAsBABYIHwUCBR8GAv////8PHwcC/////w8fCAsrBAA8KwALAQAWCB8FAgYfBgL/////Dx8HAv////8PHwgLKwQAPCsACwEAFggfBQIHHwYC/////w8fBwL/////Dx8ICysEADwrAAsBABYGHwYC/////w8fBwL/////Dx8ICysEADwrAAsBABYGHwYC/////w8fBwL/////Dx8ICysEADwrAAsBABYGHwYC/////w8fBwL/////Dx8ICysEAA8WDAIBAgICAgICAgICAgICAgICAgICAgICAhYCBZYBRGV2RXhwcmVzcy5XZWIuQVNQeEdyaWRWaWV3LkdyaWRWaWV3Q29tbWFuZENvbHVtbiwgRGV2RXhwcmVzcy5XZWIuQVNQeEdyaWRWaWV3LnY4LjMsIFZlcnNpb249OC4zLjUuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj1iODhkMTc1NGQ3MDBlNDlhBaABSW5mb2NvcnAuSUNCYW5raW5nLldlYkNvbW1vbi5DbGFzc2VzLkdyaWRWaWV3RGF0YVRleHRDb2x1bW5UZXh0LCBJbmZvY29ycC5JQ0JhbmtpbmcuV2ViQ29tbW9uLCBWZXJzaW9uPTMuMC4xLjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49NzE4NjI4MDE3ZmZiOTY2ZWQCAw8PFgQfAAUJU2lndWllbnRlHg1PbkNsaWVudENsaWNrBSFyZXR1cm4gVmFsaWRhdGVBY2NvdW50U2VsZWN0aW9uKClkZAIBD2QWAgIBD2QWAgIBD2QWBmYPZBYIZg8PFgIfAAUKMTAwLTEyNzUtMWRkAgEPDxYCHwAFEERJQSBBUkdFTlRJTkEgU0FkZAICDw8WAh8ABQJDQ2RkAgMPDxYCHwAFBSQgICAgZGQCAg9kFghmDw8WAh8ABRYwMDcwMDI5MDMwMDA0MDAyMzU4MjA1ZGQCAQ8PFgIfAAUSQ0EgJCBCYW5jbyBHYWxpY2lhZGQCAg8PFgIfAAUCQ0FkZAIDDw8WAh8ABQUkICAgIGRkAgQPZBYGZg8PFgIfAAUIMDgvMTEvMTZkZAIBDw8WAh8ABQdGYWN0dXJhZGQCAg8PFgIfAAUBMWRkAgIPZBYCAgEPZBYCZg9kFgRmD2QWAgIBD2QWCAIDDw8WBB8JBQ5eW146O1w8PidcIl0qJB8KZxYCHwsFOXJldHVybiB2YWxpZENoYXJhY3RlcnNPbmx5KHRoaXMsIGV2ZW50LCAiXlteOjtcPD4nXCJdKiQiKWQCBQ8PFgIeB0VuYWJsZWRoZGQCBw8PFgIfEGhkZAIJDw8WAh8QaGRkAgEPZBYCAgEPZBYCAgMPZBYCZg9kFgICAQ8PFgQfCQUOXlteOjtcPD4nXCJdKiQfCmcWAh8LBTlyZXR1cm4gdmFsaWRDaGFyYWN0ZXJzT25seSh0aGlzLCBldmVudCwgIl5bXjo7XDw+J1wiXSokIilkAgIPFgIeBXN0eWxlBQ1kaXNwbGF5Om5vbmU7FgICBQ8WAh4HVmlzaWJsZWgWBAIBDxAWBh8NBQVUaXRsZR8MBQNVcmkfDmcQFQEAFQEAFCsDAWcUKwEAZAIDDxYCHxEFDWRpc3BsYXk6bm9uZTsWAmYPZBYCAgEPFgIfEQUNZGlzcGxheTpub25lO2QYAwUeX19Db250cm9sc1JlcXVpcmVQb3N0QmFja0tleV9fFg0FJWN0bDAwJE1haW5Ib2xkZXIkVHJhbnNmZXJQYW5lbENvbnRyb2wFPWN0bDAwJE1haW5Ib2xkZXIkRXh0cmFCYW5rVHJhbnNmZXJGaXJzdFN0ZXAkRGViaXRBY2NvdW50UGFuZWwFQGN0bDAwJE1haW5Ib2xkZXIkRXh0cmFCYW5rVHJhbnNmZXJGaXJzdFN0ZXAkVHJhbnNmZXJEZXRhaWxzUGFuZWwFPmN0bDAwJE1haW5Ib2xkZXIkRXh0cmFCYW5rVHJhbnNmZXJGaXJzdFN0ZXAkQ3JlZGl0QWNjb3VudFBhbmVsBSNjdGwwMCRNYWluSG9sZGVyJERldGFpbHNNYXN0ZXJQYW5lbAVDY3RsMDAkTWFpbkhvbGRlciRFeHRyYUJhbmtUcmFuc2Zlckxhc3RTdGVwJERlYml0QWNjb3VudERldGFpbHNQYW5lbAVEY3RsMDAkTWFpbkhvbGRlciRFeHRyYUJhbmtUcmFuc2Zlckxhc3RTdGVwJENyZWRpdEFjY291bnREZXRhaWxzUGFuZWwFN2N0bDAwJE1haW5Ib2xkZXIkRXh0cmFCYW5rVHJhbnNmZXJMYXN0U3RlcCREZXRhaWxzUGFuZWwFKGN0bDAwJE1haW5Ib2xkZXIkVG9rZW5Tb2xpY2l0YXRpb24kcGNNQUMFKmN0bDAwJE1haW5Ib2xkZXIkVG9rZW5Tb2xpY2l0YXRpb24kcGNUb2tlbgVEY3RsMDAkTWFpbkhvbGRlciRFeHRyYUJhbmtUcmFuc2ZlckZpcnN0U3RlcCREZWJpdEFjY291bnRBU1B4R3JpZFZpZXcFTmN0bDAwJE1haW5Ib2xkZXIkRXh0cmFCYW5rVHJhbnNmZXJGaXJzdFN0ZXAkRXh0cmFCYW5rQ3JlZGl0QWNjb3VudEFTUHhHcmlkVmlldwUZY3RsMDAkaW1hZ2VCdXR0b25Db2xsYXBzZQUaY3RsMDAkTWFpbkhvbGRlciRtdWx0aVZpZXcPD2RmZAUqY3RsMDAkTWFpbkhvbGRlciRUb2tlblNvbGljaXRhdGlvbiRtdlRva2VuDw9kZmRMpJnT0o2Sf+gVJ1IzDeD85VAggg==">
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+var theForm = document.forms['aspnetForm'];
+if (!theForm) {
+    theForm = document.aspnetForm;
+}
+function __doPostBack(eventTarget, eventArgument) {
+    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+        theForm.__EVENTTARGET.value = eventTarget;
+        theForm.__EVENTARGUMENT.value = eventArgument;
+        theForm.submit();
+    }
+}
+//]]>
+</script>
+
+
+<script src="./WebResource(2).axd" type="text/javascript"></script>
+
+<script src="./DataEntry.js.descarga"></script><script src="./DataEntry.js.descarga"></script>
+						<style>							
+							P.PanelControlTitleStyle
+							{
+ 								font-family:verdana;
+ 								font-size: 12px;
+								font-weight : bold;
+								text-align: center;  								
+							}
+						</style>						
+						<script language="javascript">
+						function MinMaxPanelControl(cntrlId)
+						{
+						    var imgPath='/App_Themes/Default/Images/';	
+					
+							//Get state from hidden control.													
+							if ( document.getElementById(cntrlId).style.display == 'none' )
+							{
+								document.getElementById(cntrlId).style.display = '';						
+								document.getElementById(cntrlId+'_imgPlusMinus').src = imgPath + 'bot-grid-minus.gif';
+							}
+							else 
+							{
+								document.getElementById(cntrlId).style.display = 'none';								
+								document.getElementById(cntrlId+'_imgPlusMinus').src = imgPath + 'bot-grid-plus.gif';
+							}
+						}
+						</script>
+			
+<script src="./ScriptResource.axd" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+var __cultureInfo = '{"name":"es-UY","numberFormat":{"CurrencyDecimalDigits":2,"CurrencyDecimalSeparator":",","IsReadOnly":false,"CurrencyGroupSizes":[3],"NumberGroupSizes":[3],"PercentGroupSizes":[3],"CurrencyGroupSeparator":".","CurrencySymbol":"$U","NaNSymbol":"NeuN","CurrencyNegativePattern":14,"NumberNegativePattern":1,"PercentPositivePattern":0,"PercentNegativePattern":0,"NegativeInfinitySymbol":"-Infinito","NegativeSign":"-","NumberDecimalDigits":2,"NumberDecimalSeparator":",","NumberGroupSeparator":".","CurrencyPositivePattern":2,"PositiveInfinitySymbol":"Infinito","PositiveSign":"+","PercentDecimalDigits":2,"PercentDecimalSeparator":",","PercentGroupSeparator":".","PercentSymbol":"%","PerMilleSymbol":"‰","NativeDigits":["0","1","2","3","4","5","6","7","8","9"],"DigitSubstitution":1},"dateTimeFormat":{"AMDesignator":"a.m.","Calendar":{"MinSupportedDateTime":"\/Date(-62135586000000)\/","MaxSupportedDateTime":"\/Date(253402300799999)\/","AlgorithmType":1,"CalendarType":1,"Eras":[1],"TwoDigitYearMax":2029,"IsReadOnly":false},"DateSeparator":"/","FirstDayOfWeek":1,"CalendarWeekRule":0,"FullDateTimePattern":"dddd, dd\u0027 de \u0027MMMM\u0027 de \u0027yyyy hh:mm:ss tt","LongDatePattern":"dddd, dd\u0027 de \u0027MMMM\u0027 de \u0027yyyy","LongTimePattern":"hh:mm:ss tt","MonthDayPattern":"dd MMMM","PMDesignator":"p.m.","RFC1123Pattern":"ddd, dd MMM yyyy HH\u0027:\u0027mm\u0027:\u0027ss \u0027GMT\u0027","ShortDatePattern":"dd/MM/yyyy","ShortTimePattern":"hh:mm tt","SortableDateTimePattern":"yyyy\u0027-\u0027MM\u0027-\u0027dd\u0027T\u0027HH\u0027:\u0027mm\u0027:\u0027ss","TimeSeparator":":","UniversalSortableDateTimePattern":"yyyy\u0027-\u0027MM\u0027-\u0027dd HH\u0027:\u0027mm\u0027:\u0027ss\u0027Z\u0027","YearMonthPattern":"MMMM\u0027 de \u0027yyyy","AbbreviatedDayNames":["dom","lun","mar","mié","jue","vie","sáb"],"ShortestDayNames":["do","lu","ma","mi","ju","vi","sá"],"DayNames":["domingo","lunes","martes","miércoles","jueves","viernes","sábado"],"AbbreviatedMonthNames":["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic",""],"MonthNames":["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre",""],"IsReadOnly":false,"NativeCalendarName":"calendario gregoriano","AbbreviatedMonthGenitiveNames":["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic",""],"MonthGenitiveNames":["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre",""]}}';//]]>
+</script>
+
+<script src="./ScriptResource(1).axd" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+if (typeof(Sys) === 'undefined') throw new Error('ASP.NET Ajax client-side framework failed to load.');
+//]]>
+</script>
+
+<script src="./ScriptResource(2).axd" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+function WebForm_OnSubmit() {
+if (typeof(ValidatorOnSubmit) == "function" && ValidatorOnSubmit() == false) return false;
+return true;
+}
+//]]>
+</script>
+
+<div>
+
+	<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEWEgKI3ILKBQLQxYOuAQKVhMa4BQLu2KHXBgKEp9GIAgKc4JTWAwKlvuOVDAKljcyKCwLR2NXXBgKkqqX9AgKs/968DgLqicujCAKuquzeBgKxhfPgDgL4pPX+CwLrl8PiDQLRqszJDgKJt+C7AYvIVL+c9kU2C2ic72mNxWsA2egv">
+</div>
+    <script type="text/javascript">
+//<![CDATA[
+Sys.WebForms.PageRequestManager._initialize('ctl00$scriptManager', document.getElementById('aspnetForm'));
+Sys.WebForms.PageRequestManager.getInstance()._updateControls([], [], [], 90);
+//]]>
+</script>
+
+    <input type="hidden" id="PageLinkData" name="PageLinkData" value="">
+    <input type="hidden" id="PageLinkUrl" name="PageLinkUrl" value="">
+    <input type="hidden" id="PageUrl" value="/Pages/Transfers/ExtraBankTransfer.aspx">
+    <table id="ctl00_tableContent" width="100%" border="0" cellpadding="0" cellspacing="0" class="ic-content">
+	<tbody><tr>
+		<td class="ic-content-left-aux">
+                <img src="./log-img-aux-left-bottom.gif" width="9" height="110">
+            </td>
+		<td style="width: 100%">
+                <table width="100%" border="0" cellpadding="0" cellspacing="0" class="ic-content-left">
+                    <tbody><tr>
+                        <td id="TdCPM" class="ic-content-space-top" valign="top">
+                            <table id="TablaCPM" width="100%" border="0" cellspacing="0" cellpadding="0">
+                                
+                                <tbody><tr>
+                                    <td>
+                                        <table id="ctl00_tableHeader" width="100%" border="0" cellspacing="0" cellpadding="0">
+			<tbody><tr>
+				<td class="ic-breadcrumb-container">
+                                                    
+                                                    &gt;
+                                                    <span id="ctl00_siteMapNavigator"><a href="http://10.1.75.104:9080/Pages/Transfers/ExtraBankTransfer.aspx#ctl00_siteMapNavigator_SkipLink"><img alt="Skip Navigation Links" height="0" width="0" src="./WebResource(3).axd" style="border-width:0px;"></a><span><a href="http://10.1.75.104:9080/Home.aspx">Posición Consolidada</a></span><span> &gt; </span><span><a>Transferencias</a></span><span> &gt; </span><span>Transferencias 24/48 horas</span><a id="ctl00_siteMapNavigator_SkipLink"></a></span>
+                                                    </td>
+				<td class="ic-toolbar-container">
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tbody><tr>
+                                                            <td width="16">
+                                                                <img src="./ico-print.gif" id="ctl00_Img4" width="16" height="16">
+                                                            </td>
+                                                            <td class="ic-links-toolbar">
+                                                                <a href="http://10.1.75.104:9080/Pages/Transfers/ExtraBankTransfer.aspx#" onclick="javascript: GoPrint();">
+                                                                    Imprimir página</a>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody></table>
+                                                </td>
+			</tr>
+		</tbody></table>
+		
+                                    </td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>
+                                        <span id="ctl00_labelTitle" class="ic-page-title">Transferencia a cuentas en otros bancos</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td id="ctl00_cellRequiered" align="right">
+                                        <img src="./ic_img-data-required.gif" id="ctl00_Img5" border="0">
+                                        <span>
+                                            Campo requerido</span>
+                                    </td>
+		
+                                </tr>
+                                <tr>
+                                    <td width="95%" align="center">
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                            <tbody><tr>
+                                                <td align="right">
+                                                    
+                                                    
+                                                </td>
+                                            </tr>
+                                        </tbody></table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="100%" align="center">
+                                        <div id="ic-loading" class="ic-loading-bg" style="display: none;">
+                                            <div class="ic-loading">
+                                                <div id="message">
+                                                    <img src="./cargandoBAR.gif" id="ctl00_imgLoading"><br>
+                                                    <span id="ctl00_WaitingMessage">Procesando...</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="mainContainer">
+                                            
+    <script language="javascript" type="text/javascript">
+        function ValidateAccountSelection() {
+            if (DebitAccountASPxGridView._getSelectedRowCount() == 0) {
+                alert('Debe seleccionar una cuenta de débito.');
+                return false;
+            }
+            else {
+                if (ExtraBankCreditAccountASPxGridView._getSelectedRowCount() == 0) {
+                    alert('Debe seleccionar una cuenta de crédito.');
+                    return false;
+                }
+            }
+            return true;
+        }
+        function removeInvalidCharacters(control) {
+            
+            !(/^[A-z0-9]*$/).test(control.value) ? control.value = control.value.replace(/[^A-z0-9]/, '') : null;
+            control.value = control.value.replace('_', '');
+            control.value = control.value.replace('^', '');
+            control.value = control.value.replace('[', '');
+            control.value = control.value.replace(']', '');
+            control.value = control.value.replace('´', '');           
+        }
+    </script>
+    
+    
+            
+
+            <table class="ic-grid-border" cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+			<tbody><tr>
+				<td><table id="ctl00_MainHolder_TransferPanelControl_thePanel" class="ic-grid" cellspacing="0" cellpadding="0" align="Center" border="0" style="width:100%;border-collapse:collapse;">
+					<tbody><tr class="ic-grid-title-row">
+						<td><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+							<tbody><tr>
+								<td class="ic-grid-title-cell-left">&nbsp;</td><td class="ic-grid-title-cell" align="left" style="white-space:nowrap;">Datos de la transferencia</td>
+							</tr>
+						</tbody></table></td>
+					</tr><tr>
+						<td align="center"><div id="ctl00_MainHolder_TransferPanelControl" style="color:Black;border-color:DodgerBlue;font-family:verdana;font-size:10pt;width:100%;display:;">
+	
+                <table class="ic-grid-border" cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+		<tbody><tr>
+			<td><table id="ctl00_MainHolder_ExtraBankTransferFirstStep_DebitAccountPanel_thePanel" class="ic-grid" cellspacing="0" cellpadding="0" align="Center" border="0" style="width:100%;border-collapse:collapse;">
+				<tbody><tr class="ic-grid-title-row">
+					<td><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td class="ic-gridB-title-cell-left">&nbsp;</td><td class="ic-gridB-title-cell" align="left" style="white-space:nowrap;">Seleccione la cuenta de débito</td>
+						</tr>
+					</tbody></table></td>
+				</tr><tr>
+					<td align="center"><div id="ctl00_MainHolder_ExtraBankTransferFirstStep_DebitAccountPanel" style="color:Black;border-color:DodgerBlue;font-family:verdana;font-size:10pt;width:100%;display:;">
+	
+    <input type="hidden"><script id="dxss_1241175972" type="text/javascript">
+<!--
+window.__aspxServerFormID = 'aspnetForm';
+window.__aspxEmptyImageUrl = '/WebResource.axd?d=r8sGQK9x2VC5LfrAIP6hMW5Of0BQVx_5pcDtr_NzGA4Mft0ncv4hE1i-zBmnc8mg561Q33dXnVDmopWX_iwnWZgBELnuoLpA0P4EazLGo0XHyr4FYJEcfil8vQPDw-wMFdsFLo8AfLVBnlRoJ_At_JUEG241&t=636117930523139822';
+//-->
+</script>
+
+	<script id="dxis_136246879" src="./WebResource(4).axd" type="text/javascript"></script>
+	<script id="dxis_73471454" src="./WebResource(5).axd" type="text/javascript"></script>
+	<table class="dxgvControl" cellspacing="0" cellpadding="0" id="ctl00_MainHolder_ExtraBankTransferFirstStep_DebitAccountASPxGridView" border="0" style="width:100%;border-collapse:collapse;border-collapse:separate;">
+		<tbody><tr>
+			<td><table id="ctl00_MainHolder_ExtraBankTransferFirstStep_DebitAccountASPxGridView_DXMainTable" class="dxgvTable" cellspacing="0" cellpadding="0" onclick="aspxGVTableClick(&#39;ctl00_MainHolder_ExtraBankTransferFirstStep_DebitAccountASPxGridView&#39;, event);" border="0" style="width:100%;border-collapse:collapse;empty-cells:show;">
+				<tbody><tr id="ctl00_MainHolder_ExtraBankTransferFirstStep_DebitAccountASPxGridView_DXHeadersRow">
+					<td id="ctl00_MainHolder_ExtraBankTransferFirstStep_DebitAccountASPxGridView_DXTDcol0" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_ExtraBankTransferFirstStep_DebitAccountASPxGridView&#39;, this, event);" style="text-align:Center;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Center;"> </td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_DebitAccountASPxGridView_DXTDGScol1" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_ExtraBankTransferFirstStep_DebitAccountASPxGridView&#39;, this, event);" style="text-align:Center;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Center;">Cuenta</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_DebitAccountASPxGridView_DXTDGScol2" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_ExtraBankTransferFirstStep_DebitAccountASPxGridView&#39;, this, event);" style="text-align:Center;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Center;">CBU</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_DebitAccountASPxGridView_DXTDGScol3" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_ExtraBankTransferFirstStep_DebitAccountASPxGridView&#39;, this, event);" style="text-align:Center;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Center;">Nombre de la cuenta</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_DebitAccountASPxGridView_DXTDGScol4" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_ExtraBankTransferFirstStep_DebitAccountASPxGridView&#39;, this, event);" style="text-align:Center;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Center;">Tipo de cuenta</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_DebitAccountASPxGridView_DXTDGScol5" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_ExtraBankTransferFirstStep_DebitAccountASPxGridView&#39;, this, event);" style="text-align:Center;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Center;">Moneda</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_DebitAccountASPxGridView_DXTDGScol6" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_ExtraBankTransferFirstStep_DebitAccountASPxGridView&#39;, this, event);" style="text-align:Center;border-left-width:0px;border-top-width:0px;border-right-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Center;">Saldo</td>
+						</tr>
+					</tbody></table></td>
+				</tr><tr id="ctl00_MainHolder_ExtraBankTransferFirstStep_DebitAccountASPxGridView_DXDataRow0" class="dxgvSelectedRow ic-grid-row01">
+					<td class="dxgvCommandColumn dxgv" align="center"><input id="ctl00_MainHolder_ExtraBankTransferFirstStep_DebitAccountASPxGridView_DXSelBtn0" class="dxgvCommandColumnItem" type="checkbox" onclick="aspxGVSelectRow(&#39;ctl00_MainHolder_ExtraBankTransferFirstStep_DebitAccountASPxGridView&#39;,0,this);" checked="T"></td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_DebitAccountASPxGridView_tccell0_1" class="dxgv" style="text-align:Left;">100-1275-1</td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_DebitAccountASPxGridView_tccell0_2" class="dxgv" style="text-align:Left;">0270100010000012750019</td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_DebitAccountASPxGridView_tccell0_3" class="dxgv" style="text-align:Left;">DIA ARGENTINA SA</td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_DebitAccountASPxGridView_tccell0_4" class="dxgv" style="text-align:Center;">CC</td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_DebitAccountASPxGridView_tccell0_5" class="dxgv" style="text-align:Center;">$    </td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_DebitAccountASPxGridView_tccell0_6" class="dxgv" style="text-align:Right;white-space:nowrap;border-right-width:0px;">1.466.732,84</td>
+				</tr><tr id="ctl00_MainHolder_ExtraBankTransferFirstStep_DebitAccountASPxGridView_DXDataRow1" class="dxgvDataRow ic-grid-row01 dxgvDataRowAlt ic-grid-row02">
+					<td class="dxgvCommandColumn dxgv" align="center" style="border-bottom-width:0px;"><input id="ctl00_MainHolder_ExtraBankTransferFirstStep_DebitAccountASPxGridView_DXSelBtn1" class="dxgvCommandColumnItem" type="checkbox" onclick="aspxGVSelectRow(&#39;ctl00_MainHolder_ExtraBankTransferFirstStep_DebitAccountASPxGridView&#39;,1,this);"></td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_DebitAccountASPxGridView_tccell1_1" class="dxgv" style="text-align:Left;border-bottom-width:0px;">100-1275-3</td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_DebitAccountASPxGridView_tccell1_2" class="dxgv" style="text-align:Left;border-bottom-width:0px;">0270100010000012750033</td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_DebitAccountASPxGridView_tccell1_3" class="dxgv" style="text-align:Left;border-bottom-width:0px;">DIA ARGENTINA SA</td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_DebitAccountASPxGridView_tccell1_4" class="dxgv" style="text-align:Center;border-bottom-width:0px;">CC</td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_DebitAccountASPxGridView_tccell1_5" class="dxgv" style="text-align:Center;border-bottom-width:0px;">$    </td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_DebitAccountASPxGridView_tccell1_6" class="dxgv" style="text-align:Right;white-space:nowrap;border-right-width:0px;border-bottom-width:0px;">29.403,57</td>
+				</tr>
+			</tbody></table><img id="ctl00_MainHolder_ExtraBankTransferFirstStep_DebitAccountASPxGridView_IADD" src="./WebResource(6).axd" alt="|" style="border-width:0px;position:absolute;visibility:hidden;"><img id="ctl00_MainHolder_ExtraBankTransferFirstStep_DebitAccountASPxGridView_IADU" src="./WebResource(7).axd" alt="|" style="border-width:0px;position:absolute;visibility:hidden;"><img id="ctl00_MainHolder_ExtraBankTransferFirstStep_DebitAccountASPxGridView_IDHF" src="./WebResource(8).axd" alt="Hide" style="border-width:0px;position:absolute;visibility:hidden;"><table id="ctl00_MainHolder_ExtraBankTransferFirstStep_DebitAccountASPxGridView_LP" class="dxgvLoadingPanel" cellspacing="0" cellpadding="0" border="0" style="border-collapse:collapse;left:0px;top:0px;z-index:30000;display:none;">
+				<tbody><tr>
+					<td class="dx"><img src="./WebResource(9).axd" alt="" align="middle" style="border-width:0px;"></td><td class="dx" style="padding-left:0px;">Cargando…</td>
+				</tr>
+			</tbody></table><div id="ctl00_MainHolder_ExtraBankTransferFirstStep_DebitAccountASPxGridView_LD" class="dxgvLoadingDiv" style="display:none;z-index:29999;position:absolute;">
+
+			</div><input type="hidden" name="ctl00$MainHolder$ExtraBankTransferFirstStep$DebitAccountASPxGridView$DXSelInput" id="ctl00_MainHolder_ExtraBankTransferFirstStep_DebitAccountASPxGridView_DXSelInput" value="T"><table id="ctl00_MainHolder_ExtraBankTransferFirstStep_DebitAccountASPxGridView_DXStyleTable" border="0" style="display:none;">
+				<tbody><tr>
+					<td></td>
+				</tr><tr class="dxgvEditingErrorRow">
+					<td class="dxgv" colspan="7" style="border-right-width:0px;"></td>
+				</tr><tr class="dxgvSelectedRow ic-grid-row01">
+					<td></td>
+				</tr><tr class="dxgvFocusedRow ic-grid-row01">
+					<td></td>
+				</tr><tr class="dxgvFocusedGroupRow">
+					<td></td>
+				</tr><tr class="dxgvDataRow ic-grid-row01">
+					<td></td>
+				</tr><tr class="dxgvDataRow ic-grid-row01 dxgvDataRowAlt ic-grid-row02">
+					<td></td>
+				</tr>
+			</tbody></table><input type="hidden" name="ctl00$MainHolder$ExtraBankTransferFirstStep$DebitAccountASPxGridView$CallbackState" id="ctl00_MainHolder_ExtraBankTransferFirstStep_DebitAccountASPxGridView_CallbackState" value="/wEWBB4ERGF0YQWADUFBQUFBQUlBQUFBQUFBQUFBZ0FBQUFBSUFBQUFCVUZzYVdGekJVRnNhV0Z6QndBQUVFRjJZV2xzWVdKc1pVSmhiR0Z1WTJVUVFYWmhhV3hoWW14bFFtRnNZVzVqWlFVQUFBWlVlWEJsU1dRR1ZIbHdaVWxrQndBQUVVeHZibWRCWTJOdmRXNTBUblZ0WW1WeUVVeHZibWRCWTJOdmRXNTBUblZ0WW1WeUJ3QUJEa04xY25KbGJtTjVVM2x0WW05c0RrTjFjbkpsYm1ONVUzbHRZbTlzQndBQUEwTkNWUU5EUWxVSEFBQUpVSEp2WkhWamRFbGtDVkJ5YjJSMVkzUkpaQWNBQUF0UWNtOWtkV04wUTI5a1pRdFFjbTlrZFdOMFEyOWtaUWNBQURZQUFBQU5RV05qYjNWdWRFNTFiV0psY2doRGRYSnlaVzVqZVF0QlkyTnZkVzUwVkhsd1pSQkRiMnhzWldOMFpXUkNZV3hoYm1ObEJVOTNibVZ5QmtKeVlXNWphQWhDY21GdVkyaEpaQVZUZEdGMFpRUkRhWFI1REZKbGMzUnlhV04wYVc5dWN3eEZibU55ZVhCMFpXUkxaWGtmVEc5dVowRmpZMjkxYm5ST2RXMWlaWEpOYjJSMWJHVkRkWEp5Wlc1amVSbE1iMjVuUVdOamIzVnVkRTUxYldKbGNrTjFjbkpsYm1ONUMwZHlhV1JCWTJOdmRXNTBFMVZ1YVhGMVpVRmpZMjkxYm5ST2RXMWlaWElQUjNKcFpGUjVjR1ZCWTJOdmRXNTBHVXh2Ym1kQlkyTnZkVzUwVG5WdFltVnlWSEpoYm5ObVpYSUVRbUZ1YXc1Q2JHOWphMlZrUW1Gc1lXNWpaUWxQZG1WeVpISmhablFIUTI5dGNHRnVlUXhFYjJOMWJXVnVkRlI1Y0dVT1JHOWpkVzFsYm5ST2RXMWlaWElHVFc5a2RXeGxCVkJoY0dWeUQwOXdaWEpoZEdsdmJrNTFiV0psY2hKVGRXSlBjR1Z5WVhScGIyNU9kVzFpWlhJTlQzQmxjbUYwYVc5dVZIbHdaUk5EZFhKeVpXNWplVVJsYzJOeWFYQjBhVzl1RVUxdlpIVnNaVVJsYzJOeWFYQjBhVzl1QzBKaGJHRnVZMlZFWVhSbEZFVjRkSEpoWTNSR2NtVnhkV1Z1WTNsRGIyUmxHMFY0ZEhKaFkzUkdjbVZ4ZFdWdVkzbEVaWE5qY21sd2RHbHZiZzlGZUhSeVlXTjBWSGx3WlVOdlpHVVdSWGgwY21GamRGUjVjR1ZFWlhOamNtbHdkR2x2Ymd0RVlYbHpUM1psY21SMVpRcFFjbTkyYVc1alpVbGtGRWx6VTNWd1pYSjJhV1ZzYkdWQlkyTnZkVzUwREU5aWMyVnlkbUYwYVc5dWN3cFRZVzFsU0c5c1pHVnlDRk4wWVhSMWMwbGtEVVY0WldOMWRHbDJaVU52WkdVTlJYaGxZM1YwYVhabFRtRnRaUTFGZUdsemRITkpia3h2WTJGc0YwUnZZM1Z0Wlc1MFZIbHdaVVJsYzJOeWFYQjBhVzl1RkVKaGJtVnNZMjlCWTJOdmRXNTBUblZ0WW1WeUVWQnlaVUZ3Y0hKdmRtVmtRazlPWVcxbEJVVnRZV2xzQkU1aGJXVUtRV05qYjNWdWRFOTNiZ05VWldFVlRtVjNVMlZ5ZG1salpVZGxkRkJ5YjJSMVkzUnpCbE4wWVhSMWN3eEJaR2hsYzJsdmJsUjVjR1VIQUFjQUJ3QUhBQWIvL3djQ0VFUkpRU0JCVWtkRlRsUkpUa0VnVTBFRkE0UU92Z2dBQUFBQUFBQUFBQUFBQWdBSEFnSkRRd2NDQ2pFd01DMHhNamMxTFRFSEFnVWtJQ0FnSUFjQ0ZqQXlOekF4TURBd01UQXdNREF3TVRJM05UQXdNVGtIQWdRM01Ea3lCd0lZTVMweE1EQXRNakF0T0RBdE1DMHhNamMxTFRBdE1TMDBCd0FIQUFiLy93Y0NFRVJKUVNCQlVrZEZUbFJKVGtFZ1UwRUZBOFhkTEFBQUFBQUFBQUFBQUFBQUFnQUhBZ0pEUXdjQ0NqRXdNQzB4TWpjMUxUTUhBZ1VrSUNBZ0lBY0NGakF5TnpBeE1EQXdNVEF3TURBd01USTNOVEF3TXpNSEFnUTNNRGswQndJWU1TMHhNREF0TWpBdE9EQXRNQzB4TWpjMUxUQXRNeTAwHgVTdGF0ZQV4QndrSEFBSUJCd0VDQVFjQ0FnRUhBd0lCQndRQ0FRY0ZBZ0VIQmdJQkJ3Y0NBQWNJQWdBSEFBY0FCd0FIQUFJQUJ2Ly9DUUlKVUhKdlpIVmpkRWxrQ1FJQUFnQURCd1FDQUFjQUFnRUhBUWNDQkRjd09USUNBUWNB"></td>
+		</tr>
+	</tbody></table><script id="dxss_1355467968" type="text/javascript">
+<!--
+
+var dxo = new ASPxClientGridView('ctl00_MainHolder_ExtraBankTransferFirstStep_DebitAccountASPxGridView');
+window['DebitAccountASPxGridView'] = dxo;
+dxo.callBack = function(arg) { WebForm_DoCallback('ctl00$MainHolder$ExtraBankTransferFirstStep$DebitAccountASPxGridView',arg,aspxCallback,'ctl00_MainHolder_ExtraBankTransferFirstStep_DebitAccountASPxGridView',aspxCallbackError,true); };
+dxo.uniqueID = 'ctl00$MainHolder$ExtraBankTransferFirstStep$DebitAccountASPxGridView';
+dxo.RowClick.AddHandler(function(sender, args) { OnRowClick(sender, args); });
+dxo.callBacksEnabled=true;
+dxo.pageRowCount=2;
+dxo.selectedWithoutPageRowCount=0;
+dxo.visibleStartIndex=0;
+dxo.focusedRowIndex=-1;
+dxo.allowFocusedRow=false;
+dxo.allowMultiSelection=false;
+dxo.isColumnsResizable=false;
+dxo.isVerticalScrolling=false;
+dxo.isMainControlResizable=false;
+dxo.callbackOnFocusedRowChanged=false;
+dxo.callbackOnSelectionChanged=false;
+dxo.autoFilterDelay='1200';
+dxo.ClearColumns();
+dxo.CreateColumn('',0,null,1);
+dxo.CreateColumn('',1,'LongAccountNumber',1);
+dxo.CreateColumn('',2,'CBU',1);
+dxo.CreateColumn('',3,'Alias',1);
+dxo.CreateColumn('',4,'TypeId',1);
+dxo.CreateColumn('',5,'CurrencySymbol',1);
+dxo.CreateColumn('',6,'AvailableBalance',1);
+dxo.CreateColumn('',7,'ProductCode',0);
+dxo.CreateColumn('',8,'ProductId',0);
+dxo.keys=['7092','7094'];
+dxo.InlineInitialize();
+
+//-->
+</script>
+
+    
+
+</div></td>
+				</tr>
+			</tbody></table></td>
+		</tr>
+	</tbody></table>
+
+&nbsp;
+<table class="ic-grid-border" cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+		<tbody><tr>
+			<td><table id="ctl00_MainHolder_ExtraBankTransferFirstStep_TransferDetailsPanel_thePanel" class="ic-grid" cellspacing="0" cellpadding="0" align="Center" border="0" style="width:100%;border-collapse:collapse;">
+				<tbody><tr class="ic-grid-title-row">
+					<td><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td class="ic-gridB-title-cell-left">&nbsp;</td><td class="ic-gridB-title-cell" align="left" style="white-space:nowrap;">Detalle de la operación</td>
+						</tr>
+					</tbody></table></td>
+				</tr><tr>
+					<td align="center"><div id="ctl00_MainHolder_ExtraBankTransferFirstStep_TransferDetailsPanel" style="color:Black;border-color:DodgerBlue;font-family:verdana;font-size:10pt;width:100%;display:;">
+	
+    <table style="width: 100%">
+        <tbody><tr class="ic-form-row">
+            <td style="width: 25%" class="ic-form-label">
+                Importe a transferir:
+            </td>
+            <td class="ic-form-data-required">
+                <input name="ctl00$MainHolder$ExtraBankTransferFirstStep$Amount" type="text" value="1" maxlength="15" id="ctl00_MainHolder_ExtraBankTransferFirstStep_Amount" class="ic-control-text" onpaste="return false" onkeypress="return numbersonly(this, event, true, &#39;,&#39;)" style="width:110px;">
+                <span id="ctl00_MainHolder_ExtraBankTransferFirstStep_RequiredFieldValidator1" title="Campo requerido" style="color:Red;display:none;">*</span>
+                <span id="ctl00_MainHolder_ExtraBankTransferFirstStep_DecimalValidator" style="color:Red;visibility:hidden;">Formato incorrecto</span>
+            </td>    
+             <td class="ic-message">
+                Ingrese el importe sin puntos  y anteponiendo "coma" a los decimales
+            </td>                                
+        </tr>
+        <tr class="ic-form-row">
+            <td style="width: 25%" class="ic-form-label">
+                Concepto:
+            </td>
+            <td class="ic-form-data-required" colspan="2">
+                <select name="ctl00$MainHolder$ExtraBankTransferFirstStep$ConceptIdDropDownList" id="ctl00_MainHolder_ExtraBankTransferFirstStep_ConceptIdDropDownList" class="ic-control-select" style="width:150px;">
+		<option value="SUE">Sueldos</option>
+		<option value="ALQ">Alquileres</option>
+		<option value="CUO">Cuota</option>
+		<option value="EXP">Expensas</option>
+		<option selected="selected" value="FAC">Factura</option>
+		<option value="PRE">Préstamo</option>
+		<option value="SEG">Seguro</option>
+		<option value="HON">Honorarios</option>
+		<option value="VAR">Varios</option>
+		<option value="[Seleccionar]">[Seleccionar]</option>
+
+	</select>
+                <span id="ctl00_MainHolder_ExtraBankTransferFirstStep_CustomValidator1" style="color:Red;visibility:hidden;">Campo requerido</span>
+                
+            </td>            
+        </tr>
+        <tr class="ic-form-row">
+            <td style="width: 25%" class="ic-form-label">
+                Detalle:
+            </td>
+            <td class="ic-form-data" colspan="2">
+                <input name="ctl00$MainHolder$ExtraBankTransferFirstStep$FreeText" type="text" maxlength="12" id="ctl00_MainHolder_ExtraBankTransferFirstStep_FreeText" class="ic-control-text" onpaste="return false" onkeyup="removeInvalidCharacters(this)" onblur="removeInvalidCharacters(this)" onkeypress="return validCharactersOnly(this, event, &quot;^[^:;\&lt;&gt;&#39;\&quot;]*$&quot;)" style="width:20%;">
+                <span id="ctl00_MainHolder_ExtraBankTransferFirstStep_ValidateName" style="color:Red;visibility:hidden;">Formato incorrecto, debe ingresar solo letras.</span>
+            </td>
+        </tr>
+    </tbody></table>   
+
+</div></td>
+				</tr>
+			</tbody></table></td>
+		</tr>
+	</tbody></table>
+
+&nbsp;
+<table class="ic-grid-border" cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+		<tbody><tr>
+			<td><table id="ctl00_MainHolder_ExtraBankTransferFirstStep_CreditAccountPanel_thePanel" class="ic-grid" cellspacing="0" cellpadding="0" align="Center" border="0" style="width:100%;border-collapse:collapse;">
+				<tbody><tr class="ic-grid-title-row">
+					<td><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td class="ic-gridB-title-cell-left">&nbsp;</td><td class="ic-gridB-title-cell" align="left" style="white-space:nowrap;">Seleccione la cuenta de crédito</td>
+						</tr>
+					</tbody></table></td>
+				</tr><tr>
+					<td align="center"><div id="ctl00_MainHolder_ExtraBankTransferFirstStep_CreditAccountPanel" style="color:Black;border-color:DodgerBlue;font-family:verdana;font-size:10pt;width:100%;display:;">
+	
+    <input type="hidden"><table class="dxgvControl" cellspacing="0" cellpadding="0" id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView" border="0" style="width:100%;border-collapse:collapse;border-collapse:separate;">
+		<tbody><tr>
+			<td><table id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_DXMainTable" class="dxgvTable" cellspacing="0" cellpadding="0" onclick="aspxGVTableClick(&#39;ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView&#39;, event);" border="0" style="width:100%;border-collapse:collapse;empty-cells:show;">
+				<tbody><tr id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_DXHeadersRow">
+					<td id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_DXTDcol0" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView&#39;, this, event);" style="text-align:Center;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Center;"> </td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_DXTDGScol1" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView&#39;, this, event);" style="text-align:Center;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Center;">Cuenta</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_DXTDGScol2" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView&#39;, this, event);" style="text-align:Center;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Center;">CBU</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_DXTDGScol4" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView&#39;, this, event);" style="text-align:Center;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Center;">Tipo Documento</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_DXTDGScol5" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView&#39;, this, event);" style="text-align:Center;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Center;">Número Documento</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_DXTDGScol6" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView&#39;, this, event);" style="text-align:Center;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Center;">Nombre de la cuenta</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_DXTDGScol7" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView&#39;, this, event);" style="text-align:Center;border-left-width:0px;border-top-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Center;">Tipo de cuenta</td>
+						</tr>
+					</tbody></table></td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_DXTDGScol8" class="dxgvHeader" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView&#39;, this, event);" style="text-align:Center;border-left-width:0px;border-top-width:0px;border-right-width:0px;"><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+						<tbody><tr>
+							<td style="text-align:Center;">Moneda</td>
+						</tr>
+					</tbody></table></td>
+				</tr><tr id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_DXDataRow0" class="dxgvSelectedRow ic-grid-row01">
+					<td class="dxgvCommandColumn dxgv" align="center"><input id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_DXSelBtn0" class="dxgvCommandColumnItem" type="checkbox" onclick="aspxGVSelectRow(&#39;ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView&#39;,0,this);" checked="T"></td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_tccell0_1" class="dxgv" style="text-align:Left;">&nbsp;</td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_tccell0_2" class="dxgv" style="text-align:Left;">0070029030004002358205</td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_tccell0_4" class="dxgv" style="text-align:Center;">C.U.I.L.</td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_tccell0_5" class="dxgv" style="text-align:Center;">27120092281</td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_tccell0_6" class="dxgv" style="text-align:Left;">CA $ Banco Galicia</td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_tccell0_7" class="dxgv" style="text-align:Center;">CA</td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_tccell0_8" class="dxgv" style="text-align:Center;border-right-width:0px;">$    </td>
+				</tr><tr id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_DXDataRow1" class="dxgvDataRow ic-grid-row01 dxgvDataRowAlt ic-grid-row02">
+					<td class="dxgvCommandColumn dxgv" align="center"><input id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_DXSelBtn1" class="dxgvCommandColumnItem" type="checkbox" onclick="aspxGVSelectRow(&#39;ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView&#39;,1,this);"></td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_tccell1_1" class="dxgv" style="text-align:Left;">&nbsp;</td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_tccell1_2" class="dxgv" style="text-align:Left;">0290012410000035616125</td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_tccell1_4" class="dxgv" style="text-align:Center;">C.U.I.L.</td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_tccell1_5" class="dxgv" style="text-align:Center;">27120092281</td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_tccell1_6" class="dxgv" style="text-align:Left;">CA $ Banco Ciudad</td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_tccell1_7" class="dxgv" style="text-align:Center;">CA</td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_tccell1_8" class="dxgv" style="text-align:Center;border-right-width:0px;">$    </td>
+				</tr><tr id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_DXDataRow2" class="dxgvDataRow ic-grid-row01">
+					<td class="dxgvCommandColumn dxgv" align="center"><input id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_DXSelBtn2" class="dxgvCommandColumnItem" type="checkbox" onclick="aspxGVSelectRow(&#39;ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView&#39;,2,this);"></td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_tccell2_1" class="dxgv" style="text-align:Left;">&nbsp;</td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_tccell2_2" class="dxgv" style="text-align:Left;">0290030810000035342743</td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_tccell2_4" class="dxgv" style="text-align:Center;">C.U.I.L.</td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_tccell2_5" class="dxgv" style="text-align:Center;">27120092281</td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_tccell2_6" class="dxgv" style="text-align:Left;">CA $ Banco Ciudad</td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_tccell2_7" class="dxgv" style="text-align:Center;">CA</td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_tccell2_8" class="dxgv" style="text-align:Center;border-right-width:0px;">$    </td>
+				</tr><tr id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_DXDataRow3" class="dxgvDataRow ic-grid-row01 dxgvDataRowAlt ic-grid-row02">
+					<td class="dxgvCommandColumn dxgv" align="center"><input id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_DXSelBtn3" class="dxgvCommandColumnItem" type="checkbox" onclick="aspxGVSelectRow(&#39;ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView&#39;,3,this);"></td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_tccell3_1" class="dxgv" style="text-align:Left;">&nbsp;</td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_tccell3_2" class="dxgv" style="text-align:Left;">0720201088000036060768</td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_tccell3_4" class="dxgv" style="text-align:Center;">C.U.I.L.</td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_tccell3_5" class="dxgv" style="text-align:Center;">23115972499</td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_tccell3_6" class="dxgv" style="text-align:Left;">CA $ Banco Santander</td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_tccell3_7" class="dxgv" style="text-align:Center;">CA</td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_tccell3_8" class="dxgv" style="text-align:Center;border-right-width:0px;">$    </td>
+				</tr><tr id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_DXDataRow4" class="dxgvDataRow ic-grid-row01">
+					<td class="dxgvCommandColumn dxgv" align="center" style="border-bottom-width:0px;"><input id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_DXSelBtn4" class="dxgvCommandColumnItem" type="checkbox" onclick="aspxGVSelectRow(&#39;ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView&#39;,4,this);"></td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_tccell4_1" class="dxgv" style="text-align:Left;border-bottom-width:0px;">&nbsp;</td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_tccell4_2" class="dxgv" style="text-align:Left;border-bottom-width:0px;">2590016520082468430180</td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_tccell4_4" class="dxgv" style="text-align:Center;border-bottom-width:0px;">C.U.I.T.</td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_tccell4_5" class="dxgv" style="text-align:Center;border-bottom-width:0px;">30685849751</td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_tccell4_6" class="dxgv" style="text-align:Left;border-bottom-width:0px;">CA $ Itau - DIA Argentina SA</td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_tccell4_7" class="dxgv" style="text-align:Center;border-bottom-width:0px;">CA</td><td id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_tccell4_8" class="dxgv" style="text-align:Center;border-right-width:0px;border-bottom-width:0px;">$    </td>
+				</tr>
+			</tbody></table><img id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_IADD" src="./WebResource(6).axd" alt="|" style="border-width:0px;position:absolute;visibility:hidden;"><img id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_IADU" src="./WebResource(7).axd" alt="|" style="border-width:0px;position:absolute;visibility:hidden;"><img id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_IDHF" src="./WebResource(8).axd" alt="Hide" style="border-width:0px;position:absolute;visibility:hidden;"><table id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_LP" class="dxgvLoadingPanel" cellspacing="0" cellpadding="0" border="0" style="border-collapse:collapse;left:0px;top:0px;z-index:30000;display:none;">
+				<tbody><tr>
+					<td class="dx"><img src="./WebResource(9).axd" alt="" align="middle" style="border-width:0px;"></td><td class="dx" style="padding-left:0px;">Cargando…</td>
+				</tr>
+			</tbody></table><div id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_LD" class="dxgvLoadingDiv" style="display:none;z-index:29999;position:absolute;">
+
+			</div><input type="hidden" name="ctl00$MainHolder$ExtraBankTransferFirstStep$ExtraBankCreditAccountASPxGridView$DXSelInput" id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_DXSelInput" value="T"><table id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_DXStyleTable" border="0" style="display:none;">
+				<tbody><tr>
+					<td></td>
+				</tr><tr class="dxgvEditingErrorRow">
+					<td class="dxgv" colspan="8" style="border-right-width:0px;"></td>
+				</tr><tr class="dxgvSelectedRow ic-grid-row01">
+					<td></td>
+				</tr><tr class="dxgvFocusedRow ic-grid-row01">
+					<td></td>
+				</tr><tr class="dxgvFocusedGroupRow">
+					<td></td>
+				</tr><tr class="dxgvDataRow ic-grid-row01">
+					<td></td>
+				</tr><tr class="dxgvDataRow ic-grid-row01 dxgvDataRowAlt ic-grid-row02">
+					<td></td>
+				</tr><tr class="dxgvDataRow ic-grid-row01">
+					<td></td>
+				</tr><tr class="dxgvDataRow ic-grid-row01 dxgvDataRowAlt ic-grid-row02">
+					<td></td>
+				</tr><tr class="dxgvDataRow ic-grid-row01">
+					<td></td>
+				</tr>
+			</tbody></table><input type="hidden" name="ctl00$MainHolder$ExtraBankTransferFirstStep$ExtraBankCreditAccountASPxGridView$CallbackState" id="ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView_CallbackState" value="/wEWBB4ERGF0YQXQEEFBQUFBQVVBQUFBQUFBQUFCUUFBQUFBTEFBQUFCVUZzYVdGekJVRnNhV0Z6QndBQURVRmpZMjkxYm5ST2RXMWlaWElOUVdOamIzVnVkRTUxYldKbGNnY0FBQWhEZFhKeVpXNWplUWhEZFhKeVpXNWplUWNBQUFaVWVYQmxTV1FHVkhsd1pVbGtCd0FBREVSdlkzVnRaVzUwVkhsd1pReEViMk4xYldWdWRGUjVjR1VIQUFBT1JHOWpkVzFsYm5ST2RXMWlaWElPUkc5amRXMWxiblJPZFcxaVpYSUhBQUFPUTNWeWNtVnVZM2xUZVcxaWIyd09RM1Z5Y21WdVkzbFRlVzFpYjJ3SEFBQURRMEpWQTBOQ1ZRY0FBQXBRY205MmFXNWpaVWxrQ2xCeWIzWnBibU5sU1dRSEFBQUtVMkZ0WlVodmJHUmxjZ3BUWVcxbFNHOXNaR1Z5Q2dBQUYwUnZZM1Z0Wlc1MFZIbHdaVVJsYzJOeWFYQjBhVzl1RjBSdlkzVnRaVzUwVkhsd1pVUmxjMk55YVhCMGFXOXVCd0FBTXdBQUFCQkJkbUZwYkdGaWJHVkNZV3hoYm1ObEMwRmpZMjkxYm5SVWVYQmxFRU52Ykd4bFkzUmxaRUpoYkdGdVkyVUZUM2R1WlhJR1FuSmhibU5vQ0VKeVlXNWphRWxrQlZOMFlYUmxCRU5wZEhrTVVtVnpkSEpwWTNScGIyNXpERVZ1WTNKNWNIUmxaRXRsZVJGTWIyNW5RV05qYjNWdWRFNTFiV0psY2g5TWIyNW5RV05qYjNWdWRFNTFiV0psY2sxdlpIVnNaVU4xY25KbGJtTjVHVXh2Ym1kQlkyTnZkVzUwVG5WdFltVnlRM1Z5Y21WdVkza0xSM0pwWkVGalkyOTFiblFUVlc1cGNYVmxRV05qYjNWdWRFNTFiV0psY2c5SGNtbGtWSGx3WlVGalkyOTFiblFaVEc5dVowRmpZMjkxYm5ST2RXMWlaWEpVY21GdWMyWmxjZ1JDWVc1ckRrSnNiMk5yWldSQ1lXeGhibU5sQ1U5MlpYSmtjbUZtZEFkRGIyMXdZVzU1QmsxdlpIVnNaUVZRWVhCbGNnOVBjR1Z5WVhScGIyNU9kVzFpWlhJU1UzVmlUM0JsY21GMGFXOXVUblZ0WW1WeURVOXdaWEpoZEdsdmJsUjVjR1VUUTNWeWNtVnVZM2xFWlhOamNtbHdkR2x2YmhGTmIyUjFiR1ZFWlhOamNtbHdkR2x2Ymd0Q1lXeGhibU5sUkdGMFpSUkZlSFJ5WVdOMFJuSmxjWFZsYm1ONVEyOWtaUnRGZUhSeVlXTjBSbkpsY1hWbGJtTjVSR1Z6WTNKcGNIUnBiMjRQUlhoMGNtRmpkRlI1Y0dWRGIyUmxGa1Y0ZEhKaFkzUlVlWEJsUkdWelkzSnBjSFJwYjI0TFJHRjVjMDkyWlhKa2RXVVVTWE5UZFhCbGNuWnBaV3hzWlVGalkyOTFiblFNVDJKelpYSjJZWFJwYjI1ekNGTjBZWFIxYzBsa0RVVjRaV04xZEdsMlpVTnZaR1VOUlhobFkzVjBhWFpsVG1GdFpRMUZlR2x6ZEhOSmJreHZZMkZzRkVKaGJtVnNZMjlCWTJOdmRXNTBUblZ0WW1WeUVWQnlaVUZ3Y0hKdmRtVmtRazlPWVcxbEJVVnRZV2xzQkU1aGJXVUtRV05qYjNWdWRFOTNiZ05VWldFVlRtVjNVMlZ5ZG1salpVZGxkRkJ5YjJSMVkzUnpCbE4wWVhSMWN3eEJaR2hsYzJsdmJsUjVjR1VKVUhKdlpIVmpkRWxrQzFCeWIyUjFZM1JEYjJSbEJ3QUhBQWNBQndBRy8vOEhBaEpEUVNBa0lFSmhibU52SUVkaGJHbGphV0VKQndJQ09EQUhBZ0pEUVFjQ0FUSUhBZ3N5TnpFeU1EQTVNakk0TVFjQ0JTUWdJQ0FnQndJV01EQTNNREF5T1RBek1EQXdOREF3TWpNMU9ESXdOUWNDQWpBeENnSUFCd0lJUXk1Vkxra3VUQzRIQUFjQUJ2Ly9Cd0lSUTBFZ0pDQkNZVzVqYnlCRGFYVmtZV1FKQndJQ09EQUhBZ0pEUVFjQ0FUSUhBZ3N5TnpFeU1EQTVNakk0TVFjQ0JTUWdJQ0FnQndJV01ESTVNREF4TWpReE1EQXdNREF6TlRZeE5qRXlOUWNDQWpBeENnSUFCd0lJUXk1Vkxra3VUQzRIQUFjQUJ2Ly9Cd0lSUTBFZ0pDQkNZVzVqYnlCRGFYVmtZV1FKQndJQ09EQUhBZ0pEUVFjQ0FUSUhBZ3N5TnpFeU1EQTVNakk0TVFjQ0JTUWdJQ0FnQndJV01ESTVNREF6TURneE1EQXdNREF6TlRNME1qYzBNd2NDQWpBeENnSUFCd0lJUXk1Vkxra3VUQzRIQUFjQUJ2Ly9Cd0lVUTBFZ0pDQkNZVzVqYnlCVFlXNTBZVzVrWlhJSkJ3SUNPREFIQWdKRFFRY0NBVElIQWdzeU16RXhOVGszTWpRNU9RY0NCU1FnSUNBZ0J3SVdNRGN5TURJd01UQTRPREF3TURBek5qQTJNRGMyT0FjQ0FqQXhDZ0lBQndJSVF5NVZMa2t1VEM0SEFBY0FCdi8vQndJY1EwRWdKQ0JKZEdGMUlDMGdSRWxCSUVGeVoyVnVkR2x1WVNCVFFRa0hBZ0k0TUFjQ0FrTkJCd0lCTVFjQ0N6TXdOamcxT0RRNU56VXhCd0lGSkNBZ0lDQUhBaFl5TlRrd01ERTJOVEl3TURneU5EWTRORE13TVRnd0J3SUNNREVLQWdFSEFnaERMbFV1U1M1VUxnPT0eBVN0YXRlBZgBQnd3SEFBSUJCd0VDQVFjQ0FnRUhBd0lBQndNQ0FRY0VBZ0VIQlFJQkJ3WUNBUWNIQWdFSENBSUFCd2tDQUFjS0FnQUhBQWNBQndBSEFBSUFCdi8vQ1FJRFEwSlZDUUlBQWdBREJ3UUNBQWNBQWdFSEFRY0NGakF3TnpBd01qa3dNekF3TURRd01ESXpOVGd5TURVQ0FRY0E="></td>
+		</tr>
+	</tbody></table><script id="dxss_1556310773" type="text/javascript">
+<!--
+
+var dxo = new ASPxClientGridView('ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView');
+window['ExtraBankCreditAccountASPxGridView'] = dxo;
+dxo.callBack = function(arg) { WebForm_DoCallback('ctl00$MainHolder$ExtraBankTransferFirstStep$ExtraBankCreditAccountASPxGridView',arg,aspxCallback,'ctl00_MainHolder_ExtraBankTransferFirstStep_ExtraBankCreditAccountASPxGridView',aspxCallbackError,true); };
+dxo.uniqueID = 'ctl00$MainHolder$ExtraBankTransferFirstStep$ExtraBankCreditAccountASPxGridView';
+dxo.RowClick.AddHandler(function(sender, args) { OnRowClick(sender, args); });
+dxo.callBacksEnabled=true;
+dxo.pageRowCount=5;
+dxo.selectedWithoutPageRowCount=0;
+dxo.visibleStartIndex=0;
+dxo.focusedRowIndex=-1;
+dxo.allowFocusedRow=false;
+dxo.allowMultiSelection=false;
+dxo.isColumnsResizable=false;
+dxo.isVerticalScrolling=false;
+dxo.isMainControlResizable=false;
+dxo.callbackOnFocusedRowChanged=false;
+dxo.callbackOnSelectionChanged=false;
+dxo.autoFilterDelay='1200';
+dxo.ClearColumns();
+dxo.CreateColumn('',0,null,1);
+dxo.CreateColumn('',1,'AccountNumber',1);
+dxo.CreateColumn('',2,'CBU',1);
+dxo.CreateColumn('',3,'DocumentType',0);
+dxo.CreateColumn('',4,'DocumentTypeDescription',1);
+dxo.CreateColumn('',5,'DocumentNumber',1);
+dxo.CreateColumn('',6,'Alias',1);
+dxo.CreateColumn('',7,'TypeId',1);
+dxo.CreateColumn('',8,'CurrencySymbol',1);
+dxo.CreateColumn('',9,'ProvinceId',0);
+dxo.CreateColumn('',10,'Currency',0);
+dxo.CreateColumn('',11,'SameHolder',0);
+dxo.keys=['0070029030004002358205','0290012410000035616125','0290030810000035342743','0720201088000036060768','2590016520082468430180'];
+dxo.InlineInitialize();
+
+//-->
+</script>
+
+    
+
+</div></td>
+				</tr>
+			</tbody></table></td>
+		</tr>
+	</tbody></table>
+
+
+
+                <table width="100%">
+                    <tbody><tr>
+                        <td style="width: 100%">                                 
+                        </td>                     
+                        <td align="right" nowrap="nowrap">
+                            <a onclick="return ValidateAccountSelection();" id="ctl00_MainHolder_FirstStepNextLinkButton" class="ic-button-navigation" href="javascript:WebForm_DoPostBackWithOptions(new WebForm_PostBackOptions(&quot;ctl00$MainHolder$FirstStepNextLinkButton&quot;, &quot;&quot;, true, &quot;Confirmation&quot;, &quot;&quot;, false, true))">Siguiente</a>                        
+                        </td>
+                        
+                    </tr>
+                </tbody></table>
+            
+</div></td>
+					</tr>
+				</tbody></table></td>
+			</tr>
+		</tbody></table> 
+        
+   
+    
+
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="right">
+                                        <div id="ctl00_validationSummaryFooter" style="color:Red;font-size:10px;display:none;">
+
+		</div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="95%" align="center">
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                            <tbody><tr>
+                                                <td align="right">
+                                                    
+                                                    
+                                                </td>
+                                            </tr>
+                                        </tbody></table>
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="ic-content-footer">
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                <tbody><tr class="ic-content-footer-dottedline">
+                                    <td align="right" nowrap="nowrap" style="width: 90%">
+                                    </td>
+                                    <td align="right" nowrap="nowrap" style="width: 10%">
+                                        <a id="ctl00_LinkButtonTermsAndConditions" class="ic-grid-link" href="javascript:__doPostBack(&#39;ctl00$LinkButtonTermsAndConditions&#39;,&#39;&#39;)">Términos y Condiciones</a>
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                </tbody></table>
+            </td>
+		<td id="ctl00_cellContentRight" class="ic-content-space-top-right" valign="top" style="display:none;">
+                <table class="ic-content-right" border="0" cellspacing="0" cellpadding="0">
+                    <tbody><tr>
+                        <td>
+                            <img src="./pixel.gif" width="8" height="1">
+                        </td>
+                        <td class="ic-right-panel">
+                            <table border="0" cellpadding="0" cellspacing="0" class="ic-right-panel-content">
+                                <tbody><tr>
+                                    <td width="8" class="ic-right-panel-collapse">
+                                        <input type="image" name="ctl00$imageButtonCollapse" id="ctl00_imageButtonCollapse" src="./bot-right-collapse.gif" style="height:47px;width:9px;border-width:0px;">
+                                    </td>
+                                    
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                </tbody></table>
+            </td>
+	</tr>
+</tbody></table>
+
+    
+    
+<script type="text/javascript">
+//<![CDATA[
+var Page_ValidationSummaries =  new Array(document.getElementById("ctl00_validationSummaryFooter"));
+var Page_Validators =  new Array(document.getElementById("ctl00_MainHolder_ExtraBankTransferFirstStep_RequiredFieldValidator1"), document.getElementById("ctl00_MainHolder_ExtraBankTransferFirstStep_DecimalValidator"), document.getElementById("ctl00_MainHolder_ExtraBankTransferFirstStep_CustomValidator1"), document.getElementById("ctl00_MainHolder_ExtraBankTransferFirstStep_ValidateName"));
+//]]>
+</script>
+
+<script type="text/javascript">
+//<![CDATA[
+var ctl00_MainHolder_ExtraBankTransferFirstStep_RequiredFieldValidator1 = document.all ? document.all["ctl00_MainHolder_ExtraBankTransferFirstStep_RequiredFieldValidator1"] : document.getElementById("ctl00_MainHolder_ExtraBankTransferFirstStep_RequiredFieldValidator1");
+ctl00_MainHolder_ExtraBankTransferFirstStep_RequiredFieldValidator1.controltovalidate = "ctl00_MainHolder_ExtraBankTransferFirstStep_Amount";
+ctl00_MainHolder_ExtraBankTransferFirstStep_RequiredFieldValidator1.focusOnError = "t";
+ctl00_MainHolder_ExtraBankTransferFirstStep_RequiredFieldValidator1.errormessage = "*";
+ctl00_MainHolder_ExtraBankTransferFirstStep_RequiredFieldValidator1.display = "Dynamic";
+ctl00_MainHolder_ExtraBankTransferFirstStep_RequiredFieldValidator1.validationGroup = "Confirmation";
+ctl00_MainHolder_ExtraBankTransferFirstStep_RequiredFieldValidator1.evaluationfunction = "RequiredFieldValidatorEvaluateIsValid";
+ctl00_MainHolder_ExtraBankTransferFirstStep_RequiredFieldValidator1.initialvalue = "";
+var ctl00_MainHolder_ExtraBankTransferFirstStep_DecimalValidator = document.all ? document.all["ctl00_MainHolder_ExtraBankTransferFirstStep_DecimalValidator"] : document.getElementById("ctl00_MainHolder_ExtraBankTransferFirstStep_DecimalValidator");
+ctl00_MainHolder_ExtraBankTransferFirstStep_DecimalValidator.controltovalidate = "ctl00_MainHolder_ExtraBankTransferFirstStep_Amount";
+ctl00_MainHolder_ExtraBankTransferFirstStep_DecimalValidator.errormessage = "Formato incorrecto";
+ctl00_MainHolder_ExtraBankTransferFirstStep_DecimalValidator.validationGroup = "Confirmation";
+ctl00_MainHolder_ExtraBankTransferFirstStep_DecimalValidator.evaluationfunction = "RegularExpressionValidatorEvaluateIsValid";
+ctl00_MainHolder_ExtraBankTransferFirstStep_DecimalValidator.validationexpression = "\\d{0,13}\\,?\\d{1,2}";
+var ctl00_MainHolder_ExtraBankTransferFirstStep_CustomValidator1 = document.all ? document.all["ctl00_MainHolder_ExtraBankTransferFirstStep_CustomValidator1"] : document.getElementById("ctl00_MainHolder_ExtraBankTransferFirstStep_CustomValidator1");
+ctl00_MainHolder_ExtraBankTransferFirstStep_CustomValidator1.controltovalidate = "ctl00_MainHolder_ExtraBankTransferFirstStep_ConceptIdDropDownList";
+ctl00_MainHolder_ExtraBankTransferFirstStep_CustomValidator1.errormessage = "Campo requerido";
+ctl00_MainHolder_ExtraBankTransferFirstStep_CustomValidator1.validationGroup = "Confirmation";
+ctl00_MainHolder_ExtraBankTransferFirstStep_CustomValidator1.evaluationfunction = "CustomValidatorEvaluateIsValid";
+var ctl00_MainHolder_ExtraBankTransferFirstStep_ValidateName = document.all ? document.all["ctl00_MainHolder_ExtraBankTransferFirstStep_ValidateName"] : document.getElementById("ctl00_MainHolder_ExtraBankTransferFirstStep_ValidateName");
+ctl00_MainHolder_ExtraBankTransferFirstStep_ValidateName.controltovalidate = "ctl00_MainHolder_ExtraBankTransferFirstStep_FreeText";
+ctl00_MainHolder_ExtraBankTransferFirstStep_ValidateName.errormessage = "Formato incorrecto, debe ingresar solo letras.";
+ctl00_MainHolder_ExtraBankTransferFirstStep_ValidateName.validationGroup = "Confirmation";
+ctl00_MainHolder_ExtraBankTransferFirstStep_ValidateName.evaluationfunction = "RegularExpressionValidatorEvaluateIsValid";
+ctl00_MainHolder_ExtraBankTransferFirstStep_ValidateName.validationexpression = "[a-zA-Z0-9\\s]*";
+var ctl00_validationSummaryFooter = document.all ? document.all["ctl00_validationSummaryFooter"] : document.getElementById("ctl00_validationSummaryFooter");
+ctl00_validationSummaryFooter.headertext = "Formulario inválido, por favor revise los datos ingresados:";
+ctl00_validationSummaryFooter.showsummary = "False";
+//]]>
+</script>
+
+
+<script type="text/javascript">
+//<![CDATA[
+
+WebForm_InitCallback();
+var Page_ValidationActive = false;
+if (typeof(ValidatorOnLoad) == "function") {
+    ValidatorOnLoad();
+}
+
+function ValidatorOnSubmit() {
+    if (Page_ValidationActive) {
+        return ValidatorCommonOnSubmit();
+    }
+    else {
+        return true;
+    }
+}
+        
+document.getElementById('ctl00_validationSummaryFooter').dispose = function() {
+    Array.remove(Page_ValidationSummaries, document.getElementById('ctl00_validationSummaryFooter'));
+}
+Sys.Application.initialize();
+
+document.getElementById('ctl00_MainHolder_ExtraBankTransferFirstStep_RequiredFieldValidator1').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_ExtraBankTransferFirstStep_RequiredFieldValidator1'));
+}
+
+document.getElementById('ctl00_MainHolder_ExtraBankTransferFirstStep_DecimalValidator').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_ExtraBankTransferFirstStep_DecimalValidator'));
+}
+
+document.getElementById('ctl00_MainHolder_ExtraBankTransferFirstStep_CustomValidator1').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_ExtraBankTransferFirstStep_CustomValidator1'));
+}
+
+document.getElementById('ctl00_MainHolder_ExtraBankTransferFirstStep_ValidateName').dispose = function() {
+    Array.remove(Page_Validators, document.getElementById('ctl00_MainHolder_ExtraBankTransferFirstStep_ValidateName'));
+}
+//]]>
+</script>
+</form>
+
+
+<div class="ui-dialog ui-widget ui-widget-content ui-corner-all" tabindex="-1" role="dialog" aria-labelledby="ui-dialog-title-sessionTimeoutWarning" style="display: none; z-index: 1000; outline: 0px;"><div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix"><span class="ui-dialog-title" id="ui-dialog-title-sessionTimeoutWarning">&nbsp;</span><a href="http://10.1.75.104:9080/Pages/Transfers/ExtraBankTransfer.aspx#" class="ui-dialog-titlebar-close ui-corner-all" role="button" style="display: none;"><span class="ui-icon ui-icon-closethick">close</span></a></div><div id="sessionTimeoutWarning" style="background-color: rgb(255, 255, 255); padding: 0px; height: 100%;" class="ui-dialog-content ui-widget-content">
+        <div id="sessionTimeoutWarningHeader">
+            <table width="100%">
+                 <tbody><tr>
+                    <td colspan="2" align="center" class="ic-form-data-modal">
+                        La sesión finalizará en <span id="sessionTimeoutCountdown"></span>&nbsp;segundos.
+                        Para seguir operando seleccioná “Continuar”
+                    </td>
+                </tr>
+            </tbody></table>
+        </div>
+    </div><div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix"><div class="ui-dialog-buttonset"><button type="button">Continuar </button><button type="button">Finalizar sesión</button></div></div></div></body></html>

@@ -1,0 +1,1279 @@
+
+<!-- saved from url=(0053)http://10.1.75.104:9080/Pages/Common/Personalize.aspx -->
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><script src="./jquery-1.7.2.min.js.descarga" type="text/javascript"></script>
+<script src="./jquery-1.7.1.js.descarga" type="text/javascript"></script>
+<script src="./jquery-ui-1.8.19.custom.min.js.descarga" type="text/javascript"></script>
+<script src="./jquery.formatCurrency-1.4.0.js.descarga" type="text/javascript"></script>
+<script src="./idle-timer.js.descarga" type="text/javascript"></script>
+<script src="./idle-timer.min.js.descarga" type="text/javascript"></script>
+<script language="javascript" type="text/javascript">
+
+function Logout() {
+        if (confirm("¿ Desea salir del sistema ?") == true) {
+                    
+            window.location =  '/'+ "Logout.aspx";
+        }
+       
+    }
+    
+var focusedFormControl;    
+var dateFormat = 'dd/mm/aaaa';
+var applicationRoot = '/';      
+function OnRowClick(sender, args) {
+    if (sender.GetSelectedRowCount() == 0) {
+        sender.UnselectRowOnPage(args.visibleIndex);
+        SetPageLinkData("");
+    }
+    else {
+        _aspxClearSelection();
+        sender._selectAllRowsOnPage(false);
+        sender.SelectRow(args.visibleIndex, true);
+        SetPageLinkData(sender.GetRowKey(args.visibleIndex));
+    }
+}
+
+if (history.forward(1))
+{
+
+    location.replace(history.forward(1))
+} 
+
+function PrintPage() {
+
+    window.print();
+}
+
+function GoMyOption(select)
+{
+    var url = select.options[select.selectedIndex].value;
+    if( url != "")
+        window.location = url;
+}
+
+function GoFavourites(select)
+{
+
+    var url = select.options[select.selectedIndex].value;
+    if( url != "")
+        window.location = url;
+}
+
+function GoPrint()
+{
+
+window.print();
+}
+
+function addEvent(elm, evType, fn, useCapture)
+{
+
+  if (elm.addEventListener){
+    elm.addEventListener(evType, fn, useCapture);
+    return true;
+  } else if (elm.attachEvent){
+    var r = elm.attachEvent("on"+evType, fn);
+    return r;
+  } else {
+    alert("Handler could not be removed");
+  }
+} 
+
+function SetPageLinkData(data)
+{
+    pageLinkData = document.getElementById('PageLinkData');
+    pageLinkData.value = data;
+}
+
+function SetPageLinkUrl(url)
+{
+    pageLinkUrl = document.getElementById('PageLinkUrl');
+    pageLinkUrl.value = url;
+}
+
+function doPageLink(id)
+{
+    __doPostBack(id, 'PageLinkEvent');
+}
+
+function imprimirEstadoCuenta()
+{
+											
+    var ficha = document.getElementById('printDiv');		
+    var ventimp = window.open('', 'popimpr','height=450, width=550, scrollbars=1');																						
+    var fichaHTML = new String(ficha.innerHTML);
+    fichaHTML = fichaHTML.replace('Seleccione un período y oprima "Consultar".'," ");
+    //var i = document.getElementById('ctl00_MainHolder_panelDetalle_imgPlusMinus');
+    var html  = "<html>\n<head>\n<link rel=\"stylesheet\" type=\"text/css\" href=\"..\\..\\App_Themes\\Default\\Default.css \" />" 
+                + "</head><table width=\"100%\"><tr bgcolor=\"#FF0000\"><td><img src=\"..\\..\\App_Themes\\Default\\Images\\logoSantander.gif\" /></td></tr></table>" 
+                + fichaHTML 
+                + "</html>";
+    ventimp.document.write( html );
+    ventimp.document.close();
+    ventimp.print( );
+    ventimp.close();
+					
+}
+
+ function removeInvalidCharacters(control) {
+ 
+            !(/^[A-zÑñ0-9 ]*$/i).test(control.value) ? control.value = control.value.replace(/[^A-zÑñ0-9 ]/ig, '') : null
+        }
+        
+  function removeInvalidNumbers(control) {
+            !(/^[0-9,]*$/i).test(control.value) ? control.value = control.value.replace(/[^0-9,]/ig, '') : null
+        }
+function showLoading()
+{
+//debugger;
+    // aquí le pasamos la clase o id de nuestro div a centrar (en este caso "caja")
+    $('.ic-loading').css({
+       position:'absolute',
+       left: ($('#mainContainer').width()/2 - $('.ic-loading').outerWidth())/2,
+       //top: ($('#mainContainer').height()/2 - $('.ic-loading').outerHeight())/2
+       top: ($('#mainContainer').height()/2 - $('ic-loading').height()/2)
+    });
+    
+    $('#mainContainer').css('display','none');
+    $('#ic-loading').css('display','block');
+}
+//ModalDialog SessionTimeout
+var idleTime = (parseInt('1170') * 1000); // number of miliseconds until the user is considered idle
+var initialSessionTimeoutMessage = "La sesión finalizará en <span id='sessionTimeoutCountdown'></span> segundos. Para seguir operando seleccioná “Continuar”<br /><br />";
+var sessionTimeoutCountdownId = 'sessionTimeoutCountdown';
+var redirectAfter = (parseInt('30')) ; // number of seconds to wait before redirecting the user
+var redirectTo = '/' + "Logout.aspx"; // URL to relocate the user to once they have timed out
+var keepAliveURL = ''; // URL to call to keep the session alive
+var expiredMessage = ''; // message to show user when the countdown reaches 0
+var running = false; // var to check if the countdown is running 
+var timer; // reference to the setInterval timer so it can be stopped 
+var timerSB;  
+var timeout;  
+    $(document).ready(function() {     
+// create the warning window and set autoOpen to false  
+      var sessionTimeoutWarningDialog = $("#sessionTimeoutWarning"); 
+    $(sessionTimeoutWarningDialog).dialog({         
+        title: '',       
+        autoOpen: false,    // set this to false so we can manually open it         
+        closeOnEscape: false,         
+        draggable: false,         
+        width: 460,         
+        minHeight: 150,         
+        modal: true,           
+        beforeclose: function() { // bind to beforeclose so if the user clicks on the "X" or escape to close the dialog, it will work too             // stop the timer             
+            clearInterval(timer);               // stop countdown
+            running = false;               // ajax call to keep the server-side session alive    
+                  
+            $.ajax({               
+                url: keepAliveURL,               
+                async: false            
+            });         
+        },         
+        buttons: {      
+             'Continuar ': function() {                 
+                // close dialog 
+                window.location.reload();//BM24925: Se agrega esto para que el expired de una cookie se actualice y no se cierre la sesión luego de hacer click en continuar al terminar el timeout del webconfig. El valor del expired se pone en la tabla configuration en la clave SessionMaxMinutes.
+                //var valor = getCookie('ICBWebLogin'); //Esta función la dejo por las dudas, pero no la pude hacer andar poque el document.cookie no me trae las cookies del explorador.                
+                $(this).dialog('close');
+                clearInterval(timerSB);    
+                window.status = "";      
+                StatusBarCountDown();     
+            },
+            'Finalizar sesión': function() {                 
+                // close dialog                 
+                $(sessionTimeoutWarningDialog).html(expiredMessage);
+                $(sessionTimeoutWarningDialog).dialog('disable');                     
+                window.parent.location = redirectTo;           
+            }         
+        },         
+        resizable: false,         
+        open: function() {
+            $('body').css('overflow','auto');         
+        },         
+        close: function() {             
+            // reset overflow             
+            $('body').css('overflow','auto');         
+        }  
+           
+    }); // end of dialog  
+    jQuery("a.ui-dialog-titlebar-close").hide(); 
+          
+    // start the idle timer
+    $.idleTimer(idleTime);
+ 
+});
+
+// BM24925: Función para recuperar el valor de una cookie.
+// name - nombre de la cookie deseada
+// devuelve un string conteniendo el valor de la cookie especificada o null si la cookie no existe
+
+function getCookie(name){
+var micookie = (document.cookie.indexOf('ICBWebLogin=') === -1 ? '' : ("; " + document.cookie).split('; ICBWebLogin=')[1].split(';')[0]);
+
+  var cname = name + "=";               
+  var dc = document.cookie;             
+  if (dc.length > 0) {              
+    begin = dc.indexOf(cname);       
+    if (begin != -1) {           
+      begin += cname.length;       
+      end = dc.indexOf(";", begin);
+      if (end == -1) end = dc.length;
+        return unescape(dc.substring(begin, end));
+    } 
+  }
+  return null;
+}
+
+//Status Bar Countdown Script
+function StatusBarCountDown() 
+{
+    var redirectAfter = (parseInt('30'));
+    var timeout = '1200000';   
+    var redirectTo = '/' + "Logout.aspx"; // URL to relocate the user to once they have timed out   
+    timerSB = setInterval(function(){
+    timeout -= 1000;
+    if(timeout == redirectAfter * 1000)
+    {
+        window.focus();
+    }
+   if(timeout < redirectAfter * 1000)
+   {
+        $("#sessionTimeoutCountdown").html(timeout/1000);
+        $("#sessionTimeoutWarning").dialog('open'); 
+   }
+   if (timeout < 100)
+   {
+        $("#sessionTimeoutWarning").html(expiredMessage);
+        $("#sessionTimeoutWarning").dialog('disable');                     
+        window.parent.location = redirectTo;
+        clearInterval(timerSB);    
+        window.status = "";     
+   }
+        
+   window.status = "Su sesión expirará " + time(timeout) + " minutos";        
+    }, 1000);   
+         
+   function two(x)
+   {
+    return ((x > 9) ? "" : "0") + x
+   }   
+  
+   function time(ms)
+   {   
+       var t = '';   
+       var sec = Math.floor(ms / 1000);   
+       ms = ms % 1000   
+
+       var min = Math.floor(sec / 60);   
+       sec = sec % 60;   
+       t = two(sec);   
+
+       var hr = Math.floor(min / 60);   
+       min = min % 60;   
+       t = two(min) + ":" + t;   
+    return t;
+   }
+}
+
+StatusBarCountDown();
+
+
+
+</script>
+
+<link href="./Default.css" type="text/css" rel="stylesheet"><link href="./jquery-ui-1.8.19.custom.css" type="text/css" rel="stylesheet"><title>
+	Mis favoritos
+</title><style type="text/css">
+	.ctl00_MainHolder_treeViewFavourites_0 { text-decoration:none; }
+	.ctl00_MainHolder_treeViewFavourites_1 { color:#B20000;font-family:Tahoma;font-size:9pt; }
+	.ctl00_MainHolder_treeViewFavourites_2 { padding:0px 5px 0px 5px; }
+	.ctl00_MainHolder_treeViewFavourites_3 { font-weight:normal; }
+	.ctl00_MainHolder_treeViewFavourites_4 {  }
+
+</style></head>
+<body>
+    <form name="aspnetForm" method="post" action="http://10.1.75.104:9080/Pages/Common/Personalize.aspx" id="aspnetForm">
+<div>
+<input type="hidden" name="ctl00_MainHolder_treeViewFavourites_ExpandState" id="ctl00_MainHolder_treeViewFavourites_ExpandState" value="eennnnnennnnennnnnenenenennnnnennnnnennnennnnnennnnnnnnnnnnennnenennnnnnnennnn">
+<input type="hidden" name="ctl00_MainHolder_treeViewFavourites_SelectedNode" id="ctl00_MainHolder_treeViewFavourites_SelectedNode" value="ctl00_MainHolder_treeViewFavouritest74">
+<input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="">
+<input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="">
+<input type="hidden" name="ctl00_MainHolder_treeViewFavourites_PopulateLog" id="ctl00_MainHolder_treeViewFavourites_PopulateLog" value="">
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwULLTE5NzE0Nzc2MDEPZBYCZg9kFgICAQ9kFgICAQ9kFgJmD2QWBAIBD2QWBAICDw8WAh4EVGV4dAUNTWlzIGZhdm9yaXRvc2RkAgcPZBYCAgMPZBYCAgMPPCsACQIADxYIHg1OZXZlckV4cGFuZGVkZB4LXyFEYXRhQm91bmRnHgxTZWxlY3RlZE5vZGUFJmN0bDAwX01haW5Ib2xkZXJfdHJlZVZpZXdGYXZvdXJpdGVzdDc0HglMYXN0SW5kZXgCTmQIFCsAAgUDMDowFCsAAhYMHwAFFVBvc2ljacOzbiBDb25zb2xpZGFkYR4FVmFsdWUFCi9Ib21lLmFzcHgeB1Rvb2xUaXAFFVBvc2ljacOzbiBDb25zb2xpZGFkYR4IRGF0YVBhdGgFCi9ob21lLmFzcHgeCURhdGFCb3VuZGceCEV4cGFuZGVkZxQrABMFTzA6MCwwOjEsMDoyLDA6MywwOjQsMDo1LDA6NiwwOjcsMDo4LDA6OSwwOjEwLDA6MTEsMDoxMiwwOjEzLDA6MTQsMDoxNSwwOjE2LDA6MTcUKwACFgofAAUHQ3VlbnRhcx8GBQdDdWVudGFzHwcFJDczOTA3ZTVmLWJlMTUtNGRmNS1iN2ZmLWI4MDNlYjZlY2UyZh8IZx8JZxQrAAYFEzA6MCwwOjEsMDoyLDA6MywwOjQUKwACFgwfAAULTW92aW1pZW50b3MfBQUiL1BhZ2VzL0FjY291bnRzL0FjY291bnRTdGF0dXMuYXNweB8GBQtNb3ZpbWllbnRvcx8HBSIvcGFnZXMvYWNjb3VudHMvYWNjb3VudHN0YXR1cy5hc3B4HwhnHwlnZBQrAAIWDB8ABQhBY3VlcmRvcx8FBR4vUGFnZXMvQWNjb3VudHMvQWdyZWVtZW50LmFzcHgfBgUIQWN1ZXJkb3MfBwUeL3BhZ2VzL2FjY291bnRzL2FncmVlbWVudC5hc3B4HwhnHwlnZBQrAAIWDB8ABRNTb2xpY2l0dWQgQ2hlcXVlcmFzHwUFHi9QYWdlcy9BY2NvdW50cy9DaGVja0Jvb2suYXNweB8GBRNTb2xpY2l0dWQgQ2hlcXVlcmFzHwcFHi9wYWdlcy9hY2NvdW50cy9jaGVja2Jvb2suYXNweB8IZx8JZ2QUKwACFgwfAAUPUmVzdW1lbiBkaWdpdGFsHwUFHC9QYWdlcy9BY2NvdW50cy9SZXN1bWVuLmFzcHgfBgUPUmVzdW1lbiBkaWdpdGFsHwcFHC9wYWdlcy9hY2NvdW50cy9yZXN1bWVuLmFzcHgfCGcfCWdkFCsAAhYMHwAFHEFkaGVzacOzbiBhbCByZXN1bWVuIGRpZ2l0YWwfBQUrL1BhZ2VzL0FjY291bnRzL0FkaGVzaW9uRGlnaXRhbFN1bW1hcnkuYXNweB8GBRxBZGhlc2nDs24gYWwgcmVzdW1lbiBkaWdpdGFsHwcFKy9wYWdlcy9hY2NvdW50cy9hZGhlc2lvbmRpZ2l0YWxzdW1tYXJ5LmFzcHgfCGcfCWdkFCsAAhYKHwAFDlRyYW5zZmVyZW5jaWFzHwYFDlRyYW5zZmVyZW5jaWFzHwcFJDIzMGQ2ZWVmLWY3N2EtNGIyZS04ZmFkLWRhMDE5ZDk4YjZmYR8IZx8JZxQrAAUFDzA6MCwwOjEsMDoyLDA6MxQrAAIWDB8ABRdNaXMgY3VlbnRhcyBkZSBjcsOpZGl0bx8FBSYvUGFnZXMvVHJhbnNmZXJzL015Q3JlZGl0QWNjb3VudHMuYXNweB8GBRdNaXMgY3VlbnRhcyBkZSBjcsOpZGl0bx8HBSYvcGFnZXMvdHJhbnNmZXJzL215Y3JlZGl0YWNjb3VudHMuYXNweB8IZx8JZ2QUKwACFgwfAAUaVHJhbnNmZXJlbmNpYXMgMjQvNDggaG9yYXMfBQUnL1BhZ2VzL1RyYW5zZmVycy9FeHRyYUJhbmtUcmFuc2Zlci5hc3B4HwYFGlRyYW5zZmVyZW5jaWFzIDI0LzQ4IGhvcmFzHwcFJy9wYWdlcy90cmFuc2ZlcnMvZXh0cmFiYW5rdHJhbnNmZXIuYXNweB8IZx8JZ2QUKwACFgwfAAUMQXByb2JhY2lvbmVzHwUFLS9QYWdlcy9UcmFuc2ZlcnMvVHJhbnNmZXJzQXV0aG9yaXphdGlvbnMuYXNweB8GBQxBcHJvYmFjaW9uZXMfBwUtL3BhZ2VzL3RyYW5zZmVycy90cmFuc2ZlcnNhdXRob3JpemF0aW9ucy5hc3B4HwhnHwlnZBQrAAIWDB8ABQlIaXN0b3JpYWwfBQUyL1BhZ2VzL1RyYW5zZmVycy9UcmFuc2ZlcnNUcmFuc2FjdGlvbnNIaXN0b3J5LmFzcHgfBgUJSGlzdG9yaWFsHwcFMi9wYWdlcy90cmFuc2ZlcnMvdHJhbnNmZXJzdHJhbnNhY3Rpb25zaGlzdG9yeS5hc3B4HwhnHwlnZBQrAAIWCh8ABRFQYWdvIGRlIFNlcnZpY2lvcx8GBRFQYWdvIGRlIFNlcnZpY2lvcx8HBSRlYzJlNDRiNC0wZjFjLTQ5MWQtODUwYy01YjUxODA1ZjI3MDIfCGcfCWcUKwAGBRMwOjAsMDoxLDA6MiwwOjMsMDo0FCsAAhYMHwAFBVBhZ29zHwUFKy9QYWdlcy9TZXJ2aWNlUGF5bWVudHMvU2VydmljZVBheW1lbnRzLmFzcHgfBgUFUGFnb3MfBwUrL3BhZ2VzL3NlcnZpY2VwYXltZW50cy9zZXJ2aWNlcGF5bWVudHMuYXNweB8IZx8JZ2QUKwACFgwfAAUMQXByb2JhY2lvbmVzHwUFOC9QYWdlcy9TZXJ2aWNlUGF5bWVudHMvU2VydmljZVBheW1lbnRzQXV0aG9yaXphdGlvbi5hc3B4HwYFDEFwcm9iYWNpb25lcx8HBTgvcGFnZXMvc2VydmljZXBheW1lbnRzL3NlcnZpY2VwYXltZW50c2F1dGhvcml6YXRpb24uYXNweB8IZx8JZ2QUKwACFgwfAAUWQWRoZXNpw7NuIGRlIFNlcnZpY2lvcx8FBTMvUGFnZXMvU2VydmljZVBheW1lbnRzL1NlcnZpY2VQYXltZW50c0FkaGVzaW9uLmFzcHgfBgUWQWRoZXNpw7NuIGRlIFNlcnZpY2lvcx8HBTMvcGFnZXMvc2VydmljZXBheW1lbnRzL3NlcnZpY2VwYXltZW50c2FkaGVzaW9uLmFzcHgfCGcfCWdkFCsAAhYMHwAFCUNvbnN1bHRhcx8FBTIvUGFnZXMvU2VydmljZVBheW1lbnRzL1NlcnZpY2VQYXltZW50c0hpc3RvcnkuYXNweB8GBQlDb25zdWx0YXMfBwUyL3BhZ2VzL3NlcnZpY2VwYXltZW50cy9zZXJ2aWNlcGF5bWVudHNoaXN0b3J5LmFzcHgfCGcfCWdkFCsAAhYMHwAFDk5vdGlmaWNhY2lvbmVzHwUFOC9QYWdlcy9TZXJ2aWNlUGF5bWVudHMvU2VydmljZVBheW1lbnRzTm90aWZpY2F0aW9ucy5hc3B4HwYFDk5vdGlmaWNhY2lvbmVzHwcFOC9wYWdlcy9zZXJ2aWNlcGF5bWVudHMvc2VydmljZXBheW1lbnRzbm90aWZpY2F0aW9ucy5hc3B4HwhnHwlnZBQrAAIWCh8ABQdDaGVxdWVzHwYFB0NoZXF1ZXMfBwUkNmQ1NzRmOTYtOWI1MC00NjNlLTllYjQtNjIwZmY2YmQ5ZjdmHwhnHwlnFCsAAgUDMDowFCsAAhYMHwAFCERldGFsbGVzHwUFGC9QYWdlcy9DaGVja3MvQ2hlY2suYXNweB8GBQhEZXRhbGxlcx8HBRgvcGFnZXMvY2hlY2tzL2NoZWNrLmFzcHgfCGcfCWdkFCsAAhYKHwAFClByw6lzdGFtb3MfBgUKUHLDqXN0YW1vcx8HBSQ1NzgwYjU2Yi1lM2NkLTQ5ZjEtOWM1NS0xMzVkYjA1NjQ5OTUfCGcfCWcUKwACBQMwOjAUKwACFgwfAAUIRGV0YWxsZXMfBQUdL1BhZ2VzL0xvYW5zL0xvYW5EZXRhaWxzLmFzcHgfBgUIRGV0YWxsZXMfBwUdL3BhZ2VzL2xvYW5zL2xvYW5kZXRhaWxzLmFzcHgfCGcfCWdkFCsAAhYKHwAFB0xlYXNpbmcfBgUHTGVhc2luZx8HBSRjZmEwMjcyMy1mOTgzLTQxMTktYTZhNi00NDI3ZjNiYTI0NjMfCGcfCWcUKwACBQMwOjAUKwACFgwfAAUIRGV0YWxsZXMfBQUbL1BhZ2VzL0xlYXNpbmcvTGVhc2luZy5hc3B4HwYFCERldGFsbGVzHwcFGy9wYWdlcy9sZWFzaW5nL2xlYXNpbmcuYXNweB8IZx8JZ2QUKwACFgofAAUURmFjdG9yaW5nL0RlcMOzc2l0b3MfBgUURmFjdG9yaW5nL0RlcMOzc2l0b3MfBwUkODk3ZGExZjAtMGM1My00MGEyLWFiZjMtMDQ0MGU2ZTBiZjY1HwhnHwlnFCsABgUTMDowLDA6MSwwOjIsMDozLDA6NBQrAAIWDB8ABQdSZXN1bWVuHwUFHS9QYWdlcy9GYWN0b3JpbmcvUmVzdW1lbi5hc3B4HwYFB1Jlc3VtZW4fBwUdL3BhZ2VzL2ZhY3RvcmluZy9yZXN1bWVuLmFzcHgfCGcfCWdkFCsAAhYMHwAFB0RldGFsbGUfBQUdL1BhZ2VzL0ZhY3RvcmluZy9EZXRhbGxlLmFzcHgfBgUHRGV0YWxsZR8HBR0vcGFnZXMvZmFjdG9yaW5nL2RldGFsbGUuYXNweB8IZx8JZ2QUKwACFgwfAAUIQ3VzdG9kaWEfBQUeL1BhZ2VzL0ZhY3RvcmluZy9DdXN0b2RpYS5hc3B4HwYFCEN1c3RvZGlhHwcFHi9wYWdlcy9mYWN0b3JpbmcvY3VzdG9kaWEuYXNweB8IZx8JZ2QUKwACFgwfAAUYRGV0YWxsZSBkZSBQcmVzZW50YWNpw7NuHwUFLS9QYWdlcy9GYWN0b3JpbmcvVmVyUHJlc2VudGFjaW9uQ3VzdG9kaWEuYXNweB8GBRhEZXRhbGxlIGRlIFByZXNlbnRhY2nDs24fBwUtL3BhZ2VzL2ZhY3RvcmluZy92ZXJwcmVzZW50YWNpb25jdXN0b2RpYS5hc3B4HwhnHwlnZBQrAAIWDB8ABQlDb250cmF0b3MfBQUfL1BhZ2VzL0ZhY3RvcmluZy9Db250cmF0b3MuYXNweB8GBQlDb250cmF0b3MfBwUfL3BhZ2VzL2ZhY3RvcmluZy9jb250cmF0b3MuYXNweB8IZx8JZ2QUKwACFgofAAUSUGFnbyBhIFByb3ZlZWRvcmVzHwYFElBhZ28gYSBQcm92ZWVkb3Jlcx8HBSQyZmNjZjBjZS0zNGFmLTRjNDUtYmU1YS0wYTk0MzliNjY1MmMfCGcfCWcUKwAGBRMwOjAsMDoxLDA6MiwwOjMsMDo0FCsAAhYMHwAFE0NvbnN1bHRhIGRlIENoZXF1ZXMfBQUqL1BhZ2VzL1Byb3ZpZGVyc0NoZWNrL0NvbnN1bHRhQ2hlcXVlcy5hc3B4HwYFE0NvbnN1bHRhIGRlIENoZXF1ZXMfBwUqL3BhZ2VzL3Byb3ZpZGVyc2NoZWNrL2NvbnN1bHRhY2hlcXVlcy5hc3B4HwhnHwlnZBQrAAIWDB8ABRNJbmdyZXNvIHBvciBBcmNoaXZvHwUFIy9QYWdlcy9Qcm92aWRlcnNDaGVjay9Mb2FkRmlsZS5hc3B4HwYFE0luZ3Jlc28gcG9yIEFyY2hpdm8fBwUjL3BhZ2VzL3Byb3ZpZGVyc2NoZWNrL2xvYWRmaWxlLmFzcHgfCGcfCWdkFCsAAhYMHwAFDkluZ3Jlc28gTWFudWFsHwUFIy9QYWdlcy9Qcm92aWRlcnNDaGVjay9Mb2FkRGF0YS5hc3B4HwYFDkluZ3Jlc28gTWFudWFsHwcFIy9wYWdlcy9wcm92aWRlcnNjaGVjay9sb2FkZGF0YS5hc3B4HwhnHwlnZBQrAAIWDB8ABQxBcHJvYmFjaW9uZXMfBQU3L1BhZ2VzL1Byb3ZpZGVyc0NoZWNrL1Byb3ZpZGVyc0NoZWNrQXV0aG9yaXphdGlvbnMuYXNweB8GBQxBcHJvYmFjaW9uZXMfBwU3L3BhZ2VzL3Byb3ZpZGVyc2NoZWNrL3Byb3ZpZGVyc2NoZWNrYXV0aG9yaXphdGlvbnMuYXNweB8IZx8JZ2QUKwACFgwfAAUJSGlzdG9yaWFsHwUFPC9QYWdlcy9Qcm92aWRlcnNDaGVjay9Qcm92aWRlcnNDaGVja1RyYW5zYWN0aW9uc0hpc3RvcnkuYXNweB8GBQlIaXN0b3JpYWwfBwU8L3BhZ2VzL3Byb3ZpZGVyc2NoZWNrL3Byb3ZpZGVyc2NoZWNrdHJhbnNhY3Rpb25zaGlzdG9yeS5hc3B4HwhnHwlnZBQrAAIWCh8ABQ9QYWdvIGRlIFN1ZWxkb3MfBgUPUGFnbyBkZSBTdWVsZG9zHwcFJDllMTcwZTBlLWY0M2UtNDE4Mi05MmE5LWJlNjk4NzNlNTc1OB8IZx8JZxQrAAQFCzA6MCwwOjEsMDoyFCsAAhYMHwAFE0NvbnN1bHRhIGRlIE7Ds21pbmEfBQUhL1BhZ2VzL1NhbGFyeS9QYXlyb2xsSW5xdWlyeS5hc3B4HwYFE0NvbnN1bHRhIGRlIE7Ds21pbmEfBwUhL3BhZ2VzL3NhbGFyeS9wYXlyb2xsaW5xdWlyeS5hc3B4HwhnHwlnZBQrAAIWDB8ABQxBcHJvYmFjaW9uZXMfBQUzL1BhZ2VzL1NhbGFyeS9TYWxhcmllc1RyYW5zYWN0aW9uQXV0aG9yaXphdGlvbi5hc3B4HwYFDEFwcm9iYWNpb25lcx8HBTMvcGFnZXMvc2FsYXJ5L3NhbGFyaWVzdHJhbnNhY3Rpb25hdXRob3JpemF0aW9uLmFzcHgfCGcfCWdkFCsAAhYMHwAFCUhpc3RvcmlhbB8FBS4vUGFnZXMvU2FsYXJ5L1NhbGFyaWVzVHJhbnNhY3Rpb25zSGlzdG9yeS5hc3B4HwYFCUhpc3RvcmlhbB8HBS4vcGFnZXMvc2FsYXJ5L3NhbGFyaWVzdHJhbnNhY3Rpb25zaGlzdG9yeS5hc3B4HwhnHwlnZBQrAAIWCh8ABRFDb21lcmNpbyBFeHRlcmlvch8GBRFDb21lcmNpbyBFeHRlcmlvch8HBSRmYmRhZDY4Zi0zYWIzLTRjOTEtYmI4Yi02OTdkNjM2ZDI1MWIfCGcfCWcUKwAPBTswOjAsMDoxLDA6MiwwOjMsMDo0LDA6NSwwOjYsMDo3LDA6OCwwOjksMDoxMCwwOjExLDA6MTIsMDoxMxQrAAIWDB8ABRdDb25zdWx0YSBkZSBPcGVyYWNpb25lcx8FBSYvUGFnZXMvRUNvbWV4L0NvbnN1bHRhT3BlcmFjaW9uZXMuYXNweB8GBRdDb25zdWx0YSBkZSBPcGVyYWNpb25lcx8HBSYvcGFnZXMvZWNvbWV4L2NvbnN1bHRhb3BlcmFjaW9uZXMuYXNweB8IZx8JZ2QUKwACFgwfAAUXQ29uc3VsdGEgZGUgT3BlcmFjaW9uZXMfBQUeL1BhZ2VzL0VDb21leC9PcGVyYWNpb25lcy5hc3B4HwYFF0NvbnN1bHRhIGRlIE9wZXJhY2lvbmVzHwcFHi9wYWdlcy9lY29tZXgvb3BlcmFjaW9uZXMuYXNweB8IZx8JZ2QUKwACFgwfAAUUUGVybWlzb3MgZGUgRW1iYXJxdWUfBQUkL1BhZ2VzL0VDb21leC9QZXJtaXNvc0VtYmFycXVlcy5hc3B4HwYFFFBlcm1pc29zIGRlIEVtYmFycXVlHwcFJC9wYWdlcy9lY29tZXgvcGVybWlzb3NlbWJhcnF1ZXMuYXNweB8IZx8JZ2QUKwACFgwfAAUUUGVybWlzb3MgZGUgRW1iYXJxdWUfBQUyL1BhZ2VzL0VDb21leC9QZXJtaXNvc0VtYmFycXVlc19OZWdvY2lhY2lvbmVzLmFzcHgfBgUUUGVybWlzb3MgZGUgRW1iYXJxdWUfBwUyL3BhZ2VzL2Vjb21leC9wZXJtaXNvc2VtYmFycXVlc19uZWdvY2lhY2lvbmVzLmFzcHgfCGcfCWdkFCsAAhYMHwAFDkZpbmFuY2lhY2lvbmVzHwUFKS9QYWdlcy9FQ29tZXgvQ29uc3VsdGFGaW5hbmNpYWNpb25lcy5hc3B4HwYFDkZpbmFuY2lhY2lvbmVzHwcFKS9wYWdlcy9lY29tZXgvY29uc3VsdGFmaW5hbmNpYWNpb25lcy5hc3B4HwhnHwlnZBQrAAIWCh8ABQlTZXBhIEltcG8fBgUJU2VwYSBJbXBvHwcFJGRmOTYxMGRiLTNlZGQtNGVmOS1iNDIzLTRmODQ1MmI3NjIyMh8IZx8JZxQrAAUFDzA6MCwwOjEsMDoyLDA6MxQrAAIWDB8ABRFQYWdvcyBBbnRpY2lwYWRvcx8FBSMvUGFnZXMvRUNvbWV4L1BhZ29zQW50aWNpcGFkb3MuYXNweB8GBRFQYWdvcyBBbnRpY2lwYWRvcx8HBSMvcGFnZXMvZWNvbWV4L3BhZ29zYW50aWNpcGFkb3MuYXNweB8IZx8JZ2QUKwACFgwfAAURUGFnb3MgQW50aWNpcGFkb3MfBQUxL1BhZ2VzL0VDb21leC9QYWdvc0FudGljaXBhZG9zX05lZ29jaWFjaW9uZXMuYXNweB8GBRFQYWdvcyBBbnRpY2lwYWRvcx8HBTEvcGFnZXMvZWNvbWV4L3BhZ29zYW50aWNpcGFkb3NfbmVnb2NpYWNpb25lcy5hc3B4HwhnHwlnZBQrAAIWDB8ABQlEZXNwYWNob3MfBQUbL1BhZ2VzL0VDb21leC9TRVBBSU1QTy5hc3B4HwYFCURlc3BhY2hvcx8HBRsvcGFnZXMvZWNvbWV4L3NlcGFpbXBvLmFzcHgfCGcfCWdkFCsAAhYMHwAFCURlc3BhY2hvcx8FBSMvUGFnZXMvRUNvbWV4L1NFUEFJTVBPX0RFVEFMTEUuYXNweB8GBQlEZXNwYWNob3MfBwUjL3BhZ2VzL2Vjb21leC9zZXBhaW1wb19kZXRhbGxlLmFzcHgfCGcfCWdkFCsAAhYMHwAFFkFsZXJ0YSBkZSBWZW5jaW1pZW50b3MfBQUkL1BhZ2VzL0VDb21leC9BbGVydGFPcGVfYVZlbmNlci5hc3B4HwYFFkFsZXJ0YSBkZSBWZW5jaW1pZW50b3MfBwUkL3BhZ2VzL2Vjb21leC9hbGVydGFvcGVfYXZlbmNlci5hc3B4HwhnHwlnZBQrAAIWDB8ABRpBbGVydGEgZGUgw5NyZGVuZXMgZGUgUGFnbx8FBSQvUGFnZXMvRUNvbWV4L0FsZXJ0YU9wZXJhY2lvbmVzLmFzcHgfBgUaQWxlcnRhIGRlIMOTcmRlbmVzIGRlIFBhZ28fBwUkL3BhZ2VzL2Vjb21leC9hbGVydGFvcGVyYWNpb25lcy5hc3B4HwhnHwlnZBQrAAIWDB8ABRRBbGVydGEgZGUgUmVnw61tZW5lcx8FBRwvUGFnZXMvRUNvbWV4L1JlZ2ltZW5lcy5hc3B4HwYFFEFsZXJ0YSBkZSBSZWfDrW1lbmVzHwcFHC9wYWdlcy9lY29tZXgvcmVnaW1lbmVzLmFzcHgfCGcfCWdkFCsAAhYMHwAFGEZvcm11bGFyaW9zIHkgQ2lyY3VsYXJlcx8FBSgvUGFnZXMvRUNvbWV4L0Zvcm11bGFyaW9zQ2lyY3VsYXJlcy5hc3B4HwYFGEZvcm11bGFyaW9zIHkgQ2lyY3VsYXJlcx8HBSgvcGFnZXMvZWNvbWV4L2Zvcm11bGFyaW9zY2lyY3VsYXJlcy5hc3B4HwhnHwlnZBQrAAIWDB8ABRdDb25zdWx0YSBkZSBPcGVyYWNpb25lcx8FBSovUGFnZXMvRUNvbWV4L09wZXJhdGlvbnNDb25zdWx0YXRpb25zLmFzcHgfBgUXQ29uc3VsdGEgZGUgT3BlcmFjaW9uZXMfBwUqL3BhZ2VzL2Vjb21leC9vcGVyYXRpb25zY29uc3VsdGF0aW9ucy5hc3B4HwhnHwlnZBQrAAIWDB8ABRZJbmdyZXNvIGRlIE9wZXJhY2lvbmVzHwUFIi9QYWdlcy9FQ29tZXgvT3BlcmF0aW9uc0VudHJ5LmFzcHgfBgUWSW5ncmVzbyBkZSBPcGVyYWNpb25lcx8HBSIvcGFnZXMvZWNvbWV4L29wZXJhdGlvbnNlbnRyeS5hc3B4HwhnHwlnZBQrAAIWDB8ABQxBcHJvYmFjaW9uZXMfBQUeL1BhZ2VzL0VDb21leC9BcHJvYmF0aW9ucy5hc3B4HwYFDEFwcm9iYWNpb25lcx8HBR4vcGFnZXMvZWNvbWV4L2Fwcm9iYXRpb25zLmFzcHgfCGcfCWdkFCsAAhYMHwAFCUhpc3RvcmlhbB8FBR0vUGFnZXMvRUNvbWV4L0hpc3RvcmljYWwuYXNweB8GBQlIaXN0b3JpYWwfBwUdL3BhZ2VzL2Vjb21leC9oaXN0b3JpY2FsLmFzcHgfCGcfCWdkFCsAAhYKHwAFDVJlY2F1ZGFjaW9uZXMfBgUNUmVjYXVkYWNpb25lcx8HBSRiZDNlZjU4YS1kNjZjLTQ4OGMtOTY4ZC01NDE5ZDZjOWYwMzgfCGcfCWcUKwADBQcwOjAsMDoxFCsAAhYMHwAFCFBvciBDYWphHwUFIi9QYWdlcy9DYXNoUGF5bWVudHMvQnlDYXNoaWVyLmFzcHgfBgUIUG9yIENhamEfBwUiL3BhZ2VzL2Nhc2hwYXltZW50cy9ieWNhc2hpZXIuYXNweB8IZx8JZ2QUKwACFgwfAAUWREEg4oCTIFJlbWl0aXIgYXJjaGl2bx8FBSYvUGFnZXMvQ2FzaFBheW1lbnRzL0RBRm9yd2FyZEZpbGUuYXNweB8GBRZEQSDigJMgUmVtaXRpciBhcmNoaXZvHwcFJi9wYWdlcy9jYXNocGF5bWVudHMvZGFmb3J3YXJkZmlsZS5hc3B4HwhnHwlnZBQrAAIWDB8ABRZDb3RpemFjacOzbiBkZSBtb25lZGFzHwUFKS9QYWdlcy9TZXJ2aWNlcy9GaW5hbmNpYWxJbmZvcm1hdGlvbi5hc3B4HwYFFkNvdGl6YWNpw7NuIGRlIG1vbmVkYXMfBwUpL3BhZ2VzL3NlcnZpY2VzL2ZpbmFuY2lhbGluZm9ybWF0aW9uLmFzcHgfCGcfCWdkFCsAAhYKHwAFEkNhamFzIGRlIFNlZ3VyaWRhZB8GBRJDYWphcyBkZSBTZWd1cmlkYWQfBwUkNWI3M2IwOTAtZmQzMS00YTAwLThiNmMtOTkyZmExMDRmNjg2HwhnHwlnFCsAAgUDMDowFCsAAhYMHwAFCERldGFsbGVzHwUFKy9QYWdlcy9TYWZlRGVwb3NpdEJveGVzL1NhZmVEZXBvc2l0Qm94LmFzcHgfBgUIRGV0YWxsZXMfBwUrL3BhZ2VzL3NhZmVkZXBvc2l0Ym94ZXMvc2FmZWRlcG9zaXRib3guYXNweB8IZx8JZ2QUKwACFgofAAUPQWRtaW5pc3RyYWNpw7NuHwYFD0FkbWluaXN0cmFjacOzbh8HBSQ4ODc2OTdmOC04NjQ1LTRhYTQtYjRhYS1kYTU3YWFiYjZmNDEfCGcfCWcUKwAHBRcwOjAsMDoxLDA6MiwwOjMsMDo0LDA6NRQrAAIWDB8ABQhVc3Vhcmlvcx8FBSQvUGFnZXMvQWRtaW5pc3RyYXRpb24vVmlld1VzZXJzLmFzcHgfBgUIVXN1YXJpb3MfBwUkL3BhZ2VzL2FkbWluaXN0cmF0aW9uL3ZpZXd1c2Vycy5hc3B4HwhnHwlnZBQrAAIWDB8ABQdDdWVudGFzHwUFJy9QYWdlcy9BZG1pbmlzdHJhdGlvbi9WaWV3QWNjb3VudHMuYXNweB8GBQdDdWVudGFzHwcFJy9wYWdlcy9hZG1pbmlzdHJhdGlvbi92aWV3YWNjb3VudHMuYXNweB8IZx8JZ2QUKwACFgwfAAURR2VuZXJhciBjbGF2ZSBDRVQfBQUmL1BhZ2VzL0FkbWluaXN0cmF0aW9uL0dlbmVyYXRlTWFjLmFzcHgfBgURR2VuZXJhciBjbGF2ZSBDRVQfBwUmL3BhZ2VzL2FkbWluaXN0cmF0aW9uL2dlbmVyYXRlbWFjLmFzcHgfCGcfCWdkFCsAAhYMHwAFCFBlcm1pc29zHwUFJS9QYWdlcy9BZG1pbmlzdHJhdGlvbi9QZXJtaXNzaW9uLmFzcHgfBgUIUGVybWlzb3MfBwUlL3BhZ2VzL2FkbWluaXN0cmF0aW9uL3Blcm1pc3Npb24uYXNweB8IZx8JZ2QUKwACFgwfAAUSRXNxdWVtYXMgZGUgZmlybWFzHwUFJS9QYWdlcy9BZG1pbmlzdHJhdGlvbi9TaWduYXR1cmVzLmFzcHgfBgUSRXNxdWVtYXMgZGUgZmlybWFzHwcFJS9wYWdlcy9hZG1pbmlzdHJhdGlvbi9zaWduYXR1cmVzLmFzcHgfCGcfCWdkFCsAAhYMHwAFC0Zvcm11bGFyaW9zHwUFKC9QYWdlcy9BZG1pbmlzdHJhdGlvbi9Gb3Jtc0Rvd25sb2FkLmFzcHgfBgULRm9ybXVsYXJpb3MfBwUoL3BhZ2VzL2FkbWluaXN0cmF0aW9uL2Zvcm1zZG93bmxvYWQuYXNweB8IZx8JZ2QUKwACFgwfAAUPQWRtaW5pc3RyYXIgQ0RBHwUFLC9QYWdlcy9BZG1pbmlzdHJhdGlvbi9VcGRhdGVQaG9uZU51bWJlci5hc3B4HwYFD0FkbWluaXN0cmFyIENEQR8HBSwvcGFnZXMvYWRtaW5pc3RyYXRpb24vdXBkYXRlcGhvbmVudW1iZXIuYXNweB8IZx8JZ2QUKwACFgofAAUPQ29uZmlndXJhY2lvbmVzHwYFD0NvbmZpZ3VyYWNpb25lcx8HBSQ5MDQ1ODI1OC1kYzM4LTRmYzMtYTQ5YS0zYTZlNWMwNjM5NjYfCGcfCWcUKwADBQcwOjAsMDoxFCsAAhYOHwAFDU1pcyBmYXZvcml0b3MfBQUeL1BhZ2VzL0NvbW1vbi9QZXJzb25hbGl6ZS5hc3B4HwYFDU1pcyBmYXZvcml0b3MfBwUeL3BhZ2VzL2NvbW1vbi9wZXJzb25hbGl6ZS5hc3B4HwhnHghTZWxlY3RlZGcfCWdkFCsAAhYMHwAFDE1pcyBlbXByZXNhcx8FBS0vUGFnZXMvQWRtaW5pc3RyYXRpb24vVmlld0Vjb25vbWljR3JvdXBzLmFzcHgfBgUMTWlzIGVtcHJlc2FzHwcFLS9wYWdlcy9hZG1pbmlzdHJhdGlvbi92aWV3ZWNvbm9taWNncm91cHMuYXNweB8IZx8JZ2QUKwACFgwfAAUFQXl1ZGEfBQUKL0hlbHAuYXNweB8GBQVBeXVkYR8HBQovaGVscC5hc3B4HwhnHwlnZBQrAAIWDB8ABRFTYWxpciBkZWwgc2lzdGVtYR8FBRRqYXZhc2NyaXB0OkxvZ291dCgpOx8GBRFTYWxpciBkZWwgc2lzdGVtYR8HBRRqYXZhc2NyaXB0OmxvZ291dCgpOx8IZx8JZ2RkAgIPFgIeBXN0eWxlBQ1kaXNwbGF5Om5vbmU7FgICBQ8WAh4HVmlzaWJsZWgWBAIBDxAWBh4NRGF0YVRleHRGaWVsZAUFVGl0bGUeDkRhdGFWYWx1ZUZpZWxkBQNVcmkfAmcQFQEAFQEAFCsDAWcUKwEAZAIDDxYCHwsFDWRpc3BsYXk6bm9uZTsWAmYPZBYCAgEPFgIfCwUNZGlzcGxheTpub25lO2QYAQUeX19Db250cm9sc1JlcXVpcmVQb3N0QmFja0tleV9fFgMFHmN0bDAwJE1haW5Ib2xkZXIkcGFuZWxDb250cm9sMQUjY3RsMDAkTWFpbkhvbGRlciR0cmVlVmlld0Zhdm91cml0ZXMFGWN0bDAwJGltYWdlQnV0dG9uQ29sbGFwc2UNfU5pyY9QKw9eaQawvBkQOQeFgA==">
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+var theForm = document.forms['aspnetForm'];
+if (!theForm) {
+    theForm = document.aspnetForm;
+}
+function __doPostBack(eventTarget, eventArgument) {
+    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+        theForm.__EVENTTARGET.value = eventTarget;
+        theForm.__EVENTARGUMENT.value = eventArgument;
+        theForm.submit();
+    }
+}
+//]]>
+</script>
+
+
+<script src="./WebResource.axd" type="text/javascript"></script>
+
+
+						<style>							
+							P.PanelControlTitleStyle
+							{
+ 								font-family:verdana;
+ 								font-size: 12px;
+								font-weight : bold;
+								text-align: center;  								
+							}
+						</style>						
+						<script language="javascript">
+						function MinMaxPanelControl(cntrlId)
+						{
+						    var imgPath='/App_Themes/Default/Images/';	
+					
+							//Get state from hidden control.													
+							if ( document.getElementById(cntrlId).style.display == 'none' )
+							{
+								document.getElementById(cntrlId).style.display = '';						
+								document.getElementById(cntrlId+'_imgPlusMinus').src = imgPath + 'bot-grid-minus.gif';
+							}
+							else 
+							{
+								document.getElementById(cntrlId).style.display = 'none';								
+								document.getElementById(cntrlId+'_imgPlusMinus').src = imgPath + 'bot-grid-plus.gif';
+							}
+						}
+						</script>
+			
+<script src="./ScriptResource.axd" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+
+    function TreeView_PopulateNodeDoCallBack(context,param) {
+        WebForm_DoCallback(context.data.treeViewID,param,TreeView_ProcessNodeData,context,TreeView_ProcessNodeData,false);
+    }
+var ctl00_MainHolder_treeViewFavourites_Data = null;var __cultureInfo = '{"name":"es-UY","numberFormat":{"CurrencyDecimalDigits":2,"CurrencyDecimalSeparator":",","IsReadOnly":false,"CurrencyGroupSizes":[3],"NumberGroupSizes":[3],"PercentGroupSizes":[3],"CurrencyGroupSeparator":".","CurrencySymbol":"$U","NaNSymbol":"NeuN","CurrencyNegativePattern":14,"NumberNegativePattern":1,"PercentPositivePattern":0,"PercentNegativePattern":0,"NegativeInfinitySymbol":"-Infinito","NegativeSign":"-","NumberDecimalDigits":2,"NumberDecimalSeparator":",","NumberGroupSeparator":".","CurrencyPositivePattern":2,"PositiveInfinitySymbol":"Infinito","PositiveSign":"+","PercentDecimalDigits":2,"PercentDecimalSeparator":",","PercentGroupSeparator":".","PercentSymbol":"%","PerMilleSymbol":"‰","NativeDigits":["0","1","2","3","4","5","6","7","8","9"],"DigitSubstitution":1},"dateTimeFormat":{"AMDesignator":"a.m.","Calendar":{"MinSupportedDateTime":"\/Date(-62135586000000)\/","MaxSupportedDateTime":"\/Date(253402300799999)\/","AlgorithmType":1,"CalendarType":1,"Eras":[1],"TwoDigitYearMax":2029,"IsReadOnly":false},"DateSeparator":"/","FirstDayOfWeek":1,"CalendarWeekRule":0,"FullDateTimePattern":"dddd, dd\u0027 de \u0027MMMM\u0027 de \u0027yyyy hh:mm:ss tt","LongDatePattern":"dddd, dd\u0027 de \u0027MMMM\u0027 de \u0027yyyy","LongTimePattern":"hh:mm:ss tt","MonthDayPattern":"dd MMMM","PMDesignator":"p.m.","RFC1123Pattern":"ddd, dd MMM yyyy HH\u0027:\u0027mm\u0027:\u0027ss \u0027GMT\u0027","ShortDatePattern":"dd/MM/yyyy","ShortTimePattern":"hh:mm tt","SortableDateTimePattern":"yyyy\u0027-\u0027MM\u0027-\u0027dd\u0027T\u0027HH\u0027:\u0027mm\u0027:\u0027ss","TimeSeparator":":","UniversalSortableDateTimePattern":"yyyy\u0027-\u0027MM\u0027-\u0027dd HH\u0027:\u0027mm\u0027:\u0027ss\u0027Z\u0027","YearMonthPattern":"MMMM\u0027 de \u0027yyyy","AbbreviatedDayNames":["dom","lun","mar","mié","jue","vie","sáb"],"ShortestDayNames":["do","lu","ma","mi","ju","vi","sá"],"DayNames":["domingo","lunes","martes","miércoles","jueves","viernes","sábado"],"AbbreviatedMonthNames":["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic",""],"MonthNames":["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre",""],"IsReadOnly":false,"NativeCalendarName":"calendario gregoriano","AbbreviatedMonthGenitiveNames":["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic",""],"MonthGenitiveNames":["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre",""]}}';//]]>
+</script>
+
+<script src="./ScriptResource(1).axd" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+if (typeof(Sys) === 'undefined') throw new Error('ASP.NET Ajax client-side framework failed to load.');
+//]]>
+</script>
+
+<script src="./ScriptResource(2).axd" type="text/javascript"></script>
+<div>
+
+	<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEWUgLpv5boCQKZ0OkcAtuy3qcKAv2coPMMAsPTys8OAsGlipAIAozarpUIAu+Toq8HAvHW5l0C6r/PRAKR74a7AwKmqISvBQKPw7v7BQLdgPjfCQKlgfuoCgKh1pzfCwLmltT2BALK95u7CwK30u/TBALasp7vCwL6lIztBQKhvpeZCQL2pvyjDAKn5bSPDAKOutTzDwLc/YKIAgLah6SlBAK1hIaICQLHiYyLCgLmtoo8Atqhn5kHAsOnz6AGAoCS4JwMAveLsKMJAtuK2YcIAp2Tza8BArOw6dgOAu+e28oCAumts/ADAtuv1fwFAtyd5IoGAr3rrJIPAuDx/NcBAtrP+egOAonM094HAv3xmcABAvjNoeYOAv2aovgKAuSO1IQMApK4zZUKArK+/vsIAp/cqtwCAtSt2jkCjf7ayQoCtOnboA0C2rvlywoCrPCqvQwC6bTM2wQC3tDx1Q4CnufhrQECz5GokAECoe2KtQwCzvSj+gMC9cCXkA0C4Jj5jAUC9sTepwwC3OnB3wICl+Hm7QgCmtav+goCxtiOiwkCqMWutwICuKSbOwLzsK7oCwKAyqvmAwKQiZ7aAwLy6476DwLE4daPBgKU1qm6BALMnK3GAQK/4+y4DgLRqszJDgKJt+C7AZXLX+PFVi8mZ+JVOSC5ihgzbFfU">
+</div>
+    <script type="text/javascript">
+//<![CDATA[
+Sys.WebForms.PageRequestManager._initialize('ctl00$scriptManager', document.getElementById('aspnetForm'));
+Sys.WebForms.PageRequestManager.getInstance()._updateControls([], [], [], 90);
+//]]>
+</script>
+
+    <input type="hidden" id="PageLinkData" name="PageLinkData" value="">
+    <input type="hidden" id="PageLinkUrl" name="PageLinkUrl" value="">
+    <input type="hidden" id="PageUrl" value="/Pages/Common/Personalize.aspx">
+    <table id="ctl00_tableContent" width="100%" border="0" cellpadding="0" cellspacing="0" class="ic-content">
+	<tbody><tr>
+		<td class="ic-content-left-aux">
+                <img src="./log-img-aux-left-bottom.gif" width="9" height="110">
+            </td>
+		<td style="width: 100%">
+                <table width="100%" border="0" cellpadding="0" cellspacing="0" class="ic-content-left">
+                    <tbody><tr>
+                        <td id="TdCPM" class="ic-content-space-top" valign="top">
+                            <table id="TablaCPM" width="100%" border="0" cellspacing="0" cellpadding="0">
+                                
+                                <tbody><tr>
+                                    <td>
+                                        <table id="ctl00_tableHeader" width="100%" border="0" cellspacing="0" cellpadding="0">
+			<tbody><tr>
+				<td class="ic-breadcrumb-container">
+                                                    
+                                                    &gt;
+                                                    <span id="ctl00_siteMapNavigator"><a href="http://10.1.75.104:9080/Pages/Common/Personalize.aspx#ctl00_siteMapNavigator_SkipLink"><img alt="Skip Navigation Links" height="0" width="0" src="./WebResource(1).axd" style="border-width:0px;"></a><span><a href="http://10.1.75.104:9080/Home.aspx">Posición Consolidada</a></span><span> &gt; </span><span><a>Configuraciones</a></span><span> &gt; </span><span>Mis favoritos</span><a id="ctl00_siteMapNavigator_SkipLink"></a></span>
+                                                    </td>
+				<td class="ic-toolbar-container">
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tbody><tr>
+                                                            <td width="16">
+                                                                <img src="./ico-print.gif" id="ctl00_Img4" width="16" height="16">
+                                                            </td>
+                                                            <td class="ic-links-toolbar">
+                                                                <a href="http://10.1.75.104:9080/Pages/Common/Personalize.aspx#" onclick="javascript: GoPrint();">
+                                                                    Imprimir página</a>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody></table>
+                                                </td>
+			</tr>
+		</tbody></table>
+		
+                                    </td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>
+                                        <span id="ctl00_labelTitle" class="ic-page-title">Mis favoritos</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td id="ctl00_cellRequiered" align="right">&nbsp;</td>
+		
+                                </tr>
+                                <tr>
+                                    <td width="95%" align="center">
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                            <tbody><tr>
+                                                <td align="right">
+                                                    
+                                                    
+                                                </td>
+                                            </tr>
+                                        </tbody></table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="100%" align="center">
+                                        <div id="ic-loading" class="ic-loading-bg" style="display: none;">
+                                            <div class="ic-loading">
+                                                <div id="message">
+                                                    <img src="./cargandoBAR.gif" id="ctl00_imgLoading"><br>
+                                                    <span id="ctl00_WaitingMessage">Procesando...</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="mainContainer">
+                                            
+    <table width="90%">
+        <tbody><tr>
+            
+             
+             </tr></tbody></table><table width="90%" border="0">
+                    <tbody><tr valign="middle">
+                        <td align="center" class="ic-message">
+                            Esta opción le permitirá personalizar el menú favoritos de la aplicación, permitiendo un acceso rápido a las páginas más visitadas
+                        </td>
+                    </tr>
+             </tbody></table>
+             <table width="90%">
+             
+             <tbody><tr><td align="left">
+                <table class="ic-grid-border" cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+			<tbody><tr>
+				<td><table id="ctl00_MainHolder_panelControl1_thePanel" class="ic-grid" cellspacing="0" cellpadding="0" align="Center" border="0" style="width:100%;border-collapse:collapse;">
+					<tbody><tr class="ic-grid-title-row">
+						<td><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+							<tbody><tr>
+								<td class="ic-grid-title-cell-left">&nbsp;</td><td class="ic-grid-title-cell" align="left" style="white-space:nowrap;">Mis favoritos</td>
+							</tr>
+						</tbody></table></td>
+					</tr><tr>
+						<td align="center"><div id="ctl00_MainHolder_panelControl1" style="color:Black;border-color:DodgerBlue;font-family:verdana;font-size:10pt;height:250px;width:100%;display:;">
+	
+                    <table><tbody><tr><td align="left">
+                    
+                    <a href="http://10.1.75.104:9080/Pages/Common/Personalize.aspx#ctl00_MainHolder_treeViewFavourites_SkipLink"><img alt="Skip Navigation Links." src="./WebResource(1).axd" width="0" height="0" style="border-width:0px;"></a><div id="ctl00_MainHolder_treeViewFavourites">
+		<table cellpadding="0" cellspacing="0" style="border-width:0;">
+			<tbody><tr>
+				<td><a id="ctl00_MainHolder_treeViewFavouritesn0" href="javascript:TreeView_ToggleNode(ctl00_MainHolder_treeViewFavourites_Data,0,document.getElementById(&#39;ctl00_MainHolder_treeViewFavouritesn0&#39;),&#39; &#39;,document.getElementById(&#39;ctl00_MainHolder_treeViewFavouritesn0Nodes&#39;))"><img src="./WebResource(2).axd" alt="Collapse Posición Consolidada" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest0&#39;);" title="Posición Consolidada" id="ctl00_MainHolder_treeViewFavouritest0">Posición Consolidada</a></td>
+			</tr><tr style="height:0px;">
+				<td></td>
+			</tr>
+		</tbody></table><div id="ctl00_MainHolder_treeViewFavouritesn0Nodes" style="display:block;">
+			<table cellpadding="0" cellspacing="0" style="border-width:0;">
+				<tbody><tr style="height:0px;">
+					<td></td>
+				</tr><tr>
+					<td><div style="width:20px;height:1px"></div></td><td><a id="ctl00_MainHolder_treeViewFavouritesn1" href="javascript:TreeView_ToggleNode(ctl00_MainHolder_treeViewFavourites_Data,1,document.getElementById(&#39;ctl00_MainHolder_treeViewFavouritesn1&#39;),&#39; &#39;,document.getElementById(&#39;ctl00_MainHolder_treeViewFavouritesn1Nodes&#39;))"><img src="./WebResource(2).axd" alt="Collapse Cuentas" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeViewFavourites_2 ctl00_MainHolder_treeViewFavourites_4" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1 ctl00_MainHolder_treeViewFavourites_3" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Cuentas&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest1&#39;);" title="Cuentas" id="ctl00_MainHolder_treeViewFavouritest1">Cuentas</a></td>
+				</tr><tr style="height:0px;">
+					<td></td>
+				</tr>
+			</tbody></table><div id="ctl00_MainHolder_treeViewFavouritesn1Nodes" style="display:block;">
+				<table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn2CheckBox" id="ctl00_MainHolder_treeViewFavouritesn2CheckBox" title="Movimientos"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Cuentas\\/Pages/Accounts/AccountStatus.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest2&#39;);" title="Movimientos" id="ctl00_MainHolder_treeViewFavouritest2">Movimientos</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn3CheckBox" id="ctl00_MainHolder_treeViewFavouritesn3CheckBox" title="Acuerdos"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Cuentas\\/Pages/Accounts/Agreement.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest3&#39;);" title="Acuerdos" id="ctl00_MainHolder_treeViewFavouritest3">Acuerdos</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn4CheckBox" id="ctl00_MainHolder_treeViewFavouritesn4CheckBox" title="Solicitud Chequeras"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Cuentas\\/Pages/Accounts/CheckBook.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest4&#39;);" title="Solicitud Chequeras" id="ctl00_MainHolder_treeViewFavouritest4">Solicitud Chequeras</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn5CheckBox" id="ctl00_MainHolder_treeViewFavouritesn5CheckBox" title="Resumen digital"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Cuentas\\/Pages/Accounts/Resumen.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest5&#39;);" title="Resumen digital" id="ctl00_MainHolder_treeViewFavouritest5">Resumen digital</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn6CheckBox" id="ctl00_MainHolder_treeViewFavouritesn6CheckBox" title="Adhesión al resumen digital"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Cuentas\\/Pages/Accounts/AdhesionDigitalSummary.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest6&#39;);" title="Adhesión al resumen digital" id="ctl00_MainHolder_treeViewFavouritest6">Adhesión al resumen digital</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table>
+			</div><table cellpadding="0" cellspacing="0" style="border-width:0;">
+				<tbody><tr style="height:0px;">
+					<td></td>
+				</tr><tr>
+					<td><div style="width:20px;height:1px"></div></td><td><a id="ctl00_MainHolder_treeViewFavouritesn7" href="javascript:TreeView_ToggleNode(ctl00_MainHolder_treeViewFavourites_Data,7,document.getElementById(&#39;ctl00_MainHolder_treeViewFavouritesn7&#39;),&#39; &#39;,document.getElementById(&#39;ctl00_MainHolder_treeViewFavouritesn7Nodes&#39;))"><img src="./WebResource(2).axd" alt="Collapse Transferencias" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeViewFavourites_2 ctl00_MainHolder_treeViewFavourites_4" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1 ctl00_MainHolder_treeViewFavourites_3" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Transferencias&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest7&#39;);" title="Transferencias" id="ctl00_MainHolder_treeViewFavouritest7">Transferencias</a></td>
+				</tr><tr style="height:0px;">
+					<td></td>
+				</tr>
+			</tbody></table><div id="ctl00_MainHolder_treeViewFavouritesn7Nodes" style="display:block;">
+				<table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn8CheckBox" id="ctl00_MainHolder_treeViewFavouritesn8CheckBox" title="Mis cuentas de crédito"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Transferencias\\/Pages/Transfers/MyCreditAccounts.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest8&#39;);" title="Mis cuentas de crédito" id="ctl00_MainHolder_treeViewFavouritest8">Mis cuentas de crédito</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn9CheckBox" id="ctl00_MainHolder_treeViewFavouritesn9CheckBox" title="Transferencias 24/48 horas"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Transferencias\\/Pages/Transfers/ExtraBankTransfer.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest9&#39;);" title="Transferencias 24/48 horas" id="ctl00_MainHolder_treeViewFavouritest9">Transferencias 24/48 horas</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn10CheckBox" id="ctl00_MainHolder_treeViewFavouritesn10CheckBox" title="Aprobaciones"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Transferencias\\/Pages/Transfers/TransfersAuthorizations.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest10&#39;);" title="Aprobaciones" id="ctl00_MainHolder_treeViewFavouritest10">Aprobaciones</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn11CheckBox" id="ctl00_MainHolder_treeViewFavouritesn11CheckBox" title="Historial"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Transferencias\\/Pages/Transfers/TransfersTransactionsHistory.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest11&#39;);" title="Historial" id="ctl00_MainHolder_treeViewFavouritest11">Historial</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table>
+			</div><table cellpadding="0" cellspacing="0" style="border-width:0;">
+				<tbody><tr style="height:0px;">
+					<td></td>
+				</tr><tr>
+					<td><div style="width:20px;height:1px"></div></td><td><a id="ctl00_MainHolder_treeViewFavouritesn12" href="javascript:TreeView_ToggleNode(ctl00_MainHolder_treeViewFavourites_Data,12,document.getElementById(&#39;ctl00_MainHolder_treeViewFavouritesn12&#39;),&#39; &#39;,document.getElementById(&#39;ctl00_MainHolder_treeViewFavouritesn12Nodes&#39;))"><img src="./WebResource(2).axd" alt="Collapse Pago de Servicios" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeViewFavourites_2 ctl00_MainHolder_treeViewFavourites_4" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1 ctl00_MainHolder_treeViewFavourites_3" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Pago de Servicios&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest12&#39;);" title="Pago de Servicios" id="ctl00_MainHolder_treeViewFavouritest12">Pago de Servicios</a></td>
+				</tr><tr style="height:0px;">
+					<td></td>
+				</tr>
+			</tbody></table><div id="ctl00_MainHolder_treeViewFavouritesn12Nodes" style="display:block;">
+				<table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn13CheckBox" id="ctl00_MainHolder_treeViewFavouritesn13CheckBox" title="Pagos"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Pago de Servicios\\/Pages/ServicePayments/ServicePayments.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest13&#39;);" title="Pagos" id="ctl00_MainHolder_treeViewFavouritest13">Pagos</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn14CheckBox" id="ctl00_MainHolder_treeViewFavouritesn14CheckBox" title="Aprobaciones"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Pago de Servicios\\/Pages/ServicePayments/ServicePaymentsAuthorization.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest14&#39;);" title="Aprobaciones" id="ctl00_MainHolder_treeViewFavouritest14">Aprobaciones</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn15CheckBox" id="ctl00_MainHolder_treeViewFavouritesn15CheckBox" title="Adhesión de Servicios"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Pago de Servicios\\/Pages/ServicePayments/ServicePaymentsAdhesion.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest15&#39;);" title="Adhesión de Servicios" id="ctl00_MainHolder_treeViewFavouritest15">Adhesión de Servicios</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn16CheckBox" id="ctl00_MainHolder_treeViewFavouritesn16CheckBox" title="Consultas"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Pago de Servicios\\/Pages/ServicePayments/ServicePaymentsHistory.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest16&#39;);" title="Consultas" id="ctl00_MainHolder_treeViewFavouritest16">Consultas</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn17CheckBox" id="ctl00_MainHolder_treeViewFavouritesn17CheckBox" title="Notificaciones"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Pago de Servicios\\/Pages/ServicePayments/ServicePaymentsNotifications.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest17&#39;);" title="Notificaciones" id="ctl00_MainHolder_treeViewFavouritest17">Notificaciones</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table>
+			</div><table cellpadding="0" cellspacing="0" style="border-width:0;">
+				<tbody><tr style="height:0px;">
+					<td></td>
+				</tr><tr>
+					<td><div style="width:20px;height:1px"></div></td><td><a id="ctl00_MainHolder_treeViewFavouritesn18" href="javascript:TreeView_ToggleNode(ctl00_MainHolder_treeViewFavourites_Data,18,document.getElementById(&#39;ctl00_MainHolder_treeViewFavouritesn18&#39;),&#39; &#39;,document.getElementById(&#39;ctl00_MainHolder_treeViewFavouritesn18Nodes&#39;))"><img src="./WebResource(2).axd" alt="Collapse Cheques" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeViewFavourites_2 ctl00_MainHolder_treeViewFavourites_4" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1 ctl00_MainHolder_treeViewFavourites_3" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Cheques&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest18&#39;);" title="Cheques" id="ctl00_MainHolder_treeViewFavouritest18">Cheques</a></td>
+				</tr><tr style="height:0px;">
+					<td></td>
+				</tr>
+			</tbody></table><div id="ctl00_MainHolder_treeViewFavouritesn18Nodes" style="display:block;">
+				<table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn19CheckBox" id="ctl00_MainHolder_treeViewFavouritesn19CheckBox" title="Detalles"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Cheques\\/Pages/Checks/Check.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest19&#39;);" title="Detalles" id="ctl00_MainHolder_treeViewFavouritest19">Detalles</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table>
+			</div><table cellpadding="0" cellspacing="0" style="border-width:0;">
+				<tbody><tr style="height:0px;">
+					<td></td>
+				</tr><tr>
+					<td><div style="width:20px;height:1px"></div></td><td><a id="ctl00_MainHolder_treeViewFavouritesn20" href="javascript:TreeView_ToggleNode(ctl00_MainHolder_treeViewFavourites_Data,20,document.getElementById(&#39;ctl00_MainHolder_treeViewFavouritesn20&#39;),&#39; &#39;,document.getElementById(&#39;ctl00_MainHolder_treeViewFavouritesn20Nodes&#39;))"><img src="./WebResource(2).axd" alt="Collapse Préstamos" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeViewFavourites_2 ctl00_MainHolder_treeViewFavourites_4" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1 ctl00_MainHolder_treeViewFavourites_3" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Préstamos&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest20&#39;);" title="Préstamos" id="ctl00_MainHolder_treeViewFavouritest20">Préstamos</a></td>
+				</tr><tr style="height:0px;">
+					<td></td>
+				</tr>
+			</tbody></table><div id="ctl00_MainHolder_treeViewFavouritesn20Nodes" style="display:block;">
+				<table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn21CheckBox" id="ctl00_MainHolder_treeViewFavouritesn21CheckBox" title="Detalles"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Préstamos\\/Pages/Loans/LoanDetails.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest21&#39;);" title="Detalles" id="ctl00_MainHolder_treeViewFavouritest21">Detalles</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table>
+			</div><table cellpadding="0" cellspacing="0" style="border-width:0;">
+				<tbody><tr style="height:0px;">
+					<td></td>
+				</tr><tr>
+					<td><div style="width:20px;height:1px"></div></td><td><a id="ctl00_MainHolder_treeViewFavouritesn22" href="javascript:TreeView_ToggleNode(ctl00_MainHolder_treeViewFavourites_Data,22,document.getElementById(&#39;ctl00_MainHolder_treeViewFavouritesn22&#39;),&#39; &#39;,document.getElementById(&#39;ctl00_MainHolder_treeViewFavouritesn22Nodes&#39;))"><img src="./WebResource(2).axd" alt="Collapse Leasing" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeViewFavourites_2 ctl00_MainHolder_treeViewFavourites_4" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1 ctl00_MainHolder_treeViewFavourites_3" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Leasing&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest22&#39;);" title="Leasing" id="ctl00_MainHolder_treeViewFavouritest22">Leasing</a></td>
+				</tr><tr style="height:0px;">
+					<td></td>
+				</tr>
+			</tbody></table><div id="ctl00_MainHolder_treeViewFavouritesn22Nodes" style="display:block;">
+				<table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn23CheckBox" id="ctl00_MainHolder_treeViewFavouritesn23CheckBox" title="Detalles"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Leasing\\/Pages/Leasing/Leasing.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest23&#39;);" title="Detalles" id="ctl00_MainHolder_treeViewFavouritest23">Detalles</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table>
+			</div><table cellpadding="0" cellspacing="0" style="border-width:0;">
+				<tbody><tr style="height:0px;">
+					<td></td>
+				</tr><tr>
+					<td><div style="width:20px;height:1px"></div></td><td><a id="ctl00_MainHolder_treeViewFavouritesn24" href="javascript:TreeView_ToggleNode(ctl00_MainHolder_treeViewFavourites_Data,24,document.getElementById(&#39;ctl00_MainHolder_treeViewFavouritesn24&#39;),&#39; &#39;,document.getElementById(&#39;ctl00_MainHolder_treeViewFavouritesn24Nodes&#39;))"><img src="./WebResource(2).axd" alt="Collapse Factoring/Depósitos" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeViewFavourites_2 ctl00_MainHolder_treeViewFavourites_4" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1 ctl00_MainHolder_treeViewFavourites_3" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Factoring/Depósitos&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest24&#39;);" title="Factoring/Depósitos" id="ctl00_MainHolder_treeViewFavouritest24">Factoring/Depósitos</a></td>
+				</tr><tr style="height:0px;">
+					<td></td>
+				</tr>
+			</tbody></table><div id="ctl00_MainHolder_treeViewFavouritesn24Nodes" style="display:block;">
+				<table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn25CheckBox" id="ctl00_MainHolder_treeViewFavouritesn25CheckBox" title="Resumen"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Factoring/Depósitos\\/Pages/Factoring/Resumen.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest25&#39;);" title="Resumen" id="ctl00_MainHolder_treeViewFavouritest25">Resumen</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn26CheckBox" id="ctl00_MainHolder_treeViewFavouritesn26CheckBox" title="Detalle"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Factoring/Depósitos\\/Pages/Factoring/Detalle.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest26&#39;);" title="Detalle" id="ctl00_MainHolder_treeViewFavouritest26">Detalle</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn27CheckBox" id="ctl00_MainHolder_treeViewFavouritesn27CheckBox" title="Custodia"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Factoring/Depósitos\\/Pages/Factoring/Custodia.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest27&#39;);" title="Custodia" id="ctl00_MainHolder_treeViewFavouritest27">Custodia</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn28CheckBox" id="ctl00_MainHolder_treeViewFavouritesn28CheckBox" title="Detalle de Presentación"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Factoring/Depósitos\\/Pages/Factoring/VerPresentacionCustodia.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest28&#39;);" title="Detalle de Presentación" id="ctl00_MainHolder_treeViewFavouritest28">Detalle de Presentación</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn29CheckBox" id="ctl00_MainHolder_treeViewFavouritesn29CheckBox" title="Contratos"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Factoring/Depósitos\\/Pages/Factoring/Contratos.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest29&#39;);" title="Contratos" id="ctl00_MainHolder_treeViewFavouritest29">Contratos</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table>
+			</div><table cellpadding="0" cellspacing="0" style="border-width:0;">
+				<tbody><tr style="height:0px;">
+					<td></td>
+				</tr><tr>
+					<td><div style="width:20px;height:1px"></div></td><td><a id="ctl00_MainHolder_treeViewFavouritesn30" href="javascript:TreeView_ToggleNode(ctl00_MainHolder_treeViewFavourites_Data,30,document.getElementById(&#39;ctl00_MainHolder_treeViewFavouritesn30&#39;),&#39; &#39;,document.getElementById(&#39;ctl00_MainHolder_treeViewFavouritesn30Nodes&#39;))"><img src="./WebResource(2).axd" alt="Collapse Pago a Proveedores" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeViewFavourites_2 ctl00_MainHolder_treeViewFavourites_4" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1 ctl00_MainHolder_treeViewFavourites_3" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Pago a Proveedores&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest30&#39;);" title="Pago a Proveedores" id="ctl00_MainHolder_treeViewFavouritest30">Pago a Proveedores</a></td>
+				</tr><tr style="height:0px;">
+					<td></td>
+				</tr>
+			</tbody></table><div id="ctl00_MainHolder_treeViewFavouritesn30Nodes" style="display:block;">
+				<table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn31CheckBox" id="ctl00_MainHolder_treeViewFavouritesn31CheckBox" title="Consulta de Cheques"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Pago a Proveedores\\/Pages/ProvidersCheck/ConsultaCheques.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest31&#39;);" title="Consulta de Cheques" id="ctl00_MainHolder_treeViewFavouritest31">Consulta de Cheques</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn32CheckBox" id="ctl00_MainHolder_treeViewFavouritesn32CheckBox" title="Ingreso por Archivo"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Pago a Proveedores\\/Pages/ProvidersCheck/LoadFile.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest32&#39;);" title="Ingreso por Archivo" id="ctl00_MainHolder_treeViewFavouritest32">Ingreso por Archivo</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn33CheckBox" id="ctl00_MainHolder_treeViewFavouritesn33CheckBox" title="Ingreso Manual"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Pago a Proveedores\\/Pages/ProvidersCheck/LoadData.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest33&#39;);" title="Ingreso Manual" id="ctl00_MainHolder_treeViewFavouritest33">Ingreso Manual</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn34CheckBox" id="ctl00_MainHolder_treeViewFavouritesn34CheckBox" title="Aprobaciones"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Pago a Proveedores\\/Pages/ProvidersCheck/ProvidersCheckAuthorizations.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest34&#39;);" title="Aprobaciones" id="ctl00_MainHolder_treeViewFavouritest34">Aprobaciones</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn35CheckBox" id="ctl00_MainHolder_treeViewFavouritesn35CheckBox" title="Historial"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Pago a Proveedores\\/Pages/ProvidersCheck/ProvidersCheckTransactionsHistory.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest35&#39;);" title="Historial" id="ctl00_MainHolder_treeViewFavouritest35">Historial</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table>
+			</div><table cellpadding="0" cellspacing="0" style="border-width:0;">
+				<tbody><tr style="height:0px;">
+					<td></td>
+				</tr><tr>
+					<td><div style="width:20px;height:1px"></div></td><td><a id="ctl00_MainHolder_treeViewFavouritesn36" href="javascript:TreeView_ToggleNode(ctl00_MainHolder_treeViewFavourites_Data,36,document.getElementById(&#39;ctl00_MainHolder_treeViewFavouritesn36&#39;),&#39; &#39;,document.getElementById(&#39;ctl00_MainHolder_treeViewFavouritesn36Nodes&#39;))"><img src="./WebResource(2).axd" alt="Collapse Pago de Sueldos" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeViewFavourites_2 ctl00_MainHolder_treeViewFavourites_4" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1 ctl00_MainHolder_treeViewFavourites_3" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Pago de Sueldos&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest36&#39;);" title="Pago de Sueldos" id="ctl00_MainHolder_treeViewFavouritest36">Pago de Sueldos</a></td>
+				</tr><tr style="height:0px;">
+					<td></td>
+				</tr>
+			</tbody></table><div id="ctl00_MainHolder_treeViewFavouritesn36Nodes" style="display:block;">
+				<table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn37CheckBox" id="ctl00_MainHolder_treeViewFavouritesn37CheckBox" title="Consulta de Nómina"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Pago de Sueldos\\/Pages/Salary/PayrollInquiry.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest37&#39;);" title="Consulta de Nómina" id="ctl00_MainHolder_treeViewFavouritest37">Consulta de Nómina</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn38CheckBox" id="ctl00_MainHolder_treeViewFavouritesn38CheckBox" title="Aprobaciones"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Pago de Sueldos\\/Pages/Salary/SalariesTransactionAuthorization.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest38&#39;);" title="Aprobaciones" id="ctl00_MainHolder_treeViewFavouritest38">Aprobaciones</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn39CheckBox" id="ctl00_MainHolder_treeViewFavouritesn39CheckBox" title="Historial"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Pago de Sueldos\\/Pages/Salary/SalariesTransactionsHistory.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest39&#39;);" title="Historial" id="ctl00_MainHolder_treeViewFavouritest39">Historial</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table>
+			</div><table cellpadding="0" cellspacing="0" style="border-width:0;">
+				<tbody><tr style="height:0px;">
+					<td></td>
+				</tr><tr>
+					<td><div style="width:20px;height:1px"></div></td><td><a id="ctl00_MainHolder_treeViewFavouritesn40" href="javascript:TreeView_ToggleNode(ctl00_MainHolder_treeViewFavourites_Data,40,document.getElementById(&#39;ctl00_MainHolder_treeViewFavouritesn40&#39;),&#39; &#39;,document.getElementById(&#39;ctl00_MainHolder_treeViewFavouritesn40Nodes&#39;))"><img src="./WebResource(2).axd" alt="Collapse Comercio Exterior" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeViewFavourites_2 ctl00_MainHolder_treeViewFavourites_4" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1 ctl00_MainHolder_treeViewFavourites_3" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Comercio Exterior&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest40&#39;);" title="Comercio Exterior" id="ctl00_MainHolder_treeViewFavouritest40">Comercio Exterior</a></td>
+				</tr><tr style="height:0px;">
+					<td></td>
+				</tr>
+			</tbody></table><div id="ctl00_MainHolder_treeViewFavouritesn40Nodes" style="display:block;">
+				<table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn41CheckBox" id="ctl00_MainHolder_treeViewFavouritesn41CheckBox" title="Consulta de Operaciones"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Comercio Exterior\\/Pages/EComex/ConsultaOperaciones.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest41&#39;);" title="Consulta de Operaciones" id="ctl00_MainHolder_treeViewFavouritest41">Consulta de Operaciones</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn42CheckBox" id="ctl00_MainHolder_treeViewFavouritesn42CheckBox" title="Consulta de Operaciones"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Comercio Exterior\\/Pages/EComex/Operaciones.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest42&#39;);" title="Consulta de Operaciones" id="ctl00_MainHolder_treeViewFavouritest42">Consulta de Operaciones</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn43CheckBox" id="ctl00_MainHolder_treeViewFavouritesn43CheckBox" title="Permisos de Embarque"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Comercio Exterior\\/Pages/EComex/PermisosEmbarques.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest43&#39;);" title="Permisos de Embarque" id="ctl00_MainHolder_treeViewFavouritest43">Permisos de Embarque</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn44CheckBox" id="ctl00_MainHolder_treeViewFavouritesn44CheckBox" title="Permisos de Embarque"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Comercio Exterior\\/Pages/EComex/PermisosEmbarques_Negociaciones.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest44&#39;);" title="Permisos de Embarque" id="ctl00_MainHolder_treeViewFavouritest44">Permisos de Embarque</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn45CheckBox" id="ctl00_MainHolder_treeViewFavouritesn45CheckBox" title="Financiaciones"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Comercio Exterior\\/Pages/EComex/ConsultaFinanciaciones.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest45&#39;);" title="Financiaciones" id="ctl00_MainHolder_treeViewFavouritest45">Financiaciones</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><a id="ctl00_MainHolder_treeViewFavouritesn46" href="javascript:TreeView_ToggleNode(ctl00_MainHolder_treeViewFavourites_Data,46,document.getElementById(&#39;ctl00_MainHolder_treeViewFavouritesn46&#39;),&#39; &#39;,document.getElementById(&#39;ctl00_MainHolder_treeViewFavouritesn46Nodes&#39;))"><img src="./WebResource(2).axd" alt="Collapse Sepa Impo" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeViewFavourites_2 ctl00_MainHolder_treeViewFavourites_4" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1 ctl00_MainHolder_treeViewFavourites_3" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Comercio Exterior\\Sepa Impo&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest46&#39;);" title="Sepa Impo" id="ctl00_MainHolder_treeViewFavouritest46">Sepa Impo</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><div id="ctl00_MainHolder_treeViewFavouritesn46Nodes" style="display:block;">
+					<table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn47CheckBox" id="ctl00_MainHolder_treeViewFavouritesn47CheckBox" title="Pagos Anticipados"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Comercio Exterior\\Sepa Impo\\/Pages/EComex/PagosAnticipados.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest47&#39;);" title="Pagos Anticipados" id="ctl00_MainHolder_treeViewFavouritest47">Pagos Anticipados</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn48CheckBox" id="ctl00_MainHolder_treeViewFavouritesn48CheckBox" title="Pagos Anticipados"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Comercio Exterior\\Sepa Impo\\/Pages/EComex/PagosAnticipados_Negociaciones.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest48&#39;);" title="Pagos Anticipados" id="ctl00_MainHolder_treeViewFavouritest48">Pagos Anticipados</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn49CheckBox" id="ctl00_MainHolder_treeViewFavouritesn49CheckBox" title="Despachos"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Comercio Exterior\\Sepa Impo\\/Pages/EComex/SEPAIMPO.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest49&#39;);" title="Despachos" id="ctl00_MainHolder_treeViewFavouritest49">Despachos</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+						<tbody><tr style="height:0px;">
+							<td></td>
+						</tr><tr>
+							<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn50CheckBox" id="ctl00_MainHolder_treeViewFavouritesn50CheckBox" title="Despachos"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Comercio Exterior\\Sepa Impo\\/Pages/EComex/SEPAIMPO_DETALLE.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest50&#39;);" title="Despachos" id="ctl00_MainHolder_treeViewFavouritest50">Despachos</a></td>
+						</tr><tr style="height:0px;">
+							<td></td>
+						</tr>
+					</tbody></table>
+				</div><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn51CheckBox" id="ctl00_MainHolder_treeViewFavouritesn51CheckBox" title="Alerta de Vencimientos"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Comercio Exterior\\/Pages/EComex/AlertaOpe_aVencer.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest51&#39;);" title="Alerta de Vencimientos" id="ctl00_MainHolder_treeViewFavouritest51">Alerta de Vencimientos</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn52CheckBox" id="ctl00_MainHolder_treeViewFavouritesn52CheckBox" title="Alerta de Órdenes de Pago"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Comercio Exterior\\/Pages/EComex/AlertaOperaciones.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest52&#39;);" title="Alerta de Órdenes de Pago" id="ctl00_MainHolder_treeViewFavouritest52">Alerta de Órdenes de Pago</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn53CheckBox" id="ctl00_MainHolder_treeViewFavouritesn53CheckBox" title="Alerta de Regímenes"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Comercio Exterior\\/Pages/EComex/Regimenes.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest53&#39;);" title="Alerta de Regímenes" id="ctl00_MainHolder_treeViewFavouritest53">Alerta de Regímenes</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn54CheckBox" id="ctl00_MainHolder_treeViewFavouritesn54CheckBox" title="Formularios y Circulares"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Comercio Exterior\\/Pages/EComex/FormulariosCirculares.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest54&#39;);" title="Formularios y Circulares" id="ctl00_MainHolder_treeViewFavouritest54">Formularios y Circulares</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn55CheckBox" id="ctl00_MainHolder_treeViewFavouritesn55CheckBox" title="Consulta de Operaciones"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Comercio Exterior\\/Pages/EComex/OperationsConsultations.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest55&#39;);" title="Consulta de Operaciones" id="ctl00_MainHolder_treeViewFavouritest55">Consulta de Operaciones</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn56CheckBox" id="ctl00_MainHolder_treeViewFavouritesn56CheckBox" title="Ingreso de Operaciones"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Comercio Exterior\\/Pages/EComex/OperationsEntry.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest56&#39;);" title="Ingreso de Operaciones" id="ctl00_MainHolder_treeViewFavouritest56">Ingreso de Operaciones</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn57CheckBox" id="ctl00_MainHolder_treeViewFavouritesn57CheckBox" title="Aprobaciones"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Comercio Exterior\\/Pages/EComex/Aprobations.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest57&#39;);" title="Aprobaciones" id="ctl00_MainHolder_treeViewFavouritest57">Aprobaciones</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn58CheckBox" id="ctl00_MainHolder_treeViewFavouritesn58CheckBox" title="Historial"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Comercio Exterior\\/Pages/EComex/Historical.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest58&#39;);" title="Historial" id="ctl00_MainHolder_treeViewFavouritest58">Historial</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table>
+			</div><table cellpadding="0" cellspacing="0" style="border-width:0;">
+				<tbody><tr style="height:0px;">
+					<td></td>
+				</tr><tr>
+					<td><div style="width:20px;height:1px"></div></td><td><a id="ctl00_MainHolder_treeViewFavouritesn59" href="javascript:TreeView_ToggleNode(ctl00_MainHolder_treeViewFavourites_Data,59,document.getElementById(&#39;ctl00_MainHolder_treeViewFavouritesn59&#39;),&#39; &#39;,document.getElementById(&#39;ctl00_MainHolder_treeViewFavouritesn59Nodes&#39;))"><img src="./WebResource(2).axd" alt="Collapse Recaudaciones" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeViewFavourites_2 ctl00_MainHolder_treeViewFavourites_4" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1 ctl00_MainHolder_treeViewFavourites_3" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Recaudaciones&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest59&#39;);" title="Recaudaciones" id="ctl00_MainHolder_treeViewFavouritest59">Recaudaciones</a></td>
+				</tr><tr style="height:0px;">
+					<td></td>
+				</tr>
+			</tbody></table><div id="ctl00_MainHolder_treeViewFavouritesn59Nodes" style="display:block;">
+				<table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn60CheckBox" id="ctl00_MainHolder_treeViewFavouritesn60CheckBox" title="Por Caja"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Recaudaciones\\/Pages/CashPayments/ByCashier.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest60&#39;);" title="Por Caja" id="ctl00_MainHolder_treeViewFavouritest60">Por Caja</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn61CheckBox" id="ctl00_MainHolder_treeViewFavouritesn61CheckBox" title="DA – Remitir archivo"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Recaudaciones\\/Pages/CashPayments/DAForwardFile.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest61&#39;);" title="DA – Remitir archivo" id="ctl00_MainHolder_treeViewFavouritest61">DA – Remitir archivo</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table>
+			</div><table cellpadding="0" cellspacing="0" style="border-width:0;">
+				<tbody><tr style="height:0px;">
+					<td></td>
+				</tr><tr>
+					<td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn62CheckBox" id="ctl00_MainHolder_treeViewFavouritesn62CheckBox" title="Cotización de monedas"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\/Pages/Services/FinancialInformation.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest62&#39;);" title="Cotización de monedas" id="ctl00_MainHolder_treeViewFavouritest62">Cotización de monedas</a></td>
+				</tr><tr style="height:0px;">
+					<td></td>
+				</tr>
+			</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+				<tbody><tr style="height:0px;">
+					<td></td>
+				</tr><tr>
+					<td><div style="width:20px;height:1px"></div></td><td><a id="ctl00_MainHolder_treeViewFavouritesn63" href="javascript:TreeView_ToggleNode(ctl00_MainHolder_treeViewFavourites_Data,63,document.getElementById(&#39;ctl00_MainHolder_treeViewFavouritesn63&#39;),&#39; &#39;,document.getElementById(&#39;ctl00_MainHolder_treeViewFavouritesn63Nodes&#39;))"><img src="./WebResource(2).axd" alt="Collapse Cajas de Seguridad" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeViewFavourites_2 ctl00_MainHolder_treeViewFavourites_4" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1 ctl00_MainHolder_treeViewFavourites_3" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Cajas de Seguridad&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest63&#39;);" title="Cajas de Seguridad" id="ctl00_MainHolder_treeViewFavouritest63">Cajas de Seguridad</a></td>
+				</tr><tr style="height:0px;">
+					<td></td>
+				</tr>
+			</tbody></table><div id="ctl00_MainHolder_treeViewFavouritesn63Nodes" style="display:block;">
+				<table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn64CheckBox" id="ctl00_MainHolder_treeViewFavouritesn64CheckBox" title="Detalles"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Cajas de Seguridad\\/Pages/SafeDepositBoxes/SafeDepositBox.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest64&#39;);" title="Detalles" id="ctl00_MainHolder_treeViewFavouritest64">Detalles</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table>
+			</div><table cellpadding="0" cellspacing="0" style="border-width:0;">
+				<tbody><tr style="height:0px;">
+					<td></td>
+				</tr><tr>
+					<td><div style="width:20px;height:1px"></div></td><td><a id="ctl00_MainHolder_treeViewFavouritesn65" href="javascript:TreeView_ToggleNode(ctl00_MainHolder_treeViewFavourites_Data,65,document.getElementById(&#39;ctl00_MainHolder_treeViewFavouritesn65&#39;),&#39; &#39;,document.getElementById(&#39;ctl00_MainHolder_treeViewFavouritesn65Nodes&#39;))"><img src="./WebResource(2).axd" alt="Collapse Administración" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeViewFavourites_2 ctl00_MainHolder_treeViewFavourites_4" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1 ctl00_MainHolder_treeViewFavourites_3" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Administración&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest65&#39;);" title="Administración" id="ctl00_MainHolder_treeViewFavouritest65">Administración</a></td>
+				</tr><tr style="height:0px;">
+					<td></td>
+				</tr>
+			</tbody></table><div id="ctl00_MainHolder_treeViewFavouritesn65Nodes" style="display:block;">
+				<table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn66CheckBox" id="ctl00_MainHolder_treeViewFavouritesn66CheckBox" title="Usuarios"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Administración\\/Pages/Administration/ViewUsers.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest66&#39;);" title="Usuarios" id="ctl00_MainHolder_treeViewFavouritest66">Usuarios</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn67CheckBox" id="ctl00_MainHolder_treeViewFavouritesn67CheckBox" title="Cuentas"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Administración\\/Pages/Administration/ViewAccounts.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest67&#39;);" title="Cuentas" id="ctl00_MainHolder_treeViewFavouritest67">Cuentas</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn68CheckBox" id="ctl00_MainHolder_treeViewFavouritesn68CheckBox" title="Generar clave CET"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Administración\\/Pages/Administration/GenerateMac.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest68&#39;);" title="Generar clave CET" id="ctl00_MainHolder_treeViewFavouritest68">Generar clave CET</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn69CheckBox" id="ctl00_MainHolder_treeViewFavouritesn69CheckBox" title="Permisos"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Administración\\/Pages/Administration/Permission.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest69&#39;);" title="Permisos" id="ctl00_MainHolder_treeViewFavouritest69">Permisos</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn70CheckBox" id="ctl00_MainHolder_treeViewFavouritesn70CheckBox" title="Esquemas de firmas"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Administración\\/Pages/Administration/Signatures.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest70&#39;);" title="Esquemas de firmas" id="ctl00_MainHolder_treeViewFavouritest70">Esquemas de firmas</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn71CheckBox" id="ctl00_MainHolder_treeViewFavouritesn71CheckBox" title="Formularios"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Administración\\/Pages/Administration/FormsDownload.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest71&#39;);" title="Formularios" id="ctl00_MainHolder_treeViewFavouritest71">Formularios</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table>
+			</div><table cellpadding="0" cellspacing="0" style="border-width:0;">
+				<tbody><tr style="height:0px;">
+					<td></td>
+				</tr><tr>
+					<td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn72CheckBox" id="ctl00_MainHolder_treeViewFavouritesn72CheckBox" title="Administrar CDA"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\/Pages/Administration/UpdatePhoneNumber.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest72&#39;);" title="Administrar CDA" id="ctl00_MainHolder_treeViewFavouritest72">Administrar CDA</a></td>
+				</tr><tr style="height:0px;">
+					<td></td>
+				</tr>
+			</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+				<tbody><tr style="height:0px;">
+					<td></td>
+				</tr><tr>
+					<td><div style="width:20px;height:1px"></div></td><td><a id="ctl00_MainHolder_treeViewFavouritesn73" href="javascript:TreeView_ToggleNode(ctl00_MainHolder_treeViewFavourites_Data,73,document.getElementById(&#39;ctl00_MainHolder_treeViewFavouritesn73&#39;),&#39; &#39;,document.getElementById(&#39;ctl00_MainHolder_treeViewFavouritesn73Nodes&#39;))"><img src="./WebResource(2).axd" alt="Collapse Configuraciones" style="border-width:0;"></a></td><td class="ctl00_MainHolder_treeViewFavourites_2 ctl00_MainHolder_treeViewFavourites_4" style="white-space:nowrap;"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1 ctl00_MainHolder_treeViewFavourites_3" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Configuraciones&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest73&#39;);" title="Configuraciones" id="ctl00_MainHolder_treeViewFavouritest73">Configuraciones</a></td>
+				</tr><tr style="height:0px;">
+					<td></td>
+				</tr>
+			</tbody></table><div id="ctl00_MainHolder_treeViewFavouritesn73Nodes" style="display:block;">
+				<table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn74CheckBox" id="ctl00_MainHolder_treeViewFavouritesn74CheckBox" title="Mis favoritos"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Configuraciones\\/Pages/Common/Personalize.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest74&#39;);" title="Mis favoritos" id="ctl00_MainHolder_treeViewFavouritest74">Mis favoritos</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+					<tbody><tr style="height:0px;">
+						<td></td>
+					</tr><tr>
+						<td><div style="width:20px;height:1px"></div></td><td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn75CheckBox" id="ctl00_MainHolder_treeViewFavouritesn75CheckBox" title="Mis empresas"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\Configuraciones\\/Pages/Administration/ViewEconomicGroups.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest75&#39;);" title="Mis empresas" id="ctl00_MainHolder_treeViewFavouritest75">Mis empresas</a></td>
+					</tr><tr style="height:0px;">
+						<td></td>
+					</tr>
+				</tbody></table>
+			</div><table cellpadding="0" cellspacing="0" style="border-width:0;">
+				<tbody><tr style="height:0px;">
+					<td></td>
+				</tr><tr>
+					<td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn76CheckBox" id="ctl00_MainHolder_treeViewFavouritesn76CheckBox" title="Ayuda"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\/Help.aspx&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest76&#39;);" title="Ayuda" id="ctl00_MainHolder_treeViewFavouritest76">Ayuda</a></td>
+				</tr><tr style="height:0px;">
+					<td></td>
+				</tr>
+			</tbody></table><table cellpadding="0" cellspacing="0" style="border-width:0;">
+				<tbody><tr style="height:0px;">
+					<td></td>
+				</tr><tr>
+					<td><div style="width:20px;height:1px"></div></td><td><img src="./WebResource(3).axd" alt=""></td><td class="ctl00_MainHolder_treeViewFavourites_2" style="white-space:nowrap;"><input type="checkbox" name="ctl00_MainHolder_treeViewFavouritesn77CheckBox" id="ctl00_MainHolder_treeViewFavouritesn77CheckBox" title="Salir del sistema"><a class="ctl00_MainHolder_treeViewFavourites_0 ctl00_MainHolder_treeViewFavourites_1" href="javascript:__doPostBack(&#39;ctl00$MainHolder$treeViewFavourites&#39;,&#39;s/Home.aspx\\javascript:Logout();&#39;)" onclick="TreeView_SelectNode(ctl00_MainHolder_treeViewFavourites_Data, this,&#39;ctl00_MainHolder_treeViewFavouritest77&#39;);" title="Salir del sistema" id="ctl00_MainHolder_treeViewFavouritest77">Salir del sistema</a></td>
+				</tr><tr style="height:0px;">
+					<td></td>
+				</tr>
+			</tbody></table>
+		</div>
+	</div><a id="ctl00_MainHolder_treeViewFavourites_SkipLink"></a>
+                    </td></tr></tbody></table>
+                
+</div></td>
+					</tr>
+				</tbody></table></td>
+			</tr>
+		</tbody></table>
+             </td>
+        </tr>
+    </tbody></table>
+    
+    <table width="90%">
+			        <tbody><tr>
+			            <td align="right" nowrap="nowrap">
+			                <a id="ctl00_MainHolder_buttonGuardar" class="ic-button-navigation" href="javascript:__doPostBack(&#39;ctl00$MainHolder$buttonGuardar&#39;,&#39;&#39;)">Confirmar</a>
+			            </td>
+			        </tr>
+    </tbody></table>
+
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="right">
+                                        <div id="ctl00_validationSummaryFooter" style="color:Red;font-size:10px;display:none;">
+
+		</div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="95%" align="center">
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                            <tbody><tr>
+                                                <td align="right">
+                                                    
+                                                    
+                                                </td>
+                                            </tr>
+                                        </tbody></table>
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="ic-content-footer">
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                <tbody><tr class="ic-content-footer-dottedline">
+                                    <td align="right" nowrap="nowrap" style="width: 90%">
+                                    </td>
+                                    <td align="right" nowrap="nowrap" style="width: 10%">
+                                        <a id="ctl00_LinkButtonTermsAndConditions" class="ic-grid-link" href="javascript:__doPostBack(&#39;ctl00$LinkButtonTermsAndConditions&#39;,&#39;&#39;)">Términos y Condiciones</a>
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                </tbody></table>
+            </td>
+		<td id="ctl00_cellContentRight" class="ic-content-space-top-right" valign="top" style="display:none;">
+                <table class="ic-content-right" border="0" cellspacing="0" cellpadding="0">
+                    <tbody><tr>
+                        <td>
+                            <img src="./pixel.gif" width="8" height="1">
+                        </td>
+                        <td class="ic-right-panel">
+                            <table border="0" cellpadding="0" cellspacing="0" class="ic-right-panel-content">
+                                <tbody><tr>
+                                    <td width="8" class="ic-right-panel-collapse">
+                                        <input type="image" name="ctl00$imageButtonCollapse" id="ctl00_imageButtonCollapse" src="./bot-right-collapse.gif" style="height:47px;width:9px;border-width:0px;">
+                                    </td>
+                                    
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                </tbody></table>
+            </td>
+	</tr>
+</tbody></table>
+
+    
+    
+<script type="text/javascript">
+//<![CDATA[
+var ctl00_MainHolder_treeViewFavourites_ImageArray =  new Array('', '', '', '/WebResource.axd?d=t7wribqQUMfLGoU0RcT_QAdYdrgagCMrz4hEYd1SITskvWpnGLolc9mNGppYGlkO3UMh43zVKw82gaDcx64913B9G0EyOWQeOsZsYtHjoneyySND0&t=635198911643507698', '/WebResource.axd?d=VqnS-XSjOJaGAOn9jVKSwXZaUoVOxWTJXvw7Sy_xC1B7cNY0yVigGKqnv1_0suBa-xAMeptJCbbDXhctGLxFdI2Vor6xATXvnw1P88a1unVhKg8x0&t=635198911643507698', '/WebResource.axd?d=mINiUr9oZnTpvCCOOXi50k4I6v_dmhH6SBabG9ZWI2vYzSMFnZkVESHkPEBNBd1J6zFhr_ziFXD9bJp75bFj85-TnxgZ_kkdCVsyWhP8_I2hly6n0&t=635198911643507698');
+var Page_ValidationSummaries =  new Array(document.getElementById("ctl00_validationSummaryFooter"));
+//]]>
+</script>
+
+<script type="text/javascript">
+//<![CDATA[
+var ctl00_validationSummaryFooter = document.all ? document.all["ctl00_validationSummaryFooter"] : document.getElementById("ctl00_validationSummaryFooter");
+ctl00_validationSummaryFooter.headertext = "Formulario inválido, por favor revise los datos ingresados:";
+ctl00_validationSummaryFooter.showsummary = "False";
+//]]>
+</script>
+
+
+<script type="text/javascript">
+//<![CDATA[
+
+WebForm_InitCallback();var ctl00_MainHolder_treeViewFavourites_Data = new Object();
+ctl00_MainHolder_treeViewFavourites_Data.images = ctl00_MainHolder_treeViewFavourites_ImageArray;
+ctl00_MainHolder_treeViewFavourites_Data.collapseToolTip = "Collapse {0}";
+ctl00_MainHolder_treeViewFavourites_Data.expandToolTip = "Expand {0}";
+ctl00_MainHolder_treeViewFavourites_Data.expandState = theForm.elements['ctl00_MainHolder_treeViewFavourites_ExpandState'];
+ctl00_MainHolder_treeViewFavourites_Data.selectedNodeID = theForm.elements['ctl00_MainHolder_treeViewFavourites_SelectedNode'];
+for (var i=0;i<6;i++) {
+var preLoad = new Image();
+if (ctl00_MainHolder_treeViewFavourites_ImageArray[i].length > 0)
+preLoad.src = ctl00_MainHolder_treeViewFavourites_ImageArray[i];
+}
+ctl00_MainHolder_treeViewFavourites_Data.lastIndex = 78;
+ctl00_MainHolder_treeViewFavourites_Data.populateLog = theForm.elements['ctl00_MainHolder_treeViewFavourites_PopulateLog'];
+ctl00_MainHolder_treeViewFavourites_Data.treeViewID = 'ctl00$MainHolder$treeViewFavourites';
+ctl00_MainHolder_treeViewFavourites_Data.name = 'ctl00_MainHolder_treeViewFavourites_Data';
+
+document.getElementById('ctl00_validationSummaryFooter').dispose = function() {
+    Array.remove(Page_ValidationSummaries, document.getElementById('ctl00_validationSummaryFooter'));
+}
+Sys.Application.initialize();
+//]]>
+</script>
+</form>
+
+
+<div class="ui-dialog ui-widget ui-widget-content ui-corner-all" tabindex="-1" role="dialog" aria-labelledby="ui-dialog-title-sessionTimeoutWarning" style="display: none; z-index: 1000; outline: 0px;"><div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix"><span class="ui-dialog-title" id="ui-dialog-title-sessionTimeoutWarning">&nbsp;</span><a href="http://10.1.75.104:9080/Pages/Common/Personalize.aspx#" class="ui-dialog-titlebar-close ui-corner-all" role="button" style="display: none;"><span class="ui-icon ui-icon-closethick">close</span></a></div><div id="sessionTimeoutWarning" style="background-color: rgb(255, 255, 255); padding: 0px; height: 100%;" class="ui-dialog-content ui-widget-content">
+        <div id="sessionTimeoutWarningHeader">
+            <table width="100%">
+                 <tbody><tr>
+                    <td colspan="2" align="center" class="ic-form-data-modal">
+                        La sesión finalizará en <span id="sessionTimeoutCountdown"></span>&nbsp;segundos.
+                        Para seguir operando seleccioná “Continuar”
+                    </td>
+                </tr>
+            </tbody></table>
+        </div>
+    </div><div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix"><div class="ui-dialog-buttonset"><button type="button">Continuar </button><button type="button">Finalizar sesión</button></div></div></div></body></html>

@@ -1,0 +1,753 @@
+
+<!-- saved from url=(0064)http://10.1.75.104:9080/Pages/Common/HomeTermsAndConditions.aspx -->
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><script src="./jquery-1.7.2.min.js.descarga" type="text/javascript"></script>
+<script src="./jquery-1.7.1.js.descarga" type="text/javascript"></script>
+<script src="./jquery-ui-1.8.19.custom.min.js.descarga" type="text/javascript"></script>
+<script src="./jquery.formatCurrency-1.4.0.js.descarga" type="text/javascript"></script>
+<script src="./idle-timer.js.descarga" type="text/javascript"></script>
+<script src="./idle-timer.min.js.descarga" type="text/javascript"></script>
+<script language="javascript" type="text/javascript">
+
+function Logout() {
+        if (confirm("¿ Desea salir del sistema ?") == true) {
+                    
+            window.location =  '/'+ "Logout.aspx";
+        }
+       
+    }
+    
+var focusedFormControl;    
+var dateFormat = 'dd/mm/aaaa';
+var applicationRoot = '/';      
+function OnRowClick(sender, args) {
+    if (sender.GetSelectedRowCount() == 0) {
+        sender.UnselectRowOnPage(args.visibleIndex);
+        SetPageLinkData("");
+    }
+    else {
+        _aspxClearSelection();
+        sender._selectAllRowsOnPage(false);
+        sender.SelectRow(args.visibleIndex, true);
+        SetPageLinkData(sender.GetRowKey(args.visibleIndex));
+    }
+}
+
+if (history.forward(1))
+{
+
+    location.replace(history.forward(1))
+} 
+
+function PrintPage() {
+
+    window.print();
+}
+
+function GoMyOption(select)
+{
+    var url = select.options[select.selectedIndex].value;
+    if( url != "")
+        window.location = url;
+}
+
+function GoFavourites(select)
+{
+
+    var url = select.options[select.selectedIndex].value;
+    if( url != "")
+        window.location = url;
+}
+
+function GoPrint()
+{
+
+window.print();
+}
+
+function addEvent(elm, evType, fn, useCapture)
+{
+
+  if (elm.addEventListener){
+    elm.addEventListener(evType, fn, useCapture);
+    return true;
+  } else if (elm.attachEvent){
+    var r = elm.attachEvent("on"+evType, fn);
+    return r;
+  } else {
+    alert("Handler could not be removed");
+  }
+} 
+
+function SetPageLinkData(data)
+{
+    pageLinkData = document.getElementById('PageLinkData');
+    pageLinkData.value = data;
+}
+
+function SetPageLinkUrl(url)
+{
+    pageLinkUrl = document.getElementById('PageLinkUrl');
+    pageLinkUrl.value = url;
+}
+
+function doPageLink(id)
+{
+    __doPostBack(id, 'PageLinkEvent');
+}
+
+function imprimirEstadoCuenta()
+{
+											
+    var ficha = document.getElementById('printDiv');		
+    var ventimp = window.open('', 'popimpr','height=450, width=550, scrollbars=1');																						
+    var fichaHTML = new String(ficha.innerHTML);
+    fichaHTML = fichaHTML.replace('Seleccione un período y oprima "Consultar".'," ");
+    //var i = document.getElementById('ctl00_MainHolder_panelDetalle_imgPlusMinus');
+    var html  = "<html>\n<head>\n<link rel=\"stylesheet\" type=\"text/css\" href=\"..\\..\\App_Themes\\Default\\Default.css \" />" 
+                + "</head><table width=\"100%\"><tr bgcolor=\"#FF0000\"><td><img src=\"..\\..\\App_Themes\\Default\\Images\\logoSantander.gif\" /></td></tr></table>" 
+                + fichaHTML 
+                + "</html>";
+    ventimp.document.write( html );
+    ventimp.document.close();
+    ventimp.print( );
+    ventimp.close();
+					
+}
+
+ function removeInvalidCharacters(control) {
+ 
+            !(/^[A-zÑñ0-9 ]*$/i).test(control.value) ? control.value = control.value.replace(/[^A-zÑñ0-9 ]/ig, '') : null
+        }
+        
+  function removeInvalidNumbers(control) {
+            !(/^[0-9,]*$/i).test(control.value) ? control.value = control.value.replace(/[^0-9,]/ig, '') : null
+        }
+function showLoading()
+{
+//debugger;
+    // aquí le pasamos la clase o id de nuestro div a centrar (en este caso "caja")
+    $('.ic-loading').css({
+       position:'absolute',
+       left: ($('#mainContainer').width()/2 - $('.ic-loading').outerWidth())/2,
+       //top: ($('#mainContainer').height()/2 - $('.ic-loading').outerHeight())/2
+       top: ($('#mainContainer').height()/2 - $('ic-loading').height()/2)
+    });
+    
+    $('#mainContainer').css('display','none');
+    $('#ic-loading').css('display','block');
+}
+//ModalDialog SessionTimeout
+var idleTime = (parseInt('1170') * 1000); // number of miliseconds until the user is considered idle
+var initialSessionTimeoutMessage = "La sesión finalizará en <span id='sessionTimeoutCountdown'></span> segundos. Para seguir operando seleccioná “Continuar”<br /><br />";
+var sessionTimeoutCountdownId = 'sessionTimeoutCountdown';
+var redirectAfter = (parseInt('30')) ; // number of seconds to wait before redirecting the user
+var redirectTo = '/' + "Logout.aspx"; // URL to relocate the user to once they have timed out
+var keepAliveURL = ''; // URL to call to keep the session alive
+var expiredMessage = ''; // message to show user when the countdown reaches 0
+var running = false; // var to check if the countdown is running 
+var timer; // reference to the setInterval timer so it can be stopped 
+var timerSB;  
+var timeout;  
+    $(document).ready(function() {     
+// create the warning window and set autoOpen to false  
+      var sessionTimeoutWarningDialog = $("#sessionTimeoutWarning"); 
+    $(sessionTimeoutWarningDialog).dialog({         
+        title: '',       
+        autoOpen: false,    // set this to false so we can manually open it         
+        closeOnEscape: false,         
+        draggable: false,         
+        width: 460,         
+        minHeight: 150,         
+        modal: true,           
+        beforeclose: function() { // bind to beforeclose so if the user clicks on the "X" or escape to close the dialog, it will work too             // stop the timer             
+            clearInterval(timer);               // stop countdown
+            running = false;               // ajax call to keep the server-side session alive    
+                  
+            $.ajax({               
+                url: keepAliveURL,               
+                async: false            
+            });         
+        },         
+        buttons: {      
+             'Continuar ': function() {                 
+                // close dialog 
+                window.location.reload();//BM24925: Se agrega esto para que el expired de una cookie se actualice y no se cierre la sesión luego de hacer click en continuar al terminar el timeout del webconfig. El valor del expired se pone en la tabla configuration en la clave SessionMaxMinutes.
+                //var valor = getCookie('ICBWebLogin'); //Esta función la dejo por las dudas, pero no la pude hacer andar poque el document.cookie no me trae las cookies del explorador.                
+                $(this).dialog('close');
+                clearInterval(timerSB);    
+                window.status = "";      
+                StatusBarCountDown();     
+            },
+            'Finalizar sesión': function() {                 
+                // close dialog                 
+                $(sessionTimeoutWarningDialog).html(expiredMessage);
+                $(sessionTimeoutWarningDialog).dialog('disable');                     
+                window.parent.location = redirectTo;           
+            }         
+        },         
+        resizable: false,         
+        open: function() {
+            $('body').css('overflow','auto');         
+        },         
+        close: function() {             
+            // reset overflow             
+            $('body').css('overflow','auto');         
+        }  
+           
+    }); // end of dialog  
+    jQuery("a.ui-dialog-titlebar-close").hide(); 
+          
+    // start the idle timer
+    $.idleTimer(idleTime);
+ 
+});
+
+// BM24925: Función para recuperar el valor de una cookie.
+// name - nombre de la cookie deseada
+// devuelve un string conteniendo el valor de la cookie especificada o null si la cookie no existe
+
+function getCookie(name){
+var micookie = (document.cookie.indexOf('ICBWebLogin=') === -1 ? '' : ("; " + document.cookie).split('; ICBWebLogin=')[1].split(';')[0]);
+
+  var cname = name + "=";               
+  var dc = document.cookie;             
+  if (dc.length > 0) {              
+    begin = dc.indexOf(cname);       
+    if (begin != -1) {           
+      begin += cname.length;       
+      end = dc.indexOf(";", begin);
+      if (end == -1) end = dc.length;
+        return unescape(dc.substring(begin, end));
+    } 
+  }
+  return null;
+}
+
+//Status Bar Countdown Script
+function StatusBarCountDown() 
+{
+    var redirectAfter = (parseInt('30'));
+    var timeout = '1200000';   
+    var redirectTo = '/' + "Logout.aspx"; // URL to relocate the user to once they have timed out   
+    timerSB = setInterval(function(){
+    timeout -= 1000;
+    if(timeout == redirectAfter * 1000)
+    {
+        window.focus();
+    }
+   if(timeout < redirectAfter * 1000)
+   {
+        $("#sessionTimeoutCountdown").html(timeout/1000);
+        $("#sessionTimeoutWarning").dialog('open'); 
+   }
+   if (timeout < 100)
+   {
+        $("#sessionTimeoutWarning").html(expiredMessage);
+        $("#sessionTimeoutWarning").dialog('disable');                     
+        window.parent.location = redirectTo;
+        clearInterval(timerSB);    
+        window.status = "";     
+   }
+        
+   window.status = "Su sesión expirará " + time(timeout) + " minutos";        
+    }, 1000);   
+         
+   function two(x)
+   {
+    return ((x > 9) ? "" : "0") + x
+   }   
+  
+   function time(ms)
+   {   
+       var t = '';   
+       var sec = Math.floor(ms / 1000);   
+       ms = ms % 1000   
+
+       var min = Math.floor(sec / 60);   
+       sec = sec % 60;   
+       t = two(sec);   
+
+       var hr = Math.floor(min / 60);   
+       min = min % 60;   
+       t = two(min) + ":" + t;   
+    return t;
+   }
+}
+
+StatusBarCountDown();
+
+
+
+</script>
+
+<link href="./Default.css" type="text/css" rel="stylesheet"><link href="./jquery-ui-1.8.19.custom.css" type="text/css" rel="stylesheet"><title>
+
+</title></head>
+<body>
+    <form name="aspnetForm" method="post" action="http://10.1.75.104:9080/Pages/Common/HomeTermsAndConditions.aspx" id="aspnetForm">
+<div>
+<input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="ctl00$MainHolder$PDFTerms">
+<input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="">
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUKLTM0NTY3NTkxNg9kFgJmD2QWAgIBD2QWAgIBD2QWAmYPZBYEAgEPZBYEAgIPDxYCHgRUZXh0ZGRkAgcPZBYCAgEPZBYCAgEPFgIfAAXzugE8Y2VudGVyPiYjMDk7JiMwOTs8Zm9udCBmYWNlPSJBcmlhbCwgSGVsdmV0aWNhLCBHZW5ldmEiIHNpemU9MTQgc3R5bGU9ImZvbnQtc2l6ZToxNHB4Ij48Yj5Uw6lybWlub3MgeSBjb25kaWNpb25lcyBkZWwgU2VydmljaW88L2I+PC9mb250PjwvY2VudGVyPg0KPGNlbnRlcj4mIzA5OyYjMDk7JiMwOTs8Zm9udCBmYWNlPSJBcmlhbCwgSGVsdmV0aWNhLCBHZW5ldmEiIHNpemU9MTQgc3R5bGU9ImZvbnQtc2l6ZToxNHB4Ij48Yj4iU3VwZXJ2aWVsbGUgRW1wcmVzYSI8L2I+PC9mb250PjwvY2VudGVyPg0KPGZvbnQgZmFjZT0iQXJpYWwsIEhlbHZldGljYSwgR2VuZXZhIiBzaXplPTEwIHN0eWxlPSJmb250LXNpemU6MTJweCI+DQo8Yj5Uw6lybWlub3MgeSBDb25kaWNpb25lczwvYj48YnI+TGFzIHByZXNlbnRlcyBDb25kaWNpb25lcyBHZW5lcmFsZXMgeSBQYXJ0aWN1bGFyZXMgcmlnZW4gZWwgdXNvIGRlbCBzZXJ2aWNpbyBTVVBFUlZJRUxMRSBFTVBSRVNBUyBlbiBhZGVsYW50ZSAoIkhCRSIpLCBwcm9waWVkYWQgZGUgQmFuY28gU3VwZXJ2aWVsbGUgUy5BLiAoZW4gYWRlbGFudGUgIlN1cGVydmllbGxlIikgYSB0cmF2w6lzIGRlIGxhIHJlZCBJTlRFUk5FVCAoZW4gYWRlbGFudGUgIklOVEVSTkVUIikgbyBkZSBsYSByZWQgZGUgdHJhbnNtaXNpw7NuIGRlIGRhdG9zIHF1ZSBlbiBlbCBmdXR1cm8gYXV0b3JpY2UgU3VwZXJ2aWVsbGUsIHBhcmEgcXVlIGxhIGVtcHJlc2Egc29saWNpdGFudGUgIChlbiBhZGVsYW50ZSAiRW1wcmVzYSIpLCBlbiBzdSBjYXLDoWN0ZXIgZGUgdXN1YXJpbyBkZSBsYSBhcGxpY2FjacOzbiB5IGRlIGNvbmZvcm1pZGFkIGNvbiBsYXMgY29uZGljaW9uZXMgZXN0YWJsZWNpZGFzIG3DoXMgYWJham8gcHVlZGEsIHV0aWxpemFuZG8gbG9zIHNlcnZpY2lvcyBkZSB0cmFuc21pc2nDs24gZWxlY3Ryw7NuaWNhIGRlIGRhdG9zIGRpc3BvbmlibGUgZGUgSEJFIGRlIFN1cGVydmllbGxlLCBvcGVyYXIgbG9zIHNlcnZpY2lvcyBxdWUgc2UgZGV0YWxsYW4gYSBjb250aW51YWNpw7NuOg0KPGJyIC8+PGJyIC8+DQo8Yj4xLiBGdW5jaW9uYWxpZGFkIGRlbCBzZXJ2aWNpbyBTdXBlcnZpZWxsZSBFbXByZXNhczwvYj48YnIgLz4NClN1cGVydmllbGxlIHBvbmRyw6EgYSBkaXNwb3NpY2nDs24gZGVsIFVzdWFyaW8gYSB0cmF2w6lzIGRlIEhCRSB1bmEgc2VyaWUgZGUgY29uc3VsdGFzIHkgdHJhbnNhY2Npb25lcyBwYXJhIG9wZXJhciBjb24gc3VzIHByb2R1Y3RvcyB2aWdlbnRlcy48YnIgLz4NCkxhIEVtcHJlc2EgcG9kcsOhIG9wdGFyIHBvciBoYWJpbGl0YXIgbG9zIHNpZ3VpZW50ZXMgc2VydmljaW9zOjxiciAvPg0KPGJyIC8+DQo8Yj5Nw7NkdWxvIGRlIGFkbWluaXN0cmFjacOzbiB5IGNvbnN1bHRhczwvYj48YnIgLz4NCjx0YWJsZSBib3JkZXI9MCBjZWxsc3BhY2luZz0wIGNlbGxwYWRkaW5nPTA+DQo8dHI+PHRkPiZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOzwvdGQ+PHRkIGNsYXNzPSJpYy1mb3JtLWRhdGEtbm8tYm9yZGVyIiBjb2xzcGFuPSIyIj7igKIgQWRtaW5pc3RyYWNpw7NuPC90ZD48L3RyPg0KPHRyPjx0ZD4mbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDs8L3RkPjx0ZD4mbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDs8L3RkPjx0ZCBjbGFzcz0iaWMtZm9ybS1kYXRhLW5vLWJvcmRlciI+VXN1YXJpb3M8L3RkPjwvdHI+DQo8dHI+PHRkPiZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOzwvdGQ+PHRkPiZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOzwvdGQ+PHRkIGNsYXNzPSJpYy1mb3JtLWRhdGEtbm8tYm9yZGVyIj5DdWVudGFzPC90ZD48L3RyPg0KPHRyPjx0ZD4mbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDs8L3RkPjx0ZD4mbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDs8L3RkPjx0ZCBjbGFzcz0iaWMtZm9ybS1kYXRhLW5vLWJvcmRlciI+R2VuZXJhciBjbGF2ZSBDRVQ8L3RkPjwvdHI+DQo8dHI+PHRkPiZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOzwvdGQ+PHRkPiZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOzwvdGQ+PHRkIGNsYXNzPSJpYy1mb3JtLWRhdGEtbm8tYm9yZGVyIj5QZXJtaXNvczwvdGQ+PC90cj4NCjx0cj48dGQ+Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7PC90ZD48dGQ+Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7PC90ZD48dGQgY2xhc3M9ImljLWZvcm0tZGF0YS1uby1ib3JkZXIiPkVzcXVlbWEgZGUgZmlybWFzPC90ZD48L3RyPg0KPHRyPjx0ZD4mbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDs8L3RkPjx0ZD4mbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDs8L3RkPjx0ZCBjbGFzcz0iaWMtZm9ybS1kYXRhLW5vLWJvcmRlciI+UGVybWlzb3MgeSBlc3F1ZW1hczwvdGQ+PC90cj4NCjx0cj48dGQ+Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7PC90ZD48dGQgY2xhc3M9ImljLWZvcm0tZGF0YS1uby1ib3JkZXIiIGNvbHNwYW49IjIiPuKAoiBDdWVudGFzPC90ZD48L3RyPg0KPHRyPjx0ZD4mbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDs8L3RkPjx0ZD4mbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDs8L3RkPjx0ZCBjbGFzcz0iaWMtZm9ybS1kYXRhLW5vLWJvcmRlciI+TW92aW1pZW50b3M8L3RkPjwvdHI+DQo8dHI+PHRkPiZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOzwvdGQ+PHRkPiZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOzwvdGQ+PHRkIGNsYXNzPSJpYy1mb3JtLWRhdGEtbm8tYm9yZGVyIj5BY3VlcmRvczwvdGQ+PC90cj4NCjx0cj48dGQ+Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7PC90ZD48dGQ+Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7PC90ZD48dGQgY2xhc3M9ImljLWZvcm0tZGF0YS1uby1ib3JkZXIiPlNvbGljaXR1ZCBkZSBDaGVxdWVyYXMgPC90ZD48L3RyPg0KPHRyPjx0ZD4mbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDs8L3RkPjx0ZD4mbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDs8L3RkPjx0ZCBjbGFzcz0iaWMtZm9ybS1kYXRhLW5vLWJvcmRlciI+RXN0YWRvIGRlIEN1ZW50YSAgKCopPC90ZD48L3RyPg0KPHRyPjx0ZD4mbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDs8L3RkPjx0ZCBjbGFzcz0iaWMtZm9ybS1kYXRhLW5vLWJvcmRlciIgY29sc3Bhbj0iMiI+4oCiIFBsYXpvcyBGaWpvcyAtIEluZm9ybWFjacOzbjwvdGQ+PC90cj4NCjx0cj48dGQ+Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7PC90ZD48dGQgY2xhc3M9ImljLWZvcm0tZGF0YS1uby1ib3JkZXIiIGNvbHNwYW49IjIiPuKAoiBUYXJqZXRhcyBkZSBDcsOpZGl0byA8L3RkPjwvdHI+DQo8dHI+PHRkPiZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOzwvdGQ+PHRkPiZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOzwvdGQ+PHRkIGNsYXNzPSJpYy1mb3JtLWRhdGEtbm8tYm9yZGVyIj5Nb3ZpbWllbnRvcyA8L3RkPjwvdHI+DQo8dHI+PHRkPiZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOzwvdGQ+PHRkPiZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOzwvdGQ+PHRkIGNsYXNzPSJpYy1mb3JtLWRhdGEtbm8tYm9yZGVyIj5QYWdvIGVuIEzDrW5lYSA8L3RkPjwvdHI+DQo8dHI+PHRkPiZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOzwvdGQ+PHRkPiZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOzwvdGQ+PHRkIGNsYXNzPSJpYy1mb3JtLWRhdGEtbm8tYm9yZGVyIj5Fc3RhZG8gZGUgQ3VlbnRhICgqKTwvdGQ+PC90cj4NCjx0cj48dGQ+Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7PC90ZD48dGQ+Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7PC90ZD48dGQgY2xhc3M9ImljLWZvcm0tZGF0YS1uby1ib3JkZXIiPkF1dG9yaXphY2lvbmVzIDwvdGQ+PC90cj4NCjx0cj48dGQ+Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7PC90ZD48dGQ+Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7PC90ZD48dGQgY2xhc3M9ImljLWZvcm0tZGF0YS1uby1ib3JkZXIiPkhpc3RvcmlhbCAgPC90ZD48L3RyPg0KPHRyPjx0ZD4mbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDs8L3RkPjx0ZCBjbGFzcz0iaWMtZm9ybS1kYXRhLW5vLWJvcmRlciIgY29sc3Bhbj0iMiI+4oCiIFByw6lzdGFtb3MgLSBJbmZvcm1hY2nDs24gPC90ZD48L3RyPg0KPHRyPjx0ZD4mbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDs8L3RkPjx0ZCBjbGFzcz0iaWMtZm9ybS1kYXRhLW5vLWJvcmRlciIgY29sc3Bhbj0iMiI+4oCiIEluZm9ybWFjacOzbiBGaW5hbmNpZXJhIDwvdGQ+PC90cj4NCjx0cj48dGQ+Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7PC90ZD48dGQgY2xhc3M9ImljLWZvcm0tZGF0YS1uby1ib3JkZXIiIGNvbHNwYW49IjIiPuKAoiBDb3RpemFjacOzbiBkZSBtb25lZGFzPC90ZD48L3RyPg0KPHRyPjx0ZD4mbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDs8L3RkPjx0ZCBjbGFzcz0iaWMtZm9ybS1kYXRhLW5vLWJvcmRlciIgY29sc3Bhbj0iMiI+4oCiIENvbmZpZ3VyYWNpb25lczwvdGQ+PC90cj4NCjx0cj48dGQ+Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7PC90ZD48dGQ+Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7PC90ZD48dGQgY2xhc3M9ImljLWZvcm0tZGF0YS1uby1ib3JkZXIiPm8gTWlzIGZhdm9yaXRvczwvdGQ+PC90cj4NCjx0cj48dGQ+Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7PC90ZD48dGQ+Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7PC90ZD48dGQgY2xhc3M9ImljLWZvcm0tZGF0YS1uby1ib3JkZXIiPm8gTWlzIEVtcHJlc2FzPC90ZD48L3RyPg0KPHRyPjx0ZD4mbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDs8L3RkPjx0ZCBjbGFzcz0iaWMtZm9ybS1kYXRhLW5vLWJvcmRlciIgY29sc3Bhbj0iMiI+4oCiIEluZm9ybWFjacOzbiBkZSBjaGVxdWVzPC90ZD48L3RyPg0KPHRyPjx0ZD4mbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDs8L3RkPjx0ZCBjbGFzcz0iaWMtZm9ybS1kYXRhLW5vLWJvcmRlciIgY29sc3Bhbj0iMiI+4oCiIENhamFzIGRlIHNlZ3VyaWRhZDwvdGQ+PC90cj4NCjx0cj48dGQ+Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7PC90ZD48dGQgY2xhc3M9ImljLWZvcm0tZGF0YS1uby1ib3JkZXIiIGNvbHNwYW49IjIiPuKAoiBBeXVkYTwvdGQ+PC90cj4NCjwvdGFibGU+DQo8YnIgLz48Yj5Nw7NkdWxvIGRlIFRyYW5zZmVyZW5jaWFzPC9iPjxiciAvPg0KPHRhYmxlIGJvcmRlcj0wIGNlbGxzcGFjaW5nPTAgY2VsbHBhZGRpbmc9MD4NCjx0cj48dGQ+Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7PC90ZD48dGQgY2xhc3M9ImljLWZvcm0tZGF0YS1uby1ib3JkZXIiPuKAoiBBIGN1ZW50YXMgU3VwZXJ2aWVsbGU8L3RkPjwvdHI+DQo8dHI+PHRkPiZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOzwvdGQ+PHRkIGNsYXNzPSJpYy1mb3JtLWRhdGEtbm8tYm9yZGVyIj7igKIgQSBvdHJvcyBiYW5jb3MgLyBjdWVudGFzPC90ZD48L3RyPg0KPHRyPjx0ZD4mbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDs8L3RkPjx0ZCBjbGFzcz0iaWMtZm9ybS1kYXRhLW5vLWJvcmRlciI+4oCiIE1pcyBjdWVudGFzIGRlIGNyw6lkaXRvIDwvdGQ+PC90cj4NCjx0cj48dGQ+Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7PC90ZD48dGQgY2xhc3M9ImljLWZvcm0tZGF0YS1uby1ib3JkZXIiPuKAoiBBdXRvcml6YWNpb25lcyA8L3RkPjwvdHI+DQo8dHI+PHRkPiZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOzwvdGQ+PHRkIGNsYXNzPSJpYy1mb3JtLWRhdGEtbm8tYm9yZGVyIj7igKIgSGlzdG9yaWFsIDwvdGQ+PC90cj4NCjwvdGFibGU+DQo8YnIgLz48Yj5Nw7NkdWxvIGRlIFJlY2F1ZGFjaW9uZXM8L2I+PGJyIC8+DQo8dGFibGUgYm9yZGVyPTAgY2VsbHNwYWNpbmc9MCBjZWxscGFkZGluZz0wPg0KPHRyPjx0ZD4mbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDs8L3RkPjx0ZCBjbGFzcz0iaWMtZm9ybS1kYXRhLW5vLWJvcmRlciI+4oCiIFJlY2F1ZGFjaW9uZXMgcG9yIGNhamE8L3RkPjwvdHI+DQo8dHI+PHRkPiZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOzwvdGQ+PHRkIGNsYXNzPSJpYy1mb3JtLWRhdGEtbm8tYm9yZGVyIj7igKIgUmVtaXRpciBhcmNoaXZvIGRlIHJlY2F1ZGFjacOzbiBwb3IgRMOpYml0byBBdXRvbcOhdGljbzwvdGQ+PC90cj4NCjx0cj48dGQ+Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7PC90ZD48dGQgY2xhc3M9ImljLWZvcm0tZGF0YS1uby1ib3JkZXIiPuKAoiBEZXNjYXJnYXIgYXJjaGl2byBkZSByZW5kaWNpw7NuIGRlIETDqWJpdG8gQXV0b23DoXRpY288L3RkPjwvdHI+DQo8L3RhYmxlPg0KPGJyIC8+PGI+TcOzZHVsbyBkZSBQYWdvIGRlIFN1ZWxkb3M8L2I+PGJyIC8+DQo8dGFibGUgYm9yZGVyPTAgY2VsbHNwYWNpbmc9MCBjZWxscGFkZGluZz0wPg0KPHRyPjx0ZD4mbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDs8L3RkPjx0ZCBjbGFzcz0iaWMtZm9ybS1kYXRhLW5vLWJvcmRlciI+4oCiIFByb2Nlc2FyIHBsYW5pbGxhIDwvdGQ+PC90cj4NCjx0cj48dGQ+Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7PC90ZD48dGQgY2xhc3M9ImljLWZvcm0tZGF0YS1uby1ib3JkZXIiPuKAoiBQYWdvIE1hbnVhbCA8L3RkPjwvdHI+DQo8dHI+PHRkPiZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOzwvdGQ+PHRkIGNsYXNzPSJpYy1mb3JtLWRhdGEtbm8tYm9yZGVyIj7igKIgVHJhbnNmZXJpciBhcmNoaXZvIDwvdGQ+PC90cj4NCjx0cj48dGQ+Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7PC90ZD48dGQgY2xhc3M9ImljLWZvcm0tZGF0YS1uby1ib3JkZXIiPuKAoiBNaXMgY3VlbnRhcyBkZSBjcsOpZGl0byA8L3RkPjwvdHI+DQo8dHI+PHRkPiZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOzwvdGQ+PHRkIGNsYXNzPSJpYy1mb3JtLWRhdGEtbm8tYm9yZGVyIj7igKIgQXV0b3JpemFjaW9uZXMgPC90ZD48L3RyPg0KPHRyPjx0ZD4mbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDs8L3RkPjx0ZCBjbGFzcz0iaWMtZm9ybS1kYXRhLW5vLWJvcmRlciI+4oCiIEhpc3RvcmlhbCA8L3RkPjwvdHI+DQo8L3RhYmxlPg0KPGJyIC8+PGI+TcOzZHVsbyBkZSBQYWdvIGEgUHJvdmVlZG9yZXM8L2I+PGJyIC8+DQo8dGFibGUgYm9yZGVyPTAgY2VsbHNwYWNpbmc9MCBjZWxscGFkZGluZz0wPg0KPHRyPjx0ZD4mbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDs8L3RkPjx0ZCBjbGFzcz0iaWMtZm9ybS1kYXRhLW5vLWJvcmRlciI+4oCiIFByb2Nlc2FyIHBsYW5pbGxhIDwvdGQ+PC90cj4NCjx0cj48dGQ+Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7PC90ZD48dGQgY2xhc3M9ImljLWZvcm0tZGF0YS1uby1ib3JkZXIiPuKAoiBQYWdvIE1hbnVhbCA8L3RkPjwvdHI+DQo8dHI+PHRkPiZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOzwvdGQ+PHRkIGNsYXNzPSJpYy1mb3JtLWRhdGEtbm8tYm9yZGVyIj7igKIgVHJhbnNmZXJpciBhcmNoaXZvIDwvdGQ+PC90cj4NCjx0cj48dGQ+Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7PC90ZD48dGQgY2xhc3M9ImljLWZvcm0tZGF0YS1uby1ib3JkZXIiPuKAoiBNaXMgY3VlbnRhcyBkZSBjcsOpZGl0byA8L3RkPjwvdHI+DQo8dHI+PHRkPiZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOzwvdGQ+PHRkIGNsYXNzPSJpYy1mb3JtLWRhdGEtbm8tYm9yZGVyIj7igKIgQXV0b3JpemFjaW9uZXMgPC90ZD48L3RyPg0KPC90YWJsZT4NCjxiciAvPlNVUEVSVklFTExFIHNlIHJlc2VydmEgZWwgZGVyZWNobyB5IHNpbiBuZWNlc2lkYWQgZGUgbm90aWZpY2FjacOzbiBwcmV2aWEgYWxndW5hIGFtcGxpYXIsIGRpc21pbnVpciBvIG1vZGlmaWNhciBlbCBuw7ptZXJvIGRlIG9wZXJhY2lvbmVzIHkvbyBzZXJ2aWNpb3MgcHJlc3RhZG9zIHBvciBlbCBIQkUuDQooKikgY3VhbmRvIGVzdGUgZGlzcG9uaWJsZS4NCjxiciAvPg0KPGJyIC8+PGI+Mi4gUmVxdWlzaXRvcyBkZSB1c288L2I+PGJyIC8+DQpQYXJhIGFjY2VkZXIgYWwgSEJFIGxhIEVtcHJlc2EsIGRlYmVyw6EgZGlzcG9uZXIgZGUgdW5hIGNvbXB1dGFkb3JhIGNvbmVjdGFkYSBhIGxhIHJlZCBJTlRFUk5FVCB5IHVuYSBjb25maWd1cmFjacOzbiBtw61uaW1hIHJlcXVlcmlkYSBwb3IgbGEgYXBsaWNhY2nDs246IG5hdmVnYWRvciBFeHBsb3JlciA2LjAgY29uIGVuY3JpcGNpw7NuIGRlIDEyOCBiaXRzIHkgc2lzdGVtYSBvcGVyYXRpdm8gV2luZG93cyA5OCBvIHN1cGVyaW9yLiBIQkUgZ2FyYW50aXphIGxhIGNvbmZpZGVuY2lhbGlkYWQgZGUgbGEgaW5mb3JtYWNpw7NuIHRyYW5zbWl0aWRhIGEgdHJhdsOpcyBkZSBlc3RlIHNlcnZpY2lvLiBFcyByZXNwb25zYWJpbGlkYWQgZGUgbGEgRW1wcmVzYSBjdW1wbGlyIGNvbiBsb3MgcmVxdWVyaW1pZW50b3MgdMOpY25pY29zIHBhcmEgYWNjZWRlciBhbCBzZXJ2aWNpby4gPGJyIC8+DQogIDxiciAvPg0KPGI+My4gU2VndXJpZGFkIDwvYj48YnIgLz4NCkhCRSBlc3TDoSBiYXNhZG8gZW4gdW4gZXN0w6FuZGFyIGRlIHNlZ3VyaWRhZCBhbHRvIGRlIGxhIGluZHVzdHJpYSBpbmZvcm3DoXRpY2EsIGJyaW5kYW5kbyBjb25maWRlbmNpYWxpZGFkLCBhdXRlbnRpY2lkYWQgZSBpbnRlZ3JpZGFkIGRlIGxhIGluZm9ybWFjacOzbi4gRWwgcHJvdG9jb2xvIGRlIGNvbXVuaWNhY2nDs24gdXRpbGl6YWRvIGdhcmFudGl6YSBsYSBwcml2YWNpZGFkIGRlIGxhcyBvcGVyYWNpb25lcyBlbnRyZSBlbCBwcm9ncmFtYSB1dGlsaXphZG8gcGFyYSBuYXZlZ2FyIGVuIElOVEVSTkVUIChCcm93c2VyKSBkZWwgdXN1YXJpbyAobGEgRW1wcmVzYSkgeSBlbCBzZXJ2aWRvciBkZSBIQkUsIGdlbmVyYW5kbyB1biBjYW5hbCBzZWd1cm8gZW4gbGEgdHJhbnNtaXNpw7NuLiBIQkUgZXhpZ2UgdW5hIGZvcnRhbGV6YSBkZSBjbGF2ZSwgcXVlIGV4aWdlIHN1IGNhbWJpbyBwZXJpw7NkaWNvIHkgZXNwZWNpZmljYXIgdmFsb3JlIGFsZmFudW3DqXJpY29zLiBMYSBzZXNpw7NuIGRlIGluYWN0aXZpZGFkIGRlIGxhIGFwbGljYWNpw7NuIGV4cGlyYSBhIGxvcyAxNSAocXVpbmNlKSBtaW51dG9zIHkgZGVzY29uZWN0YSBhdXRvbcOhdGljYW1lbnRlIGFsIHVzdWFyaW8sIHNpZW5kbyBuZWNlc2FyaW8gdW4gbnVldm8gaW5ncmVzbyBwYXJhIHZvbHZlciBhIG9wZXJhci48YnIgLz4NCjxiciAvPg0KPGI+NC4gVXNvIGRlIGxhIGFwbGljYWNpw7NuPC9iPjxiciAvPg0KTGEgRW1wcmVzYSBubyBwb2Ryw6EgY29tZXJjaWFsaXphciwgY2VkZXIgbyBsaWNlbmNpYXIgZW4gZm9ybWEgYWxndW5hIGVsIHNlcnZpY2lvIEhCRSwgbyBkZSBjdWFscXVpZXIgb3RybyBtb2RvIGF1dG9yaXphciBvIHBlcm1pdGlyIHN1IHVzbyBhIHRlcmNlcm9zLCBlbmNvbnRyw6FuZG9zZSBzaWVtcHJlIGVsIHVzbyBkZSBIQkUgc3VqZXRvIGEgbGFzIGNvbmRpY2lvbmVzIHF1ZSBzdXJnZW4gZGVsIHByZXNlbnRlIGNvbnRyYXRvLCBhIGxhcyBub3JtYXMgcmVnbGFtZW50YXJpYXMgZGVsIEJhbmNvIENlbnRyYWwgZGUgbGEgUmVww7pibGljYSBBcmdlbnRpbmEsIGVuIGFkZWxhbnRlIEJDUkEsIHkgZGVtw6FzIG5vcm1hcyBhcGxpY2FibGVzLjxiciAvPg0KPGJyIC8+DQo8Yj41LiBTdXNjcmlwY2nDs24geSBoYWJpbGl0YWNpw7NuIGRlbCBzZXJ2aWNpby48L2I+PGJyIC8+DQpMYSBFbXByZXNhLCBhIHRyYXbDqXMgZGUgdW4gdXN1YXJpbyBjb21lbnphcsOhIGVsIHByb2Nlc28gZGUgYWRoZXNpw7NuIGEgSEJFIGRlc2RlIGxhIHDDoWdpbmEgd2ViIDxiPnd3dy5zdXBlcnZpZWxsZS5jb20uYXI8L2I+IC5MYSBFbXByZXNhIGZhY3VsdGFyw6EgYSB1biBPcGVyYWRvciDigJMgQWRtaW5pc3RyYWRvciBhIGNvbXBsZXRhciBlbCBwcm9jZXNvIGRlIGFkaGVzacOzbiwgZWwgY3VhbCBjb25zdGFyw6EgZGUgdW5hIHNlcmllIGRlIHBhc29zIGRvbmRlIHNlIHJlcXVlcmlyw6FuIGRhdG9zIGRlIGxhIEVtcHJlc2EsIHVzdWFyaW9zIHF1ZSBvcGVyYXLDoW4gZWwgc2lzdGVtYSwgY3VlbnRhcyB5IGZpcm1hbnRlcy4gQWwgY29uY2x1aXIgZWwgcHJvY2VzbywgZWwgdXN1YXJpbyBxdWUgb3BlcmUgZW4gbm9tYnJlIGRlIGxhIEVtcHJlc2EgZGViZXLDoSBpbXByaW1pciB5IHJlbWl0aXIgbGEgZG9jdW1lbnRhY2nDs24gZXhpZ2lkYSBwb3IgU3VwZXJ2aWVsbGUgcGFyYSBjb21wbGV0YXIgbGEgc29saWNpdHVkIGRlIGFjY2VzbyBhIEhCRS48YnIgLz4NCjxiciAvPg0KTGEgRW1wcmVzYSwgYSB0cmF2w6lzIGRlbCB1c3VhcmlvIOKAnEFkbWluaXN0cmFkb3LigJ0gZGV0ZXJtaW5hcsOhIGN1YWxlcyBzb24gbGFzIHBlcnNvbmFzIGV4cHJlc2FtZW50ZSBmYWN1bHRhZGFzIHBhcmEgYWNjZWRlciB5IG9wZXJhciBlbiBIQkUgc29icmUgbGFzIGN1ZW50YXMgZGUgbGEgRW1wcmVzYS4gQXF1ZWxsYXMgcGVyc29uYXMgcXVlIHNlIGRlc2lnbmVuIGNvbW8gQWRtaW5pc3RyYWRvcmVzIGRlIEhCRSB0ZW5kcsOhbiBsYXMgc2lndWllbnRlcyBmYWN1bHRhZGVzOjxiciAvPg0KIDxiciAvPg0KPHRhYmxlIHdpZHRoPTEwMCUgYm9yZGVyPTAgY2VsbHNwYWNpbmc9MCBjZWxscGFkZGluZz0wPg0KPHRyPjx0ZD4mbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDs8L3RkPjx0ZCBjbGFzcz0iaWMtZm9ybS1kYXRhLW5vLWJvcmRlciI+4oCiIEdlbmVyYXIgZWwgYWx0YSwgYmFqYSBvIG1vZGlmaWNhY2nDs24gZGUgbG9zIHVzdWFyaW9zIGRlIEhCRS48L3RkPjwvdHI+DQo8dHI+PHRkPiZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOzwvdGQ+PHRkIGNsYXNzPSJpYy1mb3JtLWRhdGEtbm8tYm9yZGVyIj7igKIgQ2FtYmlhciBsYSBjbGF2ZSBkZWwgdXN1YXJpbyBhY3Rpdm8geSBzdXMgcHJlZ3VudGFzIGRlIHNlZ3VyaWRhZC48L3RkPjwvdHI+DQo8dHI+PHRkPiZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOzwvdGQ+PHRkIGNsYXNzPSJpYy1mb3JtLWRhdGEtbm8tYm9yZGVyIj7igKIgRGV0ZXJtaW5hciBsYXMgYXRyaWJ1Y2lvbmVzL3Blcm1pc29zIHBhcmEgb3BlcmFyIGVuIEhCRS48L3RkPjwvdHI+DQo8dHI+PHRkPiZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOzwvdGQ+PHRkIGNsYXNzPSJpYy1mb3JtLWRhdGEtbm8tYm9yZGVyIj7igKIgRGVsaW1pdGFyIGVsIHVzbyBkZSBsYSBmaXJtYSBkZSBsYXMgcGVyc29uYXMgcXVlIGFjY2VkYW4gYSBIQkUsIGVuIGN1YW50byBhbCB0aXBvIGRlIG9wZXJhY2lvbmVzLCBjdWVudGFzIGRlIGTDqWJpdG8sIGN1ZW50YXMgZGUgY3LDqWRpdG8sIG1vbnRvIG3DoXhpbW8gcGVybWl0aWRvIHBvciB0cmFuc2FjY2nDs24geSBjdWVudGFzIHNvYnJlIGxhIHF1ZSBvcGVyYXLDoS4gRGViZXLDoSBzZXIgYXByb2JhZGEgcG9yIFNVUEVSVklFTExFIGVuIGZvcm1hIHByZXZpYSBhIGN1YWxxdWllciB0cmFuc2FjY2nDs24gcXVlIHJlYWxpY2UgZWwgb3BlcmFkb3IsIGRlYmllbmRvIGZpZ3VyYXIgY29uIGlkw6ludGljYXMgZmFjdWx0YWRlcyBxdWUgbGFzIHF1ZSBlbCBVc3VhcmlvIGhheWEgY29tdW5pY2FkbyBhbCBCYW5jbyBwYXJhIGxhcyBvcGVyYWNpb25lcyBxdWUgc2UgY3Vyc2VuIGZ1ZXJhIGRlIEhCRS48L3RkPjwvdHI+DQo8dHI+PHRkPiZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOzwvdGQ+PHRkIGNsYXNzPSJpYy1mb3JtLWRhdGEtbm8tYm9yZGVyIj7igKIgU29saWNpdGFyIGxhIGNsYXZlIGRlIENvbmZpcm1hY2nDs24gRWxlY3Ryw7NuaWNhIGRlIFRyYW5zZmVyZW5jaWEgKENFVCkuIExhIGFjZXB0YWNpw7NuIGRlIGVzdGEgY2xhdmUgc2UgcmlnZSBwb3IgZWwgZm9ybXVsYXJpbyBkZSBzb2xpY2l0dWQgZGUgY2xhdmUgQ0VUIHF1ZSBzZSBhbmV4YSBhbCBwcmVzZW50ZSBjb250cmF0by48L3RkPjwvdHI+DQo8dHI+PHRkPiZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOzwvdGQ+PHRkIGNsYXNzPSJpYy1mb3JtLWRhdGEtbm8tYm9yZGVyIj7igKIgR2VuZXJhciwgaW1wcmltaXIgeSByZW1pdGlyIGEgU3VwZXJ2aWVsbGUgZWwgZXNxdWVtYSBkZSBmaXJtYXMgcXVlIHNlIHV0aWxpemFyw6EgZW4gbGEgYXBsaWNhY2nDs24uPC90ZD48L3RyPg0KPHRyPjx0ZD4mbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDs8L3RkPjx0ZCBjbGFzcz0iaWMtZm9ybS1kYXRhLW5vLWJvcmRlciI+4oCiIENvbXVuaWNhciBhbCBTdXBlcnZpZWxsZSBjdWFscXVpZXIgY2FtYmlvIG8gbW9kaWZpY2FjacOzbiBkZSBsb3MgQWRtaW5pc3RyYWRvcmVzLCBPcGVyYWRvcmVzIHkgZGVtw6FzIHVzdWFyaW9zIHF1ZSBwdWRpZXJhbiBhZmVjdGFyIGxhIGludGVncmlkYWQgeS9vIHNlZ3VyaWRhZCBkZSBsYSBhcGxpY2FjacOzbi48L3RkPjwvdHI+DQo8L3RhYmxlPjxiciAvPg0KU3VwZXJ2aWVsbGUgc2UgcmVzZXJ2YSBlbCBkZXJlY2hvIGRlIGhhYmlsaXRhciBlbCBhY2Nlc28gYSBIQkUsIGVuIGJhc2UgYSBsYSBkb2N1bWVudGFjacOzbiwgcG9kZXJlcyB5IGF1dG9yaXphY2lvbmVzIHByb3Zpc3RhIHBvciBlbCBVc3VhcmlvLjxiciAvPg0KPGJyIC8+DQo8Yj42LiBBY2Nlc28gYSBIQkU8L2I+PGJyIC8+DQpFbCBpbmdyZXNvIGEgSEJFIHNlIHJlYWxpemFyw6EgZGVzZGUgbGEgcMOhZ2luYSB3ZWIgZGUgU3VwZXJ2aWVsbGUsIHd3dy5zdXBlcnZpZWxsZS5jb20uYXIsIGRlc2RlIGxhIG9wY2nDs24gU3VwZXJ2aWVsbGUgRW1wcmVzYXMuIEVsIGFjY2VzbyBhIEhCRSByZXF1aWVyZSBpbmdyZXNhciAg4oCcbmFjaW9uYWxpZGFk4oCdLCBDVUlMIGRlbCBPcGVyYWRvci1BZG1pbmlzdHJhZG9yLCBub21icmUgZGUgdXN1YXJpbyB5IGNsYXZlIGRlIGFjY2Vzby4gPGJyIC8+DQo8YnIgLz4NCkVuIGVsIHByaW1lciBpbmdyZXNvIGEgSEJFLCBsb3MgdXN1YXJpb3MgZGViZXLDoW4gY2FtYmlhciBsYSBjbGF2ZSBnZW5lcmFkYSBwb3IgZWwgdXN1YXJpbyBBZG1pbmlzdHJhZG9yLiBRdWVkYXLDoSBiYWpvIGxhIHJlc3BvbnNhYmlsaWRhZCBkZSBsYSBFbXByZXNhIGVsIHVzbyBxdWUgY2FkYSB1bm8gZGUgbG9zIG9wZXJhZG9yZXMgaGFnYSBkZSBzdXMgZGF0b3MsIGxvIHF1ZSBjb21wcmVuZGUgQ1VJTCwgTm9tYnJlIGRlIFVzdWFyaW8geSBDbGF2ZSwgIGFzdW1pZW5kbyBsYSByZXNwb25zYWJpbGlkYWQgcG9yIHN1IGRpdnVsZ2FjacOzbiBhIHRlcmNlcm9zIHkgbGliZXJhbmRvIGEgU1VQRVJWSUVMTEUgZGUgdG9kYSByZXNwb25zYWJpbGlkYWQgcXVlIGRlIGVsbG8gc2UgZGVyaXZlLiBMYSBFbXByZXNhIHNlIGNvbXByb21ldGUgYSBleHRyZW1hciBsYXMgbWVkaWRhcyBxdWUgcmVzdWx0ZW4gbmVjZXNhcmlhcyBhIGZpbiBkZSByZXNndWFyZGFyIHN1IGNvbmZpZGVuY2lhbGlkYWQgeSBjb25maWFiaWxpZGFkLCB0YW50byBlbiBlbCBhY2Nlc28gYSBsYSBhcGxpY2FjacOzbiBjb21vIGVuIGFxdWVsbGFzIG1lZGlkYXMgcXVlIGhhY2VuIGFsIGJ1ZW4gdXNvIGRlIGxvcyBzaXN0ZW1hcy48YnIgLz4NCjxiciAvPg0KTGEgcG9sw610aWNhIGRlIHNlZ3VyaWRhZCBlc3RhYmxlY2lkYSBwb3IgU1VQRVJWSUVMTEUgcmVxdWllcmUgcXVlIGVsIGlkZW50aWZpY2Fkb3IgZGUgdXN1YXJpbyBkZWJlIHRlbmVyIGFsIG1lbm9zIDggZMOtZ2l0b3MsIHkgbGEgY2xhdmUgZGViZSB0ZW5lciBlbnRyZSA4IHkgMTIgZMOtZ2l0b3MgeSBzZXIgYWxmYW51bcOpcmljYS48YnIgLz4NCjxiciAvPg0KPGI+Ny4gRGVzYmxvcXVlbyB5L28gY2FtYmlvIGRlIGNsYXZlcyBkZSB1c3Vhcmlvcy48L2I+PGJyIC8+DQpIQkUgbGUgYnJpbmRhIGEgY2FkYSB1c3VhcmlvIGxhIHBvc2liaWxpZGFkIGRlIGdlbmVyYXIgdW5hIG51ZXZhIGNsYXZlIGRlIGFjY2VzbywgeSBjYW1iaWFyIHN1cyBwcmVndW50YXMgZGUgc2VndXJpZGFkLiBFbiBlbCBjYXNvIHF1ZSBubyByZWN1ZXJkZSBsYSBjbGF2ZSBuaSBsYXMgcHJlZ3VudGFzIGRlIHNlZ3VyaWRhZCwgZWwgQWRtaW5pc3RyYWRvciBkZWJlcsOhIHNvbGljaXRhciBlbCBkZXNibG9xdWVvIHkvbyBjYW1iaW8gYSBTdXBlcnZpZWxsZS4gUGFyYSBlbGxvLCBlbCB1c3VhcmlvIGRlYmVyw6EgZW52aWFyIHVuYSBub3RhIGZpcm1hZGEgcG9yIGxvcyBhcG9kZXJhZG9zIC8gZmlybWFudGUgZGUgbGEgY3VlbnRhLCBzb2xpY2l0YW5kbyBlbCBibGFucXVlbyAvIGRlc2Jsb3F1ZW8gZGUgbGEgY2xhdmUuPGJyIC8+DQo8YnIgLz4NCjxiPjguIERpc3BvbmliaWxpZGFkIGRlbCBzZXJ2aWNpbzwvYj48YnIgLz4NCkxhIGRpc3BvbmliaWxpZGFkIGRlIGxvcyBzZXJ2aWNpb3MgZGVsIEhCRSBzZXLDoSBsb3MgZMOtYXMgaMOhYmlsZXMgYmFuY2FyaW9zIGVuIGxvcyBzaWd1aWVudGVzIGhvcmFyaW9zOjxiciAvPg0KPHRhYmxlIHdpZHRoPTEwMCUgYm9yZGVyPTAgY2VsbHNwYWNpbmc9MCBjZWxscGFkZGluZz0wPg0KPHRyPjx0ZD4mbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDs8L3RkPjx0ZCBjbGFzcz0iaWMtZm9ybS1kYXRhLW5vLWJvcmRlciI+YSkgRGlzcG9uaWJpbGlkYWQgZGVsIEhCRSBkZSBsdW5lcyBhIHZpZXJuZXMgZGUgOCBhIDIwaHMuPC90ZD48L3RyPg0KPHRyPjx0ZD4mbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDs8L3RkPjx0ZCBjbGFzcz0iaWMtZm9ybS1kYXRhLW5vLWJvcmRlciI+YikgVHJhbnNmZXJlbmNpYXMgYSBjdWVudGFzIFN1cGVydmllbGxlIHkgYSBvdHJvcyBiYW5jb3MgZGUgbHVuZXMgYSB2aWVybmVzIGRlIDggYSAyMGhzLjwvdGQ+PC90cj4NCjx0cj48dGQ+Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7Jm5ic3A7PC90ZD48dGQgY2xhc3M9ImljLWZvcm0tZGF0YS1uby1ib3JkZXIiPmMpIExhIGNhcmdhIGRlbCBhcmNoaXZvIGRlIHBhZ28gYSBwcm92ZWVkb3JlcyBwb2Ryw6EgcmVhbGl6YXJzZSBkZSBsdW5lcyBhIHZpZXJuZXMgZGUgOCBhIDE2IGhzLCBjb24gNDggaHMgZGUgYW50aWNpcGFjacOzbiBhIGxhIGZlY2hhIGRlIGFjcmVkaXRhY2nDs24gZGVzZWFkYSBwb3IgbGEgZW1wcmVzYS48L3RkPjwvdHI+DQo8dHI+PHRkPiZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOyZuYnNwOzwvdGQ+PHRkIGNsYXNzPSJpYy1mb3JtLWRhdGEtbm8tYm9yZGVyIj5kKSBMYSBjYXJnYSBkZWwgYXJjaGl2byBkZSBwYWdvIGRlIHN1ZWxkb3MgcG9kcsOhIHJlYWxpemFyc2UgZGUgbHVuZXMgYSB2aWVybmVzIGRlIDggYSAxNiBocywgY29uIDQ4IGhzIGRlIGFudGljaXBhY2nDs24gYSBsYSBmZWNoYSBkZSBhY3JlZGl0YWNpw7NuIGRlc2VhZGEgcG9yIGxhIGVtcHJlc2EuPC90ZD48L3RyPg0KPC90YWJsZT4NCjxiciAvPjxiPjkuIEludGVycnVwY2nDs24gZGVsIHNlcnZpY2lvPC9iPjxiciAvPg0KQ29uc2lkZXJhbmRvIHF1ZSBsYSB0ZWNub2xvZ8OtYSB5IGxvcyBtZWRpb3MgZGUgY29tdW5pY2FjacOzbiBzb2JyZSBsb3MgcXVlIHNlIGJhc2FuIGxvcyBzZXJ2aWNpb3MgcHJlc3RhZG9zIHB1ZWRlbiBzdWZyaXIgaW50ZXJydXBjaW9uZXMgbm8gZGVzZWFkYXMgbyBhamVuYXMgYSBsYXMgcGFydGVzLCBTdXBlcnZpZWxsZSBlbnRpZW5kZSwgeSBsYSBFbXByZXNhIGRlY2xhcmEgY29ub2NlciB5IGFjZXB0YXIsIHF1ZSBkZWJlcsOhIGFkb3B0YXIgbGFzIHByZWNhdWNpb25lcyB5IG1lZGlkYXMgZGUgY29udGluZ2VuY2lhcyBuZWNlc2FyaWFzIGEgZmluIGRlIGluaWNpYXIgeSBjb25jbHVpciBsYXMgdHJhbnNhY2Npb25lcyBkZSBtb2RvIHRhbCBxdWUgYW50ZSBjdWFscXVpZXIgZXZlbnR1YWxpZGFkIHB1ZWRhIGNvbmN1cnJpciBhIGxhIFN1Y3Vyc2FsIGRvbmRlIHRpZW5lIHJhZGljYWRhcyBzdXMgY3VlbnRhcyBhIGZpbiBkZSBjdW1wbGlyIGNvbiBzdXMgb2JsaWdhY2lvbmVzLCByZW51bmNpYW5kbyBhIGVmZWN0dWFyIHJlY2xhbW8gYWxndW5vIGNvbnRyYSBTdXBlcnZpZWxsZSBhbnRlIGN1YWxxdWllciBldmVudHVhbGlkYWQgcXVlIHB1ZGllcmEgc3VyZ2lyIHF1ZSBzZWEgZXh0cmHDsWEgeS9vIGFqZW5hIGEgU3VwZXJ2aWVsbGUuIE5vIG9ic3RhbnRlLCBTdXBlcnZpZWxsZSBhcmJpdHJhcsOhIHRvZG9zIGxvcyBtZWRpb3MgYSBzdSBhbGNhbmNlIHBhcmEgYXNpc3RpciBhIGxhIEVtcHJlc2EgeSBzdXMgdXN1YXJpb3MuPGJyIC8+DQo8YnIgLz4NCkxhIEVtcHJlc2EgYWNlcHRhIHF1ZSBlbCBzZXJ2aWNpbyBwdWVkYSBzZXIgaW50ZXJydW1waWRvIHkvbyBkaXNjb250aW51YWRvIGRlYmlkbyBhOiA8YnIgLz4NCjxiciAvPg0KPHRhYmxlIHdpZHRoPTEwMCUgYm9yZGVyPTAgY2VsbHNwYWNpbmc9MCBjZWxscGFkZGluZz0wPg0KPHRyPjx0ZD4mbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDs8L3RkPjx0ZCBjbGFzcz0iaWMtZm9ybS1kYXRhLW5vLWJvcmRlciI+YSkgZW4gcmF6w7NuIGRlIGxhIG5lY2VzaWRhZCBkZSByZWFsaXphciB0YXJlYXMgZGUgcmVwYXJhY2nDs24geS9vIG1hbnRlbmltaWVudG8gZGUgdG9kbyBvIHBhcnRlIGRlIGxvcyBlbGVtZW50b3MgcXVlIGludGVncmFuIEhCRSBxdWUgbm8gcHVkaWVyYW4gZXZpdGFyc2U7IGVudGVuZGllbmRvIHF1ZSBTVVBFUlZJRUxMRSBoYXLDoSBsb3MgbWVqb3JlcyBlc2Z1ZXJ6b3MgcGFyYSBxdWUgbGEgaW50ZXJydXBjacOzbiB0ZW5nYSBlbCBtZW5vciBpbXBhY3RvIHBvc2libGU7PC90ZD48L3RyPg0KPHRyPjx0ZD4mbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDs8L3RkPjx0ZCBjbGFzcz0iaWMtZm9ybS1kYXRhLW5vLWJvcmRlciI+YikgZW4gY2FzbyBxdWUgcG9yIGN1YWxxdWllciBjaXJjdW5zdGFuY2lhIGRlcml2YWRhIGRlIG1lZGlkYXMgbyByZXNvbHVjaW9uZXMgcXVlIGRpY3RlIGN1YWxxdWllciBhdXRvcmlkYWQgcMO6YmxpY2Egc2VhIMOpc3RhIG5hY2lvbmFsLCBwcm92aW5jaWFsIG8gbXVuaWNpcGFsLCBTVVBFUlZJRUxMRSBzZSB2ZWEgYWZlY3RhZG8gZW4gc3Ugbm9ybWFsIG9wZXJhdG9yaWE7PC90ZD48L3RyPg0KPHRyPjx0ZD4mbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDsmbmJzcDs8L3RkPjx0ZCBjbGFzcz0iaWMtZm9ybS1kYXRhLW5vLWJvcmRlciI+YykgZW4gdG9kb3MgbG9zIHN1cHVlc3RvcyBkZSBjYXNvIGZvcnR1aXRvIG8gZnVlcnphIG1heW9yLjwvdGQ+PC90cj4NCjwvdGFibGU+DQo8YnIgLz4NCkVuIHRvZG9zIGxvcyBjYXNvcyBwcmVjZWRlbnRlcywgZWwgc2VydmljaW8gc2UgcmVzdGl0dWlyw6EgZW4gY3VhbnRvIGhheWEgY2VzYWRvIGxhIGNhdXNhIHF1ZSBtb3RpdsOzIHN1IGRpc2NvbnRpbnVpZGFkLCBzaW4gdGVuZXIgcXVlIGFib25hciBwb3IgZWxsbyBpbmRlbW5pemFjacOzbiBkZSBuaW5ndW5hIGVzcGVjaWUgbmkgcmVzdGl0dWlyIHN1bWEgYWxndW5hLjxiciAvPg0KPGJyIC8+DQo8Yj4xMC4gQXV0b3JpemFjacOzbiBhbCBiYW5jbzwvYj48YnIgLz4NClNVUEVSVklFTExFIHF1ZWRhcsOhIGV4cHJlc2FtZW50ZSBhdXRvcml6YWRvIHBhcmEgY3Vyc2FyIGxhcyBpbnN0cnVjY2lvbmVzIHF1ZSByZWNpYmEgYSB0cmF2w6lzIGRlIEhCRSwgdG9tYW5kbyBjb21vIHbDoWxpZG8gZWwgdXNvIGRlIGxhcyBjbGF2ZXMgZGUgYWNjZXNvIGNvcnJlc3BvbmRpZW50ZXMgYS9sb3MgdXN1YXJpb3MgZGVzaWduYWRvcyBwb3IgbGEgRW1wcmVzYXMgYSB0cmF2w6lzIGRlIHN1IHVzdWFyaW8gQWRtaW5pc3RyYWRvciwgc2luIGFzdW1pciBTVVBFUlZJRUxMRSByZXNwb25zYWJpbGlkYWQgYWxndW5hIHBvciBjdWFscXVpZXIgZGHDsW8gbyBwZXJqdWljaW8gcXVlIGVsIHVzbyBubyBhdXRvcml6YWRvLCBpbmRlYmlkbyBvIGZyYXVkdWxlbnRvIGRlIGRpY2hhcyBjbGF2ZXMgZGUgYWNjZXNvLCBwb3IgcGFydGUgZGUgcGVyc29uYXMgYXV0b3JpemFkYXMgbyBkZSB0ZXJjZXJvcywgcHVkaWVyYSBwcm92b2Nhci4gPGJyIC8+DQo8YnIgLz4NCkxhcyBpbnN0cnVjY2lvbmVzIGVqZWN1dGFkYXMgcG9yIFNVUEVSVklFTExFIGVuIG5vbWJyZSBkZSBsb3MgdXN1YXJpb3MgZGUgbGEgRW1wcmVzYSBzZXLDoW4gY29uc2lkZXJhZGFzIGEgbG9zIGVmZWN0b3MgbGVnYWxlcyBjb21vIGhlY2hhcyBwb3IgbGEgRW1wcmVzYSwgeSBlbm1hcmNhZGFzIGRlbnRybyBkZSBsYXMgY29uZGljaW9uZXMgZGUgYWx0YSBkZSBjYWRhIHByb2R1Y3RvIHNvbGljaXRhZG8gcG9yIGxhIG1pc21hLiBMYSBFbXByZXNhIHF1ZWRhIG9ibGlnYWRhIGEgcHJlc2VudGFyIGVuIHTDqXJtaW5vIGFudGUgU1VQRVJWSUVMTEUgbGEgZG9jdW1lbnRhY2nDs24gZSBpbmZvcm1hY2nDs24gZXhpZ2lkYSBwb3IgbGFzIG5vcm1hcyBhcGxpY2FibGVzIHJlbGF0aXZhcyBhIGNhZGEgb3BlcmFjacOzbi4gPGJyIC8+DQo8YnIgLz4NCkxhIEVtcHJlc2EgbWFudGVuZHLDoSBpbmRlbW5lIGEgU1VQRVJWSUVMTEUgZGUgY3VhbHF1aWVyIGRhw7FvIHF1ZSBzZSBkZXJpdmUgZGUgbGEgZmFsdGEgZGUgYWNyZWRpdGFjacOzbiBvcG9ydHVuYSBkZSBmb25kb3MgbW90aXZhZGEgZW4gZGlzcG9zaWNpb25lcyBkZWwgQmFuY28gQ2VudHJhbCBkZSBsYSBSZXDDumJsaWNhIEFyZ2VudGluYSwgc2luIHF1ZSBlbGxvIGltcGxpcXVlIHJlc3BvbnNhYmlsaWRhZCBwYXJhIFNVUEVSVklFTExFLjxiciAvPg0KPGJyIC8+DQo8Yj4xMS4gTGVnYWw8L2I+PGJyIC8+DQpMYXMgY29uc3RhbmNpYXMgcXVlIHN1cmphbiBkZSBsYXMgb3BlcmFjaW9uZXMgZGUgU3VwZXJ2aWVsbGUsIHlhIHNlYW4gZGUgcmVnaXN0cm9zIGluZm9ybcOhdGljb3MgeS9vIGRvY3VtZW50YWNpw7NuIGNvbnZlbmNpb25hbCwgY29uc3RpdHVpcsOhbiBwcnVlYmEgc3VmaWNpZW50ZSB5IGNvbmNsdXllbnRlcyBkZSBsYXMgdHJhbnNhY2Npb25lcyByZWFsaXphZGFzIGRlc2RlIEhCRSwgeWEgc2VhIHJlc3BlY3RvIGRlIHN1IGVmZWN0aXZhIGVqZWN1Y2nDs24gbyBwYXJhIHJlc29sdmVyIGN1YWxxdWllciBkdWRhIHF1ZSBleGlzdGEgcmVzcGVjdG8gYSBzdSB2ZXJhY2lkYWQuIERpY2hhcyBjb25zdGFuY2lhcyBwcmV2YWxlY2Vyw6FuIHNvYnJlIGxhcyBxdWUgcHVkaWVyZW4gb2JyYXIgZW4gcG9kZXIgZGVsIENsaWVudGUsIGVuIGNhc28gZGUgZGlzY3JlcGFuY2lhcyBlbnRyZSBsYXMgbWlzbWFzLiBMYSB2ZXJhY2lkYWQgZGUgbGFzIGNvbnN0YW5jaWFzIGVtaXRpZGFzIHBvciBTVVBFUlZJRUxMRSBzdWJzaXN0aXLDoSBoYXN0YSBlbCBtb21lbnRvIGVuIHF1ZSwgbWVkaWFudGUgc2VudGVuY2lhIGZpcm1lLCBzZSBkZWNsYXJlIGp1ZGljaWFsbWVudGUgc3UgZmFsc2VkYWQuIExhIEVtcHJlc2EgYWNlcHRhIHF1ZSBlbiBjYXNvIGRlIGRpc2NyZXBhbmNpYSBwcmV2YWxlY2Vyw6EgbGEgcHJ1ZWJhIGluc3RydW1lbnRhbCByZWd1bGFybWVudGUgZW1pdGlkYSBwb3IgU1VQRVJWSUVMTEUuPGJyIC8+DQo8YnIgLz4NCjxiPjEyLiBQZXJjZXBjacOzbiBkZSBjb21pc2lvbmVzIHBvciBwYXJ0ZSBkZWwgQmFuY288L2I+PGJyIC8+DQpMYSBFbXByZXNhIGRlYmVyw6EgYWJvbmFyIGEgU1VQRVJWSUVMTEUgZWwgaW1wb3J0ZSBjb3JyZXNwb25kaWVudGUgYSBsb3MgbcOzZHVsb3MgY29udHJhdGFkb3MgbWVkaWFudGUgZWwgZMOpYml0byBlbiBsYSBjdWVudGEgcXVlIGluZGljYXJhIHBhcmEgbGEgZmFjdHVyYWNpw7NuLCBvIGN1YWxxdWllciBvdHJhIHF1ZSBlbCBVc3VhcmlvIHBvc2VhIGVuIFN1cGVydmllbGxlLjxiciAvPg0KRW4gZWwgY2FzbyBxdWUgbm8gc2UgcHVkaWVyYSBoYWNlciBlZmVjdGl2byBlbCBjb2JybyBkZSBsb3MgbcOzZHVsb3MgY29udHJhdGFkb3MgbyBlbCBjb2JybyBkZSBsYXMgY29taXNpb25lcyBkZSB0cmFuc2ZlcmVuY2lhcywgIFN1cGVydmllbGxlIHBvZHLDoSBzdXNwZW5kZXIgdGVtcG9yYWwgbyBkZWZpbml0aXZhbWVudGUgZWwgc2VydmljaW8gIHNpbiBwcmV2aW8gYXZpc28uIEVuIDxiPkFuZXhvIGRlIENvbWlzaW9uZXM8L2I+IHF1ZSBmb3JtYSBwYXJ0ZSBkZWwgcHJvY2VzbyBkZSBhZGhlc2nDs24gYWwgc2VydmljaW8gc2UgZGV0YWxsYXMgbGFzIGNvbWlzaW9uZXMgcG9yIG3Ds2R1bG8geS9vIHRyYW5zYWNjacOzbi4gIDxiciAvPg0KPGJyIC8+DQpTVVBFUlZJRUxMRSBzZSByZXNlcnZhIGVsIGRlcmVjaG8gZGUgbW9kaWZpY2FyIGxvcyBpbXBvcnRlcyBmaWphZG9zIGNvbW8gY29taXNpb25lcyBvIGdhc3RvcyBwb3IgbG9zIHNlcnZpY2lvcyBkZSBhY2Nlc28gYSBIQkUuIEVuIHRhbCBzdXB1ZXN0bywgbGFzIG1vZGlmaWNhY2lvbmVzIHNlcsOhbiBpbmZvcm1hZGFzIGEgbGEgRW1wcmVzYSBjb24gMzAgZMOtYXMgZGUgYW50ZWxhY2nDs24gYSBzdSBwdWVzdGEgZW4gdmlnZW5jaWEuPGJyIC8+DQo8YnIgLz4NCjxiPjEzLiBNb3JhIGVuIGVsIGNvYnJvIGRlIGNvbWlzaW9uZXM8L2I+PGJyIC8+DQpQYXJhIGVsIGNhc28gZGUgbW9yYSBlbiBlbCBwYWdvIGRlIGN1YWxxdWllcmEgZGUgbG9zIHNlcnZpY2lvcyBjb250cmF0YWRvcyBlbiBlbCBwcmVzZW50ZSBhY3VlcmRvLCBTdXBlcnZpZWxsZSBhcGxpY2Fyw6EgZWwgZGV2ZW5nYW1pZW50byBkZSBpbnRlcmVzZXMgZGUgYWN1ZXJkbyBhIGxhIHBvbMOtdGljYSBnZW5lcmFsIHBhcmEgbG9zIHByb2R1Y3RvcyBjb250cmF0YWRvcyBwb3IgbGEgRW1wcmVzYS48YnIgLz4NCjxiciAvPg0KPGI+MTQuIE1vZGlmaWNhY2nDs24gZGUgdMOpcm1pbm9zIHkgY29uZGljaW9uZXMuPC9iPjxiciAvPg0KU3VwZXJ2aWVsbGUsIHBvZHLDoSBtb2RpZmljYXIgdG90YWwgbyBwYXJjaWFsbWVudGUgbGFzIGNvbmRpY2lvbmVzIGRlIHByZXN0YWNpw7NuIGRlbCBzZXJ2aWNpbyBIQkUsICBtZWRpYW50ZSBsYSBpbmNsdXNpw7NuIGRlIG51ZXZhcyBmdW5jaW9uZXMgZW4gbGEgYXBsaWNhY2nDs24uIFF1ZWRhIGFzaW1pc21vIGVudGVuZGlkbyBxdWUgbGEgRW1wcmVzYSBhIHRyYXbDqXMgZGUgbG9zIHVzdWFyaW9zIGRlIEhCRSBkZWJlcsOhIGFjZXB0YXIgbG9zIHTDqXJtaW5vcyB5IGNvbmRpY2lvbmVzIGRlIGxhIG51ZXZhIHByZXN0YWNpw7NuIGRlbCBzZXJ2aWNpbyBIQkUgIGVuIHRvZGEgb3BvcnR1bmlkYWQgcXVlIGVsIEJhbmNvIGxvIHJlcXVpZXJhLiBDYXNvIGNvbnRyYXJpbywgb3BlcmFyw6EgbGEgY2FkdWNpZGFkIGRlbCBzZXJ2aWNpby4gPGJyIC8+DQo8YnIgLz4NCjxiPjE1LiBDZXNhY2nDs24gZGVsIHNlcnZpY2lvIDwvYj48YnIgLz4NCkxvcyBwcmVzZW50ZXMgVMOpcm1pbm9zIHkgQ29uZGljaW9uZXMgcGVybWFuZWNlcsOhbiB2aWdlbnRlcyBoYXN0YSBxdWUgc2VhIHJlc2NpbmRpZGEgcG9yIGFsZ3VuYSBkZSBsYXMgUEFSVEVTLiBDdWFscXVpZXJhIGRlIGxhcyBwYXJ0ZXMgcG9kcsOhLCBlbiBjdWFscXVpZXIgbW9tZW50byB5IHNpbiBleHByZXNpw7NuIGRlIGNhdXNhIHJlc2NpbmRpciBlbCBwcmVzZW50ZSBtZWRpYW50ZSBhdmlzbyBwb3IgZXNjcml0byBjb24gZGlleiAoMTApIGTDrWFzIGRlIGFudGljaXBhY2nDs24gYSBsYSBmZWNoYSBlbiBxdWUgZGVzZWUgb3BlcmUgbGEgcmVzY2lzacOzbi4gIDxiciAvPg0KRW4gZWwgY2FzbyBkZSBsYSBFbXByZXNhIHNlcsOhIGVsIFJlcHJlc2VudGFudGUgTGVnYWwgeS9vIEFwb2RlcmFkby9zIGNvbiBmYWN1bHRhZGVzIHN1ZmljaWVudGVzIGNvbmZvcm1lIGVsIFBvZGVyIEdlbmVyYWwgdmlnZW50ZXMgZGUgZGljaGEgRW1wcmVzYSBhIGxhIGZlY2hhIGRlIGxhIGNlc2FjacOzbi48YnIgLz4NCjxiciAvPg0KPGI+MTYuIEp1cmlzZGljY2nDs24geSBjb25zdGl0dWNpw7NuIGRlIGRvbWljaWxpb3MuPC9iPjxiciAvPg0KQSB0b2RvcyBsb3MgZWZlY3RvcyBkZWwgcHJlc2VudGUsIGxhIEVtcHJlc2EgeSBTVVBFUlZJRUxMRSBjb25zdGl0dXllbiBkb21pY2lsaW9zIGVzcGVjaWFsZXMgZW4gbG9zIGRvbWljaWxpb3MgaW5kaWNhZG9zIGVuIGVsIMO6bHRpbW8gY29udHJhdG8gZGUgY3VlbnRhIGNvcnJpZW50ZSB5L28gY2FqYSBkZSBhaG9ycm8sIHF1ZSBhbWJhcyBwYXJ0ZXMgaGF5YW4gYWNvcmRhZG8uIExhcyBub3RpZmljYWNpb25lcyBxdWUgc2UgY3Vyc2VuIGVuIGZvcm1hIGZlaGFjaWVudGUgYSB0YWxlcyBkb21pY2lsaW9zIGVzcGVjaWFsZXMgc2Vyw6FuIHZhbGlkYXMsIGhhc3RhIHRhbnRvIExBUyBQQVJURVMgbm8gbm90aWZpcXVlbiBlbiBmb3JtYSBmZWhhY2llbnRlIGxhIGNvbnN0aXR1Y2nDs24gZGUgdW4gbnVldm8gZG9taWNpbGlvIGRlbnRybyBkZSBsYSBtaXNtYSBqdXJpc2RpY2Npw7NuLjxiciAvPg0KPGJyIC8+DQpTZXLDoSBkZSBhcGxpY2FjacOzbiBsYSBsZXkgdmlnZW50ZSBlbiBsYSBSZXDDumJsaWNhIEFyZ2VudGluYS4gTEFTIFBBUlRFUyBzZSBzb21ldGVuIGEgbGEgIGp1cmlzZGljY2nDs24gZGUgbG9zIFRyaWJ1bmFsZXMgT3JkaW5hcmlvcyBjb21lcmNpYWxlcyBkZSBsYSBDaXVkYWQgQXV0w7Nub21hIGRlIEJ1ZW5vcyBBaXJlcy48YnIgLz4NCjxiciAvPg0KRXN0YSBzb2xpY2l0dWQgc2UgY29uc2lkZXJhcsOhIGFjZXB0YWRhIGVuIHRvZG9zIHN1cyB0w6lybWlub3MgcG9yIFNVUEVSVklFTExFLCBjdWFuZG8gU1VQRVJWSUVMTEUgaGFiaWxpdGUgZWwgYWNjZXNvIGRlbCBVc3VhcmlvIGEgSEJFLjxiciAvPg0KPGJyIC8+DQo8L2ZvbnQ+ZAICDxYCHgVzdHlsZQUNZGlzcGxheTpub25lOxYCAgUPFgIeB1Zpc2libGVoFgQCAQ8QFgYeDURhdGFUZXh0RmllbGQFBVRpdGxlHg5EYXRhVmFsdWVGaWVsZAUDVXJpHgtfIURhdGFCb3VuZGcQFQEAFQEAFCsDAWcUKwEAZAIDDxYCHwEFDWRpc3BsYXk6bm9uZTsWAmYPZBYCAgEPFgIfAQUNZGlzcGxheTpub25lO2QYAQUeX19Db250cm9sc1JlcXVpcmVQb3N0QmFja0tleV9fFgIFHmN0bDAwJE1haW5Ib2xkZXIkVHJhbnNmZXJQYW5lbAUZY3RsMDAkaW1hZ2VCdXR0b25Db2xsYXBzZXNkeL8S1jEJEww4sKGD9AkKuRF8">
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+var theForm = document.forms['aspnetForm'];
+if (!theForm) {
+    theForm = document.aspnetForm;
+}
+function __doPostBack(eventTarget, eventArgument) {
+    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+        theForm.__EVENTTARGET.value = eventTarget;
+        theForm.__EVENTARGUMENT.value = eventArgument;
+        theForm.submit();
+    }
+}
+//]]>
+</script>
+
+
+<script src="./WebResource.axd" type="text/javascript"></script>
+
+
+						<style>							
+							P.PanelControlTitleStyle
+							{
+ 								font-family:verdana;
+ 								font-size: 12px;
+								font-weight : bold;
+								text-align: center;  								
+							}
+						</style>						
+						<script language="javascript">
+						function MinMaxPanelControl(cntrlId)
+						{
+						    var imgPath='/App_Themes/Default/Images/';	
+					
+							//Get state from hidden control.													
+							if ( document.getElementById(cntrlId).style.display == 'none' )
+							{
+								document.getElementById(cntrlId).style.display = '';						
+								document.getElementById(cntrlId+'_imgPlusMinus').src = imgPath + 'bot-grid-minus.gif';
+							}
+							else 
+							{
+								document.getElementById(cntrlId).style.display = 'none';								
+								document.getElementById(cntrlId+'_imgPlusMinus').src = imgPath + 'bot-grid-plus.gif';
+							}
+						}
+						</script>
+			
+<script type="text/javascript">
+//<![CDATA[
+var __cultureInfo = '{"name":"es-UY","numberFormat":{"CurrencyDecimalDigits":2,"CurrencyDecimalSeparator":",","IsReadOnly":false,"CurrencyGroupSizes":[3],"NumberGroupSizes":[3],"PercentGroupSizes":[3],"CurrencyGroupSeparator":".","CurrencySymbol":"$U","NaNSymbol":"NeuN","CurrencyNegativePattern":14,"NumberNegativePattern":1,"PercentPositivePattern":0,"PercentNegativePattern":0,"NegativeInfinitySymbol":"-Infinito","NegativeSign":"-","NumberDecimalDigits":2,"NumberDecimalSeparator":",","NumberGroupSeparator":".","CurrencyPositivePattern":2,"PositiveInfinitySymbol":"Infinito","PositiveSign":"+","PercentDecimalDigits":2,"PercentDecimalSeparator":",","PercentGroupSeparator":".","PercentSymbol":"%","PerMilleSymbol":"‰","NativeDigits":["0","1","2","3","4","5","6","7","8","9"],"DigitSubstitution":1},"dateTimeFormat":{"AMDesignator":"a.m.","Calendar":{"MinSupportedDateTime":"\/Date(-62135586000000)\/","MaxSupportedDateTime":"\/Date(253402300799999)\/","AlgorithmType":1,"CalendarType":1,"Eras":[1],"TwoDigitYearMax":2029,"IsReadOnly":false},"DateSeparator":"/","FirstDayOfWeek":1,"CalendarWeekRule":0,"FullDateTimePattern":"dddd, dd\u0027 de \u0027MMMM\u0027 de \u0027yyyy hh:mm:ss tt","LongDatePattern":"dddd, dd\u0027 de \u0027MMMM\u0027 de \u0027yyyy","LongTimePattern":"hh:mm:ss tt","MonthDayPattern":"dd MMMM","PMDesignator":"p.m.","RFC1123Pattern":"ddd, dd MMM yyyy HH\u0027:\u0027mm\u0027:\u0027ss \u0027GMT\u0027","ShortDatePattern":"dd/MM/yyyy","ShortTimePattern":"hh:mm tt","SortableDateTimePattern":"yyyy\u0027-\u0027MM\u0027-\u0027dd\u0027T\u0027HH\u0027:\u0027mm\u0027:\u0027ss","TimeSeparator":":","UniversalSortableDateTimePattern":"yyyy\u0027-\u0027MM\u0027-\u0027dd HH\u0027:\u0027mm\u0027:\u0027ss\u0027Z\u0027","YearMonthPattern":"MMMM\u0027 de \u0027yyyy","AbbreviatedDayNames":["dom","lun","mar","mié","jue","vie","sáb"],"ShortestDayNames":["do","lu","ma","mi","ju","vi","sá"],"DayNames":["domingo","lunes","martes","miércoles","jueves","viernes","sábado"],"AbbreviatedMonthNames":["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic",""],"MonthNames":["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre",""],"IsReadOnly":false,"NativeCalendarName":"calendario gregoriano","AbbreviatedMonthGenitiveNames":["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic",""],"MonthGenitiveNames":["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre",""]}}';//]]>
+</script>
+
+<script src="./ScriptResource.axd" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+if (typeof(Sys) === 'undefined') throw new Error('ASP.NET Ajax client-side framework failed to load.');
+//]]>
+</script>
+
+<script src="./ScriptResource(1).axd" type="text/javascript"></script>
+<div>
+
+	<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEWBALgmLXeCAKG0o/SDgLRqszJDgKJt+C7AZ3YcBpugDmaVJp9ehbCra/JM8Id">
+</div>
+    <script type="text/javascript">
+//<![CDATA[
+Sys.WebForms.PageRequestManager._initialize('ctl00$scriptManager', document.getElementById('aspnetForm'));
+Sys.WebForms.PageRequestManager.getInstance()._updateControls([], [], [], 90);
+//]]>
+</script>
+
+    <input type="hidden" id="PageLinkData" name="PageLinkData" value="">
+    <input type="hidden" id="PageLinkUrl" name="PageLinkUrl" value="">
+    <input type="hidden" id="PageUrl" value="/Pages/Common/HomeTermsAndConditions.aspx">
+    <table id="ctl00_tableContent" width="100%" border="0" cellpadding="0" cellspacing="0" class="ic-content">
+	<tbody><tr>
+		<td class="ic-content-left-aux">
+                <img src="./log-img-aux-left-bottom.gif" width="9" height="110">
+            </td>
+		<td style="width: 100%">
+                <table width="100%" border="0" cellpadding="0" cellspacing="0" class="ic-content-left">
+                    <tbody><tr>
+                        <td id="TdCPM" class="ic-content-space-top" valign="top">
+                            <table id="TablaCPM" width="100%" border="0" cellspacing="0" cellpadding="0">
+                                
+                                <tbody><tr>
+                                    <td>
+                                        <table id="ctl00_tableHeader" width="100%" border="0" cellspacing="0" cellpadding="0">
+			<tbody><tr>
+				<td class="ic-breadcrumb-container">
+                                                    
+                                                    &gt;
+                                                    <span id="ctl00_siteMapNavigator"><a href="http://10.1.75.104:9080/Pages/Common/HomeTermsAndConditions.aspx#ctl00_siteMapNavigator_SkipLink"><img alt="Skip Navigation Links" height="0" width="0" src="./WebResource(1).axd" style="border-width:0px;"></a><span><a href="http://10.1.75.104:9080/Home.aspx">Posición Consolidada</a></span><span> &gt; </span><span>Términos y condiciones</span><a id="ctl00_siteMapNavigator_SkipLink"></a></span>
+                                                    </td>
+				<td class="ic-toolbar-container">
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tbody><tr>
+                                                            <td width="16">
+                                                                <img src="./ico-print.gif" id="ctl00_Img4" width="16" height="16">
+                                                            </td>
+                                                            <td class="ic-links-toolbar">
+                                                                <a href="http://10.1.75.104:9080/Pages/Common/HomeTermsAndConditions.aspx#" onclick="javascript: GoPrint();">
+                                                                    Imprimir página</a>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody></table>
+                                                </td>
+			</tr>
+		</tbody></table>
+		
+                                    </td>
+                                </tr>
+                                
+                                <tr>
+                                    <td>
+                                        <span id="ctl00_labelTitle" class="ic-page-title"></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td id="ctl00_cellRequiered" align="right">&nbsp;</td>
+		
+                                </tr>
+                                <tr>
+                                    <td width="95%" align="center">
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                            <tbody><tr>
+                                                <td align="right">
+                                                    
+                                                    
+                                                </td>
+                                            </tr>
+                                        </tbody></table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="100%" align="center">
+                                        <div id="ic-loading" class="ic-loading-bg" style="display: none;">
+                                            <div class="ic-loading">
+                                                <div id="message">
+                                                    <img src="./cargandoBAR.gif" id="ctl00_imgLoading"><br>
+                                                    <span id="ctl00_WaitingMessage">Procesando...</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="mainContainer">
+                                            
+    <table border="0" cellpadding="0" cellspacing="0">
+        <tbody><tr>
+            <td>
+                <table class="ic-grid-border" cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+			<tbody><tr>
+				<td><table id="ctl00_MainHolder_TransferPanel_thePanel" class="ic-grid" cellspacing="0" cellpadding="0" align="Center" border="0" style="width:100%;border-collapse:collapse;">
+					<tbody><tr class="ic-grid-title-row">
+						<td><table cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+							<tbody><tr>
+								<td class="ic-grid-title-cell-left">&nbsp;</td><td class="ic-grid-title-cell" align="left" style="white-space:nowrap;">Términos y condiciones</td>
+							</tr>
+						</tbody></table></td>
+					</tr><tr>
+						<td align="center"><div id="ctl00_MainHolder_TransferPanel" style="color:Black;border-color:DodgerBlue;font-family:verdana;font-size:10pt;width:100%;display:;">
+	
+                    <div class="ic-overflow">
+                    <table border="0" cellpadding="0" cellspacing="0">
+                        <tbody><tr>
+                            <td class="ic-form-data-no-border">
+                                <center>		<font face="Arial, Helvetica, Geneva" size="14" style="font-size:14px"><b>Términos y condiciones del Servicio</b></font></center>
+<center>			<font face="Arial, Helvetica, Geneva" size="14" style="font-size:14px"><b>"Supervielle Empresa"</b></font></center>
+<font face="Arial, Helvetica, Geneva" size="10" style="font-size:12px">
+<b>Términos y Condiciones</b><br>Las presentes Condiciones Generales y Particulares rigen el uso del servicio SUPERVIELLE EMPRESAS en adelante ("HBE"), propiedad de Banco Supervielle S.A. (en adelante "Supervielle") a través de la red INTERNET (en adelante "INTERNET") o de la red de transmisión de datos que en el futuro autorice Supervielle, para que la empresa solicitante  (en adelante "Empresa"), en su carácter de usuario de la aplicación y de conformidad con las condiciones establecidas más abajo pueda, utilizando los servicios de transmisión electrónica de datos disponible de HBE de Supervielle, operar los servicios que se detallan a continuación:
+<br><br>
+<b>1. Funcionalidad del servicio Supervielle Empresas</b><br>
+Supervielle pondrá a disposición del Usuario a través de HBE una serie de consultas y transacciones para operar con sus productos vigentes.<br>
+La Empresa podrá optar por habilitar los siguientes servicios:<br>
+<br>
+<b>Módulo de administración y consultas</b><br>
+<table border="0" cellspacing="0" cellpadding="0">
+<tbody><tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border" colspan="2">• Administración</td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border">Usuarios</td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border">Cuentas</td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border">Generar clave CET</td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border">Permisos</td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border">Esquema de firmas</td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border">Permisos y esquemas</td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border" colspan="2">• Cuentas</td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border">Movimientos</td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border">Acuerdos</td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border">Solicitud de Chequeras </td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border">Estado de Cuenta  (*)</td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border" colspan="2">• Plazos Fijos - Información</td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border" colspan="2">• Tarjetas de Crédito </td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border">Movimientos </td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border">Pago en Línea </td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border">Estado de Cuenta (*)</td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border">Autorizaciones </td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border">Historial  </td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border" colspan="2">• Préstamos - Información </td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border" colspan="2">• Información Financiera </td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border" colspan="2">• Cotización de monedas</td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border" colspan="2">• Configuraciones</td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border">o Mis favoritos</td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border">o Mis Empresas</td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border" colspan="2">• Información de cheques</td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border" colspan="2">• Cajas de seguridad</td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border" colspan="2">• Ayuda</td></tr>
+</tbody></table>
+<br><b>Módulo de Transferencias</b><br>
+<table border="0" cellspacing="0" cellpadding="0">
+<tbody><tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border">• A cuentas Supervielle</td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border">• A otros bancos / cuentas</td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border">• Mis cuentas de crédito </td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border">• Autorizaciones </td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border">• Historial </td></tr>
+</tbody></table>
+<br><b>Módulo de Recaudaciones</b><br>
+<table border="0" cellspacing="0" cellpadding="0">
+<tbody><tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border">• Recaudaciones por caja</td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border">• Remitir archivo de recaudación por Débito Automático</td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border">• Descargar archivo de rendición de Débito Automático</td></tr>
+</tbody></table>
+<br><b>Módulo de Pago de Sueldos</b><br>
+<table border="0" cellspacing="0" cellpadding="0">
+<tbody><tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border">• Procesar planilla </td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border">• Pago Manual </td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border">• Transferir archivo </td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border">• Mis cuentas de crédito </td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border">• Autorizaciones </td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border">• Historial </td></tr>
+</tbody></table>
+<br><b>Módulo de Pago a Proveedores</b><br>
+<table border="0" cellspacing="0" cellpadding="0">
+<tbody><tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border">• Procesar planilla </td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border">• Pago Manual </td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border">• Transferir archivo </td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border">• Mis cuentas de crédito </td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border">• Autorizaciones </td></tr>
+</tbody></table>
+<br>SUPERVIELLE se reserva el derecho y sin necesidad de notificación previa alguna ampliar, disminuir o modificar el número de operaciones y/o servicios prestados por el HBE.
+(*) cuando este disponible.
+<br>
+<br><b>2. Requisitos de uso</b><br>
+Para acceder al HBE la Empresa, deberá disponer de una computadora conectada a la red INTERNET y una configuración mínima requerida por la aplicación: navegador Explorer 6.0 con encripción de 128 bits y sistema operativo Windows 98 o superior. HBE garantiza la confidencialidad de la información transmitida a través de este servicio. Es responsabilidad de la Empresa cumplir con los requerimientos técnicos para acceder al servicio. <br>
+  <br>
+<b>3. Seguridad </b><br>
+HBE está basado en un estándar de seguridad alto de la industria informática, brindando confidencialidad, autenticidad e integridad de la información. El protocolo de comunicación utilizado garantiza la privacidad de las operaciones entre el programa utilizado para navegar en INTERNET (Browser) del usuario (la Empresa) y el servidor de HBE, generando un canal seguro en la transmisión. HBE exige una fortaleza de clave, que exige su cambio periódico y especificar valore alfanuméricos. La sesión de inactividad de la aplicación expira a los 15 (quince) minutos y desconecta automáticamente al usuario, siendo necesario un nuevo ingreso para volver a operar.<br>
+<br>
+<b>4. Uso de la aplicación</b><br>
+La Empresa no podrá comercializar, ceder o licenciar en forma alguna el servicio HBE, o de cualquier otro modo autorizar o permitir su uso a terceros, encontrándose siempre el uso de HBE sujeto a las condiciones que surgen del presente contrato, a las normas reglamentarias del Banco Central de la República Argentina, en adelante BCRA, y demás normas aplicables.<br>
+<br>
+<b>5. Suscripción y habilitación del servicio.</b><br>
+La Empresa, a través de un usuario comenzará el proceso de adhesión a HBE desde la página web <b>www.supervielle.com.ar</b> .La Empresa facultará a un Operador – Administrador a completar el proceso de adhesión, el cual constará de una serie de pasos donde se requerirán datos de la Empresa, usuarios que operarán el sistema, cuentas y firmantes. Al concluir el proceso, el usuario que opere en nombre de la Empresa deberá imprimir y remitir la documentación exigida por Supervielle para completar la solicitud de acceso a HBE.<br>
+<br>
+La Empresa, a través del usuario “Administrador” determinará cuales son las personas expresamente facultadas para acceder y operar en HBE sobre las cuentas de la Empresa. Aquellas personas que se designen como Administradores de HBE tendrán las siguientes facultades:<br>
+ <br>
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+<tbody><tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border">• Generar el alta, baja o modificación de los usuarios de HBE.</td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border">• Cambiar la clave del usuario activo y sus preguntas de seguridad.</td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border">• Determinar las atribuciones/permisos para operar en HBE.</td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border">• Delimitar el uso de la firma de las personas que accedan a HBE, en cuanto al tipo de operaciones, cuentas de débito, cuentas de crédito, monto máximo permitido por transacción y cuentas sobre la que operará. Deberá ser aprobada por SUPERVIELLE en forma previa a cualquier transacción que realice el operador, debiendo figurar con idénticas facultades que las que el Usuario haya comunicado al Banco para las operaciones que se cursen fuera de HBE.</td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border">• Solicitar la clave de Confirmación Electrónica de Transferencia (CET). La aceptación de esta clave se rige por el formulario de solicitud de clave CET que se anexa al presente contrato.</td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border">• Generar, imprimir y remitir a Supervielle el esquema de firmas que se utilizará en la aplicación.</td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border">• Comunicar al Supervielle cualquier cambio o modificación de los Administradores, Operadores y demás usuarios que pudieran afectar la integridad y/o seguridad de la aplicación.</td></tr>
+</tbody></table><br>
+Supervielle se reserva el derecho de habilitar el acceso a HBE, en base a la documentación, poderes y autorizaciones provista por el Usuario.<br>
+<br>
+<b>6. Acceso a HBE</b><br>
+El ingreso a HBE se realizará desde la página web de Supervielle, www.supervielle.com.ar, desde la opción Supervielle Empresas. El acceso a HBE requiere ingresar  “nacionalidad”, CUIL del Operador-Administrador, nombre de usuario y clave de acceso. <br>
+<br>
+En el primer ingreso a HBE, los usuarios deberán cambiar la clave generada por el usuario Administrador. Quedará bajo la responsabilidad de la Empresa el uso que cada uno de los operadores haga de sus datos, lo que comprende CUIL, Nombre de Usuario y Clave,  asumiendo la responsabilidad por su divulgación a terceros y liberando a SUPERVIELLE de toda responsabilidad que de ello se derive. La Empresa se compromete a extremar las medidas que resulten necesarias a fin de resguardar su confidencialidad y confiabilidad, tanto en el acceso a la aplicación como en aquellas medidas que hacen al buen uso de los sistemas.<br>
+<br>
+La política de seguridad establecida por SUPERVIELLE requiere que el identificador de usuario debe tener al menos 8 dígitos, y la clave debe tener entre 8 y 12 dígitos y ser alfanumérica.<br>
+<br>
+<b>7. Desbloqueo y/o cambio de claves de usuarios.</b><br>
+HBE le brinda a cada usuario la posibilidad de generar una nueva clave de acceso, y cambiar sus preguntas de seguridad. En el caso que no recuerde la clave ni las preguntas de seguridad, el Administrador deberá solicitar el desbloqueo y/o cambio a Supervielle. Para ello, el usuario deberá enviar una nota firmada por los apoderados / firmante de la cuenta, solicitando el blanqueo / desbloqueo de la clave.<br>
+<br>
+<b>8. Disponibilidad del servicio</b><br>
+La disponibilidad de los servicios del HBE será los días hábiles bancarios en los siguientes horarios:<br>
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+<tbody><tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border">a) Disponibilidad del HBE de lunes a viernes de 8 a 20hs.</td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border">b) Transferencias a cuentas Supervielle y a otros bancos de lunes a viernes de 8 a 20hs.</td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border">c) La carga del archivo de pago a proveedores podrá realizarse de lunes a viernes de 8 a 16 hs, con 48 hs de anticipación a la fecha de acreditación deseada por la empresa.</td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border">d) La carga del archivo de pago de sueldos podrá realizarse de lunes a viernes de 8 a 16 hs, con 48 hs de anticipación a la fecha de acreditación deseada por la empresa.</td></tr>
+</tbody></table>
+<br><b>9. Interrupción del servicio</b><br>
+Considerando que la tecnología y los medios de comunicación sobre los que se basan los servicios prestados pueden sufrir interrupciones no deseadas o ajenas a las partes, Supervielle entiende, y la Empresa declara conocer y aceptar, que deberá adoptar las precauciones y medidas de contingencias necesarias a fin de iniciar y concluir las transacciones de modo tal que ante cualquier eventualidad pueda concurrir a la Sucursal donde tiene radicadas sus cuentas a fin de cumplir con sus obligaciones, renunciando a efectuar reclamo alguno contra Supervielle ante cualquier eventualidad que pudiera surgir que sea extraña y/o ajena a Supervielle. No obstante, Supervielle arbitrará todos los medios a su alcance para asistir a la Empresa y sus usuarios.<br>
+<br>
+La Empresa acepta que el servicio pueda ser interrumpido y/o discontinuado debido a: <br>
+<br>
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+<tbody><tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border">a) en razón de la necesidad de realizar tareas de reparación y/o mantenimiento de todo o parte de los elementos que integran HBE que no pudieran evitarse; entendiendo que SUPERVIELLE hará los mejores esfuerzos para que la interrupción tenga el menor impacto posible;</td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border">b) en caso que por cualquier circunstancia derivada de medidas o resoluciones que dicte cualquier autoridad pública sea ésta nacional, provincial o municipal, SUPERVIELLE se vea afectado en su normal operatoria;</td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td class="ic-form-data-no-border">c) en todos los supuestos de caso fortuito o fuerza mayor.</td></tr>
+</tbody></table>
+<br>
+En todos los casos precedentes, el servicio se restituirá en cuanto haya cesado la causa que motivó su discontinuidad, sin tener que abonar por ello indemnización de ninguna especie ni restituir suma alguna.<br>
+<br>
+<b>10. Autorización al banco</b><br>
+SUPERVIELLE quedará expresamente autorizado para cursar las instrucciones que reciba a través de HBE, tomando como válido el uso de las claves de acceso correspondientes a/los usuarios designados por la Empresas a través de su usuario Administrador, sin asumir SUPERVIELLE responsabilidad alguna por cualquier daño o perjuicio que el uso no autorizado, indebido o fraudulento de dichas claves de acceso, por parte de personas autorizadas o de terceros, pudiera provocar. <br>
+<br>
+Las instrucciones ejecutadas por SUPERVIELLE en nombre de los usuarios de la Empresa serán consideradas a los efectos legales como hechas por la Empresa, y enmarcadas dentro de las condiciones de alta de cada producto solicitado por la misma. La Empresa queda obligada a presentar en término ante SUPERVIELLE la documentación e información exigida por las normas aplicables relativas a cada operación. <br>
+<br>
+La Empresa mantendrá indemne a SUPERVIELLE de cualquier daño que se derive de la falta de acreditación oportuna de fondos motivada en disposiciones del Banco Central de la República Argentina, sin que ello implique responsabilidad para SUPERVIELLE.<br>
+<br>
+<b>11. Legal</b><br>
+Las constancias que surjan de las operaciones de Supervielle, ya sean de registros informáticos y/o documentación convencional, constituirán prueba suficiente y concluyentes de las transacciones realizadas desde HBE, ya sea respecto de su efectiva ejecución o para resolver cualquier duda que exista respecto a su veracidad. Dichas constancias prevalecerán sobre las que pudieren obrar en poder del Cliente, en caso de discrepancias entre las mismas. La veracidad de las constancias emitidas por SUPERVIELLE subsistirá hasta el momento en que, mediante sentencia firme, se declare judicialmente su falsedad. La Empresa acepta que en caso de discrepancia prevalecerá la prueba instrumental regularmente emitida por SUPERVIELLE.<br>
+<br>
+<b>12. Percepción de comisiones por parte del Banco</b><br>
+La Empresa deberá abonar a SUPERVIELLE el importe correspondiente a los módulos contratados mediante el débito en la cuenta que indicara para la facturación, o cualquier otra que el Usuario posea en Supervielle.<br>
+En el caso que no se pudiera hacer efectivo el cobro de los módulos contratados o el cobro de las comisiones de transferencias,  Supervielle podrá suspender temporal o definitivamente el servicio  sin previo aviso. En <b>Anexo de Comisiones</b> que forma parte del proceso de adhesión al servicio se detallas las comisiones por módulo y/o transacción.  <br>
+<br>
+SUPERVIELLE se reserva el derecho de modificar los importes fijados como comisiones o gastos por los servicios de acceso a HBE. En tal supuesto, las modificaciones serán informadas a la Empresa con 30 días de antelación a su puesta en vigencia.<br>
+<br>
+<b>13. Mora en el cobro de comisiones</b><br>
+Para el caso de mora en el pago de cualquiera de los servicios contratados en el presente acuerdo, Supervielle aplicará el devengamiento de intereses de acuerdo a la política general para los productos contratados por la Empresa.<br>
+<br>
+<b>14. Modificación de términos y condiciones.</b><br>
+Supervielle, podrá modificar total o parcialmente las condiciones de prestación del servicio HBE,  mediante la inclusión de nuevas funciones en la aplicación. Queda asimismo entendido que la Empresa a través de los usuarios de HBE deberá aceptar los términos y condiciones de la nueva prestación del servicio HBE  en toda oportunidad que el Banco lo requiera. Caso contrario, operará la caducidad del servicio. <br>
+<br>
+<b>15. Cesación del servicio </b><br>
+Los presentes Términos y Condiciones permanecerán vigentes hasta que sea rescindida por alguna de las PARTES. Cualquiera de las partes podrá, en cualquier momento y sin expresión de causa rescindir el presente mediante aviso por escrito con diez (10) días de anticipación a la fecha en que desee opere la rescisión.  <br>
+En el caso de la Empresa será el Representante Legal y/o Apoderado/s con facultades suficientes conforme el Poder General vigentes de dicha Empresa a la fecha de la cesación.<br>
+<br>
+<b>16. Jurisdicción y constitución de domicilios.</b><br>
+A todos los efectos del presente, la Empresa y SUPERVIELLE constituyen domicilios especiales en los domicilios indicados en el último contrato de cuenta corriente y/o caja de ahorro, que ambas partes hayan acordado. Las notificaciones que se cursen en forma fehaciente a tales domicilios especiales serán validas, hasta tanto LAS PARTES no notifiquen en forma fehaciente la constitución de un nuevo domicilio dentro de la misma jurisdicción.<br>
+<br>
+Será de aplicación la ley vigente en la República Argentina. LAS PARTES se someten a la  jurisdicción de los Tribunales Ordinarios comerciales de la Ciudad Autónoma de Buenos Aires.<br>
+<br>
+Esta solicitud se considerará aceptada en todos sus términos por SUPERVIELLE, cuando SUPERVIELLE habilite el acceso del Usuario a HBE.<br>
+<br>
+</font>
+                            </td>
+                        </tr>
+                    </tbody></table>
+                    </div>
+                
+</div></td>
+					</tr>
+				</tbody></table></td>
+			</tr>
+		</tbody></table>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                    <tbody><tr>
+                        <td style="width: 100%">                                 
+                        </td>                     
+                        <td align="right" nowrap="nowrap">
+                            <a id="ctl00_MainHolder_PDFTerms" class="ic-button-navigation" href="javascript:__doPostBack(&#39;ctl00$MainHolder$PDFTerms&#39;,&#39;&#39;)">Descargar</a>
+                        </td>                                           
+                    </tr>
+                </tbody></table>
+            </td>
+        </tr>
+    </tbody></table>
+
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="right">
+                                        <div id="ctl00_validationSummaryFooter" style="color:Red;font-size:10px;display:none;">
+
+		</div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="95%" align="center">
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                            <tbody><tr>
+                                                <td align="right">
+                                                    
+                                                    
+                                                </td>
+                                            </tr>
+                                        </tbody></table>
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="ic-content-footer">
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                <tbody><tr class="ic-content-footer-dottedline">
+                                    <td align="right" nowrap="nowrap" style="width: 90%">
+                                    </td>
+                                    <td align="right" nowrap="nowrap" style="width: 10%">
+                                        <a id="ctl00_LinkButtonTermsAndConditions" class="ic-grid-link" href="javascript:__doPostBack(&#39;ctl00$LinkButtonTermsAndConditions&#39;,&#39;&#39;)">Términos y Condiciones</a>
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                </tbody></table>
+            </td>
+		<td id="ctl00_cellContentRight" class="ic-content-space-top-right" valign="top" style="display:none;">
+                <table class="ic-content-right" border="0" cellspacing="0" cellpadding="0">
+                    <tbody><tr>
+                        <td>
+                            <img src="./pixel.gif" width="8" height="1">
+                        </td>
+                        <td class="ic-right-panel">
+                            <table border="0" cellpadding="0" cellspacing="0" class="ic-right-panel-content">
+                                <tbody><tr>
+                                    <td width="8" class="ic-right-panel-collapse">
+                                        <input type="image" name="ctl00$imageButtonCollapse" id="ctl00_imageButtonCollapse" src="./bot-right-collapse.gif" style="height:47px;width:9px;border-width:0px;">
+                                    </td>
+                                    
+                                </tr>
+                            </tbody></table>
+                        </td>
+                    </tr>
+                </tbody></table>
+            </td>
+	</tr>
+</tbody></table>
+
+    
+    
+<script type="text/javascript">
+//<![CDATA[
+var Page_ValidationSummaries =  new Array(document.getElementById("ctl00_validationSummaryFooter"));
+//]]>
+</script>
+
+<script type="text/javascript">
+//<![CDATA[
+var ctl00_validationSummaryFooter = document.all ? document.all["ctl00_validationSummaryFooter"] : document.getElementById("ctl00_validationSummaryFooter");
+ctl00_validationSummaryFooter.headertext = "Formulario inválido, por favor revise los datos ingresados:";
+ctl00_validationSummaryFooter.showsummary = "False";
+//]]>
+</script>
+
+
+<script type="text/javascript">
+//<![CDATA[
+
+document.getElementById('ctl00_validationSummaryFooter').dispose = function() {
+    Array.remove(Page_ValidationSummaries, document.getElementById('ctl00_validationSummaryFooter'));
+}
+Sys.Application.initialize();
+//]]>
+</script>
+</form>
+
+
+<div class="ui-dialog ui-widget ui-widget-content ui-corner-all" tabindex="-1" role="dialog" aria-labelledby="ui-dialog-title-sessionTimeoutWarning" style="display: none; z-index: 1000; outline: 0px;"><div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix"><span class="ui-dialog-title" id="ui-dialog-title-sessionTimeoutWarning">&nbsp;</span><a href="http://10.1.75.104:9080/Pages/Common/HomeTermsAndConditions.aspx#" class="ui-dialog-titlebar-close ui-corner-all" role="button" style="display: none;"><span class="ui-icon ui-icon-closethick">close</span></a></div><div id="sessionTimeoutWarning" style="background-color: rgb(255, 255, 255); padding: 0px; height: 100%;" class="ui-dialog-content ui-widget-content">
+        <div id="sessionTimeoutWarningHeader">
+            <table width="100%">
+                 <tbody><tr>
+                    <td colspan="2" align="center" class="ic-form-data-modal">
+                        La sesión finalizará en <span id="sessionTimeoutCountdown"></span>&nbsp;segundos.
+                        Para seguir operando seleccioná “Continuar”
+                    </td>
+                </tr>
+            </tbody></table>
+        </div>
+    </div><div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix"><div class="ui-dialog-buttonset"><button type="button">Continuar </button><button type="button">Finalizar sesión</button></div></div></div></body></html>

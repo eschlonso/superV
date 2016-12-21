@@ -1,0 +1,232 @@
+﻿
+// Fecha Actualizacion: 07/03/2008
+// Autor Actualizacion: WilliamM Inc 283 Inhabilitar metacaracteres en Login Comerciales
+// Se crean: LoginPasswordKeys y LoginStringKeys
+
+function LoginMultifactorKeys(myfield, e) {
+    return (RestrictKeys(myfield, e, " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-"))
+}
+
+function LoginPasswordKeys(myfield, e) {
+    return (LoginStringKeys(myfield, e))
+}
+
+function LoginStringKeys(myfield, e) {
+    return (RestrictKeys(myfield, e, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-"))
+}
+
+function StringKeys(myfield, e) {
+    return (RestrictKeys(myfield, e, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789. _@&=*-+!$"))
+}
+
+// validar si el caracter ingresado es permitido
+function TransfersDescriptionKeys(myfield, e) {	/*	
+	var key, keychar;
+	
+	if(window.event)
+		key = window.event.keyCode;
+	else if(e)
+		key = e.wich;
+	
+	keychar = String.fromCharCode(key);	
+	
+	alert("keychar: " + keychar + " charCode: " + key);	
+	alert('test');	
+	*/
+    return (RestrictKeys(myfield, e, "abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789/-?:().,'+"));
+}
+
+function StringKeysTextArea(myfield, e) {
+    return (RestrictKeysTextArea(myfield, e, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789. _@&=*-+!$"))
+}
+function StringCustomKeys(myfield, e) {
+    return (RestrictKeys(myfield, e, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789. ?'_@&=*+!$:)-("))
+}
+
+function IntegerKeys(myfield, e) {
+    return (RestrictKeys(myfield, e, "0123456789"))
+}
+
+function DoubleKeys(myfield, e) {
+    return (RestrictKeys(myfield, e, "0123456789" + DecimalSeparator))
+}
+
+function DateTimeKeys(myfield, e) {
+    return (RestrictKeys(myfield, e, "0123456789/"))
+}
+
+function PasswordKeys(myfield, e) {
+    return (StringKeys(myfield, e))
+}
+
+function RestrictKeys(myfield, e, allowedCharacters, dec) {
+    var key;
+    var keychar;
+
+    if (window.event) {
+        key = window.event.keyCode;
+    }
+    else
+        if (e) {
+        key = e.which;
+    }
+    else {
+        return true;
+    }
+
+    keychar = String.fromCharCode(key);
+
+    // control keys
+    if ((key == null) || (key == 0) || (key == 8) || (key == 9) || (key == 13) || (key == 27) || (key == 60) || (key == 62)) {
+        return AutoCancelEnterKey(e);
+    }
+    // numbers
+    else
+        if ((allowedCharacters.indexOf(keychar) > -1)) {
+        return true;
+    }
+
+    // decimal point jump
+    else
+        if (dec && keychar == ".") {
+        myfield.form.elements[dec].focus();
+        return false;
+    }
+    else {
+        return false;
+    }
+}
+
+function RestrictKeysTextArea(myfield, e, allowedCharacters, dec) {
+    var key;
+    var keychar;
+
+    if (window.event) {
+        key = window.event.keyCode;
+    }
+    else
+        if (e) {
+        key = e.which;
+    }
+    else {
+        return true;
+    }
+
+    keychar = String.fromCharCode(key);
+
+    // control keys
+    if ((key == null) || (key == 0) || (key == 8) || (key == 9) || (key == 13) || (key == 27) || (key == 60) || (key == 62)) {
+        return AutoCancelEnterKey(e);
+    }
+    // numbers
+    else
+        if ((allowedCharacters.indexOf(keychar) > -1)) {
+        if (myfield.MaxLength == null || (myfield.value.length < myfield.MaxLength))
+            return true;
+        else
+            return false
+    }
+
+    // decimal point jump
+    else
+        if (dec && keychar == ".") {
+        if (myfield.MaxLength == null || (myfield.value.length < myfield.MaxLength)) {
+            myfield.form.elements[dec].focus();
+            return true;
+        }
+        else
+            return false
+    }
+    else {
+        return false;
+    }
+}
+
+function RestrictLengthTextArea(myfield, e) {
+    var key;
+    var keychar;
+
+
+    if (window.event) {
+        key = window.event.keyCode;
+    }
+    else
+        if (e) {
+        key = e.which;
+    }
+    else {
+        return true;
+    }
+
+    // control keys
+    if ((key == null) || (key == 0) || (key == 8) || (key == 9) || (key == 13) || (key == 27) || (key == 60) || (key == 62)) {
+        return AutoCancelEnterKey(e);
+    }
+    // numbers
+    else
+        if (myfield.attributes['MaxLength'] == null || (myfield.value.length < myfield.attributes['MaxLength'].value))
+        return true;
+    else
+        return false
+
+}
+
+
+function CancelEnterKey(e) {
+    if (window.event.keyCode == 13) {
+        return false;
+    }
+    else {
+        return true;
+    }
+}
+
+function AutoCancelEnterKey(e) {
+    /*if(window.event.keyCode == 13 )
+
+	{
+    //return document.MainForm["PageName"].value != "";
+    return false;
+    }
+    else
+    {
+    return true;
+    }*/
+    var key;
+
+    if (navigator.appVersion.charAt(0) == "4") {
+        if (navigator.appName.indexOf("Explorer") >= 0) {
+            //isIE4 = true;
+            key = window.event.keyCode;
+            if ((key == 13) || (key == 60) || (key == 62)) {
+                return false;
+            }
+            else {
+                return true
+            }
+        }
+        else {
+            //isNav4 = true;
+            key = e.which;
+            if ((key == 13) || (key == 60) || (key == 62)) {
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+    }
+    else if (navigator.appVersion.charAt(0) > "4") {
+        //isNav6 = true;
+        key = e.which;
+        if ((key == 13) || (key == 60) || (key == 62)) {
+            return false;
+        }
+        else {
+            return true;
+        }
+
+    }
+
+
+}
