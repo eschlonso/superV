@@ -134,7 +134,7 @@ bot80='cheques.html';
 		});
 
 		$( "#bot3" ).click(function() {
-alert("bot3");
+		//alert("bot3");
 		//location.target = "mainFrame";
 		  //location.href = bot3;
 		  update_session(bot3);
@@ -143,7 +143,7 @@ alert("bot3");
 
 
 		$( "#bot4" ).click(function() {
-		alert("aqui");
+		//alert("aqui");
 		//location.target = "mainFrame";
 		  //location.href = bot3;
 		  update_session(bot4);
@@ -156,7 +156,7 @@ alert("bot3");
 		alert("bot5");
 		//location.target = "mainFrame";
 		  //location.href = bot3;
-		  update_session(bot4);
+		  update_session(bot5);
 		  window.open(bot5,'mainFrame');
 		});
 
@@ -169,6 +169,7 @@ alert("bot3");
 		  //location.href = bot3;
 		  window.open(bot5a,'mainFrame');
 		});
+
 
 
 		$( "#bot5b" ).click(function() {
